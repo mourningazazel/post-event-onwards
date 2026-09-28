@@ -36,4 +36,4 @@ kind = "material"
 applies_to = { tags_any = ["cat.tool", "cat.construction", "cat.sports"] }
 name_part = { slot = "variant", text = "aluminum", order = 25 }
 desc = "made of aluminum rather than steel or wood"
-ops = [ { path = "mass_g", op = "mul", value = 0.4 } ]
+ops = [ { path = "mass_g", op = "mul", value = 0.6 } ]

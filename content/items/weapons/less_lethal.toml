@@ -1,4 +1,4 @@
-# Police and civilian less-lethal gear. Whether pepper spray or a taser affects the dead at all
+# Police and civilian less-lethal gear. Whether pepper spray or a stun_gun affects the dead at all
 # is an open question for the owner (reported); modelled as the real objects.
 
 [item.police_baton]
@@ -60,42 +60,42 @@ share = 40
 medium = "burst"
 high = "burst"
 
-[item.taser]
+[item.stun_gun]
 name = "stun gun"
-tags = ["cat.weapon.taser", "from.police", "use.weapon", "hazard.electrical"]
+tags = ["cat.weapon.stun_gun", "from.police", "use.weapon", "hazard.electrical"]
 shape = "complex"
 dims_mm = [155, 80, 35]
 mass_g = 200
 use_noise = "normal"
 desc = "A pistol-shaped conducted-energy weapon with a probe cartridge and a sealed battery pack."
-glyph = "item.taser"
+glyph = "item.stun_gun"
 why = "Drops a living attacker for seconds (probes or contact); the crackle is loud; the pack's charge runs down with the clock."
 value_class = "useful"
 power_source = { voltage = "dc_small", capacity_wh = 5, rechargeable = false }
 
-[item.taser.composition.housing]
+[item.stun_gun.composition.housing]
 material = "abs"
 share = 70
-[item.taser.composition.electronics]
+[item.stun_gun.composition.electronics]
 material = "copper"
 share = 15
-[item.taser.composition.battery]
+[item.stun_gun.composition.battery]
 material = "mild_steel"
 share = 10
-[item.taser.composition.contacts]
+[item.stun_gun.composition.contacts]
 material = "brass"
 share = 5
 
-[item.taser.features.grip]
+[item.stun_gun.features.grip]
 hands = 1
 girth_mm = 35
-[item.taser.features.slot]
-accepts = "cat.ammo.taser_cartridge"
+[item.stun_gun.features.slot]
+accepts = "cat.ammo.stun_gun_cartridge"
 count = 1
 
-[item.taser_cartridge]
+[item.stun_gun_cartridge]
 name = "stun gun cartridge"
-tags = ["cat.ammo.taser_cartridge", "from.police", "use.ammo"]
+tags = ["cat.ammo.stun_gun_cartridge", "from.police", "use.ammo"]
 shape = "small"
 dims_mm = [70, 40, 30]
 mass_g = 25
@@ -105,13 +105,13 @@ glyph = "item.cartridge"
 why = "Gives the stun gun its one ranged shot; the wire is fine binding in a pinch."
 value_class = "common"
 
-[item.taser_cartridge.composition.body]
+[item.stun_gun_cartridge.composition.body]
 material = "abs"
 share = 80
-[item.taser_cartridge.composition.wire]
+[item.stun_gun_cartridge.composition.wire]
 material = "copper"
 share = 15
-[item.taser_cartridge.composition.probes]
+[item.stun_gun_cartridge.composition.probes]
 material = "carbon_steel"
 share = 5
 

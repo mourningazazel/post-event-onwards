@@ -72,7 +72,7 @@ water = "waterproof"
 conductivity = "insulator"
 struck_sound = "none"
 surface = "fibrous"
-desc = "Kevlar-type fibre: police vests, cut-resistant gloves, firefighter gear. Bite resistant."
+desc = "Para-aramid fibre: police vests, cut-resistant gloves, firefighter gear. Bite resistant."
 
 [material.leather]
 family = "textile"

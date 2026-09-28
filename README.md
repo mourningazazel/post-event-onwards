@@ -29,6 +29,7 @@ python3 tools/content/test.py      # derivation expectations + survival-action c
 | [docs/design/survival-actions.md](docs/design/survival-actions.md) | What a real survivor would do, the mechanics that need, and the item vocabulary; worked chains |
 | [docs/design/world-catalog.md](docs/design/world-catalog.md) | Settings, buildings, rooms, outdoor sets, profiles, item plan; the content id contract |
 | [content/](content/) | Game content data and its schema reference (`content/README.md`) |
+| [docs/design/content-backlog.md](docs/design/content-backlog.md) | Reconciliation decisions, vocabulary proposals, open owner questions from content authoring |
 | [docs/design/content-model.md](docs/design/content-model.md) | Content model: materials, features and joints, capabilities, reactions, tags; how Claude authors content |
 | [docs/design/brands.md](docs/design/brands.md) | Fictional brand universe (parent companies, brands, store own labels) |
 | [docs/design/purposes.md](docs/design/purposes.md) | Purpose catalog: what each gameplay function is for, and its permanent purpose tests |

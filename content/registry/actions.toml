@@ -184,7 +184,17 @@ skill = "survival"
 difficulty = 0
 time_s = 30
 noise = "quiet"
-roles.target = { desc = "cloth", need = [ { divisible_mode = "sheet" } ] }
+roles.target = { desc = "cloth that tears by hand (divisible.needs = none; denim etc. need a blade: use cut_to_length)", need = [ { divisible_mode = "sheet" }, { divisible_by_hand = true } ] }
+
+[action.cut_strips]
+desc = "Cut cloth/leather/tarp into strips or panels with a blade (for tough fabrics that won't tear)."
+mechanics = ["M6", "M8"]
+skill = "tailoring"
+difficulty = 0
+time_s = 120
+noise = "quiet"
+roles.target = { desc = "sheet-divisible material", need = [ { divisible_mode = "sheet" } ] }
+roles.tool = { desc = "blade", need = [ { capability = "cut", min = 2 } ] }
 
 [action.saw_through]
 desc = "Saw through a board, pipe, wall section or door."

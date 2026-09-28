@@ -22,7 +22,7 @@ entries = [
   { item = "gas_can", w = 3, count = [1, 2], substance = "diesel", fill_pct = [5, 100] },
   { item = "motor_oil_bottle", w = 4, count = [1, 6], substance = "motor_oil", fill_pct = [10, 100] },
   { item = "antifreeze_jug", w = 2, count = [1, 2], substance = "antifreeze", fill_pct = [10, 100] },
-  { item = "wd40_can", w = 2, count = [1, 2] },
+  { item = "penetrating_oil_can", w = 2, count = [1, 2] },
   { item = "work_gloves", w = 4, count = [1, 4] },
   { item = "rubber_boots", w = 3, count = [1, 2] },
   { item = "coveralls", w = 3, count = [1, 2] },

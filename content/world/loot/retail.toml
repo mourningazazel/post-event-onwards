@@ -251,7 +251,7 @@ entries = [
   { item = "charcoal_bag", w = 8, count = [4, 16] },
   { item = "lighter_fluid_can", w = 6, count = [4, 12], substance = "lighter_fluid", fill_pct = [100, 100] },
   { item = "firewood", w = 3, count = [10, 30] },
-  { item = "wd40_can", w = 6, count = [4, 12] },
+  { item = "penetrating_oil_can", w = 6, count = [4, 12] },
   { item = "motor_oil_bottle", w = 5, count = [4, 12], substance = "motor_oil", fill_pct = [100, 100] },
   { item = "antifreeze_jug", w = 3, count = [2, 6], substance = "antifreeze", fill_pct = [100, 100] },
   { item = "propane_torch", w = 4, count = [2, 6] },
@@ -338,7 +338,7 @@ empty_chance_pct = 1
 entries = [
   { item = "motor_oil_bottle", w = 14, count = [6, 24], substance = "motor_oil", fill_pct = [100, 100] },
   { item = "antifreeze_jug", w = 8, count = [4, 12], substance = "antifreeze", fill_pct = [100, 100] },
-  { item = "wd40_can", w = 6, count = [4, 12] },
+  { item = "penetrating_oil_can", w = 6, count = [4, 12] },
   { item = "car_battery", w = 8, count = [2, 8] },
   { item = "jumper_cables", w = 5, count = [2, 8] },
   { item = "car_jack", w = 3, count = [1, 4] },

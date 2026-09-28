@@ -207,7 +207,7 @@ substance = "antifreeze"
 fill_pct = [20, 100]
 
 # id kept per the world-catalog contract; the name is generic (no trademarks, N010).
-[item.wd40_can]
+[item.penetrating_oil_can]
 name = "penetrating oil spray"
 tags = ["cat.household.lubricant", "from.garage", "from.kitchen", "from.vehicle", "use.tool", "hazard.flammable", "hazard.pressurized"]
 shape = "container"
@@ -221,14 +221,14 @@ brand_cats = ["household", "automotive"]
 modifiers = ["empty"]
 value_class = "useful"
 
-[item.wd40_can.composition.can]
+[item.penetrating_oil_can.composition.can]
 material = "mild_steel"
 share = 90
-[item.wd40_can.composition.nozzle]
+[item.penetrating_oil_can.composition.nozzle]
 material = "polypropylene"
 share = 10
 
-[item.wd40_can.features.container]
+[item.penetrating_oil_can.features.container]
 capacity_ml = 330
 opening_mm = 1
 closable = true
@@ -236,11 +236,11 @@ sealable = true
 compat = ["liquid"]
 
 # Closest substance: mineral_spirits (proposal: penetrating_oil).
-[item.wd40_can.contents]
+[item.penetrating_oil_can.contents]
 substance = "mineral_spirits"
 fill_pct = [5, 100]
 
-[item.wd40_can.reactions.heat]
+[item.penetrating_oil_can.reactions.heat]
 high = "burst"
 
 [item.drum_55gal]

@@ -150,6 +150,9 @@ def eval_pred(ctx: Ctx, pred: dict, rid: str, bind: dict) -> tuple[bool, str]:
     if "divisible_mode" in pred:
         mode = (it.get("divisible") or {}).get("mode")
         return mode == pred["divisible_mode"], f"{rid} divisible {mode}"
+    if "divisible_by_hand" in pred:
+        needs = (it.get("divisible") or {}).get("needs", "none")
+        return (needs == "none") == pred["divisible_by_hand"], f"{rid} divisible needs '{needs}'"
     if "flammable_min" in pred:
         v = FLAMMABILITY_RANK.get(main_material(db, it).get("flammability", "none"), 0)
         return v >= FLAMMABILITY_RANK[pred["flammable_min"]], f"{rid} flammability rank {v}"

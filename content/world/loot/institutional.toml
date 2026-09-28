@@ -142,7 +142,7 @@ entries = [
   { item = "riot_shield", w = 3, count = [1, 6] },
   { item = "police_baton", w = 4, count = [2, 10] },
   { item = "pepper_spray", w = 4, count = [2, 12] },
-  { item = "taser", w = 4, count = [1, 6] },
+  { item = "stun_gun", w = 4, count = [1, 6] },
   { item = "zip_ties", w = 3, count = [2, 10] },
   { item = "flashlight", w = 3, count = [2, 8] },
   { item = "walkie_talkie", w = 3, count = [2, 8] },

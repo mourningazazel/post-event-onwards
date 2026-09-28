@@ -131,10 +131,10 @@ eyes = [["eyeglasses", 45], ["none", 55]]
 accessory = [["wristwatch", 35], ["jewelry", 20], ["none", 45]]
 
 [profile.police_officer]
-desc = "A uniformed patrol officer: uniform shirt over body armour, duty trousers and boots, a loaded duty belt (pistol, spare magazines, spray, radio, light, taser or baton)."
+desc = "A uniformed patrol officer: uniform shirt over body armour, duty trousers and boots, a loaded duty belt (pistol, spare magazines, spray, radio, light, stun_gun or baton)."
 occupancy = ["police.weekday_day", "police.weekend_day", "police.evening", "police.night", "street.night", "street.weekday_day"]
 pockets = ["pistol", "magazine_pistol", "magazine_pistol", "pepper_spray", "walkie_talkie", "flashlight", "wallet", "smartphone", "car_key"]
-carried = [["taser", 55], ["police_baton", 25], ["none", 20]]
+carried = [["stun_gun", 55], ["police_baton", 25], ["none", 20]]
 tags = ["cat.profile.worker", "cat.profile.emergency", "cat.profile.armed"]
 [profile.police_officer.outfit]
 underwear = [["underwear", 100]]
@@ -172,7 +172,7 @@ accessory = [["wristwatch", 50], ["none", 50]]
 desc = "A contract security guard at a desk or on rounds: uniform shirt and trousers, heavy shoes, a flashlight and radio, occasionally spray, a baton or a sidearm."
 occupancy = ["office.night", "office.weekend_day", "retail.night", "hospital.night", "residential.night", "industrial.night"]
 pockets = ["wallet", "smartphone", "house_key", "car_key", "flashlight", "walkie_talkie"]
-carried = [["pepper_spray", 25], ["police_baton", 10], ["pistol", 8], ["taser", 5], ["none", 52]]
+carried = [["pepper_spray", 25], ["police_baton", 10], ["pistol", 8], ["stun_gun", 5], ["none", 52]]
 tags = ["cat.profile.worker", "cat.profile.security"]
 [profile.security_guard.outfit]
 underwear = [["underwear", 99], ["none", 1]]

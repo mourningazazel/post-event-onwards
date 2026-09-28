@@ -183,7 +183,7 @@ in their domain's report.
 - **Materials:** ✓wood_plank, ✓steel_pipe, ✓brick, lumber_2x4, plywood_sheet, cinder_block, rebar,
   sheet_metal, pallet, tarp, plastic_sheeting, sandbag, concrete_mix_bag
 - **Fuel and fluids:** gas_can, propane_tank, fuel_canister, lighter_fluid_can, motor_oil_bottle,
-  antifreeze_jug, wd40_can, drum_55gal
+  antifreeze_jug, penetrating_oil_can, drum_55gal
 - **Containers and haulers:** bucket, toolbox, tool_belt (also C), wheelbarrow, hand_truck,
   ladder_step, extension_ladder
 - **Salvage:** ✓rubber_hose, ✓copper_tubing, ✓battery_aa, ✓car_battery, battery_d, battery_9v,
@@ -246,7 +246,7 @@ in their domain's report.
   - pistol, revolver, shotgun, hunting_rifle, semi_auto_rifle
   - ammo_9mm, ammo_12ga, ammo_308, ammo_556, magazine_pistol, magazine_rifle
   - compound_bow, crossbow, arrows, crossbow_bolts
-  - police_baton, pepper_spray, taser, riot_shield
+  - police_baton, pepper_spray, stun_gun, riot_shield
 
 ## 7. Loot tables (ids): shared by rooms, containers, profiles
 
@@ -309,3 +309,15 @@ in their domain's report.
   broken, bloody).
 - **Size and material variants:** `size_small`, `size_large`, `aluminum_body`, `heavy_duty`, `cheap`.
 - **Brands:** `brand.*` tags from the brand universe (`content/brands/`).
+
+## 9. Additions and renames during authoring
+
+See [`content-backlog.md`](content-backlog.md) §1–2:
+
+- **Renamed** for trademark safety:
+  - `wd40_can` → `penetrating_oil_can`
+  - `taser` → `stun_gun`
+- **Extra item archetypes:** tin_snips, hatchet_head, tool_handle, steel_wool, elastic_bandage,
+  burn_gel, dryer_lint, fuel_pump, semi_trailer, ammo_38spl, stun_gun_cartridge
+- **Extra rooms:** five specialty store floors
+- **Extra loot tables:** twelve

@@ -55,7 +55,7 @@ entries = [
   { item = "screws_box", w = 6, count = [2, 8] },
   { item = "nails_box", w = 3, count = [1, 4] },
   { item = "zip_ties", w = 3, count = [1, 4] },
-  { item = "wd40_can", w = 4, count = [1, 4] },
+  { item = "penetrating_oil_can", w = 4, count = [1, 4] },
   { item = "motor_oil_bottle", w = 3, count = [1, 4], substance = "motor_oil", fill_pct = [20, 100] },
   { item = "metal_file", w = 3, count = [1, 4] },
   { item = "adjustable_wrench", w = 3, count = [1, 3] },

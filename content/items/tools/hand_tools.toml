@@ -89,7 +89,7 @@ shape = "rod"
 dims_mm = [250, 60, 15]
 mass_g = 400
 durability = 9
-desc = "A 10-inch crescent-style wrench."
+desc = "A 10-inch adjustable spanner-style wrench."
 glyph = "item.wrench"
 why = "Undoes nuts and bolts (car batteries, valves, fixtures); decent bludgeon."
 brand_cats = ["tools"]
@@ -379,8 +379,10 @@ sharpness = 8
 hands = 1
 girth_mm = 22
 
+# cut: authored 6 — shearing leverage exceeds the slicing cap (derive.SLICE_CAP 5); cuts steel wire.
 [item.wire_cutters.capabilities]
 grip_tool = 2
+cut = 6
 
 [item.bolt_cutters]
 name = "bolt cutters"
@@ -415,8 +417,11 @@ hands = 2
 girth_mm = 30
 
 # chop: derived 7 (edge x heavy tool). Shearing jaws cannot hack when swung.
+# cut: authored 7 — compound-lever shearing beats the slicing cap (derive.SLICE_CAP 5):
+# shears chain and mild/carbon steel up to hardness 7 (not hardened padlocks: tier via lock).
 [item.bolt_cutters.capabilities]
 chop = 1
+cut = 7
 
 [item.utility_knife]
 name = "utility knife"
@@ -734,6 +739,10 @@ sharpness = 9
 [item.tin_snips.features.grip]
 hands = 1
 girth_mm = 25
+
+# cut: authored 6 — shearing leverage beats the slicing cap (derive.SLICE_CAP 5); cuts sheet steel.
+[item.tin_snips.capabilities]
+cut = 6
 
 [item.hatchet_head]
 name = "hatchet head"

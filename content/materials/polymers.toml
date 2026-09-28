@@ -123,7 +123,7 @@ water = "waterproof"
 conductivity = "insulator"
 struck_sound = "none"
 surface = "porous"
-desc = "Styrofoam: coolers, packaging, cups. Dissolved by gasoline."
+desc = "Expanded polystyrene foam: coolers, packaging, cups. Dissolved by gasoline."
 
 [material.abs]
 family = "polymer"
@@ -170,7 +170,7 @@ water = "waterproof"
 conductivity = "insulator"
 struck_sound = "clack"
 surface = "smooth"
-desc = "Plexiglass sneeze guards, displays, signs."
+desc = "Acrylic-sheet sneeze guards, displays, signs."
 
 [material.nylon]
 family = "polymer"

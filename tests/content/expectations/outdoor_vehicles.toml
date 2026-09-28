@@ -78,8 +78,8 @@ why = "point 5 x carbon steel head rigidity 9 / 10 = 4.5"
 item = "hunting_knife"
 path = "cap.cut"
 op = "=="
-value = 6
-why = "8 x 7 / 10 = 5.6"
+value = 5
+why = "8 x 7 / 10 = 5.6, capped at the slicing limit 5 (no knife parts steel)"
 
 [[expect]]
 item = "hunting_knife"

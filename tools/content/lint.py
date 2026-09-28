@@ -141,7 +141,7 @@ class Lint:
     KNOWN_PREDICATES = {
         "feature", "param", "capability", "prop", "shape_in", "tag", "tag_prefix", "has_salvage",
         "salvage_yields", "substance", "substance_param", "holds_substance_of", "compatible_with",
-        "divisible_mode", "flammable_min", "fits_socket_of", "fits_slot_of", "param_or_dim_min",
+        "divisible_mode", "divisible_by_hand", "flammable_min", "fits_socket_of", "fits_slot_of", "param_or_dim_min",
         "rigidity_min", "medical", "any",
     }
 

@@ -435,7 +435,7 @@ empty_chance_pct = 3
 entries = [
   { item = "motor_oil_bottle", w = 8, count = [1, 4], substance = "motor_oil", fill_pct = [10, 100] },
   { item = "antifreeze_jug", w = 5, count = [1, 1], substance = "antifreeze", fill_pct = [10, 100] },
-  { item = "wd40_can", w = 6, count = [1, 2] },
+  { item = "penetrating_oil_can", w = 6, count = [1, 2] },
   { item = "gas_can", w = 7, count = [1, 2], substance = "gasoline", fill_pct = [5, 100] },
   { item = "gas_can", w = 2, count = [1, 1], mods = ["empty"] },
   { item = "propane_tank", w = 4, count = [1, 1], substance = "propane", fill_pct = [5, 100] },

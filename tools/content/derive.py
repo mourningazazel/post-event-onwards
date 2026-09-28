@@ -16,6 +16,8 @@ TOUGHNESS = ["brittle", "fragile", "moderate", "tough", "very_tough"]
 AERO_BASE = {"poor": 6, "fair": 9, "good": 12}
 IGNITE_BY_METHOD = {"flame": 6, "strike": 6, "flint": 4, "spark": 4, "electric": 2}
 BIND_BY_TOUGHNESS = {"brittle": 0, "fragile": 1, "moderate": 3, "tough": 5, "very_tough": 7}
+SLICE_CAP = 5          # max derived cut from an edge alone (see capabilities())
+WIELD_MAX_G = 12000    # heaviest thing that can be swung/levered as a tool or weapon
 PART_ROLES_EDGE = ("blade", "edge", "head", "bit")
 PART_ROLES_POINT = ("point", "tip", "blade", "head")
 PART_ROLES_STRIKE = ("head", "striking_face", "face", "body")
@@ -211,7 +213,9 @@ def capabilities(db: Db, item: dict) -> dict[str, int]:
     if "edge" in f:
         em = role_material(db, item, PART_ROLES_EDGE)
         sharp = f["edge"].get("sharpness", 0)
-        c["cut"] = clamp(sharp * em.get("edge_holding", 0) / 10)
+        # A slicing edge alone tops out at 5: it cannot part hardness >= 6 materials (metals,
+        # glass, stone). Those need saw/grinder/bolt-cutter capabilities (authored).
+        c["cut"] = min(SLICE_CAP, clamp(sharp * em.get("edge_holding", 0) / 10))
         chop = c["cut"] * min(1.0, mass / 1200) * (1.3 if item.get("balance") == "head" else 1.0)
         c["chop"] = clamp(chop)
         c["scrape"] = clamp(3 + sharp // 3)
@@ -221,7 +225,10 @@ def capabilities(db: Db, item: dict) -> dict[str, int]:
         pm = role_material(db, item, PART_ROLES_POINT)
         c["pierce"] = clamp(f["point"].get("sharpness", 0) * pm.get("rigidity", 0) / 10)
 
-    if mass > 0 and shape not in ("fabric", "cord", "bag", "granular"):
+    # Wieldability gate: things too heavy to swing (or fixed in place) get no derived hammer/pry;
+    # blocking/barricade value comes from mass, not these capabilities.
+    wieldable = mass <= WIELD_MAX_G and not item.get("fixed")
+    if wieldable and mass > 0 and shape not in ("fabric", "cord", "bag", "granular"):
         sm = role_material(db, item, PART_ROLES_STRIKE)
         h = math.log2(max(mass, 50) / 50) + sm.get("hardness", 0) / 3
         if "striking_face" in f:
@@ -230,7 +237,7 @@ def capabilities(db: Db, item: dict) -> dict[str, int]:
             h *= 0.5
         c["hammer"] = clamp(h)
 
-    if shape in ("rod", "blade") and length > 0:
+    if wieldable and shape in ("rod", "blade") and length > 0:
         c["pry"] = clamp(rigidity * min(1.0, length / 600))
     if length:
         c["reach"] = length
