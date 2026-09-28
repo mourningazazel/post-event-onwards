@@ -1,0 +1,216 @@
+# Institutional loot tables (world-catalog §7): schools, hospitals, police and fire, pre-event baseline.
+
+# ---------------------------------------------------------------- schools
+
+[loot.classroom_supplies]
+desc = "A teacher's desk and classroom cupboards, including the lockdown bucket many US classrooms keep."
+rolls = [3, 7]
+empty_chance_pct = 2
+entries = [
+  { item = "paper_ream", w = 10, count = [1, 6] },
+  { item = "notebook", w = 8, count = [2, 12] },
+  { item = "pen", w = 8, count = [5, 30] },
+  { item = "marker", w = 10, count = [4, 24] },
+  { item = "book", w = 12, count = [4, 30] },
+  { item = "desk_clutter", w = 8, count = [1, 1] },
+  { item = "cardboard_box", w = 4, count = [1, 4] },
+  { item = "hand_sanitizer_bottle", w = 5, count = [1, 2], substance = "hand_sanitizer", fill_pct = [20, 100] },
+  { item = "paper_towels", w = 5, count = [1, 4] },
+  { item = "snack_bar", w = 5, count = [4, 20] },
+  { item = "first_aid_kit", w = 3, count = [1, 1] },
+  { item = "bucket", w = 3, count = [1, 1] },
+  { item = "flashlight", w = 3, count = [1, 1] },
+  { item = "trash_bags", w = 2, count = [1, 1] },
+  { item = "toilet_paper", w = 2, count = [1, 4] },
+  { item = "battery_aa", w = 2, count = [2, 8] },
+  { item = "glow_stick", w = 1, count = [4, 12] },
+  { item = "mug", w = 3, count = [1, 2] },
+  { item = "laptop", w = 3, count = [1, 1] },
+  { item = "city_map", w = 1, count = [1, 1] },
+  { item = "photo", w = 2, count = [1, 2] },
+]
+
+# Extra (not in world-catalog §7): a school gym's equipment closet.
+[loot.gym_equipment]
+desc = "A gym equipment closet: bats, sticks, pads and helmets, weights, first aid, a whistle-and-clipboard mess."
+rolls = [3, 7]
+empty_chance_pct = 2
+entries = [
+  { item = "baseball_bat", w = 16, count = [2, 10] },
+  { item = "hockey_stick", w = 10, count = [4, 16] },
+  { item = "sports_pads", w = 12, count = [4, 16] },
+  { item = "football_helmet", w = 8, count = [4, 16] },
+  { item = "dumbbell", w = 8, count = [4, 16] },
+  { item = "sneakers", w = 4, count = [1, 4] },
+  { item = "t_shirt", w = 6, count = [4, 20] },
+  { item = "shorts", w = 4, count = [4, 16] },
+  { item = "towel", w = 6, count = [4, 12] },
+  { item = "first_aid_kit", w = 5, count = [1, 1] },
+  { item = "cooler", w = 4, count = [1, 2] },
+  { item = "bottled_water", w = 6, count = [6, 24] },
+  { item = "air_horn", w = 2, count = [1, 1] },
+  { item = "cardboard_box", w = 3, count = [1, 3] },
+  { item = "desk_clutter", w = 2, count = [1, 1] },
+]
+
+[loot.nurse_office_stock]
+desc = "A school or workplace nurse's cabinets: first aid, pain relief, splints, a stop-the-bleed kit."
+rolls = [3, 8]
+empty_chance_pct = 2
+entries = [
+  { item = "bandage_box", w = 18, count = [1, 6] },
+  { item = "gauze_pads", w = 12, count = [2, 10] },
+  { item = "painkillers", w = 10, count = [1, 4] },
+  { item = "antiseptic_bottle", w = 8, count = [1, 3], substance = "antiseptic", fill_pct = [20, 100] },
+  { item = "rubbing_alcohol_bottle", w = 5, count = [1, 2], substance = "rubbing_alcohol", fill_pct = [20, 100] },
+  { item = "latex_gloves", w = 10, count = [1, 4] },
+  { item = "first_aid_kit", w = 6, count = [1, 2] },
+  { item = "tourniquet", w = 4, count = [1, 4] },
+  { item = "splint_sam", w = 4, count = [1, 3] },
+  { item = "crutches", w = 2, count = [1, 1] },
+  { item = "stethoscope", w = 3, count = [1, 1] },
+  { item = "hand_sanitizer_bottle", w = 5, count = [1, 2], substance = "hand_sanitizer", fill_pct = [20, 100] },
+  { item = "towel", w = 3, count = [1, 4] },
+  { item = "snack_bar", w = 4, count = [2, 10] },
+  { item = "sanitary_pads", w = 3, count = [2, 10] },
+  { item = "t_shirt", w = 2, count = [1, 4] },
+  { item = "sweatpants", w = 1, count = [1, 3] },
+]
+
+# ---------------------------------------------------------------- hospitals
+
+[loot.hospital_supplies]
+desc = "Hospital supply cabinets and carts: dressings, IV fluid, sutures, PPE, scrubs, linens."
+rolls = [4, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "gauze_pads", w = 14, count = [5, 30] },
+  { item = "bandage_box", w = 8, count = [2, 10] },
+  { item = "latex_gloves", w = 12, count = [2, 10] },
+  { item = "saline_bag", w = 9, count = [2, 12] },
+  { item = "suture_kit", w = 5, count = [1, 6] },
+  { item = "tourniquet", w = 3, count = [1, 4] },
+  { item = "splint_sam", w = 3, count = [1, 4] },
+  { item = "antiseptic_bottle", w = 7, count = [1, 6], substance = "antiseptic", fill_pct = [30, 100] },
+  { item = "rubbing_alcohol_bottle", w = 5, count = [1, 4], substance = "rubbing_alcohol", fill_pct = [30, 100] },
+  { item = "hand_sanitizer_bottle", w = 5, count = [1, 4], substance = "hand_sanitizer", fill_pct = [30, 100] },
+  { item = "dust_mask", w = 6, count = [5, 40] },
+  { item = "goggles", w = 2, count = [1, 6] },
+  { item = "scrubs_top", w = 4, count = [2, 12] },
+  { item = "scrubs_pants", w = 4, count = [2, 12] },
+  { item = "bedsheet", w = 5, count = [2, 12] },
+  { item = "towel", w = 3, count = [2, 10] },
+  { item = "stethoscope", w = 1, count = [1, 2] },
+  { item = "crutches", w = 1, count = [1, 3] },
+  { item = "trash_bags", w = 2, count = [1, 3] },
+  { item = "first_aid_kit", w = 1, count = [1, 2] },
+]
+
+[loot.hospital_pharmacy_stock]
+desc = "Hospital pharmacy shelving: bulk antibiotics and analgesics, IV fluids, disinfectants."
+rolls = [4, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "antibiotics", w = 32, count = [4, 24] },
+  { item = "painkillers", w = 30, count = [4, 24] },
+  { item = "saline_bag", w = 14, count = [4, 24] },
+  { item = "antiseptic_bottle", w = 6, count = [2, 8], substance = "antiseptic", fill_pct = [100, 100] },
+  { item = "rubbing_alcohol_bottle", w = 4, count = [2, 8], substance = "rubbing_alcohol", fill_pct = [100, 100] },
+  { item = "baby_formula", w = 3, count = [4, 12] },
+  { item = "purification_tablets", w = 1, count = [1, 4] },
+  { item = "latex_gloves", w = 5, count = [2, 8] },
+  { item = "suture_kit", w = 2, count = [2, 8] },
+  { item = "bandage_box", w = 3, count = [2, 8] },
+]
+
+# ---------------------------------------------------------------- police and fire
+
+[loot.police_armory_stock]
+desc = "A police armory: patrol rifles and shotguns, duty pistols, ammunition, less-lethal gear, armor."
+rolls = [4, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "semi_auto_rifle", w = 10, count = [1, 6] },
+  { item = "shotgun", w = 9, count = [1, 6] },
+  { item = "pistol", w = 8, count = [1, 6] },
+  { item = "ammo_9mm", w = 11, count = [100, 1000] },
+  { item = "ammo_556", w = 9, count = [100, 1000] },
+  { item = "ammo_12ga", w = 7, count = [25, 250] },
+  { item = "magazine_pistol", w = 6, count = [4, 20] },
+  { item = "magazine_rifle", w = 6, count = [4, 20] },
+  { item = "police_vest", w = 6, count = [1, 6] },
+  { item = "riot_shield", w = 3, count = [1, 6] },
+  { item = "police_baton", w = 4, count = [2, 10] },
+  { item = "pepper_spray", w = 4, count = [2, 12] },
+  { item = "taser", w = 4, count = [1, 6] },
+  { item = "zip_ties", w = 3, count = [2, 10] },
+  { item = "flashlight", w = 3, count = [2, 8] },
+  { item = "walkie_talkie", w = 3, count = [2, 8] },
+  { item = "tourniquet", w = 2, count = [2, 10] },
+  { item = "road_flare", w = 2, count = [6, 24] },
+  { item = "binoculars", w = 1, count = [1, 2] },
+  { item = "hunting_rifle", w = 1, count = [1, 1] },
+]
+
+[loot.police_locker]
+desc = "An officer's personal locker: spare uniform layers and duty gear, gym kit, personal effects."
+rolls = [2, 6]
+empty_chance_pct = 5
+entries = [
+  { item = "dress_shirt", w = 10, count = [1, 3] },
+  { item = "work_pants", w = 8, count = [1, 2] },
+  { item = "t_shirt", w = 8, count = [1, 4] },
+  { item = "work_boots", w = 5, count = [1, 1] },
+  { item = "sneakers", w = 4, count = [1, 1] },
+  { item = "rain_jacket", w = 4, count = [1, 1] },
+  { item = "hi_vis_vest", w = 4, count = [1, 1] },
+  { item = "police_vest", w = 4, count = [1, 1] },
+  { item = "flashlight", w = 6, count = [1, 2] },
+  { item = "pepper_spray", w = 4, count = [1, 1] },
+  { item = "police_baton", w = 3, count = [1, 1] },
+  { item = "latex_gloves", w = 4, count = [1, 2] },
+  { item = "tourniquet", w = 3, count = [1, 1] },
+  { item = "ammo_9mm", w = 3, count = [15, 50] },
+  { item = "magazine_pistol", w = 2, count = [1, 2] },
+  { item = "pistol", w = 1, count = [1, 1] },
+  { item = "deodorant_spray", w = 4, count = [1, 1] },
+  { item = "towel", w = 4, count = [1, 2] },
+  { item = "snack_bar", w = 4, count = [1, 6] },
+  { item = "painkillers", w = 3, count = [1, 1], mods = ["opened"] },
+  { item = "photo", w = 3, count = [1, 2] },
+  { item = "cash", w = 1, count = [1, 1] },
+  { item = "hoodie", w = 3, count = [1, 1] },
+]
+
+[loot.fire_station_gear]
+desc = "Fire-station gear racks and compartments: turnout gear, forcible-entry tools, EMS kit, rope, fuel."
+rolls = [3, 8]
+empty_chance_pct = 2
+entries = [
+  { item = "firefighter_coat", w = 10, count = [1, 4] },
+  { item = "work_pants", w = 5, count = [1, 4] },
+  { item = "rubber_boots", w = 6, count = [1, 4] },
+  { item = "hard_hat", w = 5, count = [1, 4] },
+  { item = "leather_gloves", w = 5, count = [1, 4] },
+  { item = "hi_vis_vest", w = 3, count = [1, 4] },
+  { item = "axe", w = 6, count = [1, 2] },
+  { item = "crowbar", w = 5, count = [1, 2] },
+  { item = "sledgehammer", w = 3, count = [1, 1] },
+  { item = "bolt_cutters", w = 4, count = [1, 1] },
+  { item = "chainsaw", w = 2, count = [1, 1] },
+  { item = "fire_extinguisher", w = 5, count = [1, 3] },
+  { item = "first_aid_kit", w = 5, count = [1, 2] },
+  { item = "tourniquet", w = 3, count = [1, 4] },
+  { item = "splint_sam", w = 3, count = [1, 4] },
+  { item = "saline_bag", w = 2, count = [1, 4] },
+  { item = "gauze_pads", w = 3, count = [2, 10] },
+  { item = "latex_gloves", w = 3, count = [1, 4] },
+  { item = "flashlight", w = 4, count = [1, 3] },
+  { item = "headlamp", w = 2, count = [1, 3] },
+  { item = "walkie_talkie", w = 3, count = [1, 4] },
+  { item = "nylon_rope", w = 4, count = [1, 2] },
+  { item = "gas_can", w = 3, count = [1, 2], substance = "gasoline", fill_pct = [50, 100] },
+  { item = "road_flare", w = 2, count = [4, 12] },
+  { item = "dust_mask", w = 2, count = [2, 10] },
+  { item = "goggles", w = 2, count = [1, 4] },
+]

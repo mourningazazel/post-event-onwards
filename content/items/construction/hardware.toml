@@ -1,0 +1,81 @@
+# Hardware (domain B): chain, locks, abrasives.
+
+[item.steel_chain]
+name = "steel chain"
+tags = ["cat.hardware.chain", "from.garage", "from.farm", "from.construction", "from.industrial", "use.barricade", "use.weapon"]
+shape = "cord"
+dims_mm = [3048, 22, 22]
+mass_g = 3400
+durability = 10
+desc = "Ten feet of quarter-inch galvanized proof-coil chain."
+glyph = "item.chain"
+why = "Chains doors and gates shut with a padlock; tow and drag loads; a swung chain is a brutal flail."
+attach_surface = { kind = "irregular", contact_area_mm2 = 3000, wrap_girth_mm = 70 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "cut>=6" }
+modifiers = ["security_chain"]
+value_class = "useful"
+
+[item.steel_chain.composition.links]
+material = "mild_steel"
+share = 100
+
+# hammer: authored (cord shapes derive none). 3.4 kg of swung links hits hard.
+[item.steel_chain.capabilities]
+hammer = 5
+
+[item.padlock]
+name = "padlock"
+tags = ["cat.hardware.lock", "from.garage", "from.industrial", "from.school", "from.retail", "from.farm", "use.barricade"]
+shape = "block"
+dims_mm = [85, 50, 28]
+mass_g = 280
+durability = 9
+desc = "A 50 mm laminated-steel padlock with a brass keyway."
+glyph = "item.padlock"
+why = "Locks your own doors, gates, chains and stashes (M10); zombies can't open it, looters need cutters or a grinder."
+brand_cats = ["tools"]
+modifiers = ["padlock_hardened", "rusted"]
+value_class = "useful"
+
+[item.padlock.composition.body]
+material = "carbon_steel"
+share = 60
+[item.padlock.composition.shackle]
+material = "tool_steel"
+share = 25
+[item.padlock.composition.cylinder]
+material = "brass"
+share = 15
+
+[item.padlock.features.lock]
+tier = 3
+keyed = true
+pickable = true
+
+[item.steel_wool]
+name = "steel wool"
+tags = ["cat.hardware.abrasive", "from.garage", "from.kitchen", "from.construction", "use.tinder", "use.fire_starter", "hazard.flammable"]
+shape = "block"
+dims_mm = [150, 100, 60]
+mass_g = 130
+fill_pct = 3
+units = 12
+desc = "A sleeve of twelve pads of fine 0000 steel wool."
+glyph = "item.steel_wool"
+why = "Touched across a 9 V (or any) battery it glows and lights tinder, even damp; scours rust off tools."
+value_class = "useful"
+
+[item.steel_wool.composition.wool]
+material = "mild_steel"
+share = 90
+[item.steel_wool.composition.sleeve]
+material = "paper"
+share = 10
+
+# needs_striker = true: the "striker" is a battery across the fibres (proposal: an ignition
+# `needs` param naming the required item tag, e.g. cat.battery).
+[item.steel_wool.features.ignition]
+method = "electric"
+charges = 12
+fails_when_wet = false
+needs_striker = true

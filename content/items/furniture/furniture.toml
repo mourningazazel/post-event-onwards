@@ -1,0 +1,664 @@
+# Furniture: movable (with effort) world objects. Domain D (world-catalog §6.D).
+# Gameplay roles: barricade mass (block_with_furniture needs >= 20 kg), sight blocking, seats and
+# beds (rest), work surfaces, loot containers, secure storage (locks), and salvage (planks, slats,
+# springs, kindling). Finishes/colours come from detail tables in modifiers/furniture_electronics.toml.
+# `sofa` lives in items/household/household.toml (exemplar).
+#
+# Lock tiers (feature.lock.tier) across this domain roughly equal the security skill level a
+# picker needs for a fair chance: 1 privacy latch · 2 furniture wafer lock · 3 locker/padlock ·
+# 4 residential deadbolt · 7 commercial mortise · 15 safe (combination, not pickable).
+
+# ---------------------------------------------------------------- seating
+[item.armchair]
+name = "armchair"
+tags = ["cat.furniture.seating", "from.living", "from.bedroom", "use.barricade"]
+shape = "complex"
+dims_mm = [950, 880, 850]
+mass_g = 30000
+blocks = "partial"
+blocks_sight = false
+desc = "A deep upholstered armchair with a sprung seat."
+glyph = "obj.armchair"
+why = "Barricade mass a single person can shove; comfortable rest seat; foam and cloth tinder."
+details = ["upholstery_look"]
+value_class = "common"
+
+[item.armchair.composition.frame]
+material = "softwood"
+share = 45
+[item.armchair.composition.springs]
+material = "mild_steel"
+share = 20
+salvage = { item = "steel_spring", count = 6, tool = "cut>=2", time_s = 600 }
+[item.armchair.composition.cushions]
+material = "pu_foam"
+share = 15
+[item.armchair.composition.upholstery]
+material = "polyester"
+share = 15
+[item.armchair.composition.legs]
+material = "hardwood"
+share = 5
+
+[item.armchair.features.seat]
+comfort = 7
+sleepable = false
+
+[item.dining_chair]
+name = "dining chair"
+tags = ["cat.furniture.seating", "from.kitchen", "from.living", "from.restaurant"]
+shape = "complex"
+dims_mm = [900, 450, 450]
+mass_g = 6000
+fill_pct = 10
+blocks = "partial"
+desc = "A plain hardwood dining chair with a slatted back."
+glyph = "obj.chair"
+why = "Light enough to swing or throw; breaks down into kindling; wedges under a door handle."
+details = ["furniture_finish"]
+value_class = "junk"
+
+[item.dining_chair.composition.frame]
+material = "hardwood"
+share = 95
+salvage = { item = "firewood", count = 2, set = { dims_mm = [450, 45, 40], mass_g = 600 }, tool = "hammer>=3", time_s = 120 }
+[item.dining_chair.composition.screws]
+material = "mild_steel"
+share = 5
+
+[item.dining_chair.features.seat]
+comfort = 3
+sleepable = false
+[item.dining_chair.features.grip]
+hands = 2
+girth_mm = 35
+
+[item.office_chair]
+name = "office chair"
+tags = ["cat.furniture.seating", "from.office", "from.school", "from.police"]
+shape = "complex"
+dims_mm = [1100, 680, 650]
+mass_g = 14000
+blocks = "partial"
+desc = "A swivel office chair on five squeaky casters."
+glyph = "obj.office_chair"
+why = "Rolls: moves a heavy load down a corridor without lifting (M20); gas-lift column is a steel bar."
+value_class = "junk"
+
+[item.office_chair.composition.base]
+material = "nylon"
+share = 25
+[item.office_chair.composition.column]
+material = "mild_steel"
+share = 30
+[item.office_chair.composition.seat_shell]
+material = "polypropylene"
+share = 20
+[item.office_chair.composition.padding]
+material = "pu_foam"
+share = 10
+[item.office_chair.composition.fabric]
+material = "polyester"
+share = 10
+[item.office_chair.composition.casters]
+material = "nylon"
+share = 5
+
+[item.office_chair.features.seat]
+comfort = 5
+sleepable = false
+[item.office_chair.features.wheels]
+load_g = 120000
+terrain = "smooth"
+rattle = "normal"
+
+[item.church_pew]
+name = "church pew"
+tags = ["cat.furniture.seating", "from.church", "use.barricade", "use.fuel"]
+shape = "complex"
+dims_mm = [3000, 900, 650]
+mass_g = 90000
+blocks = "full"
+blocks_sight = false
+desc = "A long oak pew, its seat polished by generations."
+glyph = "obj.pew"
+why = "Very heavy barricade (N007 churches as refuges); long seasoned planks when sawn apart."
+value_class = "common"
+
+[item.church_pew.composition.boards]
+material = "hardwood"
+share = 95
+salvage = { item = "wood_plank", count = 4, set = { dims_mm = [2800, 300, 30], mass_g = 18000 }, tool = "saw>=5", time_s = 1800 }
+[item.church_pew.composition.fasteners]
+material = "mild_steel"
+share = 5
+
+[item.church_pew.features.seat]
+comfort = 3
+sleepable = true
+
+[item.school_desk]
+name = "school desk"
+tags = ["cat.furniture.table", "from.school"]
+shape = "complex"
+dims_mm = [850, 750, 600]
+mass_g = 16000
+fill_pct = 10
+blocks = "partial"
+desc = "A one-piece student desk-and-chair on steel tube legs."
+glyph = "obj.school_desk"
+why = "Classrooms hold thirty of them: stackable barricade material (several make one block)."
+value_class = "junk"
+
+[item.school_desk.composition.frame]
+material = "mild_steel"
+share = 55
+[item.school_desk.composition.top]
+material = "particleboard"
+share = 30
+[item.school_desk.composition.seat]
+material = "polypropylene"
+share = 15
+
+[item.school_desk.features.seat]
+comfort = 2
+sleepable = false
+[item.school_desk.features.surface]
+area_mm2 = 270000
+workbench = false
+
+# ---------------------------------------------------------------- tables and work surfaces
+[item.dining_table]
+name = "dining table"
+tags = ["cat.furniture.table", "from.kitchen", "from.living", "from.restaurant", "use.barricade"]
+shape = "complex"
+dims_mm = [1800, 900, 760]
+mass_g = 55000
+fill_pct = 6
+blocks = "partial"
+blocks_sight = false
+desc = "A six-seat hardwood dining table."
+glyph = "obj.table"
+why = "Tipped on its side it covers a doorway; the top is a large work surface; boards when sawn."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.dining_table.composition.top]
+material = "hardwood"
+share = 65
+salvage = { item = "wood_plank", count = 3, set = { dims_mm = [1800, 300, 25], mass_g = 10000 }, tool = "saw>=5", time_s = 900 }
+[item.dining_table.composition.legs]
+material = "hardwood"
+share = 32
+[item.dining_table.composition.hardware]
+material = "mild_steel"
+share = 3
+
+[item.dining_table.features.surface]
+area_mm2 = 1620000
+workbench = false
+
+[item.coffee_table]
+name = "coffee table"
+tags = ["cat.furniture.table", "from.living"]
+shape = "complex"
+dims_mm = [1200, 600, 450]
+mass_g = 18000
+fill_pct = 15
+blocks = "partial"
+desc = "A low pine coffee table with a shelf underneath."
+glyph = "obj.coffee_table"
+why = "Low surface and quick trip obstacle in a hallway; pine boards and kindling."
+details = ["furniture_finish"]
+value_class = "junk"
+
+[item.coffee_table.composition.top]
+material = "softwood"
+share = 95
+salvage = { item = "firewood", count = 4, set = { dims_mm = [600, 100, 30], mass_g = 900 }, tool = "hammer>=3", time_s = 300 }
+[item.coffee_table.composition.hardware]
+material = "mild_steel"
+share = 5
+
+[item.coffee_table.features.surface]
+area_mm2 = 720000
+workbench = false
+
+[item.desk]
+name = "desk"
+tags = ["cat.furniture.table", "from.office", "from.bedroom", "from.school", "use.barricade"]
+shape = "complex"
+dims_mm = [1500, 750, 750]
+mass_g = 45000
+fill_pct = 5
+blocks = "partial"
+blocks_sight = false
+desc = "A laminate office desk with a steel frame and a locking pedestal of drawers."
+glyph = "obj.desk"
+why = "Office loot container (desk_drawer); work surface; heavy enough to hold a door."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.desk.composition.top]
+material = "particleboard"
+share = 60
+[item.desk.composition.frame]
+material = "mild_steel"
+share = 35
+[item.desk.composition.handles]
+material = "abs"
+share = 5
+
+[item.desk.features.surface]
+area_mm2 = 1125000
+workbench = false
+[item.desk.features.container]
+capacity_ml = 60000
+max_dim_mm = 400
+closable = true
+compat = ["solid"]
+[item.desk.features.lock]
+tier = 2
+keyed = true
+pickable = true
+
+[item.workbench]
+name = "workbench"
+tags = ["cat.furniture.table", "from.garage", "from.industrial", "from.construction", "use.barricade"]
+shape = "complex"
+dims_mm = [1830, 910, 760]
+mass_g = 70000
+fill_pct = 5
+blocks = "partial"
+blocks_sight = false
+desc = "A heavy garage workbench: thick hardwood top, steel legs, a pegboard back."
+glyph = "obj.workbench"
+why = "The crafting station (surface.workbench): assembly, repairs and sharpening go faster here."
+value_class = "useful"
+
+[item.workbench.composition.top]
+material = "hardwood"
+share = 55
+[item.workbench.composition.frame]
+material = "mild_steel"
+share = 40
+[item.workbench.composition.pegboard]
+material = "particleboard"
+share = 5
+
+[item.workbench.features.surface]
+area_mm2 = 1665000
+workbench = true
+[item.workbench.features.anchor]
+max_load_g = 150000
+
+# ---------------------------------------------------------------- storage
+[item.bookshelf]
+name = "bookshelf"
+tags = ["cat.furniture.storage", "from.living", "from.office", "from.school", "from.bedroom", "use.barricade"]
+shape = "complex"
+dims_mm = [1800, 800, 300]
+mass_g = 35000
+blocks = "full"
+blocks_sight = true
+desc = "A tall five-shelf pine bookcase."
+glyph = "obj.bookshelf"
+why = "Tall sight-blocking barricade; holds books and manuals (N012); five shelves pry off as boards."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.bookshelf.composition.shelves]
+material = "softwood"
+share = 55
+salvage = { item = "wood_plank", count = 5, set = { dims_mm = [760, 280, 18], mass_g = 1900 }, tool = "hammer>=3", time_s = 300 }
+[item.bookshelf.composition.sides]
+material = "softwood"
+share = 35
+[item.bookshelf.composition.back]
+material = "particleboard"
+share = 8
+[item.bookshelf.composition.nails]
+material = "mild_steel"
+share = 2
+
+[item.bookshelf.features.container]
+capacity_ml = 300000
+max_dim_mm = 400
+closable = false
+compat = ["solid"]
+
+[item.dresser]
+name = "dresser"
+tags = ["cat.furniture.storage", "from.bedroom", "use.barricade"]
+shape = "complex"
+dims_mm = [1500, 850, 500]
+mass_g = 60000
+blocks = "full"
+blocks_sight = false
+desc = "A six-drawer bedroom dresser in solid wood."
+glyph = "obj.dresser"
+why = "Clothes loot container (dresser_clothes); a classic door barricade; drawers pull out to lighten it."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.dresser.composition.carcass]
+material = "hardwood"
+share = 70
+[item.dresser.composition.drawer_boxes]
+material = "plywood"
+share = 25
+[item.dresser.composition.hardware]
+material = "brass"
+share = 5
+
+[item.dresser.features.container]
+capacity_ml = 180000
+max_dim_mm = 700
+closable = true
+compat = ["solid"]
+[item.dresser.features.surface]
+area_mm2 = 750000
+workbench = false
+
+[item.nightstand]
+name = "nightstand"
+tags = ["cat.furniture.storage", "from.bedroom"]
+shape = "complex"
+dims_mm = [650, 500, 400]
+mass_g = 12000
+blocks = "partial"
+desc = "A bedside table with one drawer and a cupboard."
+glyph = "obj.nightstand"
+why = "Bedside loot container (nightstand_drawer: flashlights, pills, sometimes a handgun)."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.nightstand.composition.carcass]
+material = "particleboard"
+share = 95
+[item.nightstand.composition.handle]
+material = "brass"
+share = 5
+
+[item.nightstand.features.container]
+capacity_ml = 40000
+max_dim_mm = 450
+closable = true
+compat = ["solid"]
+[item.nightstand.features.surface]
+area_mm2 = 200000
+workbench = false
+
+[item.wardrobe]
+name = "wardrobe"
+tags = ["cat.furniture.storage", "from.bedroom", "use.barricade"]
+shape = "complex"
+dims_mm = [2000, 1000, 580]
+mass_g = 70000
+blocks = "full"
+blocks_sight = true
+desc = "A two-door wardrobe with a hanging rail and a shelf above."
+glyph = "obj.wardrobe"
+why = "Tallest sight blocker in a home; big clothes container; a place to hide something (or someone)."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.wardrobe.composition.carcass]
+material = "particleboard"
+share = 90
+[item.wardrobe.composition.rail]
+material = "mild_steel"
+share = 7
+[item.wardrobe.composition.handles]
+material = "brass"
+share = 3
+
+[item.wardrobe.features.container]
+capacity_ml = 900000
+max_dim_mm = 1500
+closable = true
+compat = ["solid"]
+
+[item.filing_cabinet]
+name = "filing cabinet"
+tags = ["cat.furniture.storage", "from.office", "from.school", "from.police", "from.medical", "use.barricade"]
+shape = "complex"
+dims_mm = [1330, 710, 380]
+mass_g = 35000
+hollow = true
+fill_pct = 4
+blocks = "full"
+blocks_sight = false
+desc = "A four-drawer steel filing cabinet with a push-button lock at the top."
+glyph = "obj.filing_cabinet"
+why = "Heavy steel barricade (heavier still when full of paper); lockable office container; paper for fuel."
+value_class = "junk"
+
+[item.filing_cabinet.composition.body]
+material = "mild_steel"
+share = 95
+[item.filing_cabinet.composition.lock]
+material = "brass"
+share = 5
+
+[item.filing_cabinet.features.container]
+capacity_ml = 220000
+max_dim_mm = 600
+closable = true
+compat = ["solid"]
+[item.filing_cabinet.features.lock]
+tier = 2
+keyed = true
+pickable = true
+
+[item.metal_locker]
+name = "metal locker"
+tags = ["cat.furniture.secure", "from.school", "from.police", "from.fire_service", "from.industrial", "from.medical"]
+shape = "complex"
+dims_mm = [1830, 460, 380]
+mass_g = 22000
+hollow = true
+fill_pct = 3
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A full-height steel locker, bolted into a bank of identical ones."
+glyph = "obj.locker"
+why = "Personal-effects container (police_locker, gym bags, uniforms) behind a lock worth forcing."
+details = ["locker_look"]
+value_class = "useful"
+
+[item.metal_locker.composition.body]
+material = "mild_steel"
+share = 97
+[item.metal_locker.composition.latch]
+material = "mild_steel"
+share = 3
+
+[item.metal_locker.features.container]
+capacity_ml = 250000
+max_dim_mm = 1500
+closable = true
+compat = ["solid"]
+[item.metal_locker.features.lock]
+tier = 3
+keyed = true
+pickable = true
+
+[item.safe]
+name = "safe"
+tags = ["cat.furniture.secure", "from.living", "from.bedroom", "from.office", "from.retail"]
+shape = "complex"
+dims_mm = [560, 430, 430]
+mass_g = 75000
+blocks = "partial"
+desc = "A squat steel home safe with a dial, bolted to the floor through its base."
+glyph = "obj.safe"
+why = "Concentrated valuables (cash, documents, sometimes guns and ammo); only an expert opens it quietly."
+modifiers = ["safe_gun"]
+value_class = "valuable"
+
+[item.safe.composition.body]
+material = "mild_steel"
+share = 80
+[item.safe.composition.fire_lining]
+material = "gypsum_board"
+share = 15
+[item.safe.composition.dial]
+material = "brass"
+share = 5
+
+[item.safe.features.container]
+capacity_ml = 57000
+max_dim_mm = 350
+closable = true
+sealable = true
+compat = ["solid"]
+[item.safe.features.lock]
+tier = 15
+keyed = false
+pickable = false
+combination = true
+
+[item.safe.reactions.impact]
+low = "none"
+medium = "none"
+high = "dent"
+
+[item.metal_shelving]
+name = "metal shelving unit"
+tags = ["cat.furniture.storage", "from.garage", "from.industrial", "from.retail", "from.grocery"]
+shape = "complex"
+dims_mm = [1830, 910, 460]
+mass_g = 20000
+fill_pct = 5
+blocks = "partial"
+blocks_sight = false
+desc = "A five-tier boltless steel shelving unit, the kind in every garage and stockroom."
+glyph = "obj.shelving"
+why = "Stockroom/garage loot container; climbable to reach high windows; steel angle posts salvage."
+value_class = "junk"
+
+[item.metal_shelving.composition.frame]
+material = "mild_steel"
+share = 70
+salvage = { item = "scrap_metal", count = 4, set = { dims_mm = [1830, 40, 40], mass_g = 2800 }, tool = "none", time_s = 180 }
+[item.metal_shelving.composition.decks]
+material = "particleboard"
+share = 30
+
+[item.metal_shelving.features.container]
+capacity_ml = 700000
+max_dim_mm = 900
+closable = false
+compat = ["solid"]
+[item.metal_shelving.features.climbable]
+difficulty = 2
+height_mm = 1830
+
+# ---------------------------------------------------------------- beds
+[item.bed_frame]
+name = "bed frame"
+tags = ["cat.furniture.bed", "from.bedroom", "use.barricade"]
+shape = "complex"
+dims_mm = [2150, 1650, 1100]
+mass_g = 45000
+fill_pct = 5
+blocks = "partial"
+blocks_sight = false
+desc = "A queen-size hardwood bed frame with a tall headboard and pine slats."
+glyph = "obj.bed_frame"
+why = "Rope anchor under a bedroom window (rope escape); slats come out as ready-made boards."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.bed_frame.composition.frame]
+material = "hardwood"
+share = 70
+[item.bed_frame.composition.slats]
+material = "softwood"
+share = 25
+salvage = { item = "wood_plank", count = 10, set = { dims_mm = [1520, 75, 18], mass_g = 1000 }, tool = "none", time_s = 120 }
+[item.bed_frame.composition.bolts]
+material = "mild_steel"
+share = 5
+
+[item.bed_frame.features.anchor]
+max_load_g = 200000
+
+[item.mattress]
+name = "mattress"
+tags = ["cat.furniture.bed", "from.bedroom", "from.medical", "use.barricade", "use.shelter"]
+shape = "complex"
+dims_mm = [2030, 1520, 250]
+mass_g = 32000
+blocks = "partial"
+blocks_sight = false
+absorbs_water = true
+absorbs_scent = true
+desc = "A queen innerspring mattress."
+glyph = "obj.mattress"
+why = "Best sleep (rest); stood against a window it stops glass and sight; muffles noise; springs salvage."
+value_class = "common"
+
+[item.mattress.composition.springs]
+material = "mild_steel"
+share = 40
+salvage = { item = "steel_spring", count = 20, tool = "cut>=2", time_s = 900 }
+[item.mattress.composition.foam]
+material = "pu_foam"
+share = 25
+[item.mattress.composition.ticking]
+material = "polyester"
+share = 20
+[item.mattress.composition.batting]
+material = "cotton"
+share = 15
+
+[item.mattress.features.seat]
+comfort = 8
+sleepable = true
+
+[item.mattress.capabilities]
+cushion = 8
+
+[item.hospital_bed]
+name = "hospital bed"
+tags = ["cat.furniture.bed", "from.medical", "use.barricade"]
+shape = "complex"
+dims_mm = [2200, 1000, 600]
+mass_g = 120000
+blocks = "full"
+blocks_sight = false
+desc = "An electric hospital bed on locking casters, side rails raised."
+glyph = "obj.hospital_bed"
+why = "Rolls a 120 kg barricade into a doorway; solid anchor; bed actuators salvage as motors."
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 150 }
+
+[item.hospital_bed.composition.frame]
+material = "mild_steel"
+share = 75
+[item.hospital_bed.composition.actuators]
+material = "mild_steel"
+share = 10
+salvage = { item = "electric_motor", count = 2, tool = "fasten>=2", time_s = 900 }
+[item.hospital_bed.composition.rails]
+material = "abs"
+share = 8
+[item.hospital_bed.composition.pad]
+material = "pu_foam"
+share = 4
+[item.hospital_bed.composition.casters]
+material = "nylon"
+share = 3
+
+[item.hospital_bed.features.seat]
+comfort = 7
+sleepable = true
+[item.hospital_bed.features.wheels]
+load_g = 250000
+terrain = "smooth"
+rattle = "quiet"
+[item.hospital_bed.features.anchor]
+max_load_g = 300000

@@ -1,0 +1,441 @@
+# Road vehicles as world objects (non-functional per setting, N005/P-WO-03): fuel to siphon,
+# parts to salvage, loot space, cover and barricades. Colours, stickers and interior mess come
+# from detail tables in modifiers/outdoor_vehicles.toml, not from extra archetypes (N011).
+# Passenger vehicles that behave like the sedan inherit from it (car_sedan, cars.toml).
+
+[item.suv]
+name = "SUV"
+parent = "car_sedan"
+tags = ["cat.vehicle.suv", "from.street", "use.salvage", "use.barricade"]
+dims_mm = [4900, 1950, 1780]
+mass_g = 2100000
+desc = "A tall five-door sport utility vehicle with a roof rack."
+glyph = "obj.suv"
+why = "Bigger tank than a sedan, roomy cargo area, tall enough to block sight; the most common family car."
+details = ["vehicle_paint", "bumper_stickers", "vehicle_interior", "vehicle_condition"]
+
+[item.suv.features.fuel_tank]
+capacity_ml = 70000
+[item.suv.features.container]
+capacity_ml = 1200000
+[item.suv.features.climbable]
+difficulty = 3
+height_mm = 1780
+
+[item.minivan]
+name = "minivan"
+parent = "car_sedan"
+tags = ["cat.vehicle.van", "from.street", "use.salvage", "use.barricade", "use.shelter"]
+dims_mm = [5150, 2000, 1780]
+mass_g = 2000000
+desc = "A family minivan with sliding side doors and three rows of seats."
+glyph = "obj.minivan"
+why = "Largest passenger cargo space; seats fold flat into a lockable place to sleep."
+details = ["vehicle_paint", "bumper_stickers", "vehicle_interior", "vehicle_condition"]
+
+[item.minivan.features.fuel_tank]
+capacity_ml = 72000
+[item.minivan.features.container]
+capacity_ml = 1500000
+[item.minivan.features.seat]
+comfort = 4
+sleepable = true
+[item.minivan.features.climbable]
+difficulty = 3
+height_mm = 1780
+
+[item.pickup_truck]
+name = "pickup truck"
+tags = ["cat.vehicle.truck", "from.street", "from.farm", "from.construction", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [5900, 2030, 1950]
+mass_g = 2250000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A full-size crew-cab pickup with an open steel bed."
+glyph = "obj.pickup"
+why = "Big fuel tank, open bed of loot, leaf springs (forged blade stock), tow hooks as anchors; plastic tank punctures easily."
+brand_cats = ["vehicles", "trucks"]
+modifiers = ["diesel_engine"]
+details = ["vehicle_paint", "bumper_stickers", "vehicle_interior", "vehicle_condition"]
+value_class = "valuable"
+
+[item.pickup_truck.composition.frame]
+material = "mild_steel"
+share = 30
+[item.pickup_truck.composition.body]
+material = "mild_steel"
+share = 25
+[item.pickup_truck.composition.engine]
+material = "cast_iron"
+share = 14
+[item.pickup_truck.composition.interior]
+material = "polypropylene"
+share = 8
+[item.pickup_truck.composition.tyres]
+material = "rubber"
+share = 6
+[item.pickup_truck.composition.seats]
+material = "pu_foam"
+share = 3
+[item.pickup_truck.composition.upholstery]
+material = "polyester"
+share = 2
+[item.pickup_truck.composition.windows]
+material = "tempered_glass"
+share = 3
+[item.pickup_truck.composition.battery]
+material = "lead"
+share = 1
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.pickup_truck.composition.fuel_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 2, tool = "fasten>=2", time_s = 600 }
+[item.pickup_truck.composition.brake_lines]
+material = "copper"
+share = 1
+salvage = { item = "copper_tubing", count = 2, tool = "fasten>=3", time_s = 1200 }
+[item.pickup_truck.composition.leaf_springs]
+material = "carbon_steel"
+share = 5
+salvage = { item = "leaf_spring", count = 2, tool = "fasten>=4", time_s = 3600 }
+[item.pickup_truck.composition.starter]
+material = "copper"
+share = 1
+salvage = { item = "electric_motor", count = 1, tool = "fasten>=3", time_s = 900 }
+
+[item.pickup_truck.features.fuel_tank]
+capacity_ml = 98000
+fuel = ["gasoline"]
+drain = "siphon"
+[item.pickup_truck.features.container]
+capacity_ml = 1500000
+closable = false
+compat = ["solid"]
+[item.pickup_truck.features.lock]
+tier = 3
+keyed = true
+pickable = true
+[item.pickup_truck.features.alarm]
+loudness = "extreme"
+timer = false
+trigger = "touch"
+[item.pickup_truck.features.climbable]
+difficulty = 1
+height_mm = 1950
+[item.pickup_truck.features.anchor]
+max_load_g = 3000000
+
+[item.delivery_van]
+name = "delivery van"
+tags = ["cat.vehicle.van", "from.street", "from.industrial", "use.salvage", "use.barricade", "use.shelter"]
+shape = "complex"
+dims_mm = [5900, 2750, 2050]
+mass_g = 2700000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A high-roof cargo van, windowless behind the cab, with rear barn doors."
+glyph = "obj.van"
+why = "Lockable windowless box on wheels: shelter or stash; parcels as loot; roof is a vantage point."
+brand_cats = ["vehicles", "trucks"]
+modifiers = ["diesel_engine"]
+details = ["fleet_livery", "vehicle_condition"]
+value_class = "valuable"
+
+[item.delivery_van.composition.body]
+material = "mild_steel"
+share = 55
+[item.delivery_van.composition.engine]
+material = "cast_iron"
+share = 14
+[item.delivery_van.composition.interior]
+material = "polypropylene"
+share = 6
+[item.delivery_van.composition.floor]
+material = "plywood"
+share = 6
+[item.delivery_van.composition.tyres]
+material = "rubber"
+share = 6
+[item.delivery_van.composition.seats]
+material = "pu_foam"
+share = 2
+[item.delivery_van.composition.windows]
+material = "tempered_glass"
+share = 2
+[item.delivery_van.composition.battery]
+material = "lead"
+share = 1
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.delivery_van.composition.fuel_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 2, tool = "fasten>=2", time_s = 600 }
+[item.delivery_van.composition.brake_lines]
+material = "copper"
+share = 2
+salvage = { item = "copper_tubing", count = 2, tool = "fasten>=3", time_s = 1200 }
+[item.delivery_van.composition.leaf_springs]
+material = "carbon_steel"
+share = 5
+salvage = { item = "leaf_spring", count = 2, tool = "fasten>=4", time_s = 3600 }
+
+[item.delivery_van.features.fuel_tank]
+capacity_ml = 95000
+fuel = ["gasoline"]
+drain = "siphon"
+[item.delivery_van.features.container]
+capacity_ml = 10000000
+closable = true
+compat = ["solid"]
+[item.delivery_van.features.lock]
+tier = 3
+keyed = true
+pickable = true
+[item.delivery_van.features.climbable]
+difficulty = 5
+height_mm = 2750
+
+[item.semi_truck]
+name = "semi truck"
+tags = ["cat.vehicle.truck", "from.street", "from.industrial", "use.salvage", "use.barricade", "use.shelter"]
+shape = "complex"
+dims_mm = [7000, 4000, 2600]
+mass_g = 9000000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A long-nose sleeper-cab tractor unit with twin aluminium saddle tanks."
+glyph = "obj.semi"
+why = "Hundreds of litres of diesel, a battery bank, a sleeper bunk behind the seats; an immovable road block."
+brand_cats = ["trucks"]
+details = ["fleet_livery", "vehicle_interior", "vehicle_condition"]
+value_class = "valuable"
+
+[item.semi_truck.composition.frame]
+material = "mild_steel"
+share = 42
+[item.semi_truck.composition.cab]
+material = "aluminum"
+share = 8
+[item.semi_truck.composition.engine]
+material = "cast_iron"
+share = 20
+[item.semi_truck.composition.tyres]
+material = "rubber"
+share = 8
+[item.semi_truck.composition.interior]
+material = "polypropylene"
+share = 4
+[item.semi_truck.composition.bunk]
+material = "pu_foam"
+share = 1
+[item.semi_truck.composition.windows]
+material = "tempered_glass"
+share = 1
+[item.semi_truck.composition.fuel_tanks]
+material = "aluminum"
+share = 4
+[item.semi_truck.composition.batteries]
+material = "lead"
+share = 3
+salvage = { item = "car_battery", count = 4, tool = "fasten>=3", time_s = 1800 }
+[item.semi_truck.composition.air_lines]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 3, tool = "fasten>=2", time_s = 600 }
+[item.semi_truck.composition.springs]
+material = "carbon_steel"
+share = 8
+salvage = { item = "leaf_spring", count = 4, tool = "fasten>=4", time_s = 5400 }
+
+[item.semi_truck.features.fuel_tank]
+capacity_ml = 900000
+fuel = ["diesel"]
+drain = "valve"
+[item.semi_truck.features.container]
+capacity_ml = 1500000
+closable = true
+compat = ["solid"]
+[item.semi_truck.features.seat]
+comfort = 6
+sleepable = true
+[item.semi_truck.features.lock]
+tier = 3
+keyed = true
+pickable = true
+[item.semi_truck.features.climbable]
+difficulty = 2
+height_mm = 4000
+[item.semi_truck.features.anchor]
+max_load_g = 5000000
+
+[item.semi_trailer]
+name = "semi trailer"
+tags = ["cat.vehicle.trailer", "from.street", "from.industrial", "use.shelter", "use.barricade", "use.salvage"]
+shape = "container"
+dims_mm = [16150, 4100, 2600]
+mass_g = 6800000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A 53-foot dry-van trailer with aluminium walls, a hardwood floor and sealed rear doors."
+glyph = "obj.trailer"
+why = "A warehouse on wheels: sealed freight loot, a 4 m roof to camp on, oak floorboards to pry up."
+details = ["fleet_livery", "street_graffiti"]
+value_class = "valuable"
+
+[item.semi_trailer.composition.frame]
+material = "mild_steel"
+share = 45
+[item.semi_trailer.composition.walls]
+material = "aluminum"
+share = 25
+[item.semi_trailer.composition.roof]
+material = "aluminum"
+share = 3
+[item.semi_trailer.composition.floor]
+material = "hardwood"
+share = 20
+salvage = { item = "wood_plank", count = 20, tool = "pry>=5", time_s = 3600 }
+[item.semi_trailer.composition.tyres]
+material = "rubber"
+share = 7
+
+[item.semi_trailer.features.container]
+capacity_ml = 107000000
+closable = true
+compat = ["solid"]
+[item.semi_trailer.features.lock]
+tier = 2
+keyed = true
+pickable = true
+[item.semi_trailer.features.climbable]
+difficulty = 6
+height_mm = 4100
+
+[item.school_bus]
+name = "school bus"
+tags = ["cat.vehicle.bus", "from.school", "from.street", "use.shelter", "use.barricade", "use.salvage"]
+shape = "complex"
+dims_mm = [12200, 3200, 2450]
+mass_g = 11500000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A yellow conventional school bus with rows of vinyl bench seats."
+glyph = "obj.school_bus"
+why = "The iconic road block; a long steel shelter with bench beds; a big diesel tank and two batteries."
+details = ["vehicle_condition"]
+value_class = "useful"
+
+[item.school_bus.composition.body]
+material = "mild_steel"
+share = 45
+[item.school_bus.composition.frame]
+material = "mild_steel"
+share = 20
+[item.school_bus.composition.engine]
+material = "cast_iron"
+share = 12
+[item.school_bus.composition.seats]
+material = "pu_foam"
+share = 3
+[item.school_bus.composition.seat_covers]
+material = "flexible_pvc"
+share = 3
+[item.school_bus.composition.windows]
+material = "tempered_glass"
+share = 4
+[item.school_bus.composition.tyres]
+material = "rubber"
+share = 6
+[item.school_bus.composition.batteries]
+material = "lead"
+share = 2
+salvage = { item = "car_battery", count = 2, tool = "fasten>=3", time_s = 1200 }
+[item.school_bus.composition.fuel_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 3, tool = "fasten>=2", time_s = 600 }
+[item.school_bus.composition.springs]
+material = "carbon_steel"
+share = 4
+salvage = { item = "leaf_spring", count = 2, tool = "fasten>=4", time_s = 5400 }
+
+[item.school_bus.features.fuel_tank]
+capacity_ml = 380000
+fuel = ["diesel"]
+drain = "valve"
+[item.school_bus.features.seat]
+comfort = 3
+sleepable = true
+[item.school_bus.features.lock]
+tier = 1
+keyed = false
+pickable = true
+[item.school_bus.features.climbable]
+difficulty = 5
+height_mm = 3200
+
+[item.motorcycle]
+name = "motorcycle"
+tags = ["cat.vehicle.motorcycle", "from.street", "from.garage", "use.salvage"]
+shape = "complex"
+dims_mm = [2200, 1150, 850]
+mass_g = 230000
+blocks = "partial"
+desc = "A mid-size road motorcycle on its side stand."
+glyph = "obj.motorcycle"
+why = "Gasoline and a small battery; can be pushed in neutral. Riding is undecided (survival-actions §5 Q1)."
+brand_cats = ["vehicles"]
+details = ["vehicle_paint", "vehicle_condition"]
+value_class = "useful"
+
+[item.motorcycle.composition.frame]
+material = "mild_steel"
+share = 35
+[item.motorcycle.composition.engine]
+material = "aluminum"
+share = 25
+[item.motorcycle.composition.wheels]
+material = "aluminum"
+share = 8
+[item.motorcycle.composition.tyres]
+material = "rubber"
+share = 8
+[item.motorcycle.composition.fairings]
+material = "abs"
+share = 10
+[item.motorcycle.composition.tank]
+material = "mild_steel"
+share = 5
+[item.motorcycle.composition.seat]
+material = "pu_foam"
+share = 2
+[item.motorcycle.composition.seat_cover]
+material = "flexible_pvc"
+share = 2
+[item.motorcycle.composition.exhaust]
+material = "stainless_steel"
+share = 3
+[item.motorcycle.composition.battery]
+material = "lead"
+share = 2
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 300, set = { mass_g = 4000, dims_mm = [180, 130, 90], power_source = { voltage = "dc_12v", capacity_wh = 140, rechargeable = true } } }
+
+[item.motorcycle.features.fuel_tank]
+capacity_ml = 16000
+fuel = ["gasoline"]
+drain = "valve"
+[item.motorcycle.features.wheels]
+load_g = 40000
+terrain = "rough"
+rattle = "quiet"
+[item.motorcycle.features.lock]
+tier = 2
+keyed = true
+pickable = true

@@ -1,0 +1,603 @@
+# Domain D modifiers and detail tables: furniture, fixtures, electronics, lighting, paper and books.
+# Lean rule (N011): colours, finishes, titles, note texts and manual subjects live here, not as
+# separate archetypes.
+
+# ============================================================== variant modifiers
+[modifier.safe_gun]
+kind = "variant"
+applies_to = { items = ["safe"] }
+name_part = { slot = "variant", text = "gun", order = 20 }
+desc = "a tall gun safe, bolted into the corner of a closet or basement"
+weight = 3
+ops = [
+  { path = "dims_mm", op = "set", value = [1500, 710, 560] },
+  { path = "mass_g", op = "set", value = 250000 },
+  { path = "features.container.capacity_ml", op = "set", value = 350000 },
+  { path = "features.container.max_dim_mm", op = "set", value = 1300 },
+  { path = "blocks_sight", op = "set", value = true },
+  { path = "blocks", op = "set", value = "full" },
+]
+
+[modifier.flashlight_d_cell]
+kind = "variant"
+applies_to = { items = ["flashlight"] }
+name_part = { slot = "variant", text = "D-cell", order = 20 }
+desc = "a long, heavy aluminium flashlight, the kind security guards carry and swing"
+add_tags = ["use.weapon", "from.police"]
+weight = 2
+ops = [
+  { path = "dims_mm", op = "set", value = [380, 55, 55] },
+  { path = "mass_g", op = "set", value = 700 },
+  { path = "features.slot.accepts", op = "set", value = "cat.battery.d" },
+  { path = "features.slot.count", op = "set", value = 4 },
+  { path = "features.light.radius_m", op = "set", value = 12 },
+  { path = "features.light.duration_min", op = "set", value = 900 },
+  { path = "features.grip.girth_mm", op = "set", value = 45 },
+]
+
+[modifier.candle_scented]
+kind = "variant"
+applies_to = { items = ["candle"] }
+name_part = { slot = "variant", text = "scented", order = 20 }
+desc = "a heavily perfumed jar candle; its smell hangs in the room"
+add_tags = ["emits.perfume.2"]
+weight = 4
+
+[modifier.book_hardcover]
+kind = "variant"
+applies_to = { items = ["book"] }
+name_part = { slot = "variant", text = "hardcover", order = 20 }
+desc = "a clothbound hardcover edition"
+weight = 3
+ops = [
+  { path = "dims_mm", op = "set", value = [240, 160, 35] },
+  { path = "mass_g", op = "set", value = 700 },
+  { path = "composition.cover.share", op = "set", value = 25 },
+  { path = "composition.pages.share", op = "set", value = 75 },
+]
+
+# ============================================================== skill manual subjects (N012)
+# Tiers: guide (max 3-5, fast) · manual/handbook (6-8) · textbook/reference (10-12, slow, rare).
+# Advanced texts are heavier and loot-worthy (value_class valuable).
+
+[modifier.manual_fitness]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "home fitness", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_climbing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "rock climbing", order = 20 }
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 7, rate = 5 } } ]
+
+[modifier.manual_stalking]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "tracking and stalking", order = 20 }
+ops = [ { path = "name", op = "set", value = "field guide" }, { path = "teaches", op = "set", value = { skill = "stealth", max_level = 6, rate = 5 } } ]
+
+[modifier.manual_recon]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "army reconnaissance", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "field manual" },
+  { path = "teaches", op = "set", value = { skill = "stealth", max_level = 11, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+]
+
+[modifier.manual_self_defense]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "self-defense", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "melee", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_martial_arts]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "martial arts", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "melee", max_level = 8, rate = 4 } } ]
+
+[modifier.manual_pitching]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "baseball pitching", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "throwing", max_level = 5, rate = 6 } } ]
+
+[modifier.manual_hunter_education]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "hunter education", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_precision_rifle]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "precision rifle", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "handbook" },
+  { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 10, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+]
+
+[modifier.manual_archery]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "traditional archery", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "archery", max_level = 7, rate = 5 } } ]
+
+[modifier.manual_home_repair]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "home repair", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_carpentry]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "framing and carpentry", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 7, rate = 5 } } ]
+
+[modifier.manual_timber_framing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "timber framing", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 11, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_welding]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "welding", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 6, rate = 5 } } ]
+
+[modifier.manual_blacksmithing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "blacksmithing", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "handbook" },
+  { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 10, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+]
+
+[modifier.manual_small_engine]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "small engine repair", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 6, rate = 5 } } ]
+
+[modifier.manual_auto_service]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "automotive service", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 10, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_electronics_basics]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "beginner's electronics", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "electronics", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_ham_radio]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "amateur radio", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "electronics", max_level = 7, rate = 5 } } ]
+
+[modifier.manual_electrician]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "electrician's", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "reference" },
+  { path = "teaches", op = "set", value = { skill = "electronics", max_level = 10, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_plumbing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "plumbing", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "construction", max_level = 5, rate = 6 } } ]
+
+[modifier.manual_masonry]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "masonry and concrete", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "construction", max_level = 7, rate = 5 } } ]
+
+[modifier.manual_structural]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "structural engineering", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "construction", max_level = 12, rate = 2 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_sewing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "sewing", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 5, rate = 7 } } ]
+
+[modifier.manual_leathercraft]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "leathercraft", order = 20 }
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 8, rate = 4 } } ]
+
+[modifier.manual_first_aid]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "first aid", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "medicine", max_level = 5, rate = 6 } } ]
+
+[modifier.manual_wilderness_medicine]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "wilderness medicine", order = 20 }
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "medicine", max_level = 8, rate = 4 } } ]
+
+[modifier.manual_field_surgery]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "emergency surgery", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "medicine", max_level = 12, rate = 2 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_cookbook]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "family", order = 20 }
+ops = [ { path = "name", op = "set", value = "cookbook" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 4, rate = 8 } } ]
+
+[modifier.manual_preserving]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "canning and preserving", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 8, rate = 5 } } ]
+
+[modifier.manual_scout]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "scout", order = 20 }
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "survival", max_level = 5, rate = 6 } } ]
+
+[modifier.manual_wilderness_survival]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "wilderness survival", order = 20 }
+ops = [ { path = "teaches", op = "set", value = { skill = "survival", max_level = 8, rate = 4 } } ]
+
+[modifier.manual_military_survival]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "military survival", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "field manual" },
+  { path = "teaches", op = "set", value = { skill = "survival", max_level = 12, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+]
+
+[modifier.manual_home_security]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "home security", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "security", max_level = 3, rate = 8 } } ]
+
+[modifier.manual_locksmithing]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "locksmithing", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "security", max_level = 10, rate = 3 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_soapmaking]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "soap and candle making", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 4, rate = 7 } } ]
+
+[modifier.manual_chemistry]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "high school chemistry", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 6, rate = 4 } },
+  { path = "dims_mm", op = "set", value = [280, 220, 40] },
+  { path = "mass_g", op = "set", value = 1600 },
+]
+
+[modifier.manual_organic_chemistry]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "organic chemistry", order = 20 }
+ops = [
+  { path = "name", op = "set", value = "textbook" },
+  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 11, rate = 2 } },
+  { path = "value_class", op = "set", value = "valuable" },
+  { path = "dims_mm", op = "set", value = [280, 220, 45] },
+  { path = "mass_g", op = "set", value = 1800 },
+]
+
+[modifier.manual_picker]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "antique picker's", order = 20 }
+ops = [ { path = "name", op = "set", value = "price guide" }, { path = "teaches", op = "set", value = { skill = "scavenging", max_level = 5, rate = 6 } } ]
+
+[modifier.manual_trapping]
+kind = "variant"
+applies_to = { items = ["skill_manual"] }
+name_part = { slot = "variant", text = "trapping and snaring", order = 20 }
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "trapping", max_level = 7, rate = 5 } } ]
+
+[detail_table.skill_manual_subject]
+applies_to = { items = ["skill_manual"] }
+pick = 1
+desc = "The manual's subject: picks one manual_* variant, which sets teaches {skill, max_level, rate} and the name."
+entries = [
+  { w = 12, text = "Splattered with sauce on the most-used pages.", modifier = "manual_cookbook" },
+  { w = 10, text = "Sticky notes mark the chapters on drywall and leaky taps.", modifier = "manual_home_repair" },
+  { w = 8, text = "A red cross on the cover; a phone number for poison control inside.", modifier = "manual_first_aid" },
+  { w = 8, text = "A smiling instructor on the cover, mid-lunge.", modifier = "manual_fitness" },
+  { w = 6, text = "Photos of a woman flipping a much larger attacker.", modifier = "manual_self_defense" },
+  { w = 6, text = "Diagrams of stitches, a pattern envelope tucked in the back.", modifier = "manual_sewing" },
+  { w = 5, text = "The state wildlife agency's crest on the cover.", modifier = "manual_hunter_education" },
+  { w = 5, text = "Circuit diagrams with coffee rings on them.", modifier = "manual_electronics_basics" },
+  { w = 5, text = "Exploded diagrams of pipe fittings.", modifier = "manual_plumbing" },
+  { w = 5, text = "A troop number written inside the cover.", modifier = "manual_scout" },
+  { w = 5, text = "A school library stamp; answers pencilled in the margins.", modifier = "manual_chemistry" },
+  { w = 4, text = "Span tables and nail schedules, the spine cracked flat.", modifier = "manual_carpentry" },
+  { w = 4, text = "Oil-stained fingerprints on the carburettor chapter.", modifier = "manual_small_engine" },
+  { w = 4, text = "Advice on door chains, peepholes and 'deterring intruders'.", modifier = "manual_home_security" },
+  { w = 3, text = "A chalk-dusted cover and knot diagrams on every other page.", modifier = "manual_climbing" },
+  { w = 3, text = "Track drawings of deer, coyote and dog.", modifier = "manual_stalking" },
+  { w = 3, text = "A pitching grip chart on the back cover.", modifier = "manual_pitching" },
+  { w = 3, text = "Burn marks on the edges; somebody read it at the bench.", modifier = "manual_welding" },
+  { w = 3, text = "Rows of mason jars on the cover, recipes for brine and syrup inside.", modifier = "manual_preserving" },
+  { w = 3, text = "Charts of which knots hold and which slip.", modifier = "manual_wilderness_survival" },
+  { w = 3, text = "Recipes for lye soap and poured candles.", modifier = "manual_soapmaking" },
+  { w = 3, text = "Price stickers and estate-sale receipts used as bookmarks.", modifier = "manual_picker" },
+  { w = 3, text = "Diagrams of stone walls and footings.", modifier = "manual_masonry" },
+  { w = 2, text = "Snare diagrams and a warning about local game laws.", modifier = "manual_trapping" },
+  { w = 2, text = "A callsign written on the flyleaf.", modifier = "manual_ham_radio" },
+  { w = 2, text = "Belt ranks and stances, the pages worn soft.", modifier = "manual_martial_arts" },
+  { w = 2, text = "Bow-building plans in the appendix.", modifier = "manual_archery" },
+  { w = 2, text = "Awl, thread and saddle-stitch diagrams.", modifier = "manual_leathercraft" },
+  { w = 2, text = "Splinting and evacuation chapters heavily underlined.", modifier = "manual_wilderness_medicine" },
+  { w = 1, text = "A course syllabus is folded inside; the owner never finished it.", modifier = "manual_auto_service" },
+  { w = 1, text = "Code tables, wiring diagrams, a union local's stamp.", modifier = "manual_electrician" },
+  { w = 1, text = "Anvil work photographed step by step.", modifier = "manual_blacksmithing" },
+  { w = 1, text = "Joinery drawings for barns and bridges.", modifier = "manual_timber_framing" },
+  { w = 1, text = "Load calculations in a dense, serious typeface.", modifier = "manual_structural" },
+  { w = 1, text = "Pin-tumbler cutaways and a chapter on bypass methods.", modifier = "manual_locksmithing" },
+  { w = 1, text = "A trauma-bay reference, highlighted by a nursing student.", modifier = "manual_field_surgery" },
+  { w = 1, text = "Reaction mechanisms and a graduate student's notes.", modifier = "manual_organic_chemistry" },
+  { w = 1, text = "A government-issue field manual; the cover says 'distribution unlimited'.", modifier = "manual_military_survival" },
+  { w = 1, text = "Olive-drab cover, chapters on movement, concealment and observation.", modifier = "manual_recon" },
+  { w = 1, text = "Ballistics tables and a range log tucked in the back.", modifier = "manual_precision_rifle" },
+]
+
+# ============================================================== furniture and fixtures looks
+[detail_table.furniture_finish]
+applies_to = { tags_any = ["cat.furniture", "cat.fixture.cabinet"] }
+pick = 1
+entries = [
+  { w = 6, text = "stained a dark walnut brown" },
+  { w = 5, text = "in honey-coloured pine" },
+  { w = 4, text = "painted white, chipped at the corners" },
+  { w = 3, text = "ring-marked by years of coffee mugs" },
+  { w = 2, text = "covered in a child's stickers", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "in grey laminate peeling at one edge" },
+  { w = 1, text = "hand-built, with the maker's initials burned into the underside", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.locker_look]
+applies_to = { items = ["metal_locker"] }
+pick = 1
+entries = [
+  { w = 5, text = "with a name label on the door" },
+  { w = 4, text = "dented at knee height" },
+  { w = 3, text = "plastered with band and sports stickers" },
+  { w = 2, text = "with a photo taped inside the vent slots", add_tags = ["flavor.photo", "flavor.sentimental"] },
+  { w = 2, text = "pried at the latch: someone already tried it" },
+]
+
+[detail_table.door_look]
+applies_to = { tags_any = ["cat.fixture.door"] }
+pick = 1
+entries = [
+  { w = 6, text = "painted white, scuffed around the handle" },
+  { w = 4, text = "with a brass kick plate" },
+  { w = 3, text = "with a wreath gone brown and brittle" },
+  { w = 2, text = "with children's heights pencilled up the frame", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "with a 'NO SOLICITORS' plaque" },
+  { w = 2, text = "gouged and smeared near the handle: something tried this door" },
+  { w = 1, text = "with an X sprayed across it and a number underneath", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.window_look]
+applies_to = { tags_any = ["cat.fixture.window"] }
+pick = 1
+entries = [
+  { w = 6, text = "behind half-drawn blinds" },
+  { w = 4, text = "framed by lace curtains" },
+  { w = 3, text = "with an alarm company sticker in the corner" },
+  { w = 2, text = "with paper snowflakes taped to the glass", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "streaked with dried handprints on the outside" },
+  { w = 1, text = "with 'ALIVE INSIDE' written backwards in lipstick, long ago", add_tags = ["flavor.readable"] },
+]
+
+# ============================================================== electronics and lighting looks
+[detail_table.device_wear]
+applies_to = { tags_any = ["cat.electronics"] }
+chance_pct = 60
+pick = 1
+entries = [
+  { w = 5, text = "with a spiderweb crack in one corner" },
+  { w = 4, text = "plastered in stickers" },
+  { w = 3, text = "with a password on a sticky note" },
+  { w = 2, text = "with a family photo as the lock screen", add_tags = ["flavor.photo", "flavor.sentimental"] },
+]
+
+[detail_table.candle_kind]
+applies_to = { items = ["candle"] }
+pick = 1
+entries = [
+  { w = 6, text = "a plain white emergency pillar" },
+  { w = 3, text = "in a glass jar labelled 'Autumn Hearth'", modifier = "candle_scented" },
+  { w = 2, text = "a tall church taper, dripped down its holder" },
+  { w = 2, text = "a vanilla jar candle, half burned", modifier = "candle_scented" },
+  { w = 1, text = "a birthday-number candle among the plain ones", add_tags = ["flavor.sentimental"] },
+]
+
+# ============================================================== paper, books, notes
+[detail_table.book_title]
+applies_to = { items = ["book"] }
+pick = 1
+entries = [
+  { w = 5, text = "'Nine Days in Carrow County', a courtroom thriller." },
+  { w = 5, text = "'A Duke for the Season', a Regency romance with a bent spine." },
+  { w = 4, text = "'The Winter Orchard', a literary novel with a book-club sticker." },
+  { w = 4, text = "'Murder at the Harvest Fair', a cozy mystery, eleventh in its series." },
+  { w = 4, text = "'Starfall Protocol', a space-opera paperback." },
+  { w = 3, text = "'Why Nations Stumble', pop history, half highlighted." },
+  { w = 3, text = "'The Last Ferry to Oldport', a ghost story." },
+  { w = 3, text = "'Blood Tide', a lurid horror paperback. It doesn't seem so far-fetched now." },
+  { w = 3, text = "A self-help book promising 'a better tomorrow in thirty days'." },
+  { w = 2, text = "'Goodnight, Little Tugboat', a children's picture book.", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "A well-thumbed family Bible, births and deaths inked inside the cover.", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "A library book, due back the week after the event." },
+  { w = 1, text = "'The Complete Stories of Ada Fenwick', a first edition someone treasured.", add_tags = ["flavor.collectible"] },
+]
+
+[detail_table.book_inscription]
+applies_to = { items = ["book"] }
+chance_pct = 20
+pick = 1
+entries = [
+  { w = 4, text = "Inscribed: 'For Danny — happy 12th! Love, Aunt Ro.'", add_tags = ["flavor.sentimental"] },
+  { w = 3, text = "A bookmark sits two chapters from the end." },
+  { w = 2, text = "A pressed flower falls out of the middle.", add_tags = ["flavor.sentimental"] },
+  { w = 1, text = "A handwritten list inside the back cover: names, each crossed out but one." },
+]
+
+[detail_table.map_markings]
+applies_to = { tags_any = ["cat.paper.map"] }
+pick = 1
+entries = [
+  { w = 6, text = "Pristine, still creased along the factory folds." },
+  { w = 3, text = "A hardware store and a pharmacy circled in red pen." },
+  { w = 2, text = "A route traced in highlighter out of the city, then scribbled over." },
+  { w = 2, text = "Three neighbourhoods crossed out with heavy Xs.", add_tags = ["flavor.readable"] },
+  { w = 1, text = "A house marked with a star and the word 'CACHE — under porch'.", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.notebook_contents]
+applies_to = { items = ["notebook"] }
+pick = 1
+entries = [
+  { w = 6, text = "Blank but for the owner's name on the cover." },
+  { w = 3, text = "A shopping list, phone numbers and doodles of cubes." },
+  { w = 2, text = "Meeting notes full of deadlines that no longer matter." },
+  { w = 2, text = "A teenager's diary that stops mid-sentence on the morning of the event.", add_tags = ["flavor.readable", "flavor.sentimental"] },
+  { w = 1, text = "A survivor's log: supplies counted, streets checked, nine pages, then nothing.", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.paint_colour]
+applies_to = { items = ["spray_paint"] }
+pick = 1
+entries = [
+  { w = 5, text = "flat black" }, { w = 4, text = "safety orange" }, { w = 3, text = "gloss white" },
+  { w = 3, text = "fire-engine red" }, { w = 2, text = "fluorescent green" }, { w = 1, text = "metallic gold" },
+]
+
+[detail_table.desk_clutter_items]
+applies_to = { items = ["desk_clutter"] }
+pick = 2
+entries = [
+  { w = 5, text = "A mug of dried-out pens beside a dead succulent." },
+  { w = 4, text = "Sticky notes: passwords, a dentist appointment, 'CALL MOM'." },
+  { w = 4, text = "A jar of paper clips and a box of staples." },
+  { w = 3, text = "A calendar still showing the month of the event, one day circled." },
+  { w = 2, text = "A framed photo of a family squinting into beach sunlight.", add_tags = ["flavor.photo", "flavor.sentimental"] },
+  { w = 2, text = "A half-eaten granola bar, now as hard as wood." },
+  { w = 1, text = "A resignation letter, signed, never handed in.", add_tags = ["flavor.readable"] },
+]
+
+# Survivor notes (P-WO-14). Lore constraints: the turning was instant, simultaneous and not a
+# sickness (N005); 80-99% turned (N007); no living people are ever met, so notes are traces of the
+# dead or the departed. Many carry practical hints that teach real mechanics.
+[detail_table.survivor_note_text]
+applies_to = { items = ["survivor_note"] }
+pick = 1
+entries = [
+  { w = 4, text = "'Mom was mid-sentence when it happened. Her eyes just emptied. I shut her in the pantry. I'm sorry I'm sorry I'm sorry.'", add_tags = ["flavor.sentimental"] },
+  { w = 4, text = "'Everyone on the bus turned at the same moment. The driver too. We rolled into the median. I was the only one who climbed out.'" },
+  { w = 4, text = "'They go where the noise is. I threw a bottle over the fence and the whole street turned its head like one animal.'" },
+  { w = 4, text = "'Water heater in the basement still has forty gallons in it. Drain at the bottom, open a tap upstairs so it flows. Boil it anyway.'" },
+  { w = 3, text = "'Smear them on you. I know. I KNOW. But they walked right past me.'" },
+  { w = 3, text = "'Counted from the roof tonight: eleven lights in the whole city. Last night there were fourteen.'" },
+  { w = 3, text = "'If you're reading this I didn't come back for it. Food is under the loose board by the radiator. Take it. Don't waste it.'" },
+  { w = 3, text = "'Whatever this is, it isn't a sickness. A sickness doesn't take everyone in the same second.'" },
+  { w = 3, text = "'Keep your doors shut. The ones inside got in because every house was open when it happened.'" },
+  { w = 3, text = "'Their eyes are open but something else is looking out of them.'" },
+  { w = 3, text = "'Pharmacy on Fifth is empty. Somebody got there before me, and then something got to them.'" },
+  { w = 2, text = "'7:40 in the morning. I know because the kitchen clock was still right and nothing else was.'" },
+  { w = 2, text = "'Radio is only the tone now. Even the automated weather voice stopped on Tuesday.'" },
+  { w = 2, text = "'They lose you in the rain. I don't know how I know that, but I'm still here.'" },
+  { w = 2, text = "'They don't sleep. They stand. A lot of them stand facing the church.'" },
+  { w = 2, text = "'The dog won't go near them. Won't even growl. She just shakes.'" },
+  { w = 2, text = "'Hunger is louder than fear now. That's how you know it's been a week.'" },
+  { w = 2, text = "'Stacked the desks against the stairwell door. Third floor is safe. Was safe.'" },
+  { w = 2, text = "'NEED: D batteries, bleach, matches, insulin for Mrs. K. (doesn't matter now)'" },
+  { w = 2, text = "'Sis — waited three days. Going north to the lake house. Mark the mailbox if you make it.'", add_tags = ["flavor.sentimental"] },
+  { w = 1, text = "In a child's careful letters: 'i am being very quiet like dad said'", add_tags = ["flavor.sentimental"] },
+  { w = 1, text = "A heading, 'the ones I put down', and a page and a half of tally marks." },
+  { w = 1, text = "'Tape the button on a smoke alarm and throw it in a car. They crowd it for hours. Go the other way.'" },
+]
+
+[detail_table.survivor_note_medium]
+applies_to = { items = ["survivor_note"] }
+pick = 1
+entries = [
+  { w = 5, text = "Scrawled in ballpoint pressed hard enough to tear the paper." },
+  { w = 4, text = "Written in marker on the back of a takeout menu." },
+  { w = 3, text = "In pencil on a page torn from a hymnal." },
+  { w = 3, text = "On a flap torn from a cereal box." },
+  { w = 2, text = "On hotel stationery, the letterhead cheerful and absurd." },
+  { w = 2, text = "Water-stained, the last lines too blurred to read." },
+  { w = 1, text = "On the back of a child's crayon drawing of a house.", add_tags = ["flavor.sentimental"] },
+]

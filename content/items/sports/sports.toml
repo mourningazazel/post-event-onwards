@@ -1,0 +1,138 @@
+# Sporting goods found in garages, bedrooms and schools: mostly improvised weapons.
+# Pry is authored down where a round or thin-walled body can't get under anything.
+
+[item.baseball_bat]
+name = "baseball bat"
+tags = ["cat.sports.bat", "from.garage", "from.bedroom", "from.school", "use.weapon"]
+shape = "rod"
+dims_mm = [840, 67, 67]
+mass_g = 900
+balance = "head"
+durability = 7
+desc = "A 33-inch ash baseball bat, tape wrapped on the handle."
+glyph = "item.bat"
+why = "The archetypal two-handed bludgeon: heavy barrel, safe grip, found in half the garages in America."
+brand_cats = ["sporting_goods"]
+modifiers = ["bat_aluminum"]
+attach_surface = { kind = "round", contact_area_mm2 = 12000, wrap_girth_mm = 210 }
+value_class = "useful"
+
+[item.baseball_bat.composition.body]
+material = "hardwood"
+share = 100
+
+[item.baseball_bat.features.grip]
+hands = 2
+girth_mm = 25
+
+[item.baseball_bat.capabilities]
+pry = 1
+
+[item.golf_club]
+name = "golf club"
+tags = ["cat.sports.golf", "from.garage", "use.weapon"]
+shape = "rod"
+dims_mm = [950, 75, 50]
+mass_g = 430
+fill_pct = 3
+balance = "head"
+durability = 4
+desc = "A steel-shafted 7-iron with a rubber grip."
+glyph = "item.golf_club"
+why = "Long reach and a hard steel head, but the thin shaft bends on a hard hit: a weaker, shorter-lived bludgeon than a bat."
+brand_cats = ["sporting_goods"]
+details = ["golf_club_kind"]
+value_class = "common"
+
+[item.golf_club.composition.head]
+material = "stainless_steel"
+share = 60
+[item.golf_club.composition.shaft]
+material = "carbon_steel"
+share = 28
+[item.golf_club.composition.grip]
+material = "rubber"
+share = 12
+
+[item.golf_club.features.grip]
+hands = 2
+girth_mm = 22
+
+[item.golf_club.capabilities]
+pry = 2
+
+[item.hockey_stick]
+name = "hockey stick"
+tags = ["cat.sports.hockey", "from.garage", "from.school", "use.weapon"]
+shape = "rod"
+dims_mm = [1500, 290, 75]
+mass_g = 600
+fill_pct = 3
+durability = 5
+desc = "A laminated-wood ice hockey stick with a taped blade."
+glyph = "item.hockey_stick"
+why = "Long, light reach for shoving and tripping; a splint or a haft in a pinch."
+brand_cats = ["sporting_goods"]
+value_class = "junk"
+
+[item.hockey_stick.composition.shaft]
+material = "hardwood"
+share = 95
+[item.hockey_stick.composition.tape]
+material = "cotton"
+share = 5
+
+[item.hockey_stick.features.grip]
+hands = 2
+girth_mm = 30
+
+[item.hockey_stick.capabilities]
+pry = 2
+
+[item.dumbbell]
+name = "dumbbell"
+tags = ["cat.sports.weights", "from.bedroom", "from.garage", "from.school", "use.weapon"]
+shape = "block"
+dims_mm = [330, 130, 115]
+mass_g = 6800
+durability = 10
+desc = "A 15 lb rubber-coated hex dumbbell."
+glyph = "item.dumbbell"
+why = "Dense crushing weight: a short brutal swing, deadfall and tripwire weight, a door wedge."
+brand_cats = ["sporting_goods"]
+value_class = "junk"
+
+[item.dumbbell.composition.head]
+material = "cast_iron"
+share = 85
+[item.dumbbell.composition.coating]
+material = "rubber"
+share = 10
+[item.dumbbell.composition.handle]
+material = "mild_steel"
+share = 5
+
+[item.dumbbell.features.grip]
+hands = 1
+girth_mm = 33
+
+[item.bowling_ball]
+name = "bowling ball"
+tags = ["cat.sports.bowling", "from.garage", "from.bedroom", "flavor.collectible"]
+shape = "sphere"
+dims_mm = [218, 218, 218]
+mass_g = 6800
+desc = "A 15 lb three-hole bowling ball, glossy and swirled."
+glyph = "item.bowling_ball"
+why = "Heavy round weight that rolls down stairs and ramps into a crowd; deadfall weight; collectible swirls."
+brand_cats = ["sporting_goods"]
+value_class = "junk"
+
+[item.bowling_ball.composition.shell]
+material = "abs"
+share = 100
+
+[item.bowling_ball.reactions.impact]
+low = "none"
+medium = "none"
+high = "crack"

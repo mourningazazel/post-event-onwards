@@ -1,0 +1,189 @@
+# Fasteners (domain B): consumables for joints (content-model §7, registry/fasteners.toml).
+# Every fastener carries its items_tag (cat.fastener.*), use.fastener and `units` in the
+# fastener's own unit (g of glue, wraps of cord/tape, twists of wire, ties, screws).
+# nails_box and duct_tape live in materials.toml (exemplars; ids unchanged).
+# Glue masses use `acrylic` as the closest registered polymer (proposal: `adhesive` material).
+
+[item.screws_box]
+name = "box of screws"
+tags = ["cat.fastener.screw", "from.construction", "from.garage", "use.fastener"]
+shape = "small"
+dims_mm = [120, 80, 55]
+mass_g = 480
+units = 75
+desc = "A one-pound box of three-inch coated deck screws."
+glyph = "item.box_small"
+why = "Strongest removable wood joint (screw Hold); boards up windows with a drill and comes back out cleanly."
+brand_cats = ["tools"]
+details = ["fastener_amount"]
+value_class = "useful"
+
+[item.screws_box.composition.screws]
+material = "carbon_steel"
+share = 94
+[item.screws_box.composition.box]
+material = "cardboard"
+share = 6
+
+[item.superglue]
+name = "superglue"
+tags = ["cat.fastener.glue.super", "from.garage", "from.kitchen", "from.office", "from.retail", "use.fastener"]
+shape = "small"
+dims_mm = [70, 20, 12]
+mass_g = 10
+units = 3
+desc = "A tiny aluminum tube of cyanoacrylate glue with a pin cap."
+glyph = "item.glue_tube"
+why = "Instant bond for small hard parts (glasses, knife scales, cracked plastic); closes small cuts; useless on heavy or porous loads."
+brand_cats = ["adhesives"]
+details = ["fastener_amount"]
+value_class = "useful"
+
+[item.superglue.composition.tube]
+material = "aluminum"
+share = 60
+[item.superglue.composition.adhesive]
+material = "acrylic"
+share = 40
+
+[item.superglue.capabilities]
+adhere = 4
+
+# Cyanoacrylate is used in the field to close small lacerations (medical glue is a cousin).
+[item.superglue.medical]
+bleed_stop = 2
+doses = 3
+
+[item.epoxy]
+name = "epoxy"
+tags = ["cat.fastener.glue.epoxy", "from.garage", "from.construction", "from.retail", "use.fastener"]
+shape = "small"
+dims_mm = [160, 40, 20]
+mass_g = 45
+units = 28
+desc = "A twin-barrel syringe of five-minute epoxy with a mixing stick."
+glyph = "item.glue_syringe"
+why = "Durable gap-filling bond on nearly anything rigid (spear heads, rehafted axes); permanent, and it takes time to cure."
+brand_cats = ["adhesives"]
+details = ["fastener_amount"]
+value_class = "useful"
+
+[item.epoxy.composition.syringe]
+material = "polypropylene"
+share = 40
+[item.epoxy.composition.resin]
+material = "acrylic"
+share = 60
+
+[item.epoxy.capabilities]
+adhere = 7
+
+[item.wood_glue]
+name = "wood glue"
+tags = ["cat.fastener.glue.wood", "from.garage", "from.construction", "from.school", "use.fastener"]
+shape = "block"
+dims_mm = [180, 60, 60]
+mass_g = 270
+units = 250
+desc = "An eight-ounce squeeze bottle of yellow carpenter's glue."
+glyph = "item.glue_bottle"
+why = "Strong on wood, paper and cloth (clamped); weak on metal and plastic and fails when soaked."
+brand_cats = ["adhesives"]
+details = ["fastener_amount"]
+value_class = "common"
+
+[item.wood_glue.composition.bottle]
+material = "hdpe"
+share = 10
+[item.wood_glue.composition.glue]
+material = "acrylic"
+share = 90
+
+[item.wood_glue.capabilities]
+adhere = 5
+
+[item.zip_ties]
+name = "zip ties"
+tags = ["cat.fastener.zip_tie", "from.garage", "from.construction", "from.utility", "from.police", "use.fastener"]
+shape = "block"
+dims_mm = [210, 60, 20]
+mass_g = 180
+units = 100
+desc = "A bag of a hundred 8-inch black nylon cable ties."
+glyph = "item.zip_ties"
+why = "Fast loop fastener: bundles, lashes a knife to a pole, secures door handles, improvised restraints; snaps under impact."
+details = ["fastener_amount"]
+value_class = "useful"
+
+[item.zip_ties.composition.ties]
+material = "nylon"
+share = 95
+[item.zip_ties.composition.bag]
+material = "ldpe"
+share = 5
+
+[item.nylon_rope]
+name = "nylon rope"
+tags = ["cat.fastener.cord", "from.garage", "from.outdoors", "from.farm", "from.construction", "use.fastener", "use.shelter"]
+shape = "cord"
+dims_mm = [15240, 10, 10]          # uncoiled length first (cord convention)
+mass_g = 820
+units = 50
+durability = 8
+desc = "Fifty feet of 3/8-inch twisted white nylon rope."
+glyph = "item.rope"
+why = "Climbing and descent line, heavy lashing (crude mauls, loads), shelters, hauling; cord joints forgive impacts."
+brand_cats = ["rope"]
+modifiers = ["rope_100ft"]
+attach_surface = { kind = "fibrous", contact_area_mm2 = 2000, wrap_girth_mm = 31 }
+divisible = { mode = "length", min_piece_mm = 300, needs = "cut>=2" }
+value_class = "valuable"
+
+[item.nylon_rope.composition.rope]
+material = "nylon_fabric"
+share = 100
+
+[item.paracord]
+name = "paracord"
+tags = ["cat.fastener.cord", "from.outdoors", "from.garage", "use.fastener", "use.shelter"]
+shape = "cord"
+dims_mm = [30480, 4, 4]
+mass_g = 200
+units = 80
+durability = 8
+desc = "A hank of a hundred feet of olive 550 parachute cord."
+glyph = "item.rope"
+why = "Light, strong line for lashing, snares, tripwires and shelters; inner strands pull out as thread; too thin to climb."
+brand_cats = ["rope", "outdoors"]
+attach_surface = { kind = "fibrous", contact_area_mm2 = 500, wrap_girth_mm = 13 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "cut>=1" }
+value_class = "useful"
+
+[item.paracord.composition.cord]
+material = "nylon_fabric"
+share = 100
+
+# bind: derived 7 (very tough nylon fibre). A 4 mm line cuts into hands and lashings and
+# can't take the same working load as 3/8-inch rope.
+[item.paracord.capabilities]
+bind = 5
+
+[item.baling_wire]
+name = "baling wire"
+tags = ["cat.fastener.wire", "from.farm", "from.construction", "from.garage", "use.fastener"]
+shape = "cord"
+dims_mm = [100000, 2, 2]           # uncoiled length first (cord convention)
+mass_g = 1600
+units = 200
+durability = 9
+desc = "A 3.5-pound roll of soft 16-gauge black annealed tie wire."
+glyph = "item.wire_coil"
+why = "Wire joints (twists; pliers for full Hold): spear heads, fence repairs, tripwires, snares, hanging things."
+attach_surface = { kind = "round", contact_area_mm2 = 200, wrap_girth_mm = 6 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "cut>=6" }
+details = ["fastener_amount"]
+value_class = "useful"
+
+[item.baling_wire.composition.wire]
+material = "mild_steel"
+share = 100

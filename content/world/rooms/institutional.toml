@@ -1,0 +1,192 @@
+# Institutional room types (world-catalog §3): schools, library, hospital, police, fire, church.
+# Pre-event baseline. Things carried by occupants (backpacks on students, duty belts on officers)
+# come from profiles; rooms hold what is left in them.
+
+# ---------------------------------------------------------------- school and library
+
+[room.classroom]
+desc = "A classroom: rows of student desks, the teacher's desk and cupboards, backpacks on hooks."
+size_m2 = [50, 90]
+floor = "any"
+tags = ["from.school"]
+objects = [
+  { item = "school_desk", count = [18, 32] },
+  { item = "desk", count = [1, 1], contains = ["classroom_supplies"] },
+  { item = "office_chair", count = [1, 1] },
+  { item = "bookshelf", count = [1, 3], contains = ["classroom_supplies"] },
+  { item = "desktop_pc", count = [1, 1], chance_pct = 50 },
+  { item = "television", count = [1, 1], chance_pct = 40 },
+  { item = "school_backpack", count = [0, 12], chance_pct = 40, contains = ["backpack_school"] },
+  { item = "smoke_detector", count = [1, 1] },
+]
+
+[room.cafeteria]
+desc = "A school or workplace cafeteria: long tables and seats, milk coolers, vending machines."
+size_m2 = [150, 800]
+floor = "ground"
+tags = ["from.school", "from.restaurant"]
+objects = [
+  { item = "dining_table", count = [10, 40] },
+  { item = "dining_chair", count = [40, 300] },
+  { item = "refrigerator", count = [1, 2], chance_pct = 70, contains = ["grocery_drinks"] },
+  { item = "vending_machine", count = [0, 3], contains = ["vending_machine_stock"] },
+  { item = "trash_can_street", count = [2, 6] },
+]
+
+[room.gymnasium]
+desc = "A gymnasium: open court, bleachers, the equipment closet, locker banks."
+size_m2 = [300, 1500]
+floor = "ground"
+tags = ["from.school"]
+objects = [
+  { item = "metal_shelving", count = [1, 4], contains = ["gym_equipment"] },
+  { item = "bench", count = [4, 12] },
+  { item = "metal_locker", count = [10, 40], contains = ["backpack_school"] },
+  { item = "vending_machine", count = [0, 1], contains = ["vending_machine_stock"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.nurse_office]
+desc = "A school or workplace nurse's office: a cot, supply cabinets, a desk, a sink."
+size_m2 = [10, 25]
+floor = "ground"
+tags = ["from.medical", "from.school"]
+objects = [
+  { item = "hospital_bed", count = [1, 2] },
+  { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
+  { item = "office_chair", count = [1, 1] },
+  { item = "kitchen_cabinet", count = [1, 3], contains = ["nurse_office_stock"] },
+  { item = "refrigerator", count = [1, 1], chance_pct = 50 },
+  { item = "sink", count = [1, 1] },
+]
+
+[room.library_stacks]
+desc = "Library stacks and reading area: shelves of books and references, study tables, the circulation desk."
+size_m2 = [80, 2000]
+floor = "any"
+tags = ["from.school"]
+objects = [
+  { item = "bookshelf", count = [10, 80], contains = ["bookstore_shelf"] },
+  { item = "dining_table", count = [2, 10] },
+  { item = "dining_chair", count = [8, 40] },
+  { item = "desktop_pc", count = [2, 10] },
+  { item = "desk", count = [1, 1], contains = ["reception_desk"] },
+  { item = "fire_extinguisher", count = [1, 3] },
+]
+
+# ---------------------------------------------------------------- hospital
+
+[room.hospital_ward]
+desc = "A patient room on a ward: beds, bedside cabinets with patients' belongings, a supply cabinet."
+size_m2 = [15, 40]
+floor = "any"
+tags = ["from.medical"]
+objects = [
+  { item = "hospital_bed", count = [1, 4] },
+  { item = "nightstand", count = [1, 4], contains = ["pockets_generic"] },
+  { item = "kitchen_cabinet", count = [1, 2], contains = ["hospital_supplies"] },
+  { item = "armchair", count = [1, 2] },
+  { item = "television", count = [1, 2] },
+  { item = "sink", count = [1, 1] },
+  { item = "toilet", count = [1, 1], chance_pct = 70 },
+]
+
+[room.emergency_bay]
+desc = "An emergency department treatment bay: trauma beds, supply carts and shelving, workstations."
+size_m2 = [15, 60]
+floor = "ground"
+tags = ["from.medical"]
+objects = [
+  { item = "hospital_bed", count = [1, 6] },
+  { item = "metal_shelving", count = [2, 6], contains = ["hospital_supplies"] },
+  { item = "kitchen_cabinet", count = [2, 6], contains = ["hospital_supplies"] },
+  { item = "sink", count = [1, 2] },
+  { item = "desktop_pc", count = [1, 2] },
+  { item = "fire_extinguisher", count = [1, 1] },
+]
+
+[room.hospital_pharmacy]
+desc = "The hospital pharmacy: bulk drug shelving, the controlled-substance vault, fridges, workstations."
+size_m2 = [30, 200]
+floor = "any"
+tags = ["from.medical"]
+objects = [
+  { item = "metal_shelving", count = [6, 30], contains = ["hospital_pharmacy_stock"] },
+  { item = "refrigerator", count = [1, 4], contains = ["hospital_pharmacy_stock"] },
+  { item = "safe", count = [1, 2], contains = ["pharmacy_rx"] },
+  { item = "desk", count = [1, 3], contains = ["desk_drawer"] },
+  { item = "desktop_pc", count = [1, 3] },
+  { item = "sink", count = [1, 1] },
+]
+
+# ---------------------------------------------------------------- police and fire
+
+[room.police_bullpen]
+desc = "A police squad room: desks, filing cabinets, the radio charger rack, officers' lockers."
+size_m2 = [40, 400]
+floor = "any"
+tags = ["from.police", "from.office"]
+objects = [
+  { item = "desk", count = [4, 20], contains = ["office_desk"] },
+  { item = "office_chair", count = [4, 20] },
+  { item = "desktop_pc", count = [4, 20] },
+  { item = "filing_cabinet", count = [2, 8], contains = ["desk_clutter"] },
+  { item = "metal_locker", count = [4, 20], contains = ["police_locker"] },
+  { item = "metal_shelving", count = [1, 1], chance_pct = 50, contains = ["walkie_talkie"] },
+  { item = "television", count = [1, 1], chance_pct = 40 },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.police_armory]
+desc = "A police armory: locked racks and cabinets of weapons, ammunition and riot gear."
+size_m2 = [6, 30]
+floor = "any"
+tags = ["from.police"]
+objects = [
+  { item = "metal_shelving", count = [1, 4], contains = ["police_armory_stock"] },
+  { item = "metal_locker", count = [2, 8], contains = ["police_armory_stock"] },
+  { item = "safe", count = [0, 2], contains = ["police_armory_stock"] },
+  { item = "workbench", count = [1, 1], chance_pct = 40 },
+]
+
+[room.holding_cell]
+desc = "A holding cell: a steel bench, toilet and sink."
+size_m2 = [6, 20]
+floor = "any"
+tags = ["from.police"]
+objects = [
+  { item = "bench", count = [1, 2] },
+  { item = "toilet", count = [1, 1] },
+  { item = "sink", count = [1, 1] },
+]
+
+[room.apparatus_bay]
+desc = "A fire-station apparatus bay: engines and ambulances, gear racks, the workbench, ladders."
+size_m2 = [150, 600]
+floor = "ground"
+tags = ["from.fire_service"]
+objects = [
+  { item = "fire_engine", count = [1, 3] },
+  { item = "ambulance", count = [0, 2] },
+  { item = "metal_shelving", count = [2, 10], contains = ["fire_station_gear"] },
+  { item = "metal_locker", count = [4, 16], contains = ["fire_station_gear"] },
+  { item = "workbench", count = [1, 1], chance_pct = 60, contains = ["workbench_tools"] },
+  { item = "portable_generator", count = [0, 2] },
+  { item = "extension_ladder", count = [1, 4] },
+  { item = "fire_extinguisher", count = [2, 6] },
+]
+
+# ---------------------------------------------------------------- church
+
+[room.church_nave]
+desc = "A church nave: rows of pews with hymnals in the racks, candles at the front, the offering safe."
+size_m2 = [150, 1200]
+floor = "ground"
+tags = ["from.church"]
+objects = [
+  { item = "church_pew", count = [10, 60], contains = ["book"] },
+  { item = "dining_table", count = [1, 1] },
+  { item = "safe", count = [1, 1], chance_pct = 20, contains = ["cash"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+loose = ["candle"]

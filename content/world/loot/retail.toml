@@ -1,0 +1,423 @@
+# Retail loot tables (world-catalog §7): store stock at the PRE-EVENT BASELINE (fully stocked
+# shelves). Looting by survivors is applied later by the aftermath pass, weighted by building
+# loot_priority. One pick is usually a facing of one product, so counts are shelf-scale.
+
+# ---------------------------------------------------------------- grocery
+
+[loot.grocery_shelf_canned]
+desc = "One grocery shelving section of canned and jarred goods."
+rolls = [4, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "canned_food", w = 70, count = [6, 24] },
+  { item = "jar_food", w = 16, count = [4, 12] },
+  { item = "honey_jar", w = 4, count = [3, 8] },
+  { item = "coffee_can", w = 10, count = [4, 12] },
+]
+
+[loot.grocery_shelf_dry]
+desc = "One grocery shelving section of dry goods: boxes, staples, snacks, baby and pet food."
+rolls = [4, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "boxed_dry_food", w = 34, count = [6, 20] },
+  { item = "snack_bar", w = 16, count = [10, 40] },
+  { item = "bag_of_rice", w = 8, count = [4, 12] },
+  { item = "bag_of_flour", w = 6, count = [4, 12] },
+  { item = "bag_of_sugar", w = 6, count = [4, 12] },
+  { item = "glass_bottle", w = 6, count = [4, 12], substance = "cooking_oil", fill_pct = [100, 100] },
+  { item = "bread_loaf", w = 8, count = [6, 20] },
+  { item = "pet_food_bag", w = 8, count = [3, 10] },
+  { item = "baby_formula", w = 4, count = [4, 12] },
+  { item = "jar_food", w = 4, count = [4, 10] },
+]
+
+[loot.grocery_drinks]
+desc = "One drinks section or cooler: bottled water, soda, juice, beer."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "bottled_water", w = 30, count = [12, 48] },
+  { item = "soda_can", w = 30, count = [12, 48] },
+  { item = "glass_bottle", w = 12, count = [4, 12], substance = "juice", fill_pct = [100, 100] },
+  { item = "soda_can", w = 14, count = [12, 36], substance = "beer", fill_pct = [100, 100] },
+  { item = "glass_bottle", w = 8, count = [6, 24], substance = "beer", fill_pct = [100, 100] },
+  { item = "milk_jug", w = 6, count = [4, 12], substance = "juice", fill_pct = [100, 100] },
+]
+
+[loot.grocery_produce]
+desc = "One produce stand or bakery rack: fresh fruit and vegetables, bread."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "fresh_produce", w = 80, count = [10, 40] },
+  { item = "bread_loaf", w = 15, count = [6, 20] },
+  { item = "honey_jar", w = 5, count = [2, 6] },
+]
+
+# Extra (not in world-catalog §7): refrigerated display cases (dairy, meat, deli, juice).
+[loot.grocery_cold_case]
+desc = "One refrigerated display case: milk, meat, deli tubs, juice."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "milk_jug", w = 30, count = [6, 24], substance = "milk", fill_pct = [100, 100] },
+  { item = "meat_package", w = 30, count = [6, 24] },
+  { item = "plastic_tub", w = 12, count = [4, 12] },
+  { item = "jar_food", w = 8, count = [4, 12] },
+  { item = "glass_bottle", w = 12, count = [4, 12], substance = "juice", fill_pct = [100, 100] },
+  { item = "fresh_produce", w = 8, count = [6, 20] },
+]
+
+# Extra (not in world-catalog §7): freezer display cases.
+[loot.grocery_freezer_case]
+desc = "One freezer case: frozen meals, vegetables, ice cream, frozen meat."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "frozen_food", w = 75, count = [6, 30] },
+  { item = "meat_package", w = 20, count = [4, 16] },
+  { item = "bread_loaf", w = 5, count = [4, 10] },
+]
+
+[loot.grocery_household]
+desc = "One household-goods section: paper, cleaning, bags, toiletries, batteries, grill supplies."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "toilet_paper", w = 10, count = [6, 24] },
+  { item = "paper_towels", w = 8, count = [6, 18] },
+  { item = "trash_bags", w = 7, count = [4, 12] },
+  { item = "aluminum_foil", w = 5, count = [4, 12] },
+  { item = "zip_bags", w = 5, count = [4, 12] },
+  { item = "dish_soap", w = 6, count = [4, 12], substance = "soap_liquid", fill_pct = [100, 100] },
+  { item = "bleach_jug", w = 6, count = [4, 12], substance = "bleach", fill_pct = [100, 100] },
+  { item = "bleach_jug", w = 5, count = [4, 12], substance = "soap_liquid", fill_pct = [100, 100] },
+  { item = "soap_bar", w = 5, count = [6, 20] },
+  { item = "shampoo_bottle", w = 5, count = [4, 12], substance = "soap_liquid", fill_pct = [100, 100] },
+  { item = "deodorant_spray", w = 4, count = [4, 12] },
+  { item = "toothbrush_kit", w = 4, count = [4, 12] },
+  { item = "sanitary_pads", w = 4, count = [4, 12] },
+  { item = "razor", w = 3, count = [4, 12] },
+  { item = "battery_aa", w = 5, count = [8, 32] },
+  { item = "battery_d", w = 2, count = [4, 16] },
+  { item = "battery_9v", w = 2, count = [4, 12] },
+  { item = "candle", w = 3, count = [4, 12] },
+  { item = "matchbook", w = 2, count = [10, 30] },
+  { item = "lighter", w = 2, count = [6, 24] },
+  { item = "charcoal_bag", w = 3, count = [3, 10] },
+  { item = "lighter_fluid_can", w = 2, count = [3, 10], substance = "lighter_fluid", fill_pct = [100, 100] },
+  { item = "painkillers", w = 3, count = [4, 12] },
+  { item = "bandage_box", w = 2, count = [3, 10] },
+  { item = "latex_gloves", w = 1, count = [2, 6] },
+  { item = "flashlight", w = 2, count = [2, 8], mods = ["cheap"] },
+]
+
+# ---------------------------------------------------------------- pharmacy
+
+[loot.pharmacy_otc]
+desc = "One over-the-counter pharmacy aisle: pain relief, first aid, hygiene, baby care."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "painkillers", w = 24, count = [6, 24] },
+  { item = "bandage_box", w = 12, count = [4, 12] },
+  { item = "gauze_pads", w = 7, count = [4, 12] },
+  { item = "first_aid_kit", w = 5, count = [2, 6] },
+  { item = "antiseptic_bottle", w = 6, count = [3, 10], substance = "antiseptic", fill_pct = [100, 100] },
+  { item = "rubbing_alcohol_bottle", w = 6, count = [3, 10], substance = "rubbing_alcohol", fill_pct = [100, 100] },
+  { item = "hand_sanitizer_bottle", w = 5, count = [4, 12], substance = "hand_sanitizer", fill_pct = [100, 100] },
+  { item = "latex_gloves", w = 3, count = [2, 6] },
+  { item = "dust_mask", w = 3, count = [4, 12] },
+  { item = "splint_sam", w = 1, count = [1, 3] },
+  { item = "crutches", w = 1, count = [1, 2] },
+  { item = "eyeglasses", w = 3, count = [4, 12] },
+  { item = "toothbrush_kit", w = 4, count = [4, 12] },
+  { item = "sanitary_pads", w = 4, count = [4, 12] },
+  { item = "baby_formula", w = 4, count = [4, 12] },
+  { item = "purification_tablets", w = 1, count = [2, 6] },
+  { item = "deodorant_spray", w = 3, count = [4, 12] },
+  { item = "razor", w = 3, count = [4, 12] },
+  { item = "perfume_bottle", w = 2, count = [2, 6], substance = "perfume", fill_pct = [100, 100] },
+  { item = "battery_aa", w = 2, count = [6, 24] },
+]
+
+[loot.pharmacy_rx]
+desc = "Prescription stock behind the counter: bottles and stock bins of dispensed drugs."
+rolls = [3, 10]
+empty_chance_pct = 1
+entries = [
+  { item = "painkillers", w = 45, count = [2, 12] },
+  { item = "antibiotics", w = 45, count = [2, 12] },
+  { item = "saline_bag", w = 2, count = [1, 4] },
+  { item = "latex_gloves", w = 4, count = [1, 2] },
+  { item = "suture_kit", w = 1, count = [1, 2] },
+  { item = "zip_bags", w = 3, count = [2, 6] },
+]
+
+# ---------------------------------------------------------------- hardware
+
+[loot.hardware_shelf_tools]
+desc = "One hardware-store tool section: hand and power tools, yard tools, safety gear, locks."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "claw_hammer", w = 5, count = [3, 10] },
+  { item = "screwdriver", w = 5, count = [4, 16] },
+  { item = "adjustable_wrench", w = 4, count = [2, 8] },
+  { item = "pliers", w = 4, count = [3, 10] },
+  { item = "locking_pliers", w = 3, count = [2, 6] },
+  { item = "wire_cutters", w = 3, count = [2, 6] },
+  { item = "bolt_cutters", w = 2, count = [1, 4] },
+  { item = "utility_knife", w = 4, count = [4, 12] },
+  { item = "handsaw", w = 3, count = [2, 6] },
+  { item = "hacksaw", w = 3, count = [2, 6] },
+  { item = "chisel", w = 2, count = [2, 6] },
+  { item = "metal_file", w = 2, count = [2, 6] },
+  { item = "whetstone", w = 2, count = [2, 6] },
+  { item = "tape_measure", w = 4, count = [4, 12] },
+  { item = "crowbar", w = 3, count = [2, 6] },
+  { item = "pipe_wrench", w = 2, count = [1, 4] },
+  { item = "tire_iron", w = 1, count = [1, 3] },
+  { item = "sledgehammer", w = 2, count = [1, 4] },
+  { item = "hatchet", w = 2, count = [2, 6] },
+  { item = "axe", w = 2, count = [2, 6] },
+  { item = "machete", w = 1, count = [1, 4] },
+  { item = "shovel", w = 3, count = [2, 8] },
+  { item = "pickaxe", w = 1, count = [1, 3] },
+  { item = "rake", w = 2, count = [2, 6] },
+  { item = "pruning_shears", w = 2, count = [2, 6] },
+  { item = "cordless_drill", w = 3, count = [2, 6] },
+  { item = "drill_battery", w = 3, count = [2, 8] },
+  { item = "circular_saw", w = 2, count = [1, 4] },
+  { item = "angle_grinder", w = 2, count = [1, 4] },
+  { item = "chainsaw", w = 1, count = [1, 3] },
+  { item = "toolbox", w = 2, count = [2, 6] },
+  { item = "tool_belt", w = 1, count = [2, 6] },
+  { item = "work_gloves", w = 3, count = [4, 12] },
+  { item = "goggles", w = 2, count = [3, 10] },
+  { item = "dust_mask", w = 2, count = [4, 16] },
+  { item = "hard_hat", w = 1, count = [2, 6] },
+  { item = "flashlight", w = 3, count = [3, 10] },
+  { item = "headlamp", w = 2, count = [2, 6] },
+  { item = "padlock", w = 2, count = [4, 12] },
+  { item = "bucket", w = 2, count = [4, 12] },
+]
+
+[loot.hardware_shelf_fasteners]
+desc = "One hardware-store fastener and building-materials section: tape, glue, rope, chain, lumber."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "nails_box", w = 8, count = [4, 16] },
+  { item = "screws_box", w = 8, count = [4, 16] },
+  { item = "duct_tape", w = 7, count = [4, 16] },
+  { item = "zip_ties", w = 5, count = [4, 12] },
+  { item = "superglue", w = 4, count = [4, 12] },
+  { item = "epoxy", w = 3, count = [3, 10] },
+  { item = "wood_glue", w = 3, count = [3, 10] },
+  { item = "nylon_rope", w = 5, count = [2, 8] },
+  { item = "paracord", w = 3, count = [2, 8] },
+  { item = "baling_wire", w = 2, count = [1, 4] },
+  { item = "steel_chain", w = 3, count = [1, 4] },
+  { item = "padlock", w = 3, count = [3, 10] },
+  { item = "copper_wire", w = 3, count = [2, 6] },
+  { item = "extension_cord", w = 4, count = [2, 8] },
+  { item = "tarp", w = 4, count = [2, 8] },
+  { item = "plastic_sheeting", w = 3, count = [2, 6] },
+  { item = "lumber_2x4", w = 6, count = [10, 40] },
+  { item = "plywood_sheet", w = 4, count = [5, 20] },
+  { item = "wood_plank", w = 3, count = [10, 30] },
+  { item = "steel_pipe", w = 3, count = [4, 16] },
+  { item = "rebar", w = 2, count = [5, 20] },
+  { item = "sheet_metal", w = 1, count = [2, 8] },
+  { item = "concrete_mix_bag", w = 3, count = [4, 16] },
+  { item = "cinder_block", w = 2, count = [10, 40] },
+  { item = "sandbag", w = 1, count = [5, 20] },
+  { item = "spray_paint", w = 4, count = [6, 24] },
+  { item = "garden_hose", w = 2, count = [2, 6] },
+  { item = "rubber_hose", w = 1, count = [2, 6] },
+]
+
+[loot.hardware_shelf_fuel]
+desc = "One hardware-store fuel and fire section: propane, camp fuel, charcoal, lamp oil, fluids."
+rolls = [3, 7]
+empty_chance_pct = 1
+entries = [
+  { item = "propane_tank", w = 10, count = [2, 8], substance = "propane", fill_pct = [100, 100] },
+  { item = "fuel_canister", w = 8, count = [4, 12] },
+  { item = "gas_can", w = 8, count = [2, 8], mods = ["empty"] },
+  { item = "gas_can", w = 3, count = [2, 6], substance = "kerosene", fill_pct = [100, 100] },
+  { item = "charcoal_bag", w = 8, count = [4, 16] },
+  { item = "lighter_fluid_can", w = 6, count = [4, 12], substance = "lighter_fluid", fill_pct = [100, 100] },
+  { item = "firewood", w = 3, count = [10, 30] },
+  { item = "wd40_can", w = 6, count = [4, 12] },
+  { item = "motor_oil_bottle", w = 5, count = [4, 12], substance = "motor_oil", fill_pct = [100, 100] },
+  { item = "antifreeze_jug", w = 3, count = [2, 6], substance = "antifreeze", fill_pct = [100, 100] },
+  { item = "propane_torch", w = 4, count = [2, 6] },
+  { item = "lighter", w = 4, count = [6, 24] },
+  { item = "matchbook", w = 3, count = [10, 30] },
+  { item = "ferro_rod", w = 2, count = [2, 6] },
+  { item = "kerosene_lantern", w = 3, count = [1, 4] },
+  { item = "battery_lantern", w = 3, count = [2, 6] },
+  { item = "candle", w = 3, count = [6, 20] },
+  { item = "fire_extinguisher", w = 4, count = [2, 8] },
+  { item = "road_flare", w = 2, count = [4, 12] },
+  { item = "camp_stove", w = 2, count = [1, 3] },
+]
+
+# ---------------------------------------------------------------- specialty stores
+
+[loot.gun_store_stock]
+desc = "Gun-store stock: long guns on the wall, handguns in the case, ammunition, archery, knives."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "pistol", w = 12, count = [2, 8] },
+  { item = "revolver", w = 4, count = [1, 4] },
+  { item = "shotgun", w = 10, count = [2, 6] },
+  { item = "hunting_rifle", w = 10, count = [2, 6] },
+  { item = "semi_auto_rifle", w = 7, count = [1, 4] },
+  { item = "ammo_9mm", w = 10, count = [50, 500] },
+  { item = "ammo_12ga", w = 8, count = [25, 250] },
+  { item = "ammo_308", w = 6, count = [20, 200] },
+  { item = "ammo_556", w = 6, count = [40, 400] },
+  { item = "magazine_pistol", w = 5, count = [3, 12] },
+  { item = "magazine_rifle", w = 4, count = [3, 10] },
+  { item = "compound_bow", w = 2, count = [1, 3] },
+  { item = "crossbow", w = 2, count = [1, 3] },
+  { item = "arrows", w = 2, count = [6, 24] },
+  { item = "crossbow_bolts", w = 2, count = [6, 24] },
+  { item = "hunting_knife", w = 4, count = [2, 8] },
+  { item = "pepper_spray", w = 3, count = [3, 10] },
+  { item = "binoculars", w = 2, count = [1, 4] },
+]
+
+[loot.sporting_goods_stock]
+desc = "Sporting-goods stock: team sports, fitness, camping and hiking, hunting accessories."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "baseball_bat", w = 7, count = [3, 12] },
+  { item = "golf_club", w = 5, count = [4, 16] },
+  { item = "hockey_stick", w = 3, count = [2, 8] },
+  { item = "football_helmet", w = 2, count = [2, 6] },
+  { item = "sports_pads", w = 3, count = [2, 8] },
+  { item = "bike_helmet", w = 4, count = [3, 10] },
+  { item = "dumbbell", w = 4, count = [4, 20] },
+  { item = "bowling_ball", w = 1, count = [2, 6] },
+  { item = "tent", w = 4, count = [2, 6] },
+  { item = "sleeping_bag", w = 4, count = [2, 8] },
+  { item = "hiking_pack", w = 4, count = [2, 8] },
+  { item = "camp_stove", w = 3, count = [2, 6] },
+  { item = "fuel_canister", w = 4, count = [4, 16] },
+  { item = "water_pump_filter", w = 3, count = [2, 6] },
+  { item = "purification_tablets", w = 3, count = [4, 12] },
+  { item = "compass", w = 2, count = [2, 8] },
+  { item = "binoculars", w = 2, count = [2, 6] },
+  { item = "hunting_knife", w = 3, count = [2, 8] },
+  { item = "trekking_pole", w = 2, count = [2, 8] },
+  { item = "headlamp", w = 3, count = [3, 10] },
+  { item = "ferro_rod", w = 2, count = [3, 10] },
+  { item = "paracord", w = 3, count = [3, 10] },
+  { item = "cooler", w = 3, count = [2, 6] },
+  { item = "thermos", w = 2, count = [2, 8] },
+  { item = "fanny_pack", w = 1, count = [2, 6] },
+  { item = "sneakers", w = 4, count = [4, 16] },
+  { item = "fleece_jacket", w = 2, count = [3, 10] },
+  { item = "rain_jacket", w = 2, count = [3, 10] },
+  { item = "compound_bow", w = 1, count = [1, 3] },
+  { item = "arrows", w = 1, count = [6, 24] },
+  { item = "air_horn", w = 1, count = [2, 6] },
+]
+
+[loot.auto_parts_stock]
+desc = "Auto-parts stock: fluids, batteries, jacks and cables, hoses, emergency kit items."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "motor_oil_bottle", w = 14, count = [6, 24], substance = "motor_oil", fill_pct = [100, 100] },
+  { item = "antifreeze_jug", w = 8, count = [4, 12], substance = "antifreeze", fill_pct = [100, 100] },
+  { item = "wd40_can", w = 6, count = [4, 12] },
+  { item = "car_battery", w = 8, count = [2, 8] },
+  { item = "jumper_cables", w = 5, count = [2, 8] },
+  { item = "car_jack", w = 3, count = [1, 4] },
+  { item = "tire_iron", w = 3, count = [2, 6] },
+  { item = "rubber_hose", w = 5, count = [3, 10] },
+  { item = "gas_can", w = 5, count = [2, 6], mods = ["empty"] },
+  { item = "road_flare", w = 4, count = [4, 12] },
+  { item = "work_light_12v", w = 3, count = [2, 6] },
+  { item = "flashlight", w = 3, count = [2, 8] },
+  { item = "adjustable_wrench", w = 3, count = [2, 6] },
+  { item = "screwdriver", w = 3, count = [3, 10] },
+  { item = "duct_tape", w = 3, count = [3, 10] },
+  { item = "zip_ties", w = 3, count = [3, 10] },
+  { item = "epoxy", w = 2, count = [2, 6] },
+  { item = "work_gloves", w = 3, count = [3, 10] },
+  { item = "steel_spring", w = 2, count = [2, 6] },
+  { item = "copper_wire", w = 2, count = [2, 6] },
+  { item = "battery_9v", w = 1, count = [4, 12] },
+  { item = "road_atlas", w = 2, count = [2, 6] },
+]
+
+[loot.liquor_shelf]
+desc = "One liquor-store or back-bar shelf: spirits, some beer, mixers."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "glass_bottle", w = 60, count = [4, 18], substance = "liquor", fill_pct = [100, 100] },
+  { item = "glass_bottle", w = 10, count = [2, 8], substance = "liquor", fill_pct = [100, 100], mods = ["size_small"] },
+  { item = "glass_bottle", w = 10, count = [6, 24], substance = "beer", fill_pct = [100, 100] },
+  { item = "soda_can", w = 10, count = [6, 24], substance = "beer", fill_pct = [100, 100] },
+  { item = "soda_can", w = 6, count = [6, 24] },
+  { item = "cigarettes", w = 2, count = [2, 10] },
+  { item = "lighter", w = 2, count = [4, 12] },
+]
+
+[loot.bookstore_shelf]
+desc = "One book or library shelf: books, some practical manuals, maps and atlases."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "book", w = 70, count = [8, 30] },
+  { item = "skill_manual", w = 12, count = [1, 6] },
+  { item = "road_atlas", w = 4, count = [1, 4] },
+  { item = "city_map", w = 4, count = [2, 8] },
+  { item = "notebook", w = 4, count = [3, 10] },
+  { item = "newspaper", w = 3, count = [2, 10] },
+  { item = "pen", w = 3, count = [4, 16] },
+]
+
+[loot.convenience_counter]
+desc = "A checkout counter and its impulse racks: tobacco, lighters, snacks, pills, batteries, till cash."
+rolls = [3, 8]
+empty_chance_pct = 1
+entries = [
+  { item = "cigarettes", w = 16, count = [10, 60] },
+  { item = "lighter", w = 12, count = [6, 30] },
+  { item = "snack_bar", w = 16, count = [10, 40] },
+  { item = "soda_can", w = 8, count = [4, 12] },
+  { item = "matchbook", w = 4, count = [10, 30] },
+  { item = "painkillers", w = 6, count = [3, 12] },
+  { item = "battery_aa", w = 6, count = [4, 16] },
+  { item = "power_bank", w = 2, count = [1, 4] },
+  { item = "hand_sanitizer_bottle", w = 2, count = [2, 6], substance = "hand_sanitizer", fill_pct = [100, 100] },
+  { item = "flashlight", w = 2, count = [1, 4], mods = ["cheap"] },
+  { item = "city_map", w = 2, count = [2, 6] },
+  { item = "road_atlas", w = 1, count = [1, 3] },
+  { item = "glow_stick", w = 2, count = [4, 12] },
+  { item = "newspaper", w = 5, count = [4, 16] },
+  { item = "cash", w = 10, count = [1, 3] },
+  { item = "pen", w = 2, count = [2, 6] },
+]
+
+[loot.vending_machine_stock]
+desc = "A vending machine's spirals and its coin box."
+rolls = [3, 6]
+empty_chance_pct = 2
+entries = [
+  { item = "soda_can", w = 45, count = [4, 12] },
+  { item = "bottled_water", w = 20, count = [4, 10] },
+  { item = "snack_bar", w = 30, count = [4, 15] },
+  { item = "cash", w = 5, count = [1, 1] },
+]

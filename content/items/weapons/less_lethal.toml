@@ -1,0 +1,148 @@
+# Police and civilian less-lethal gear. Whether pepper spray or a taser affects the dead at all
+# is an open question for the owner (reported); modelled as the real objects.
+
+[item.police_baton]
+name = "expandable baton"
+tags = ["cat.weapon.baton", "from.police", "use.weapon"]
+shape = "rod"
+dims_mm = [530, 32, 32]
+mass_g = 500
+hollow = true
+balance = "head"
+durability = 8
+desc = "A 21-inch friction-lock steel baton that snaps out from a 20 cm handle."
+glyph = "item.baton"
+why = "Pocketable steel club, one-handed; the telescoping sections collapse under side load, so it can't pry."
+value_class = "useful"
+
+[item.police_baton.composition.shaft]
+material = "carbon_steel"
+share = 80
+[item.police_baton.composition.grip]
+material = "rubber"
+share = 15
+[item.police_baton.composition.tip]
+material = "carbon_steel"
+share = 5
+
+[item.police_baton.features.grip]
+hands = 1
+girth_mm = 30
+[item.police_baton.features.strap]
+kind = "belt"
+load_g = 1000
+
+[item.police_baton.capabilities]
+pry = 3
+
+[item.pepper_spray]
+name = "pepper spray"
+tags = ["cat.weapon.spray", "from.police", "from.bedroom", "from.retail", "use.weapon", "hazard.pressurized"]
+shape = "complex"
+dims_mm = [165, 45, 45]
+mass_g = 140
+pressurized = true
+units = 10
+use_noise = "quiet"
+desc = "A police-size canister of capsicum spray with a flip-top actuator."
+glyph = "item.spray_can"
+why = "Blinds and chokes the living (survivors, raiders); its effect on the dead is doubtful; bursts in a fire."
+value_class = "common"
+
+[item.pepper_spray.composition.can]
+material = "aluminum"
+share = 60
+[item.pepper_spray.composition.actuator]
+material = "polypropylene"
+share = 40
+
+[item.pepper_spray.reactions.heat]
+medium = "burst"
+high = "burst"
+
+[item.taser]
+name = "stun gun"
+tags = ["cat.weapon.taser", "from.police", "use.weapon", "hazard.electrical"]
+shape = "complex"
+dims_mm = [155, 80, 35]
+mass_g = 200
+use_noise = "normal"
+desc = "A pistol-shaped conducted-energy weapon with a probe cartridge and a sealed battery pack."
+glyph = "item.taser"
+why = "Drops a living attacker for seconds (probes or contact); the crackle is loud; the pack's charge runs down with the clock."
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 5, rechargeable = false }
+
+[item.taser.composition.housing]
+material = "abs"
+share = 70
+[item.taser.composition.electronics]
+material = "copper"
+share = 15
+[item.taser.composition.battery]
+material = "mild_steel"
+share = 10
+[item.taser.composition.contacts]
+material = "brass"
+share = 5
+
+[item.taser.features.grip]
+hands = 1
+girth_mm = 35
+[item.taser.features.slot]
+accepts = "cat.ammo.taser_cartridge"
+count = 1
+
+[item.taser_cartridge]
+name = "stun gun cartridge"
+tags = ["cat.ammo.taser_cartridge", "from.police", "use.ammo"]
+shape = "small"
+dims_mm = [70, 40, 30]
+mass_g = 25
+units = 1
+desc = "A single-shot probe cartridge: two barbed darts on thin insulated wires."
+glyph = "item.cartridge"
+why = "Gives the stun gun its one ranged shot; the wire is fine binding in a pinch."
+value_class = "common"
+
+[item.taser_cartridge.composition.body]
+material = "abs"
+share = 80
+[item.taser_cartridge.composition.wire]
+material = "copper"
+share = 15
+[item.taser_cartridge.composition.probes]
+material = "carbon_steel"
+share = 5
+
+[item.riot_shield]
+name = "riot shield"
+tags = ["cat.weapon.shield", "from.police", "use.weapon", "use.barricade"]
+shape = "sheet"
+dims_mm = [915, 510, 90]
+mass_g = 3200
+fill_pct = 5
+encumbrance = 5
+durability = 8
+desc = "A curved clear polycarbonate shield with a padded forearm strap and handle."
+glyph = "item.shield"
+why = "A see-through, bite-proof wall on your arm for shoving through or holding a doorway."
+value_class = "valuable"
+armor = { blunt = 7, cut = 8, pierce = 6, bite = 10 }
+
+[item.riot_shield.composition.shield]
+material = "polycarbonate"
+share = 85
+[item.riot_shield.composition.handles]
+material = "aluminum"
+share = 10
+[item.riot_shield.composition.pad]
+material = "rubber"
+share = 5
+
+[item.riot_shield.features.grip]
+hands = 1
+girth_mm = 30
+[item.riot_shield.features.strap]
+kind = "handle"
+load_g = 10000

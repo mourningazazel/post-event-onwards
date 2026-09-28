@@ -1,0 +1,738 @@
+# Kitchen, food and drink modifiers and detail tables (domain A; N011 leanness).
+#
+# Food kinds follow one pattern: an archetype (canned_food, jar_food, ...) lists a *_kind detail
+# table; each entry applies a `variant` modifier that
+#   - sets `name` to the kind ("chili") and adds a variant name_part ("canned"), giving
+#     "canned chili" / "Crestmoor canned chili" / "spoiled canned chili (opened)";
+#   - sets the whole `food` table with realistic per-package values (US package sizes);
+#   - changes dims/mass/material only where the real package differs.
+# kcal figures are per package from typical US nutrition labels, rounded.
+
+# ================================================================ canned food
+[detail_table.canned_food_kind]
+applies_to = { items = ["canned_food"] }
+pick = 1
+entries = [
+  { w = 8, modifier = "canned_chicken_soup" }, { w = 6, modifier = "canned_tomato_soup" },
+  { w = 7, modifier = "canned_chili" }, { w = 7, modifier = "canned_baked_beans" },
+  { w = 6, modifier = "canned_corn" }, { w = 6, modifier = "canned_green_beans" },
+  { w = 5, modifier = "canned_peaches" }, { w = 6, modifier = "canned_tuna" },
+  { w = 3, modifier = "canned_luncheon_meat" }, { w = 4, modifier = "canned_beef_stew" },
+  { w = 4, modifier = "canned_ravioli" },
+]
+
+[detail_table.canned_lid]
+applies_to = { items = ["canned_food"] }
+pick = 1
+entries = [
+  { w = 6, text = "The lid is plain steel; it needs an opener." },
+  { w = 4, text = "The lid has a pull ring.", ops = [ { path = "food.needs_opening", op = "set", value = false } ] },
+]
+
+[detail_table.canned_label]
+applies_to = { items = ["canned_food"] }
+chance_pct = 15
+pick = 1
+entries = [
+  { w = 5, text = "The label is water-stained and hard to read." },
+  { w = 3, text = "The label has come off entirely; there's no telling what's inside." },
+  { w = 3, text = "It's dented along one side." },
+  { w = 1, text = "The ends bulge outward and spring back when pressed.", add_tags = ["hazard.toxic"] },
+]
+
+[modifier.canned_chicken_soup]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "condensed chicken noodle soup"
+ops = [
+  { path = "name", op = "set", value = "chicken noodle soup" },
+  { path = "dims_mm", op = "set", value = [100, 68, 68] },
+  { path = "mass_g", op = "set", value = 355 },
+  { path = "food", op = "set", value = { kcal = 150, servings = 2, hydration_ml = 250, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_tomato_soup]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "condensed tomato soup"
+ops = [
+  { path = "name", op = "set", value = "tomato soup" },
+  { path = "dims_mm", op = "set", value = [100, 68, 68] },
+  { path = "mass_g", op = "set", value = 355 },
+  { path = "food", op = "set", value = { kcal = 220, servings = 2, hydration_ml = 250, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_chili]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "chili con carne with beans"
+ops = [
+  { path = "name", op = "set", value = "chili" },
+  { path = "food", op = "set", value = { kcal = 520, servings = 2, hydration_ml = 120, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_baked_beans]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "baked beans in sweet sauce"
+ops = [
+  { path = "name", op = "set", value = "baked beans" },
+  { path = "mass_g", op = "set", value = 500 },
+  { path = "food", op = "set", value = { kcal = 480, servings = 3, hydration_ml = 100, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_corn]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "whole-kernel sweet corn in water"
+ops = [
+  { path = "name", op = "set", value = "corn" },
+  { path = "food", op = "set", value = { kcal = 240, servings = 3, hydration_ml = 150, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_green_beans]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "cut green beans in salted water"
+ops = [
+  { path = "name", op = "set", value = "green beans" },
+  { path = "mass_g", op = "set", value = 450 },
+  { path = "food", op = "set", value = { kcal = 70, servings = 3, hydration_ml = 200, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_peaches]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "sliced peaches in heavy syrup"
+ops = [
+  { path = "name", op = "set", value = "peaches" },
+  { path = "mass_g", op = "set", value = 480 },
+  { path = "food", op = "set", value = { kcal = 340, servings = 3, hydration_ml = 220, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_tuna]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "chunk light tuna in water"
+ops = [
+  { path = "name", op = "set", value = "tuna" },
+  { path = "dims_mm", op = "set", value = [85, 85, 40] },
+  { path = "mass_g", op = "set", value = 170 },
+  { path = "features.container.capacity_ml", op = "set", value = 160 },
+  { path = "food", op = "set", value = { kcal = 120, servings = 1, hydration_ml = 40, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_luncheon_meat]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "a brick of salty pork luncheon meat in a pull-ring tin"
+ops = [
+  { path = "name", op = "set", value = "luncheon meat" },
+  { path = "dims_mm", op = "set", value = [95, 85, 55] },
+  { path = "mass_g", op = "set", value = 380 },
+  { path = "features.container.capacity_ml", op = "set", value = 350 },
+  { path = "food", op = "set", value = { kcal = 1080, servings = 6, perishable = "shelf_stable", needs_opening = false, cookable = false } },
+]
+
+[modifier.canned_beef_stew]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "beef stew with potatoes and carrots"
+ops = [
+  { path = "name", op = "set", value = "beef stew" },
+  { path = "dims_mm", op = "set", value = [125, 88, 88] },
+  { path = "mass_g", op = "set", value = 620 },
+  { path = "features.container.capacity_ml", op = "set", value = 580 },
+  { path = "food", op = "set", value = { kcal = 460, servings = 2, hydration_ml = 250, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+[modifier.canned_ravioli]
+kind = "variant"
+applies_to = { items = ["canned_food"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "beef ravioli in tomato sauce"
+ops = [
+  { path = "name", op = "set", value = "ravioli" },
+  { path = "food", op = "set", value = { kcal = 440, servings = 2, hydration_ml = 150, perishable = "shelf_stable", needs_opening = true, cookable = false } },
+]
+
+# ================================================================ boxed dry food
+[detail_table.boxed_dry_food_kind]
+applies_to = { items = ["boxed_dry_food"] }
+pick = 1
+entries = [
+  { w = 7, modifier = "boxed_spaghetti" }, { w = 6, modifier = "boxed_mac_cheese" },
+  { w = 7, modifier = "boxed_cereal" }, { w = 5, modifier = "boxed_crackers" },
+  { w = 4, modifier = "boxed_oats" },
+]
+
+[modifier.boxed_spaghetti]
+kind = "variant"
+applies_to = { items = ["boxed_dry_food"] }
+name_part = { slot = "variant", text = "dry", order = 26 }
+desc = "a one-pound box of spaghetti"
+ops = [
+  { path = "name", op = "set", value = "spaghetti" },
+  { path = "food", op = "set", value = { kcal = 1600, servings = 8, perishable = "shelf_stable", needs_opening = false, cookable = true } },
+]
+
+[modifier.boxed_mac_cheese]
+kind = "variant"
+applies_to = { items = ["boxed_dry_food"] }
+name_part = { slot = "variant", text = "boxed", order = 26 }
+desc = "elbow macaroni with a packet of cheese powder"
+ops = [
+  { path = "name", op = "set", value = "macaroni and cheese" },
+  { path = "dims_mm", op = "set", value = [185, 115, 40] },
+  { path = "mass_g", op = "set", value = 225 },
+  { path = "food", op = "set", value = { kcal = 760, servings = 3, perishable = "shelf_stable", needs_opening = false, cookable = true } },
+]
+
+[modifier.boxed_cereal]
+kind = "variant"
+applies_to = { items = ["boxed_dry_food"] }
+name_part = { slot = "variant", text = "breakfast", order = 26 }
+desc = "a tall box of sweetened breakfast cereal"
+ops = [
+  { path = "name", op = "set", value = "cereal" },
+  { path = "brand_cats", op = "set", value = ["cereal"] },
+  { path = "dims_mm", op = "set", value = [300, 195, 65] },
+  { path = "mass_g", op = "set", value = 370 },
+  { path = "food", op = "set", value = { kcal = 1300, servings = 9, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.boxed_crackers]
+kind = "variant"
+applies_to = { items = ["boxed_dry_food"] }
+name_part = { slot = "variant", text = "saltine", order = 26 }
+desc = "four sleeves of salted square crackers"
+ops = [
+  { path = "name", op = "set", value = "crackers" },
+  { path = "dims_mm", op = "set", value = [235, 110, 100] },
+  { path = "mass_g", op = "set", value = 490 },
+  { path = "food", op = "set", value = { kcal = 1900, servings = 16, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.boxed_oats]
+kind = "variant"
+applies_to = { items = ["boxed_dry_food"] }
+name_part = { slot = "variant", text = "rolled", order = 26 }
+desc = "a round cardboard canister of old-fashioned oats"
+ops = [
+  { path = "name", op = "set", value = "oats" },
+  { path = "dims_mm", op = "set", value = [180, 130, 130] },
+  { path = "mass_g", op = "set", value = 560 },
+  { path = "food", op = "set", value = { kcal = 1900, servings = 13, perishable = "long", needs_opening = false, cookable = true } },
+]
+
+# ================================================================ jars
+[detail_table.jar_food_kind]
+applies_to = { items = ["jar_food"] }
+pick = 1
+entries = [
+  { w = 7, modifier = "jar_pasta_sauce" }, { w = 6, modifier = "jar_peanut_butter" },
+  { w = 5, modifier = "jar_jam" }, { w = 4, modifier = "jar_pickles" },
+]
+
+[modifier.jar_pasta_sauce]
+kind = "variant"
+applies_to = { items = ["jar_food"] }
+name_part = { slot = "variant", text = "jarred", order = 26 }
+desc = "tomato and basil pasta sauce"
+ops = [ { path = "name", op = "set", value = "pasta sauce" } ]
+
+# Peanut butter comes in a PET plastic jar: it doesn't shatter.
+[modifier.jar_peanut_butter]
+kind = "variant"
+applies_to = { items = ["jar_food"] }
+name_part = { slot = "variant", text = "creamy", order = 26 }
+desc = "a plastic jar of creamy peanut butter"
+ops = [
+  { path = "name", op = "set", value = "peanut butter" },
+  { path = "dims_mm", op = "set", value = [125, 92, 92] },
+  { path = "mass_g", op = "set", value = 500 },
+  { path = "composition.jar.material", op = "set", value = "pet" },
+  { path = "composition.jar.share", op = "set", value = 8 },
+  { path = "composition.lid.material", op = "set", value = "polypropylene" },
+  { path = "composition.contents.share", op = "set", value = 90 },
+  { path = "tags", op = "remove", value = "hazard.sharp_debris" },
+  { path = "reactions.impact", op = "set", value = { low = "none", medium = "none", high = "split" } },
+  { path = "food", op = "set", value = { kcal = 2670, servings = 15, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.jar_jam]
+kind = "variant"
+applies_to = { items = ["jar_food"] }
+name_part = { slot = "variant", text = "strawberry", order = 26 }
+desc = "strawberry jam"
+ops = [
+  { path = "name", op = "set", value = "jam" },
+  { path = "dims_mm", op = "set", value = [140, 85, 85] },
+  { path = "mass_g", op = "set", value = 760 },
+  { path = "food", op = "set", value = { kcal = 1280, servings = 25, perishable = "shelf_stable", needs_opening = false, cookable = false } },
+]
+
+[modifier.jar_pickles]
+kind = "variant"
+applies_to = { items = ["jar_food"] }
+name_part = { slot = "variant", text = "dill", order = 26 }
+desc = "whole dill pickles in brine"
+ops = [
+  { path = "name", op = "set", value = "pickles" },
+  { path = "dims_mm", op = "set", value = [190, 95, 95] },
+  { path = "mass_g", op = "set", value = 1000 },
+  { path = "food", op = "set", value = { kcal = 60, servings = 8, hydration_ml = 200, perishable = "shelf_stable", needs_opening = false, cookable = false } },
+]
+
+# ================================================================ snacks
+[detail_table.snack_bar_kind]
+applies_to = { items = ["snack_bar"] }
+pick = 1
+entries = [
+  { w = 7, modifier = "snack_granola_bar" }, { w = 7, modifier = "snack_chocolate_bar" },
+  { w = 4, modifier = "snack_protein_bar" }, { w = 3, modifier = "snack_trail_mix" },
+  { w = 6, modifier = "snack_potato_chips" },
+]
+
+[modifier.snack_granola_bar]
+kind = "variant"
+applies_to = { items = ["snack_bar"] }
+name_part = { slot = "variant", text = "granola", order = 26 }
+desc = "chewy oats and honey"
+ops = [ { path = "name", op = "set", value = "bar" } ]
+
+[modifier.snack_chocolate_bar]
+kind = "variant"
+applies_to = { items = ["snack_bar"] }
+name_part = { slot = "variant", text = "chocolate", order = 26 }
+desc = "milk chocolate with peanuts and caramel"
+ops = [
+  { path = "name", op = "set", value = "bar" },
+  { path = "mass_g", op = "set", value = 52 },
+  { path = "food", op = "set", value = { kcal = 250, servings = 1, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.snack_protein_bar]
+kind = "variant"
+applies_to = { items = ["snack_bar"] }
+name_part = { slot = "variant", text = "protein", order = 26 }
+desc = "a dense, chalky protein bar"
+ops = [
+  { path = "name", op = "set", value = "bar" },
+  { path = "dims_mm", op = "set", value = [130, 40, 20] },
+  { path = "mass_g", op = "set", value = 62 },
+  { path = "food", op = "set", value = { kcal = 210, servings = 1, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.snack_trail_mix]
+kind = "variant"
+applies_to = { items = ["snack_bar"] }
+name_part = { slot = "variant", text = "trail mix", order = 26 }
+desc = "nuts, raisins and chocolate pieces in a resealable pouch"
+ops = [
+  { path = "name", op = "set", value = "pouch" },
+  { path = "dims_mm", op = "set", value = [180, 120, 40] },
+  { path = "mass_g", op = "set", value = 175 },
+  { path = "food", op = "set", value = { kcal = 850, servings = 6, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+[modifier.snack_potato_chips]
+kind = "variant"
+applies_to = { items = ["snack_bar"] }
+name_part = { slot = "variant", text = "family-size", order = 26 }
+desc = "a crinkly, air-puffed bag of salted potato chips"
+ops = [
+  { path = "name", op = "set", value = "bag of chips" },
+  { path = "dims_mm", op = "set", value = [330, 230, 80] },
+  { path = "mass_g", op = "set", value = 235 },
+  { path = "food", op = "set", value = { kcal = 1200, servings = 8, perishable = "long", needs_opening = false, cookable = false } },
+]
+
+# ================================================================ bread
+[detail_table.bread_kind]
+applies_to = { items = ["bread_loaf"] }
+pick = 1
+entries = [
+  { w = 7, modifier = "bread_white" }, { w = 5, modifier = "bread_wheat" },
+  { w = 3, modifier = "bread_buns" }, { w = 3, modifier = "bread_tortillas" },
+]
+
+[modifier.bread_white]
+kind = "variant"
+applies_to = { items = ["bread_loaf"] }
+name_part = { slot = "variant", text = "white", order = 26 }
+desc = "soft white sandwich bread"
+
+[modifier.bread_wheat]
+kind = "variant"
+applies_to = { items = ["bread_loaf"] }
+name_part = { slot = "variant", text = "whole wheat", order = 26 }
+desc = "brown whole-wheat sandwich bread"
+ops = [ { path = "food", op = "set", value = { kcal = 1400, servings = 20, perishable = "short", needs_opening = false, cookable = false } } ]
+
+[modifier.bread_buns]
+kind = "variant"
+applies_to = { items = ["bread_loaf"] }
+name_part = { slot = "variant", text = "hamburger", order = 26 }
+desc = "eight soft sesame buns"
+ops = [
+  { path = "name", op = "set", value = "buns" },
+  { path = "dims_mm", op = "set", value = [300, 200, 80] },
+  { path = "mass_g", op = "set", value = 360 },
+  { path = "food", op = "set", value = { kcal = 960, servings = 8, perishable = "short", needs_opening = false, cookable = false } },
+]
+
+# Tortillas keep far longer than loaves: a real reason to grab them.
+[modifier.bread_tortillas]
+kind = "variant"
+applies_to = { items = ["bread_loaf"] }
+name_part = { slot = "variant", text = "flour", order = 26 }
+desc = "ten large flour tortillas in a zip pack"
+ops = [
+  { path = "name", op = "set", value = "tortillas" },
+  { path = "dims_mm", op = "set", value = [270, 270, 30] },
+  { path = "mass_g", op = "set", value = 470 },
+  { path = "food", op = "set", value = { kcal = 1400, servings = 10, perishable = "medium", needs_opening = false, cookable = false } },
+]
+
+# ================================================================ produce
+[detail_table.produce_kind]
+applies_to = { items = ["fresh_produce"] }
+pick = 1
+entries = [
+  { w = 6, modifier = "produce_apples" }, { w = 6, modifier = "produce_potatoes" },
+  { w = 5, modifier = "produce_bananas" }, { w = 5, modifier = "produce_onions" },
+  { w = 4, modifier = "produce_carrots" }, { w = 4, modifier = "produce_oranges" },
+  { w = 3, modifier = "produce_lettuce" },
+]
+
+[modifier.produce_apples]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "red", order = 26 }
+desc = "a three-pound bag of apples"
+ops = [ { path = "name", op = "set", value = "apples" } ]
+
+[modifier.produce_potatoes]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "russet", order = 26 }
+desc = "a five-pound bag of potatoes, keeps for months somewhere cool and dark"
+ops = [
+  { path = "name", op = "set", value = "potatoes" },
+  { path = "dims_mm", op = "set", value = [450, 280, 110] },
+  { path = "mass_g", op = "set", value = 2290 },
+  { path = "food", op = "set", value = { kcal = 1750, servings = 10, hydration_ml = 1800, perishable = "long", needs_opening = false, cookable = true, raw_risk = 2 } },
+]
+
+[modifier.produce_bananas]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "yellow", order = 26 }
+desc = "a bunch of six bananas"
+ops = [
+  { path = "name", op = "set", value = "bananas" },
+  { path = "dims_mm", op = "set", value = [230, 180, 120] },
+  { path = "mass_g", op = "set", value = 720 },
+  { path = "food", op = "set", value = { kcal = 450, servings = 6, hydration_ml = 370, perishable = "short", needs_opening = false, cookable = false } },
+]
+
+[modifier.produce_onions]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "yellow", order = 26 }
+desc = "a three-pound mesh bag of onions"
+ops = [
+  { path = "name", op = "set", value = "onions" },
+  { path = "dims_mm", op = "set", value = [330, 200, 120] },
+  { path = "food", op = "set", value = { kcal = 540, servings = 8, hydration_ml = 1200, perishable = "long", needs_opening = false, cookable = true } },
+]
+
+[modifier.produce_carrots]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "bagged", order = 26 }
+desc = "a two-pound bag of carrots"
+ops = [
+  { path = "name", op = "set", value = "carrots" },
+  { path = "dims_mm", op = "set", value = [300, 180, 70] },
+  { path = "mass_g", op = "set", value = 910 },
+  { path = "food", op = "set", value = { kcal = 370, servings = 6, hydration_ml = 800, perishable = "medium", needs_opening = false, cookable = true } },
+]
+
+[modifier.produce_oranges]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "navel", order = 26 }
+desc = "a four-pound bag of oranges"
+ops = [
+  { path = "name", op = "set", value = "oranges" },
+  { path = "dims_mm", op = "set", value = [380, 250, 120] },
+  { path = "mass_g", op = "set", value = 1820 },
+  { path = "food", op = "set", value = { kcal = 640, servings = 8, hydration_ml = 1300, perishable = "medium", needs_opening = false, cookable = false } },
+]
+
+[modifier.produce_lettuce]
+kind = "variant"
+applies_to = { items = ["fresh_produce"] }
+name_part = { slot = "variant", text = "iceberg", order = 26 }
+desc = "a single head of lettuce in a plastic sleeve"
+ops = [
+  { path = "name", op = "set", value = "lettuce" },
+  { path = "dims_mm", op = "set", value = [180, 160, 150] },
+  { path = "mass_g", op = "set", value = 600 },
+  { path = "food", op = "set", value = { kcal = 85, servings = 4, hydration_ml = 570, perishable = "very_short", needs_opening = false, cookable = false } },
+]
+
+# ================================================================ frozen food
+[detail_table.frozen_food_kind]
+applies_to = { items = ["frozen_food"] }
+pick = 1
+entries = [
+  { w = 6, modifier = "frozen_pizza" }, { w = 5, modifier = "frozen_vegetables" },
+  { w = 5, modifier = "frozen_tv_dinner" }, { w = 4, modifier = "frozen_ice_cream" },
+  { w = 4, modifier = "frozen_chicken_nuggets" },
+]
+
+[modifier.frozen_pizza]
+kind = "variant"
+applies_to = { items = ["frozen_food"] }
+name_part = { slot = "variant", text = "frozen", order = 26 }
+desc = "a twelve-inch pepperoni pizza"
+ops = [ { path = "name", op = "set", value = "pizza" } ]
+
+[modifier.frozen_vegetables]
+kind = "variant"
+applies_to = { items = ["frozen_food"] }
+name_part = { slot = "variant", text = "frozen", order = 26 }
+desc = "a one-pound bag of peas, carrots, corn and beans"
+ops = [
+  { path = "name", op = "set", value = "mixed vegetables" },
+  { path = "dims_mm", op = "set", value = [250, 180, 50] },
+  { path = "mass_g", op = "set", value = 460 },
+  { path = "composition.box.material", op = "set", value = "ldpe" },
+  { path = "composition.box.share", op = "set", value = 2 },
+  { path = "food", op = "set", value = { kcal = 290, servings = 4, hydration_ml = 350, perishable = "very_short", needs_opening = false, cookable = true } },
+]
+
+[modifier.frozen_tv_dinner]
+kind = "variant"
+applies_to = { items = ["frozen_food"] }
+name_part = { slot = "variant", text = "frozen", order = 26 }
+desc = "a compartment tray of meatloaf, mash and gravy"
+ops = [
+  { path = "name", op = "set", value = "TV dinner" },
+  { path = "dims_mm", op = "set", value = [250, 180, 45] },
+  { path = "mass_g", op = "set", value = 360 },
+  { path = "food", op = "set", value = { kcal = 450, servings = 1, hydration_ml = 150, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 1 } },
+]
+
+[modifier.frozen_ice_cream]
+kind = "variant"
+applies_to = { items = ["frozen_food"] }
+name_part = { slot = "variant", text = "tub of", order = 26 }
+desc = "a round tub of vanilla ice cream"
+ops = [
+  { path = "name", op = "set", value = "ice cream" },
+  { path = "dims_mm", op = "set", value = [160, 160, 110] },
+  { path = "mass_g", op = "set", value = 820 },
+  { path = "food", op = "set", value = { kcal = 1650, servings = 12, hydration_ml = 400, perishable = "very_short", needs_opening = false, cookable = false } },
+]
+
+[modifier.frozen_chicken_nuggets]
+kind = "variant"
+applies_to = { items = ["frozen_food"] }
+name_part = { slot = "variant", text = "frozen", order = 26 }
+desc = "a two-pound bag of breaded, precooked nuggets"
+ops = [
+  { path = "name", op = "set", value = "chicken nuggets" },
+  { path = "dims_mm", op = "set", value = [330, 250, 70] },
+  { path = "mass_g", op = "set", value = 920 },
+  { path = "composition.box.material", op = "set", value = "ldpe" },
+  { path = "composition.box.share", op = "set", value = 2 },
+  { path = "food", op = "set", value = { kcal = 2270, servings = 9, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 1 } },
+]
+
+# ================================================================ meat
+[detail_table.meat_kind]
+applies_to = { items = ["meat_package"] }
+pick = 1
+entries = [
+  { w = 7, modifier = "meat_ground_beef" }, { w = 7, modifier = "meat_chicken_breast" },
+  { w = 4, modifier = "meat_pork_chops" }, { w = 3, modifier = "meat_steak" },
+  { w = 5, modifier = "meat_hot_dogs" }, { w = 4, modifier = "meat_bacon" },
+]
+
+[modifier.meat_ground_beef]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "raw", order = 26 }
+desc = "a pound of 80/20 ground beef"
+ops = [ { path = "name", op = "set", value = "ground beef" } ]
+
+[modifier.meat_chicken_breast]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "raw", order = 26 }
+desc = "a pound and a half of boneless chicken breasts"
+ops = [
+  { path = "name", op = "set", value = "chicken breasts" },
+  { path = "dims_mm", op = "set", value = [260, 190, 60] },
+  { path = "mass_g", op = "set", value = 710 },
+  { path = "food", op = "set", value = { kcal = 820, servings = 4, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 8 } },
+]
+
+[modifier.meat_pork_chops]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "raw", order = 26 }
+desc = "four bone-in pork chops"
+ops = [
+  { path = "name", op = "set", value = "pork chops" },
+  { path = "dims_mm", op = "set", value = [260, 190, 40] },
+  { path = "mass_g", op = "set", value = 700 },
+  { path = "food", op = "set", value = { kcal = 1050, servings = 4, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 6 } },
+]
+
+[modifier.meat_steak]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "raw", order = 26 }
+desc = "two thick ribeye steaks"
+ops = [
+  { path = "name", op = "set", value = "steaks" },
+  { path = "dims_mm", op = "set", value = [260, 190, 40] },
+  { path = "mass_g", op = "set", value = 610 },
+  { path = "food", op = "set", value = { kcal = 1700, servings = 2, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 4 } },
+]
+
+# Precooked and cured: lasts longer and is safer raw, still smells of meat.
+[modifier.meat_hot_dogs]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "packaged", order = 26 }
+desc = "eight vacuum-packed franks"
+ops = [
+  { path = "name", op = "set", value = "hot dogs" },
+  { path = "dims_mm", op = "set", value = [170, 110, 40] },
+  { path = "mass_g", op = "set", value = 460 },
+  { path = "composition.tray.material", op = "set", value = "ldpe" },
+  { path = "food", op = "set", value = { kcal = 1300, servings = 8, perishable = "short", needs_opening = false, cookable = true, raw_risk = 2 } },
+]
+
+[modifier.meat_bacon]
+kind = "variant"
+applies_to = { items = ["meat_package"] }
+name_part = { slot = "variant", text = "sliced", order = 26 }
+desc = "twelve ounces of hickory-smoked bacon"
+ops = [
+  { path = "name", op = "set", value = "bacon" },
+  { path = "dims_mm", op = "set", value = [280, 150, 20] },
+  { path = "mass_g", op = "set", value = 350 },
+  { path = "food", op = "set", value = { kcal = 1420, servings = 6, perishable = "short", needs_opening = false, cookable = true, raw_risk = 5 } },
+]
+
+# ================================================================ drinks
+[detail_table.soda_can_kind]
+applies_to = { items = ["soda_can"] }
+pick = 1
+entries = [
+  { w = 9, text = "Cola." }, { w = 5, text = "Lemon-lime." }, { w = 4, text = "Orange." },
+  { w = 3, text = "Root beer." }, { w = 3, text = "Ginger ale." }, { w = 2, text = "Grape." },
+  { w = 3, text = "An energy drink, loaded with caffeine." },
+  { w = 6, modifier = "canned_beer" },
+]
+
+[modifier.canned_beer]
+kind = "variant"
+applies_to = { items = ["soda_can"] }
+name_part = { slot = "variant", text = "canned", order = 26 }
+desc = "a 12-ounce can of pale lager"
+ops = [
+  { path = "name", op = "set", value = "beer" },
+  { path = "contents.substance", op = "set", value = "beer" },
+  { path = "brand_cats", op = "set", value = ["beer"] },
+]
+
+[modifier.soda_two_liter]
+kind = "variant"
+applies_to = { items = ["soda_can"] }
+name_part = { slot = "variant", text = "two-liter", order = 24 }
+desc = "a two-liter PET bottle with a screw cap: reusable, resealable"
+remove_tags = ["cat.container.can"]
+add_tags = ["cat.container.bottle", "use.container"]
+ops = [
+  { path = "name", op = "set", value = "bottle of soda" },
+  { path = "dims_mm", op = "set", value = [330, 110, 110] },
+  { path = "mass_g", op = "set", value = 50 },
+  { path = "composition.can.material", op = "set", value = "pet" },
+  { path = "features.container", op = "set", value = { capacity_ml = 2000, opening_mm = 28, closable = true, sealable = true, watertight = true, compat = ["liquid"] } },
+  { path = "features.lid", op = "set", value = { kind = "screw", reclosable = true } },
+  { path = "reactions.impact", op = "set", value = { low = "none", medium = "none", high = "split" } },
+]
+
+[modifier.water_gallon]
+kind = "variant"
+applies_to = { items = ["bottled_water"] }
+name_part = { slot = "variant", text = "one-gallon", order = 24 }
+desc = "a one-gallon HDPE jug with a handle"
+ops = [
+  { path = "dims_mm", op = "set", value = [265, 150, 150] },
+  { path = "mass_g", op = "set", value = 60 },
+  { path = "composition.bottle.material", op = "set", value = "hdpe" },
+  { path = "features.container.capacity_ml", op = "set", value = 3785 },
+  { path = "features.container.opening_mm", op = "set", value = 38 },
+  { path = "features.grip", op = "set", value = { hands = 1, girth_mm = 30 } },
+]
+
+# ================================================================ cookware and appliances
+# Nonstick aluminum pan: a third of the weight, dents instead of cracking, and the coating
+# gives off toxic fumes when overheated on an open fire.
+[modifier.aluminum_cookware]
+kind = "material"
+applies_to = { items = ["frying_pan"] }
+name_part = { slot = "variant", text = "aluminum", order = 25 }
+desc = "a light aluminum pan with a scratched nonstick coating"
+add_tags = ["hazard.fumes"]
+ops = [
+  { path = "mass_g", op = "mul", value = 0.4 },
+  { path = "composition.body.material", op = "set", value = "aluminum" },
+  { path = "attach_surface.kind", op = "set", value = "smooth" },
+  { path = "reactions", op = "remove" },
+]
+
+# Gas burners light with a match when the grid is down (natural gas often keeps flowing for a
+# while; rural homes run on a propane tank). The oven's glow-bar igniter still needs power.
+[modifier.gas_range]
+kind = "variant"
+applies_to = { items = ["stove_range"] }
+name_part = { slot = "variant", text = "gas", order = 24 }
+desc = "four sealed gas burners; the knobs smell of gas when turned"
+add_tags = ["hazard.fumes"]
+ops = [
+  { path = "features.heat_source.fuel", op = "set", value = ["natural_gas", "propane"] },
+  { path = "power_use.watts", op = "set", value = 400 },
+]
+
+# ================================================================ flavour
+[detail_table.mug_print]
+applies_to = { items = ["mug"] }
+pick = 1
+entries = [
+  { w = 5, text = "printed with a faded insurance-company logo" },
+  { w = 4, text = "plain, with a brown tea ring inside" },
+  { w = 3, text = "from a national-park gift shop" },
+  { w = 3, text = "chipped at the rim" },
+  { w = 2, text = "reading 'DO NOT TALK TO ME BEFORE THIS'" },
+  { w = 1, text = "hand-painted with a child's name", add_tags = ["flavor.sentimental"] },
+]

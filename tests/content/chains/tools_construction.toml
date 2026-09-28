@@ -1,0 +1,246 @@
+# Domain B feasibility chains (tools, construction, fasteners, fuel, salvage).
+# Negative controls (expect_fail = true) pin realism limits: they must stay infeasible.
+
+[chain.cut_chained_gate]
+title = "Cut the chain on a padlocked gate with bolt cutters, or saw it with a hacksaw"
+source = "survival-actions.md §2.10 (force access)"
+
+[[chain.cut_chained_gate.steps]]
+action = "cut_to_length"
+bind = { target = "steel_chain", tool = "bolt_cutters" }
+
+[[chain.cut_chained_gate.steps]]
+action = "cut_to_length"
+bind = { target = "steel_chain", tool = "hacksaw" }
+
+[[chain.cut_chained_gate.steps]]
+action = "saw_through"
+bind = { tool = "hacksaw", target = "padlock" }
+
+[chain.grind_padlock]
+title = "An angle grinder on generator power cuts through a padlock's hardened shackle"
+source = "survival-actions.md §2.10, §2.11"
+
+[[chain.grind_padlock.steps]]
+action = "run_generator"
+bind = { generator = "portable_generator" }
+
+[[chain.grind_padlock.steps]]
+action = "saw_through"
+bind = { tool = "angle_grinder", target = "padlock" }
+
+[chain.board_window_plywood]
+title = "Cut plywood to size and screw it over a window with a cordless drill"
+source = "survival-actions.md §2.4, §4.3"
+
+[[chain.board_window_plywood.steps]]
+action = "saw_through"
+bind = { tool = "handsaw", target = "plywood_sheet" }
+
+[[chain.board_window_plywood.steps]]
+action = "insert_battery"
+bind = { device = "cordless_drill", battery = "drill_battery" }
+
+[[chain.board_window_plywood.steps]]
+action = "barricade_opening"
+bind = { boards = "plywood_sheet", fasteners = "screws_box", tool = "cordless_drill" }
+
+[chain.pallet_barricade]
+title = "Pry a pallet apart for planks and nail them across a door"
+source = "survival-actions.md §4.3"
+
+[[chain.pallet_barricade.steps]]
+action = "disassemble"
+bind = { target = "pallet", tool = "crowbar" }
+yields = "wood_plank"
+
+[[chain.pallet_barricade.steps]]
+action = "barricade_opening"
+bind = { boards = "wood_plank", fasteners = "nails_box", tool = "claw_hammer" }
+
+[chain.siphon_gas_can]
+title = "Siphon gasoline out of a gas can into a jug, then refuel and run the generator"
+source = "survival-actions.md §2.9, §2.11"
+
+[[chain.siphon_gas_can.steps]]
+action = "siphon"
+bind = { tube = "rubber_hose", source = "gas_can", dest = "milk_jug", liquid = "gasoline" }
+fuel = "gasoline"
+
+[[chain.siphon_gas_can.steps]]
+action = "siphon"
+bind = { tube = "garden_hose", source = "car_sedan", dest = "gas_can", liquid = "gasoline" }
+fuel = "gasoline"
+
+[[chain.siphon_gas_can.steps]]
+action = "run_generator"
+bind = { generator = "portable_generator" }
+
+[chain.rehaft_hatchet]
+title = "Knock the head off a broken hatchet and epoxy it onto a new hickory handle"
+source = "content-model §7 (Load vs Hold); owner brief"
+
+[[chain.rehaft_hatchet.steps]]
+action = "disassemble"
+bind = { target = "hatchet", tool = "claw_hammer" }
+yields = "hatchet_head"
+
+[[chain.rehaft_hatchet.steps]]
+action = "attach"
+bind = { base = "tool_handle", head = "hatchet_head", fastener = "epoxy" }
+
+[[chain.rehaft_hatchet.steps]]
+action = "sharpen"
+bind = { stone = "whetstone", blade = "hatchet_head" }
+
+[chain.crude_maul]
+title = "Lash a brick to the end of a 2x4 with nylon rope"
+source = "content-model §7 worked examples"
+
+[[chain.crude_maul.steps]]
+action = "attach"
+bind = { base = "lumber_2x4", head = "brick", fastener = "nylon_rope" }
+
+[[chain.crude_maul.steps]]
+action = "smash"
+bind = { tool = "sledgehammer" }
+
+[chain.rebar_spear_welded]
+title = "Cut rebar to length with a grinder and weld a knife to it"
+source = "survival-actions.md §2.4, §2.9"
+
+[[chain.rebar_spear_welded.steps]]
+action = "run_generator"
+bind = { generator = "portable_generator" }
+
+[[chain.rebar_spear_welded.steps]]
+action = "cut_to_length"
+bind = { target = "rebar", tool = "angle_grinder" }
+
+[[chain.rebar_spear_welded.steps]]
+action = "weld_join"
+bind = { welder = "arc_welder" }
+min_skill = 3
+
+[[chain.rebar_spear_welded.steps]]
+action = "attach"
+bind = { base = "rebar", head = "kitchen_knife", fastener = "arc_welder" }
+
+[chain.dig_pit_trap]
+title = "Break ground with a pickaxe and dig a pit with a shovel"
+source = "survival-actions.md §2.1, §2.4"
+
+[[chain.dig_pit_trap.steps]]
+action = "dig"
+bind = { tool = "pickaxe" }
+
+[[chain.dig_pit_trap.steps]]
+action = "dig"
+bind = { tool = "shovel" }
+
+[chain.rope_escape_nylon]
+title = "Tie nylon rope to a radiator and climb down from an upper floor"
+source = "survival-actions.md §4.7"
+
+[[chain.rope_escape_nylon.steps]]
+action = "rope_descent"
+bind = { rope = "nylon_rope", anchor = "radiator" }
+
+[chain.wire_tripwire]
+title = "String baling wire as a tripwire to an alarm clock noisemaker"
+source = "survival-actions.md §2.4 (traps)"
+
+[[chain.wire_tripwire.steps]]
+action = "cut_to_length"
+bind = { target = "baling_wire", tool = "wire_cutters" }
+
+[[chain.wire_tripwire.steps]]
+action = "tripwire_alarm"
+bind = { wire = "baling_wire", noisemaker = "alarm_clock" }
+
+[chain.drain_tank_drill]
+title = "Drill a car's fuel tank when there's no hose to siphon with"
+source = "survival-actions.md §2.10"
+
+[[chain.drain_tank_drill.steps]]
+action = "insert_battery"
+bind = { device = "cordless_drill", battery = "drill_battery" }
+
+[[chain.drain_tank_drill.steps]]
+action = "puncture_tank"
+bind = { tool = "cordless_drill", source = "car_sedan" }
+
+[chain.motor_copper]
+title = "Strip an electric motor for copper wire and wire a work light to a car battery"
+source = "survival-actions.md §2.9, §4.9"
+
+[[chain.motor_copper.steps]]
+action = "disassemble"
+bind = { target = "electric_motor", tool = "screwdriver" }
+yields = "copper_wire"
+
+[[chain.motor_copper.steps]]
+action = "cut_to_length"
+bind = { target = "copper_wire", tool = "wire_cutters" }
+
+[[chain.motor_copper.steps]]
+action = "wire_12v"
+bind = { battery = "car_battery", device = "work_light_12v" }
+
+[chain.torch_fire]
+title = "Screw a propane cylinder onto a torch and light a fire"
+source = "survival-actions.md §2.5"
+
+[[chain.torch_fire.steps]]
+action = "insert_battery"
+bind = { device = "propane_torch", battery = "fuel_canister" }
+
+[[chain.torch_fire.steps]]
+action = "make_fire"
+bind = { igniter = "propane_torch", tinder = "newspaper", fuel = "firewood" }
+
+# ---------------------------------------------------------------- negative controls
+[chain.handsaw_vs_steel_pipe]
+title = "Negative control: a coarse wood handsaw cannot saw through steel pipe"
+source = "realism: saw 5 < mild steel 6"
+expect_fail = true
+
+[[chain.handsaw_vs_steel_pipe.steps]]
+action = "saw_through"
+bind = { tool = "handsaw", target = "steel_pipe" }
+
+[chain.utility_knife_vs_chain]
+title = "Negative control: a box cutter (or any knife) cannot cut steel chain"
+source = "realism: a keen edge without leverage can't shear steel links (cut 5 < mild steel 6)"
+expect_fail = true
+
+[[chain.utility_knife_vs_chain.steps]]
+action = "cut_to_length"
+bind = { target = "steel_chain", tool = "utility_knife" }
+
+[chain.kitchen_knife_vs_chain]
+title = "Negative control: a kitchen knife cannot cut steel chain"
+source = "realism: cut 4 < mild steel 6"
+expect_fail = true
+
+[[chain.kitchen_knife_vs_chain.steps]]
+action = "cut_to_length"
+bind = { target = "steel_chain", tool = "kitchen_knife" }
+
+[chain.aa_in_drill]
+title = "Negative control: AA cells don't fit an 18 V tool-pack slot"
+source = "realism: slot standards"
+expect_fail = true
+
+[[chain.aa_in_drill.steps]]
+action = "insert_battery"
+bind = { device = "cordless_drill", battery = "battery_aa" }
+
+[chain.sledgehammer_no_pry]
+title = "Negative control: a sledgehammer is no pry bar"
+source = "realism: no lip to lever with"
+expect_fail = true
+
+[[chain.sledgehammer_no_pry.steps]]
+action = "pry_open"
+bind = { tool = "sledgehammer" }

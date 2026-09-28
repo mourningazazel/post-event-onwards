@@ -129,3 +129,297 @@ fill_pct = [20, 100]
 
 [item.bleach_jug.capabilities]
 purify = 6
+
+# ---------------------------------------------------------------- cookware and tableware (domain A)
+
+[item.frying_pan]
+name = "frying pan"
+tags = ["cat.kitchen.cookware", "from.kitchen", "from.restaurant", "from.outdoors", "use.cooking", "use.weapon"]
+shape = "container"
+dims_mm = [420, 270, 50]
+mass_g = 2300
+heat_resistant = true
+balance = "head"
+durability = 10
+desc = "A ten-inch cast-iron skillet, black with years of seasoning."
+glyph = "item.pan"
+why = "Cooks directly over an open fire; a heavy flat face makes it a brutal blunt weapon; bangs loud as a lure."
+brand_cats = ["cookware"]
+modifiers = ["aluminum_cookware"]
+attach_surface = { kind = "rough", contact_area_mm2 = 45000, wrap_girth_mm = 90 }
+value_class = "useful"
+
+[item.frying_pan.composition.body]
+material = "cast_iron"
+share = 100
+
+[item.frying_pan.features.container]
+capacity_ml = 1500
+opening_mm = 250
+closable = false
+compat = ["liquid", "solid"]
+[item.frying_pan.features.grip]
+hands = 1
+girth_mm = 25
+[item.frying_pan.features.striking_face]
+area_mm2 = 45000
+
+[item.frying_pan.capabilities]
+noise = 4                          # derived = false: banging it is a deliberate lure
+
+# Cast iron defaults to "moderate" (splits at medium energy), but a thick skillet shrugs off a
+# thrown or swung hit; it only cracks from a hard high-energy impact (dropped onto concrete).
+[item.frying_pan.reactions.impact]
+low = "none"
+medium = "none"
+high = "crack"
+
+[item.baking_sheet]
+name = "baking sheet"
+tags = ["cat.kitchen.cookware", "from.kitchen", "from.restaurant", "use.cooking"]
+shape = "sheet"
+dims_mm = [460, 330, 25]
+mass_g = 680
+fill_pct = 7                       # 1 mm sheet with a rolled rim; the bounding box is mostly air
+heat_resistant = true
+desc = "A heavy-gauge aluminum half-sheet pan with a rolled rim."
+glyph = "item.tray"
+why = "Heat-proof tray over coals; a rigid metal sheet for splints, window covers and improvised armour plates."
+brand_cats = ["cookware"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 150000 }
+value_class = "common"
+
+[item.baking_sheet.composition.sheet]
+material = "aluminum"
+share = 100
+
+[item.baking_sheet.features.container]
+capacity_ml = 2500
+opening_mm = 330
+closable = false
+compat = ["solid", "granular"]
+
+[item.mug]
+name = "mug"
+tags = ["cat.kitchen.tableware", "from.kitchen", "from.office", "from.restaurant", "use.container", "hazard.sharp_debris"]
+shape = "container"
+dims_mm = [120, 95, 85]
+mass_g = 330
+fill_pct = 14                      # thick ceramic walls
+desc = "A glazed ceramic coffee mug with a handle."
+glyph = "item.mug"
+why = "Drinking vessel found everywhere; throwable, shatters loudly into shards (noise lure)."
+details = ["mug_print"]
+value_class = "junk"
+
+[item.mug.composition.body]
+material = "ceramic"
+share = 100
+
+[item.mug.features.container]
+capacity_ml = 350
+opening_mm = 80
+closable = false
+compat = ["liquid", "granular", "solid"]
+[item.mug.features.grip]
+hands = 1
+girth_mm = 20
+
+[item.dinner_plate]
+name = "dinner plate"
+tags = ["cat.kitchen.tableware", "from.kitchen", "from.restaurant", "hazard.sharp_debris"]
+shape = "sheet"
+dims_mm = [270, 270, 25]
+mass_g = 550
+fill_pct = 12                      # shallow dish, not a solid slab
+aerodynamics = "fair"
+desc = "A plain white stoneware dinner plate."
+glyph = "item.plate"
+why = "Flies flat when thrown and shatters loudly on landing: a cheap, plentiful noise lure that leaves shards."
+value_class = "junk"
+
+[item.dinner_plate.composition.body]
+material = "ceramic"
+share = 100
+
+[item.plastic_tub]
+name = "food storage tub"
+tags = ["cat.container.tub", "from.kitchen", "from.office", "use.container"]
+shape = "container"
+dims_mm = [200, 150, 100]
+mass_g = 150
+desc = "A clear polypropylene food container with a snap-locking lid."
+glyph = "item.tub"
+why = "Airtight lid seals food scent in and keeps water or dry goods safe; melts on a fire."
+brand_cats = ["household"]
+modifiers = ["size_large", "size_small"]
+value_class = "common"
+
+[item.plastic_tub.composition.body]
+material = "polypropylene"
+share = 85
+[item.plastic_tub.composition.lid]
+material = "ldpe"
+share = 15
+
+[item.plastic_tub.features.container]
+capacity_ml = 2000
+opening_mm = 180
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid", "granular", "solid"]
+[item.plastic_tub.features.lid]
+kind = "snap"
+reclosable = true
+
+[item.cooler]
+name = "cooler"
+tags = ["cat.container.cooler", "from.garage", "from.outdoors", "from.gas_station", "use.container"]
+shape = "container"
+dims_mm = [600, 380, 360]
+mass_g = 4200
+fill_pct = 45                      # 4 cm foam-filled walls: nearly half the box is wall
+desc = "A 48-quart hard-sided picnic cooler with a hinged lid and side handles."
+glyph = "item.cooler"
+why = "Insulated box slows thawing and spoilage for a day or two without power; big watertight water store; a seat."
+brand_cats = ["outdoors"]
+value_class = "useful"
+
+[item.cooler.composition.shell]
+material = "hdpe"
+share = 60
+[item.cooler.composition.insulation]
+material = "pu_foam"
+share = 20
+[item.cooler.composition.liner]
+material = "polypropylene"
+share = 15
+[item.cooler.composition.hinges]
+material = "nylon"
+share = 5
+
+[item.cooler.features.container]
+capacity_ml = 45000
+opening_mm = 500
+closable = true
+sealable = false
+watertight = true
+compat = ["liquid", "granular", "solid"]
+[item.cooler.features.lid]
+kind = "hinged"
+reclosable = true
+[item.cooler.features.strap]
+kind = "handle"
+load_g = 40000
+[item.cooler.features.seat]
+comfort = 2
+sleepable = false
+
+[item.cooler.capabilities]
+insulate = 6                       # override: the derived rule only reads wearables; a foam box keeps cold in
+
+[item.thermos]
+name = "vacuum flask"
+tags = ["cat.container.flask", "from.kitchen", "from.outdoors", "from.vehicle", "from.construction", "use.container"]
+shape = "container"
+dims_mm = [300, 95, 95]
+mass_g = 550
+desc = "A stainless-steel vacuum flask with a cup-cap."
+glyph = "item.flask"
+why = "Keeps boiled water hot for hours without a second fire; sealed, unbreakable water carrier."
+brand_cats = ["outdoors"]
+value_class = "useful"
+
+[item.thermos.composition.body]
+material = "stainless_steel"
+share = 90
+[item.thermos.composition.cap]
+material = "polypropylene"
+share = 10
+
+[item.thermos.features.container]
+capacity_ml = 1000
+opening_mm = 45
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid"]
+[item.thermos.features.lid]
+kind = "screw"
+reclosable = true
+[item.thermos.features.grip]
+hands = 1
+girth_mm = 95
+
+[item.thermos.capabilities]
+insulate = 8                       # override: vacuum wall; the derived rule only reads wearables
+
+[item.kettle]
+name = "kettle"
+tags = ["cat.kitchen.cookware", "from.kitchen", "use.cooking", "use.container"]
+shape = "container"
+dims_mm = [240, 230, 200]
+mass_g = 1000
+heat_resistant = true
+use_noise = "loud"                 # it whistles when the water boils
+desc = "A stainless stovetop kettle with a whistling spout cap."
+glyph = "item.kettle"
+why = "Boils water with a precise pour; its whistle at the boil is a loud noise event (a hazard, or a timed lure)."
+brand_cats = ["cookware"]
+value_class = "useful"
+
+[item.kettle.composition.body]
+material = "stainless_steel"
+share = 90
+[item.kettle.composition.handle]
+material = "abs"
+share = 10
+
+[item.kettle.features.container]
+capacity_ml = 2000
+opening_mm = 90
+closable = true
+sealable = false
+compat = ["liquid"]
+[item.kettle.features.lid]
+kind = "snap"
+reclosable = true
+[item.kettle.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.water_filter_pitcher]
+name = "water filter pitcher"
+tags = ["cat.container.pitcher", "from.kitchen", "from.office", "use.water_treatment", "use.container"]
+shape = "container"
+dims_mm = [280, 260, 130]
+mass_g = 700
+desc = "A ten-cup plastic pitcher with a replaceable activated-carbon filter cartridge."
+glyph = "item.pitcher"
+why = "Removes sediment, chlorine and bad taste; does NOT make untreated water safe on its own (pair with boiling or bleach)."
+brand_cats = ["household"]
+value_class = "useful"
+
+[item.water_filter_pitcher.composition.body]
+material = "polypropylene"
+share = 85
+[item.water_filter_pitcher.composition.filter]
+material = "charcoal"
+share = 15
+
+[item.water_filter_pitcher.features.container]
+capacity_ml = 2400
+opening_mm = 120
+closable = true
+sealable = false
+compat = ["liquid"]
+[item.water_filter_pitcher.features.lid]
+kind = "snap"
+reclosable = true
+[item.water_filter_pitcher.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.water_filter_pitcher.capabilities]
+filter = 4                         # derived = false; carbon block only: no purify, pathogens pass

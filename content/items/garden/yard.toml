@@ -1,0 +1,435 @@
+# Garden and yard: equipment, cooking, water, plants and ornaments (world-catalog §4
+# front_yard, backyard). Algae, overgrowth and species come from modifiers/outdoor_vehicles.toml.
+
+[item.garden_hose]
+name = "garden hose"
+tags = ["cat.garden.hose", "from.garden", "use.tool"]
+shape = "cord"
+dims_mm = [15000, 25, 25]
+mass_g = 2500
+hollow = true
+desc = "Fifteen metres of green vinyl garden hose."
+glyph = "item.hose"
+why = "Long siphon/transfer line; climbing/descent line; binding; cut into shorter hoses."
+divisible = { mode = "length", min_piece_mm = 100, needs = "cut>=1" }
+value_class = "useful"
+
+[item.garden_hose.composition.hose]
+material = "flexible_pvc"
+share = 100
+
+[item.garden_hose.features.tube]
+inner_diameter_mm = 16
+length_mm = 15000
+flexible = true
+
+[item.lawn_mower]
+name = "lawn mower"
+tags = ["cat.garden.mower", "from.garden", "from.garage", "use.lure"]
+shape = "complex"
+dims_mm = [1650, 1000, 560]
+mass_g = 30000
+fill_pct = 1
+use_noise = "very_loud"
+desc = "A pull-start gasoline push mower with a rear grass bag."
+glyph = "obj.lawn_mower"
+why = "Pull-start needs no battery: left running it drones for most of an hour as a noise lure. A litre of gasoline in the tank."
+value_class = "useful"
+
+[item.lawn_mower.composition.deck]
+material = "mild_steel"
+share = 45
+[item.lawn_mower.composition.engine]
+material = "aluminum"
+share = 25
+[item.lawn_mower.composition.wheels]
+material = "polypropylene"
+share = 8
+[item.lawn_mower.composition.handle]
+material = "mild_steel"
+share = 10
+[item.lawn_mower.composition.blade]
+material = "carbon_steel"
+share = 5
+[item.lawn_mower.composition.fuel_tank]
+material = "hdpe"
+share = 2
+[item.lawn_mower.composition.bag]
+material = "polyester"
+share = 5
+
+[item.lawn_mower.features.fuel_tank]
+capacity_ml = 1100
+fuel = ["gasoline"]
+drain = "siphon"
+
+[item.lawn_mower.capabilities]
+noise = 8
+
+[item.gas_grill]
+name = "gas grill"
+tags = ["cat.garden.grill", "from.garden", "use.cooking"]
+shape = "complex"
+dims_mm = [1300, 1150, 600]
+mass_g = 45000
+fill_pct = 1
+heat_resistant = true
+desc = "A three-burner propane grill on a cart, with a push-button igniter and a tank hook underneath."
+glyph = "obj.grill"
+why = "Cooks and boils water on a swapped-in propane tank; the tank itself is the real prize."
+brand_cats = ["outdoors"]
+value_class = "useful"
+
+[item.gas_grill.composition.body]
+material = "mild_steel"
+share = 45
+[item.gas_grill.composition.burners]
+material = "stainless_steel"
+share = 15
+[item.gas_grill.composition.grates]
+material = "cast_iron"
+share = 20
+[item.gas_grill.composition.lid]
+material = "aluminum"
+share = 12
+[item.gas_grill.composition.shelves]
+material = "polypropylene"
+share = 5
+[item.gas_grill.composition.valves]
+material = "brass"
+share = 3
+
+[item.gas_grill.features.heat_source]
+output = 8
+fuel = ["propane"]
+[item.gas_grill.features.slot]
+accepts = "cat.fuel.propane"
+count = 1
+[item.gas_grill.features.ignition]
+method = "spark"
+charges = 5000
+fails_when_wet = false
+
+[item.charcoal_grill]
+name = "charcoal grill"
+tags = ["cat.garden.grill", "from.garden", "use.cooking"]
+shape = "container"
+dims_mm = [1000, 620, 580]
+mass_g = 12000
+fill_pct = 1
+heat_resistant = true
+desc = "A black enamelled kettle grill on three legs, with a lid vent."
+glyph = "obj.grill_kettle"
+why = "Fire-safe cooking and water boiling on charcoal or scrap wood; lid damps the glow."
+brand_cats = ["outdoors"]
+value_class = "common"
+
+[item.charcoal_grill.composition.bowl]
+material = "mild_steel"
+share = 70
+[item.charcoal_grill.composition.grate]
+material = "mild_steel"
+share = 15
+[item.charcoal_grill.composition.legs]
+material = "aluminum"
+share = 10
+[item.charcoal_grill.composition.handles]
+material = "nylon"
+share = 5
+
+[item.charcoal_grill.features.heat_source]
+output = 7
+fuel = ["charcoal", "firewood"]
+
+[item.patio_chair]
+name = "patio chair"
+tags = ["cat.furniture.outdoor", "from.garden"]
+shape = "complex"
+dims_mm = [800, 550, 550]
+mass_g = 2800
+fill_pct = 3
+desc = "A white one-piece plastic stacking chair."
+glyph = "obj.chair_patio"
+why = "Somewhere to sit outside; light enough to throw or stack as a flimsy blockade."
+details = ["weathering"]
+value_class = "junk"
+
+[item.patio_chair.composition.body]
+material = "polypropylene"
+share = 100
+
+[item.patio_chair.features.seat]
+comfort = 3
+sleepable = false
+
+[item.patio_table]
+name = "patio table"
+tags = ["cat.furniture.outdoor", "from.garden", "hazard.sharp_debris"]
+shape = "complex"
+dims_mm = [1500, 900, 740]
+mass_g = 25000
+fill_pct = 3
+desc = "An aluminium-framed patio table with a tempered-glass top and an umbrella hole."
+glyph = "obj.table_patio"
+why = "Work surface outdoors; the glass top bursts into cubes with a crash when hit or dropped (noise, debris)."
+details = ["weathering"]
+value_class = "junk"
+
+[item.patio_table.composition.top]
+material = "tempered_glass"
+share = 60
+[item.patio_table.composition.frame]
+material = "aluminum"
+share = 40
+
+[item.patio_table.features.surface]
+area_mm2 = 1350000
+workbench = false
+
+[item.backyard_pool]
+name = "above-ground pool"
+tags = ["cat.garden.pool", "from.garden"]
+shape = "container"
+dims_mm = [4570, 4570, 1220]
+mass_g = 150000
+fill_pct = 1
+fixed = true
+blocks = "full"
+desc = "A fifteen-foot round steel-walled pool with a vinyl liner and a drain plug."
+glyph = "obj.pool"
+why = "Eighteen tonnes of untreated water: a neighbourhood's worth of drinking water once boiled or treated; goes green with time."
+modifiers = ["water_gone_foul"]
+value_class = "useful"
+
+[item.backyard_pool.composition.wall]
+material = "mild_steel"
+share = 50
+[item.backyard_pool.composition.liner]
+material = "flexible_pvc"
+share = 30
+[item.backyard_pool.composition.rails]
+material = "polypropylene"
+share = 20
+
+[item.backyard_pool.features.container]
+capacity_ml = 18000000
+closable = false
+watertight = true
+opening_mm = 4400
+compat = ["liquid"]
+[item.backyard_pool.features.valve]
+needs = "none"
+[item.backyard_pool.features.climbable]
+difficulty = 2
+height_mm = 1220
+
+[item.backyard_pool.contents]
+substance = "water_untreated"
+fill_pct = [50, 100]
+
+[item.rain_barrel]
+name = "rain barrel"
+tags = ["cat.garden.rain_barrel", "cat.container.barrel", "from.garden", "use.container"]
+shape = "container"
+dims_mm = [900, 600, 600]
+mass_g = 10000
+desc = "A 55-gallon plastic barrel under a downspout, with a brass spigot near the bottom."
+glyph = "obj.barrel"
+why = "Refills itself when it rains (M1 + weather); 208 L of untreated water with a tap."
+modifiers = ["water_gone_foul"]
+value_class = "useful"
+
+[item.rain_barrel.composition.barrel]
+material = "hdpe"
+share = 95
+[item.rain_barrel.composition.spigot]
+material = "brass"
+share = 5
+
+[item.rain_barrel.features.container]
+capacity_ml = 208000
+closable = true
+watertight = true
+opening_mm = 60
+compat = ["liquid"]
+[item.rain_barrel.features.valve]
+needs = "none"
+
+[item.rain_barrel.contents]
+substance = "water_untreated"
+fill_pct = [0, 100]
+
+[item.fire_pit]
+name = "fire pit"
+tags = ["cat.garden.fire_pit", "from.garden", "from.outdoors", "use.cooking"]
+shape = "container"
+dims_mm = [900, 900, 450]
+mass_g = 20000
+fill_pct = 1
+heat_resistant = true
+desc = "A wide steel fire bowl on short legs."
+glyph = "obj.fire_pit"
+why = "Contains a wood fire for warmth and cooking without setting the yard alight; the smoke plume masks scent (N007)."
+value_class = "common"
+
+[item.fire_pit.composition.bowl]
+material = "mild_steel"
+share = 100
+
+[item.fire_pit.features.heat_source]
+output = 5
+fuel = ["firewood", "charcoal"]
+
+[item.woodpile]
+name = "woodpile"
+tags = ["cat.garden.woodpile", "from.garden", "from.farm", "use.fuel"]
+shape = "block"
+dims_mm = [2440, 1220, 410]
+mass_g = 340000
+blocks = "partial"
+desc = "A face cord of split, seasoned firewood stacked against the fence under a tarp."
+glyph = "obj.woodpile"
+why = "Months of fire fuel, taken a split at a time; low cover."
+value_class = "useful"
+
+[item.woodpile.composition.wood]
+material = "softwood"
+share = 100
+salvage = { item = "firewood", count = 170, tool = "none", time_s = 1800 }
+
+[item.woodpile.features.climbable]
+difficulty = 1
+height_mm = 1220
+
+[item.play_set]
+name = "backyard play set"
+tags = ["cat.garden.play_set", "from.garden", "use.salvage"]
+shape = "complex"
+dims_mm = [4300, 3600, 2700]
+mass_g = 350000
+fill_pct = 2
+fixed = true
+blocks = "partial"
+desc = "A wooden swing set with a raised fort, a plastic slide and chain swings."
+glyph = "obj.play_set"
+why = "A raised lookout platform with a ladder; lumber and chain to salvage; poignant world-building."
+details = ["weathering"]
+value_class = "common"
+
+[item.play_set.composition.lumber]
+material = "softwood"
+share = 85
+salvage = { item = "wood_plank", count = 12, tool = "pry>=4", time_s = 2400 }
+[item.play_set.composition.chains]
+material = "mild_steel"
+share = 8
+[item.play_set.composition.slide]
+material = "hdpe"
+share = 7
+
+[item.play_set.features.climbable]
+difficulty = 1
+height_mm = 2700
+[item.play_set.features.anchor]
+max_load_g = 300000
+
+[item.garden_gnome]
+name = "garden gnome"
+tags = ["cat.garden.ornament", "from.garden", "flavor.decorative", "flavor.collectible"]
+shape = "block"
+dims_mm = [300, 150, 140]
+mass_g = 1500
+hollow = true
+desc = "A hollow glazed-ceramic gnome with a red pointed hat."
+glyph = "item.gnome"
+why = "Pure aesthetic (collect them); also a throwable ceramic that bursts with a crash (noise lure)."
+details = ["gnome_pose"]
+value_class = "junk"
+
+[item.garden_gnome.composition.body]
+material = "ceramic"
+share = 100
+
+[item.shed_object]
+name = "garden shed"
+tags = ["cat.garden.shed", "from.garden", "use.shelter", "use.salvage"]
+shape = "container"
+dims_mm = [2440, 2050, 1830]
+mass_g = 110000
+fill_pct = 1
+hollow = true
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A small galvanised-steel storage shed with sliding doors and a padlock hasp."
+glyph = "obj.shed"
+why = "Padlocked tool and fuel stash (shed_contents loot); a tight shelter; sheet steel to salvage."
+details = ["weathering"]
+value_class = "useful"
+
+[item.shed_object.composition.walls]
+material = "mild_steel"
+share = 95
+salvage = { item = "sheet_metal", count = 6, tool = "fasten>=2", time_s = 1800 }
+[item.shed_object.composition.skylight]
+material = "polycarbonate"
+share = 5
+
+[item.shed_object.features.container]
+capacity_ml = 8000000
+closable = true
+compat = ["solid", "liquid"]
+[item.shed_object.features.lock]
+tier = 1
+keyed = true
+pickable = true
+[item.shed_object.features.climbable]
+difficulty = 4
+height_mm = 2050
+
+[item.hedge]
+name = "hedge"
+tags = ["cat.garden.plant", "from.garden", "from.street"]
+shape = "complex"
+dims_mm = [1800, 1000, 800]
+mass_g = 60000
+fill_pct = 5
+fixed = true
+blocks = "partial"
+blocks_sight = true
+desc = "A dense clipped privet hedge, head-high."
+glyph = "obj.hedge"
+why = "Breaks line of sight and slows movement: hiding places, chokepoints; grows wild as the clock runs (N007)."
+modifiers = ["overgrown_hedge"]
+value_class = "junk"
+
+[item.hedge.composition.shrubs]
+material = "green_wood"
+share = 100
+
+[item.tree]
+name = "tree"
+tags = ["cat.garden.tree", "from.garden", "from.street", "from.outdoors"]
+shape = "complex"
+dims_mm = [12000, 8000, 8000]
+mass_g = 2500000
+fill_pct = 1
+fixed = true
+blocks = "partial"
+blocks_sight = true
+desc = "A mature shade tree with low, climbable limbs."
+glyph = "obj.tree"
+why = "Climb out of reach; tie a rope to it (anchor); saw the limbs into firewood; breaks sight lines."
+details = ["tree_species"]
+value_class = "common"
+
+[item.tree.composition.wood]
+material = "green_wood"
+share = 100
+salvage = { item = "firewood", count = 600, tool = "saw>=5", time_s = 28800 }
+
+[item.tree.features.climbable]
+difficulty = 3
+height_mm = 6000
+[item.tree.features.anchor]
+max_load_g = 1500000

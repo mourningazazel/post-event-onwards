@@ -1,0 +1,583 @@
+# Building types: retail and food service (world-catalog §2).
+# Conventions (footprint, materials, room counts, occupant time buckets, chance_pct, utilities):
+# see the header of buildings/residential.toml.
+#
+# Staffing follows typical US store hours: most shops trade ~09:00-21:00, so "evening" carries
+# reduced staff and shoppers; "night" is only staffed where 24-hour trading is common
+# (convenience stores, gas stations, some supermarkets/pharmacies, fast-food drive-thrus), shown
+# as a chance_pct. Night stockers and cleaners keep big stores from ever being truly empty.
+
+[building.supermarket]
+desc = "A full-line grocery store: a single-storey block building with long aisles, refrigerated cases, a deli-bakery, often an in-store pharmacy, and a rear receiving dock."
+footprint_m = [[45, 90], [40, 70]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "grocery_floor", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "pharmacy_counter", count = [0, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [1, 3], floor = "ground" },
+  { room = "stockroom", count = [1, 2], floor = "ground" },
+  { room = "loading_dock", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 2], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+]
+occupants = [
+  { profile = "grocery_clerk", count = [10, 35], when = ["weekday_day", "weekend_day"] },
+  { profile = "grocery_clerk", count = [6, 20], when = ["evening"] },
+  { profile = "grocery_clerk", count = [2, 8], chance_pct = 60, when = ["night"] },
+  { profile = "pharmacist", count = [1, 2], chance_pct = 55, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "cook", count = [1, 4], chance_pct = 70, when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [20, 120], when = ["weekday_day"] },
+  { profile = "retiree", count = [8, 45], when = ["weekday_day", "weekend_day"] },
+  { profile = "child_student", count = [0, 8], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [40, 220], when = ["weekend_day"] },
+  { profile = "child_student", count = [4, 30], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [15, 110], when = ["evening"] },
+  { profile = "office_worker", count = [3, 30], when = ["evening"] },
+  { profile = "at_home_adult", count = [0, 6], chance_pct = 60, when = ["night"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 30, when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "delivery_driver", count = [0, 2], when = ["weekday_day", "night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "very_high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["grovely_market"]
+tags = ["cat.building.retail", "cat.building.grocery"]
+
+[building.convenience_store]
+desc = "A small corner store or mini-mart: a few aisles of snacks and staples, drinks coolers with a walk-in behind, lottery and tobacco behind the counter; often open all night."
+footprint_m = [[12, 25], [10, 20]]
+floors = [1, 1]
+basement_pct = 10
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "grocery_floor", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "private_office", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 3], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 1], chance_pct = 55, when = ["night"] },
+  { profile = "at_home_adult", count = [0, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "construction_worker", count = [0, 2], chance_pct = 40, when = ["weekday_day"] },
+  { profile = "teen_student", count = [0, 3], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 2], chance_pct = 40, when = ["night"] },
+]
+outdoor = ["parking_lot", "alley"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["lanternway"]
+tags = ["cat.building.retail", "cat.building.grocery"]
+
+[building.pharmacy]
+desc = "A chain drugstore: aisles of over-the-counter medicine, first aid, toiletries and snacks, with the prescription counter and its locked stock at the back."
+footprint_m = [[25, 40], [25, 40]]
+floors = [1, 1]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "pharmacy_floor", count = [1, 1], floor = "ground" },
+  { room = "pharmacy_counter", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 1], floor = "ground" },
+  { room = "break_room", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "pharmacist", count = [1, 2], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "pharmacist", count = [1, 1], chance_pct = 15, when = ["night"] },
+  { profile = "retail_worker", count = [2, 6], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 4], when = ["evening"] },
+  { profile = "retail_worker", count = [1, 1], chance_pct = 15, when = ["night"] },
+  { profile = "retiree", count = [1, 10], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [1, 10], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 2], chance_pct = 15, when = ["night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "very_high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["pennant_pharmacy"]
+tags = ["cat.building.retail", "cat.building.medical"]
+
+[building.hardware_store]
+desc = "A hardware store or home centre: aisles of hand and power tools, fasteners, plumbing, electrical, paint, fuel and propane, with a lumber and garden corner."
+footprint_m = [[30, 60], [25, 50]]
+floors = [1, 1]
+basement_pct = 5
+walls = "concrete"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "hardware_floor", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 2], floor = "ground" },
+  { room = "loading_dock", count = [0, 1], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "private_office", count = [1, 1], floor = "any" },
+  { room = "break_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [3, 12], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [2, 5], when = ["evening"] },
+  { profile = "construction_worker", count = [1, 8], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [2, 15], when = ["weekday_day", "evening"] },
+  { profile = "retiree", count = [1, 8], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [6, 30], when = ["weekend_day"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["burlows_hardware"]
+tags = ["cat.building.retail", "cat.building.hardware"]
+
+[building.big_box_store]
+desc = "A warehouse-sized supercenter under one roof: groceries, pharmacy, hardware, clothing, electronics, sporting goods with a locked firearms counter, and an auto service bay."
+footprint_m = [[90, 180], [70, 130]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "mild_steel"
+rooms = [
+  { room = "store_floor_generic", count = [1, 1], floor = "ground" },
+  { room = "grocery_floor", count = [0, 1], floor = "ground" },
+  { room = "pharmacy_floor", count = [0, 1], floor = "ground" },
+  { room = "pharmacy_counter", count = [0, 1], floor = "ground" },
+  { room = "hardware_floor", count = [0, 1], floor = "ground" },
+  { room = "gun_counter", count = [0, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "dining_area", count = [0, 1], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 2], floor = "ground" },
+  { room = "stockroom", count = [1, 3], floor = "ground" },
+  { room = "loading_dock", count = [1, 2], floor = "ground" },
+  { room = "private_office", count = [1, 3], floor = "ground" },
+  { room = "break_room", count = [1, 1], floor = "ground" },
+  { room = "restroom_public", count = [2, 4], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [25, 120], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [15, 60], when = ["evening"] },
+  { profile = "retail_worker", count = [5, 25], chance_pct = 70, when = ["night"] },
+  { profile = "pharmacist", count = [1, 2], chance_pct = 70, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "mechanic", count = [1, 4], chance_pct = 50, when = ["weekday_day", "weekend_day"] },
+  { profile = "security_guard", count = [1, 2], chance_pct = 60, when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [40, 300], when = ["weekday_day"] },
+  { profile = "retiree", count = [15, 90], when = ["weekday_day", "weekend_day"] },
+  { profile = "child_student", count = [3, 30], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [100, 600], when = ["weekend_day"] },
+  { profile = "child_student", count = [15, 90], when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [5, 40], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [40, 250], when = ["evening"] },
+  { profile = "at_home_adult", count = [0, 20], chance_pct = 50, when = ["night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["maxfield"]
+tags = ["cat.building.retail", "cat.building.grocery", "cat.building.big_box"]
+
+[building.gun_store]
+desc = "A gun shop: long glass counters of handguns, racked long guns behind, ammunition shelves, a barred storefront and a gunsmith's bench at the back."
+footprint_m = [[10, 25], [15, 30]]
+floors = [1, 1]
+basement_pct = 5
+walls = "concrete"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "gun_counter", count = [1, 1], floor = "ground" },
+  { room = "store_floor_generic", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "private_office", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 4], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 2], chance_pct = 50, when = ["evening"] },
+  { profile = "outdoorsman", count = [0, 4], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [0, 5], when = ["weekday_day", "weekend_day"] },
+  { profile = "police_officer", count = [1, 1], chance_pct = 8, when = ["weekday_day"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "very_high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.weapons"]
+
+[building.sporting_goods]
+desc = "A sporting goods store: camping, hunting and fishing gear, team sports, exercise equipment and outdoor clothing, sometimes with a firearms and ammunition counter."
+footprint_m = [[30, 60], [30, 50]]
+floors = [1, 1]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [1, 1], floor = "ground" },
+  { room = "gun_counter", count = [0, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 1], floor = "ground" },
+  { room = "restroom_public", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [3, 12], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [2, 6], when = ["evening"] },
+  { profile = "outdoorsman", count = [1, 8], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [2, 20], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [6, 40], when = ["weekend_day"] },
+  { profile = "teen_student", count = [0, 8], when = ["weekend_day", "evening"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.outdoors"]
+
+[building.clothing_store]
+desc = "A clothing store or thrift shop: racks and tables of clothes, shoes and outerwear, fitting rooms and a back stockroom of boxed inventory."
+footprint_m = [[10, 40], [15, 40]]
+floors = [1, 2]
+basement_pct = 15
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [1, 2], floor = "any" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "retail_worker", count = [2, 8], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 4], when = ["evening"] },
+  { profile = "at_home_adult", count = [1, 15], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [4, 30], when = ["weekend_day"] },
+  { profile = "teen_student", count = [0, 8], when = ["weekend_day", "evening"] },
+  { profile = "retiree", count = [0, 4], when = ["weekday_day"] },
+]
+outdoor = ["parking_lot", "downtown_street"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.clothing"]
+
+[building.auto_parts_store]
+desc = "An auto parts store: shelves of oil, fluids, filters, batteries, wipers and tools, with a parts counter backed by rows of boxed parts."
+footprint_m = [[20, 35], [20, 35]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "loading_dock", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [2, 6], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 3], when = ["evening"] },
+  { profile = "mechanic", count = [0, 3], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 8], when = ["weekday_day", "weekend_day", "evening"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.automotive"]
+
+[building.liquor_store]
+desc = "A package liquor store: shelves and cases of spirits, wine and beer, a beer cooler, a cash counter behind glass; high-proof alcohol is fuel, antiseptic and trade."
+footprint_m = [[10, 25], [12, 25]]
+floors = [1, 1]
+basement_pct = 20
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 3], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retiree", count = [0, 2], when = ["weekday_day"] },
+]
+outdoor = ["parking_lot", "alley"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.liquor"]
+
+[building.bookstore]
+desc = "A bookstore, new or used: tall shelves of books and maps, a reading corner, often a small cafe counter. A quiet source of manuals, atlases and local maps."
+footprint_m = [[10, 40], [15, 40]]
+floors = [1, 2]
+basement_pct = 20
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [1, 2], floor = "any" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "dining_area", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 5], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 2], when = ["evening"] },
+  { profile = "retiree", count = [0, 5], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [1, 10], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "teen_student", count = [0, 4], when = ["weekend_day", "evening"] },
+]
+outdoor = ["downtown_street", "parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.books"]
+
+[building.fast_food]
+desc = "A fast-food restaurant with a drive-thru: fryers and grills behind the counter, a walk-in cooler and freezer, a dining room of fixed booths."
+footprint_m = [[15, 25], [12, 20]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "commercial_kitchen", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [1, 1], floor = "ground" },
+  { room = "dining_area", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+]
+occupants = [
+  { profile = "cook", count = [2, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 4], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "cook", count = [1, 2], chance_pct = 30, when = ["night"] },
+  { profile = "at_home_adult", count = [2, 25], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "office_worker", count = [0, 10], when = ["weekday_day"] },
+  { profile = "construction_worker", count = [0, 5], when = ["weekday_day"] },
+  { profile = "child_student", count = [0, 8], when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [0, 8], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 3], chance_pct = 30, when = ["night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.food"]
+
+[building.diner]
+desc = "A diner: a long counter with stools, booths along the windows, a short-order grill in view; open early, sometimes around the clock."
+footprint_m = [[12, 25], [10, 20]]
+floors = [1, 1]
+basement_pct = 15
+walls = "gypsum_board"
+exterior = "mild_steel"
+roof = "asphalt"
+rooms = [
+  { room = "commercial_kitchen", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "ground" },
+  { room = "dining_area", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "cook", count = [1, 3], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 4], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "cook", count = [1, 1], chance_pct = 20, when = ["night"] },
+  { profile = "retail_worker", count = [1, 1], chance_pct = 20, when = ["night"] },
+  { profile = "retiree", count = [1, 10], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [2, 20], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "construction_worker", count = [0, 4], when = ["weekday_day"] },
+  { profile = "trucker", count = [0, 3], when = ["weekday_day", "evening"] },
+  { profile = "police_officer", count = [1, 2], chance_pct = 10, when = ["weekday_day", "night"] },
+  { profile = "at_home_adult", count = [0, 4], chance_pct = 20, when = ["night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.food"]
+
+[building.bar]
+desc = "A neighbourhood bar or tavern: a long bar with taps and bottle shelves, tables and booths, a pool table, a small grill kitchen and a keg cellar."
+footprint_m = [[8, 20], [15, 30]]
+floors = [1, 1]
+basement_pct = 45
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "bar_room", count = [1, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "any" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "private_office", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "bartender", count = [1, 1], chance_pct = 40, when = ["weekday_day"] },
+  { profile = "bartender", count = [1, 2], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "bartender", count = [1, 4], when = ["evening"] },
+  { profile = "bartender", count = [1, 3], chance_pct = 75, when = ["night"] },
+  { profile = "cook", count = [1, 2], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "retiree", count = [0, 4], chance_pct = 40, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [0, 12], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [4, 40], when = ["evening"] },
+  { profile = "office_worker", count = [0, 10], when = ["evening"] },
+  { profile = "construction_worker", count = [0, 6], when = ["evening"] },
+  { profile = "at_home_adult", count = [2, 30], chance_pct = 75, when = ["night"] },
+]
+outdoor = ["alley", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.food", "cat.building.nightlife"]
+
+[building.coffee_shop]
+desc = "A coffee shop: an espresso counter, pastry case, a few tables and laptop-lined window seats; busiest in the morning."
+footprint_m = [[8, 15], [10, 20]]
+floors = [1, 1]
+basement_pct = 10
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "dining_area", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [2, 5], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [1, 2], chance_pct = 60, when = ["evening"] },
+  { profile = "office_worker", count = [2, 20], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 12], when = ["weekday_day", "weekend_day"] },
+  { profile = "teen_student", count = [0, 6], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 6], chance_pct = 60, when = ["evening"] },
+  { profile = "jogger", count = [0, 2], when = ["weekend_day"] },
+]
+outdoor = ["downtown_street", "parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.food"]
+
+[building.gas_station]
+desc = "A filling station: a canopy over fuel pumps fed by underground tanks, a convenience store with drinks coolers, a propane exchange cage; older stations keep a service bay."
+footprint_m = [[12, 25], [10, 20]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "grocery_floor", count = [1, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 2], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 1], chance_pct = 45, when = ["night"] },
+  { profile = "mechanic", count = [1, 2], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [0, 5], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "construction_worker", count = [0, 2], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [0, 1], when = ["weekday_day"] },
+  { profile = "trucker", count = [0, 1], when = ["weekday_day", "evening", "night"] },
+  { profile = "at_home_adult", count = [0, 2], chance_pct = 45, when = ["night"] },
+]
+outdoor = ["gas_station_forecourt", "parking_lot"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+store_chains = ["orrins"]
+tags = ["cat.building.retail", "cat.building.fuel"]
+
+[building.laundromat]
+desc = "A self-service laundromat: banks of coin washers and big dryers, folding tables, a soap vending machine and an attendant's counter."
+footprint_m = [[10, 20], [15, 30]]
+floors = [1, 1]
+basement_pct = 10
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "laundry_room", count = [2, 5], floor = "ground" },
+  { room = "checkout", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 1], chance_pct = 60, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 8], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [2, 12], when = ["weekend_day"] },
+  { profile = "retiree", count = [0, 3], when = ["weekday_day"] },
+  { profile = "child_student", count = [0, 3], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 12, when = ["night"] },
+]
+outdoor = ["parking_lot", "downtown_street"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.service"]
+
+[building.strip_mall]
+desc = "A one-storey strip of 4-12 small shop units under one flat roof facing a parking lot: nail salon, takeout, dollar store, phone shop, tax office, laundromat, vacant units."
+footprint_m = [[60, 200], [18, 30]]
+floors = [1, 1]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "store_floor_generic", count = [3, 10], floor = "ground" },
+  { room = "checkout", count = [2, 8], floor = "ground" },
+  { room = "dining_area", count = [0, 3], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 3], floor = "ground" },
+  { room = "laundry_room", count = [0, 2], floor = "ground" },
+  { room = "private_office", count = [1, 5], floor = "ground" },
+  { room = "stockroom", count = [3, 12], floor = "ground" },
+  { room = "restroom_public", count = [2, 10], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [5, 30], when = ["weekday_day", "weekend_day"] },
+  { profile = "retail_worker", count = [2, 15], when = ["evening"] },
+  { profile = "cook", count = [0, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "office_worker", count = [0, 8], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [5, 50], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [10, 80], when = ["weekend_day"] },
+  { profile = "retiree", count = [1, 12], when = ["weekday_day", "weekend_day"] },
+  { profile = "child_student", count = [0, 10], when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [0, 10], when = ["weekend_day", "evening"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 15, when = ["night"] },
+]
+outdoor = ["parking_lot", "alley"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.composite"]

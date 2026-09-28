@@ -1,0 +1,210 @@
+# Domain C modifiers and detail tables: clothing, bags, personal effects, hygiene, medical.
+# N011 leanness: sizes, colours, occupational markings, drug kinds and keepsake subjects are
+# generated here instead of being separate archetypes. Shared tables used by these items and
+# defined elsewhere: clothing_colour, clothing_print, fabric_pattern (details.toml).
+
+# ---- variants --------------------------------------------------------------------------------
+
+[modifier.child_size]
+kind = "variant"
+applies_to = { tags_any = ["cat.clothing", "cat.bag"] }
+name_part = { slot = "variant", text = "child's", order = 19 }
+desc = "sized for a child"
+ops = [ { path = "dims_mm", op = "mul", value = 0.6 }, { path = "mass_g", op = "mul", value = 0.35 } ]
+
+[modifier.faux_leather]
+kind = "material"
+applies_to = { items = ["leather_jacket"] }
+name_part = { slot = "variant", text = "faux", order = 24 }
+desc = "made of vinyl-coated fabric imitating leather"
+ops = [
+  { path = "composition.shell.material", op = "set", value = "flexible_pvc" },
+  { path = "armor.bite", op = "set", value = 2 },
+  { path = "armor.cut", op = "set", value = 2 },
+  { path = "durability", op = "add", value = -4 },
+  { path = "mass_g", op = "mul", value = 0.6 },
+  { path = "absorbs_water", op = "set", value = false },
+]
+
+# ---- clothing detail tables -----------------------------------------------------------------
+
+[detail_table.clothing_fit]
+applies_to = { tags_any = ["cat.clothing"] }
+chance_pct = 25
+pick = 1
+entries = [
+  { w = 5, text = "a size too big" },
+  { w = 4, text = "a little tight" },
+  { w = 3, text = "with the shop tags still attached" },
+  { w = 2, text = "patched at one elbow or knee" },
+  { w = 1, text = "with a name written on the label in marker", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.leather_look]
+applies_to = { tags_any = ["mat.textile"] }
+pick = 1
+entries = [
+  { w = 6, text = "in black leather" }, { w = 5, text = "in brown leather" },
+  { w = 3, text = "in oxblood leather" }, { w = 2, text = "scuffed pale at every edge" },
+  { w = 1, text = "hand-painted with a band logo on the back", add_tags = ["flavor.decorative"] },
+]
+
+[detail_table.scrubs_colour]
+applies_to = { items = ["scrubs_top", "scrubs_pants"] }
+pick = 1
+entries = [
+  { w = 6, text = "ceil blue" }, { w = 5, text = "navy" }, { w = 4, text = "hospital green" },
+  { w = 3, text = "wine red" }, { w = 2, text = "teal" },
+  { w = 2, text = "printed with cartoon animals (paediatrics)" },
+]
+
+[detail_table.uniform_marking]
+applies_to = { items = ["hi_vis_vest", "police_vest", "firefighter_coat", "coveralls"] }
+chance_pct = 70
+pick = 1
+entries = [
+  { w = 5, text = "with a blank front and faded reflective tape" },
+  { w = 4, text = "lettered POLICE across the back", add_tags = ["flavor.readable"] },
+  { w = 3, text = "lettered SECURITY across the back", add_tags = ["flavor.readable"] },
+  { w = 3, text = "with an embroidered name patch over the chest", add_tags = ["flavor.readable"] },
+  { w = 2, text = "stencilled with a county road department's name", add_tags = ["flavor.readable"] },
+  { w = 2, text = "marked with an engine company number", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.eyeglasses_kind]
+applies_to = { items = ["eyeglasses"] }
+pick = 1
+entries = [
+  { w = 6, text = "strong short-sighted lenses that shrink the world" },
+  { w = 4, text = "reading glasses with thick magnifying lenses" },
+  { w = 2, text = "tinted prescription sunglasses" },
+  { w = 1, text = "with one lens cracked and the arm taped", add_tags = ["state.damaged"] },
+]
+
+# ---- bags and personal effects --------------------------------------------------------------
+
+[detail_table.bag_decoration]
+applies_to = { tags_any = ["cat.bag"] }
+chance_pct = 50
+pick = 1
+entries = [
+  { w = 5, text = "covered in enamel pins" },
+  { w = 4, text = "with a name tag on the handle", add_tags = ["flavor.readable"] },
+  { w = 3, text = "with a key-ring charm dangling from the zip" },
+  { w = 2, text = "with a friendship bracelet tied to a strap", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.key_ring]
+applies_to = { tags_any = ["cat.personal.key"] }
+chance_pct = 60
+pick = 1
+entries = [
+  { w = 5, text = "on a ring with a supermarket loyalty tag" },
+  { w = 4, text = "on a ring with a bottle-opener fob" },
+  { w = 3, text = "with a paper tag: an address in neat handwriting", add_tags = ["flavor.readable"] },
+  { w = 2, text = "with a tiny photo-frame fob", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.phone_screen]
+applies_to = { items = ["smartphone"] }
+pick = 1
+entries = [
+  { w = 5, text = "The lock screen shows a family photo.", add_tags = ["flavor.sentimental"] },
+  { w = 4, text = "The screen is spider-webbed with cracks but still lights.", add_tags = ["state.damaged"] },
+  { w = 3, text = "Dozens of unanswered calls from 'Mom' fill the lock screen." },
+  { w = 2, text = "An unsent text reads: 'dont come home. stay where you are'", add_tags = ["flavor.readable"] },
+  { w = 1, text = "It is in a rugged rubber case." , ops = [ { path = "durability", op = "set", value = 7 } ] },
+]
+
+[detail_table.badge_employer]
+applies_to = { items = ["lanyard_badge"] }
+pick = 1
+entries = [
+  { w = 5, text = "for an office building downtown" },
+  { w = 4, text = "for the regional hospital, with a staff photo", add_tags = ["flavor.readable"] },
+  { w = 3, text = "for a school district: 'VISITOR'" },
+  { w = 3, text = "for a distribution warehouse, with a forklift certification sticker" },
+  { w = 2, text = "for the water treatment plant, with an 'ALL AREAS' stripe" },
+]
+
+[detail_table.photo_subject]
+applies_to = { items = ["photo"] }
+pick = 1
+entries = [
+  { w = 5, text = "Two children grinning on a backyard swing set." },
+  { w = 4, text = "A wedding couple under a white arch." },
+  { w = 3, text = "An elderly man holding up a large fish at a lake." },
+  { w = 3, text = "A school portrait against a mottled blue backdrop." },
+  { w = 2, text = "A dog asleep on a couch, labelled on the back in pen.", add_tags = ["flavor.readable"] },
+  { w = 1, text = "A house with a handwritten note: 'meet here if anything happens'", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.cash_wad]
+applies_to = { items = ["cash"] }
+pick = 1
+entries = [
+  { w = 6, text = "About forty dollars in small bills." },
+  { w = 3, text = "A couple of hundred dollars, folded in a money clip." },
+  { w = 1, text = "A thick rubber-banded roll someone was saving.", ops = [ { path = "units", op = "set", value = 60 }, { path = "mass_g", op = "set", value = 60 } ] },
+]
+
+[detail_table.jewelry_kind]
+applies_to = { items = ["jewelry"] }
+pick = 1
+entries = [
+  { w = 5, text = "A wedding band, engraved inside.", add_tags = ["flavor.sentimental"] },
+  { w = 4, text = "A gold-coloured chain necklace." },
+  { w = 3, text = "A pair of stud earrings and a bracelet." },
+  { w = 2, text = "A locket holding a tiny photograph.", add_tags = ["flavor.sentimental", "flavor.photo"] },
+  { w = 2, text = "A class ring with a red stone." },
+]
+
+[detail_table.cigarette_pack]
+applies_to = { items = ["cigarettes"] }
+pick = 1
+entries = [
+  { w = 5, text = "Half the pack is gone.", ops = [ { path = "units", op = "set", value = 10 } ] },
+  { w = 3, text = "Still sealed in cellophane." },
+  { w = 2, text = "Menthols, with a lottery ticket tucked in the cellophane." },
+  { w = 1, text = "Only two left, and a book of matches tucked inside.", ops = [ { path = "units", op = "set", value = 2 } ] },
+]
+
+[detail_table.stuffed_toy_kind]
+applies_to = { items = ["stuffed_toy"] }
+pick = 1
+entries = [
+  { w = 5, text = "a brown teddy bear with a bald patch" }, { w = 4, text = "a floppy-eared rabbit" },
+  { w = 3, text = "a green dinosaur" }, { w = 2, text = "a unicorn with a glittery horn" },
+  { w = 1, text = "a bear wearing a hospital gown: 'GET WELL SOON'", add_tags = ["flavor.readable"] },
+]
+
+# ---- hygiene and medical --------------------------------------------------------------------
+
+[detail_table.perfume_note]
+applies_to = { items = ["perfume_bottle", "deodorant_spray"] }
+pick = 1
+entries = [
+  { w = 5, text = "smelling of powdery florals" }, { w = 4, text = "smelling of cedar and musk" },
+  { w = 3, text = "smelling sharply of citrus" }, { w = 2, text = "smelling of vanilla, cloyingly sweet" },
+]
+
+[detail_table.painkiller_kind]
+applies_to = { items = ["painkillers"] }
+pick = 1
+entries = [
+  { w = 6, text = "Ibuprofen, 200 mg tablets." },
+  { w = 5, text = "Acetaminophen, 500 mg caplets." },
+  { w = 3, text = "Low-dose aspirin (thins the blood: worse for bleeding).", ops = [ { path = "medical.pain", op = "set", value = 2 } ] },
+  { w = 2, text = "Naproxen, long-acting.", ops = [ { path = "medical.pain", op = "set", value = 5 }, { path = "medical.doses", op = "set", value = 24 }, { path = "units", op = "set", value = 24 } ] },
+  { w = 1, text = "A leftover prescription opioid, a few tablets left.", add_tags = ["flavor.readable"], ops = [ { path = "medical.pain", op = "set", value = 8 }, { path = "medical.doses", op = "set", value = 8 }, { path = "units", op = "set", value = 8 } ] },
+]
+
+[detail_table.antibiotic_kind]
+applies_to = { items = ["antibiotics"] }
+pick = 1
+entries = [
+  { w = 5, text = "Amoxicillin, a full course unused." },
+  { w = 4, text = "Cephalexin, half a course left.", ops = [ { path = "medical.doses", op = "set", value = 10 }, { path = "units", op = "set", value = 10 } ] },
+  { w = 3, text = "Doxycycline, broad-spectrum.", ops = [ { path = "medical.antibiotic", op = "set", value = 8 } ] },
+  { w = 1, text = "Expired years ago, kept 'just in case'.", ops = [ { path = "medical.antibiotic", op = "set", value = 4 } ] },
+]

@@ -1,0 +1,185 @@
+# Emergency vehicles: struggle-hotspot loot sources (N007 emergency_scene). Their gear (shotgun
+# racks, trauma bags, tools) comes from world loot tables later, so no `contents` here.
+# Sirens and light bars run off the vehicle battery while it holds charge.
+
+[item.police_cruiser]
+name = "police cruiser"
+parent = "car_sedan"
+tags = ["cat.vehicle.police", "from.police", "from.street"]
+dims_mm = [5100, 1900, 1500]
+mass_g = 1900000
+desc = "A marked patrol car with a roof light bar, push bumper and a cage behind the front seats."
+glyph = "obj.police_car"
+why = "Loot source (long-gun rack, trunk gear, via world loot); siren is a battery-powered lure; light bar lights a scene."
+details = ["police_livery", "vehicle_condition"]
+value_class = "valuable"
+
+[item.police_cruiser.features.fuel_tank]
+capacity_ml = 70000
+[item.police_cruiser.features.lock]
+tier = 4
+[item.police_cruiser.features.light]
+radius_m = 40
+beam = "omni"
+fuel = "battery"
+
+[item.police_cruiser.capabilities]
+noise = 10
+
+[item.ambulance]
+name = "ambulance"
+tags = ["cat.vehicle.ambulance", "from.medical", "from.street", "use.salvage", "use.shelter"]
+shape = "complex"
+dims_mm = [7000, 2900, 2450]
+mass_g = 5200000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A box-body ambulance with a patient compartment full of cabinets and a stretcher cot."
+glyph = "obj.ambulance"
+why = "Medical loot source (via world loot); stretcher cot to sleep on; siren lure; a lockable aluminium box."
+brand_cats = ["vehicles", "trucks"]
+details = ["ambulance_livery", "vehicle_condition"]
+value_class = "valuable"
+
+[item.ambulance.composition.box]
+material = "aluminum"
+share = 26
+[item.ambulance.composition.chassis]
+material = "mild_steel"
+share = 35
+[item.ambulance.composition.engine]
+material = "cast_iron"
+share = 12
+[item.ambulance.composition.interior]
+material = "polypropylene"
+share = 8
+[item.ambulance.composition.tyres]
+material = "rubber"
+share = 6
+[item.ambulance.composition.windows]
+material = "tempered_glass"
+share = 2
+[item.ambulance.composition.cot]
+material = "pu_foam"
+share = 2
+[item.ambulance.composition.upholstery]
+material = "flexible_pvc"
+share = 1
+[item.ambulance.composition.batteries]
+material = "lead"
+share = 2
+salvage = { item = "car_battery", count = 2, tool = "fasten>=2", time_s = 900 }
+[item.ambulance.composition.fuel_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 2, tool = "fasten>=2", time_s = 600 }
+[item.ambulance.composition.springs]
+material = "carbon_steel"
+share = 5
+salvage = { item = "leaf_spring", count = 2, tool = "fasten>=4", time_s = 3600 }
+
+[item.ambulance.features.fuel_tank]
+capacity_ml = 208000
+fuel = ["gasoline"]
+drain = "siphon"
+[item.ambulance.features.container]
+capacity_ml = 10000000
+closable = true
+compat = ["solid"]
+[item.ambulance.features.seat]
+comfort = 5
+sleepable = true
+[item.ambulance.features.lock]
+tier = 3
+keyed = true
+pickable = true
+[item.ambulance.features.light]
+radius_m = 40
+beam = "omni"
+fuel = "battery"
+[item.ambulance.features.climbable]
+difficulty = 4
+height_mm = 2900
+
+[item.ambulance.capabilities]
+noise = 10
+
+[item.fire_engine]
+name = "fire engine"
+tags = ["cat.vehicle.fire", "from.fire_service", "from.street", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [10500, 3100, 2500]
+mass_g = 18000000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A pumper fire engine with roll-up equipment compartments, a ground ladder rack and an onboard water tank."
+glyph = "obj.fire_engine"
+why = "Carries ~2800 L of water (drain valve), a big diesel tank, a ground ladder and tools (via world loot); siren lure."
+brand_cats = ["trucks"]
+details = ["fire_engine_livery", "vehicle_condition"]
+value_class = "valuable"
+
+[item.fire_engine.composition.chassis]
+material = "mild_steel"
+share = 46
+[item.fire_engine.composition.body]
+material = "aluminum"
+share = 15
+[item.fire_engine.composition.engine]
+material = "cast_iron"
+share = 12
+[item.fire_engine.composition.pump]
+material = "brass"
+share = 3
+[item.fire_engine.composition.water_tank]
+material = "polypropylene"
+share = 5
+[item.fire_engine.composition.tyres]
+material = "rubber"
+share = 5
+[item.fire_engine.composition.plumbing]
+material = "rubber"
+share = 5
+salvage = { item = "rubber_hose", count = 4, tool = "fasten>=3", time_s = 1200 }
+[item.fire_engine.composition.ladders]
+material = "aluminum"
+share = 5
+salvage = { item = "extension_ladder", count = 1, tool = "none", time_s = 120 }
+[item.fire_engine.composition.windows]
+material = "tempered_glass"
+share = 1
+[item.fire_engine.composition.batteries]
+material = "lead"
+share = 2
+salvage = { item = "car_battery", count = 2, tool = "fasten>=3", time_s = 1200 }
+[item.fire_engine.composition.seats]
+material = "pu_foam"
+share = 1
+
+[item.fire_engine.features.fuel_tank]
+capacity_ml = 250000
+fuel = ["diesel"]
+drain = "valve"
+[item.fire_engine.features.container]
+capacity_ml = 2840000
+closable = true
+watertight = true
+compat = ["liquid"]
+[item.fire_engine.features.valve]
+needs = "none"
+[item.fire_engine.features.light]
+radius_m = 50
+beam = "omni"
+fuel = "battery"
+[item.fire_engine.features.climbable]
+difficulty = 2
+height_mm = 3100
+
+[item.fire_engine.capabilities]
+noise = 10
+
+[item.fire_engine.contents]
+substance = "water"
+fill_pct = [0, 100]

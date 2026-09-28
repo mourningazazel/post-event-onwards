@@ -1,0 +1,183 @@
+# Domain E feasibility chains: vehicles, street, garden, farm, outdoors, sports, weapons.
+# Each step binds real content to a registry action; tools/content/test.py checks every role.
+
+[chain.tractor_diesel_siphon]
+title = "Siphon diesel from a farm tractor into a gas can"
+source = "survival-actions.md §2.10 (drain a vehicle tank)"
+
+[[chain.tractor_diesel_siphon.steps]]
+action = "siphon"
+bind = { tube = "rubber_hose", source = "tractor", dest = "gas_can", liquid = "diesel" }
+fuel = "diesel"
+
+[chain.pickup_tank_puncture]
+title = "No hose? Punch a pitchfork tine through a pickup's plastic fuel tank"
+source = "survival-actions.md §2.10"
+
+[[chain.pickup_tank_puncture.steps]]
+action = "puncture_tank"
+bind = { tool = "pitchfork", source = "pickup_truck" }
+
+[[chain.pickup_tank_puncture.steps]]
+action = "fill_container"
+bind = { dest = "gas_can", liquid = "gasoline" }
+
+[chain.alley_escape_over_dumpster]
+title = "Climb a dumpster, then a chain-link fence, then a privacy fence to lose a crowd"
+source = "survival-actions.md §2.1 (climb)"
+
+[[chain.alley_escape_over_dumpster.steps]]
+action = "climb"
+bind = { fixture = "dumpster" }
+
+[[chain.alley_escape_over_dumpster.steps]]
+action = "climb"
+bind = { fixture = "chain_link_fence" }
+
+[[chain.alley_escape_over_dumpster.steps]]
+action = "climb"
+bind = { fixture = "wooden_fence" }
+
+[chain.fireworks_lure]
+title = "Light a fireworks cake and throw it down the block as a noise lure"
+source = "survival-actions.md §2.3 (fireworks or flares)"
+
+[[chain.fireworks_lure.steps]]
+action = "light_fire_source"
+bind = { igniter = "lighter" }
+
+[[chain.fireworks_lure.steps]]
+action = "throw_noise_lure"
+bind = { item = "fireworks" }
+expect_range_min = 5
+
+[[chain.fireworks_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "fireworks" }
+
+[chain.gnome_lure]
+title = "Lob a ceramic garden gnome across the street: it shatters loudly"
+source = "survival-actions.md §2.3 (throw something that breaks)"
+
+[[chain.gnome_lure.steps]]
+action = "throw_noise_lure"
+bind = { item = "garden_gnome" }
+expect_impact = "shatter"
+expect_range_min = 6
+
+[chain.flare_in_rain]
+title = "Strike a road flare in the rain and toss it onto a gasoline spill"
+source = "survival-actions.md §2.5; road_flare fails_when_wet = false (pinned)"
+
+[[chain.flare_in_rain.steps]]
+action = "light_fire_source"
+bind = { igniter = "road_flare" }
+
+[[chain.flare_in_rain.steps]]
+action = "ignite_tile"
+bind = { igniter = "road_flare", fuel = "gasoline" }
+
+[chain.hay_bale_wall]
+title = "Wall off a barn door with hay bales; set the wall alight if it's overrun"
+source = "survival-actions.md §2.4 (barricade), §2.5 (burn a barricade)"
+
+[[chain.hay_bale_wall.steps]]
+action = "block_with_furniture"
+bind = { furniture = "hay_bale" }
+
+[[chain.hay_bale_wall.steps]]
+action = "make_fire"
+bind = { igniter = "lighter", tinder = "hay_bale", fuel = "hay_bale" }
+
+[chain.tree_rope_descent]
+title = "Climb a yard tree, tie the garden hose to it and lower yourself over the wall"
+source = "survival-actions.md §2.1 (climb, descend by rope), §4.7"
+
+[[chain.tree_rope_descent.steps]]
+action = "climb"
+bind = { fixture = "tree" }
+
+[[chain.tree_rope_descent.steps]]
+action = "rope_descent"
+bind = { rope = "garden_hose", anchor = "tree" }
+
+[chain.air_horn_tripwire]
+title = "String barbed wire across a gap, rigged to an air horn"
+source = "survival-actions.md §2.4 (tripwire alarms)"
+
+[[chain.air_horn_tripwire.steps]]
+action = "tripwire_alarm"
+bind = { wire = "barbed_wire", noisemaker = "air_horn" }
+
+[chain.fence_planks_barricade]
+title = "Pry pickets off a wooden fence and nail them over a window"
+source = "survival-actions.md §4.3"
+
+[[chain.fence_planks_barricade.steps]]
+action = "disassemble"
+bind = { target = "wooden_fence", tool = "crowbar" }
+yields = "wood_plank"
+
+[[chain.fence_planks_barricade.steps]]
+action = "barricade_opening"
+bind = { boards = "wood_plank", fasteners = "nails_box", tool = "claw_hammer" }
+
+[chain.trekking_pole_spear]
+title = "Tape a kitchen knife to a trekking pole"
+source = "content-model §7; survival-actions.md §4.5"
+
+[[chain.trekking_pole_spear.steps]]
+action = "attach"
+bind = { base = "trekking_pole", head = "kitchen_knife", fastener = "duct_tape" }
+
+[chain.backyard_water]
+title = "Fill a pot from the rain barrel and boil it on a charcoal grill"
+source = "survival-actions.md §2.6"
+
+[[chain.backyard_water.steps]]
+action = "fill_container"
+bind = { dest = "cooking_pot", liquid = "water_untreated" }
+
+[[chain.backyard_water.steps]]
+action = "purify_water_boil"
+bind = { pot = "cooking_pot", heat = "charcoal_grill" }
+
+[chain.suv_alarm_lure]
+title = "Set off a parked SUV's alarm and slip away while it wails"
+source = "survival-actions.md §2.3 (trigger a car alarm)"
+
+[[chain.suv_alarm_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "suv" }
+
+[chain.tractor_diesel_match]
+title = "Negative control: diesel siphoned from the tractor and spilled won't catch from a match"
+source = "survival-actions.md §4.1 realism note; diesel flash point 52 C (siphon step itself is proven by tractor_diesel_siphon)"
+expect_fail = true
+
+[[chain.tractor_diesel_match.steps]]
+action = "siphon"
+bind = { tube = "rubber_hose", source = "tractor", dest = "gas_can", liquid = "diesel" }
+fuel = "diesel"
+
+[[chain.tractor_diesel_match.steps]]
+action = "ignite_tile"
+bind = { igniter = "matchbook", fuel = "diesel" }
+
+[chain.throw_shopping_cart]
+title = "Negative control: a 16 kg shopping cart can't be thrown"
+source = "M4 throwing mass limit"
+expect_fail = true
+
+[[chain.throw_shopping_cart.steps]]
+action = "throw"
+bind = { item = "shopping_cart" }
+
+[chain.bicycle_barricade]
+title = "Negative control: a 14 kg bicycle is too light to block a door"
+source = "M17 blocking mass"
+expect_fail = true
+
+[[chain.bicycle_barricade.steps]]
+action = "block_with_furniture"
+bind = { furniture = "bicycle" }

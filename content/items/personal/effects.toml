@@ -1,0 +1,252 @@
+# Personal effects found on people and bodies (world-catalog §6.C; content-model §3.1 pockets).
+# Domain C. Keys are real relationships: generation links each key to a door or vehicle through
+# its generation address (G01 D1.5); the archetype only says "this is a key".
+
+[item.wallet]
+name = "wallet"
+tags = ["cat.personal.wallet", "from.bedroom", "from.street", "from.vehicle", "use.container"]
+shape = "bag"
+dims_mm = [110, 90, 15]
+mass_g = 90
+fill_pct = 60
+absorbs_water = true
+absorbs_scent = true
+durability = 7
+desc = "A worn bifold leather wallet."
+glyph = "item.wallet"
+why = "Holds ID, cash, cards and photos (wallet_contents loot, authored later): the story of whoever carried it."
+brand_cats = ["clothing_formal"]
+details = ["leather_look"]
+value_class = "common"
+
+[item.wallet.composition.leather]
+material = "leather"
+share = 90
+[item.wallet.composition.lining]
+material = "polyester"
+share = 10
+
+[item.wallet.features.container]
+capacity_ml = 100
+max_mass_g = 300
+max_dim_mm = 110
+opening_mm = 100
+closable = true
+compat = ["solid"]
+
+[item.house_key]
+name = "house key"
+tags = ["cat.personal.key", "from.bedroom", "from.street", "from.living", "use.key"]
+shape = "small"
+dims_mm = [55, 22, 2]
+mass_g = 10
+desc = "A nickel-plated brass door key."
+glyph = "item.key"
+why = "Opens one real door in the world (M10, P-IT-06): a key on a body leads to its home."
+details = ["key_ring"]
+value_class = "useful"
+
+[item.house_key.composition.key]
+material = "brass"
+share = 100
+
+[item.car_key]
+name = "car key"
+tags = ["cat.personal.key", "from.street", "from.vehicle", "from.bedroom", "use.key"]
+shape = "small"
+dims_mm = [80, 35, 15]
+mass_g = 35
+desc = "A car key with a remote fob: lock, unlock and a red panic button."
+glyph = "item.key"
+why = "Opens and starts one real vehicle (M10); the panic button sets off that car's alarm from a distance (remote lure; vocabulary proposal)."
+brand_cats = ["vehicles"]
+details = ["key_ring"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 1, rechargeable = false }
+
+[item.car_key.composition.fob]
+material = "abs"
+share = 60
+[item.car_key.composition.blade]
+material = "mild_steel"
+share = 30
+[item.car_key.composition.circuit]
+material = "copper"
+share = 10
+
+[item.smartphone]
+name = "smartphone"
+tags = ["cat.electronics.phone", "from.bedroom", "from.street", "from.office", "from.vehicle", "use.light_source", "use.lure", "flavor.readable"]
+shape = "complex"
+dims_mm = [150, 72, 8]
+mass_g = 190
+fill_pct = 80
+desc = "A glass-fronted touchscreen smartphone; no signal since the event."
+glyph = "item.phone"
+why = "Torch, timed alarm lure and clock while the battery lasts (M9, M11, M13); messages and photos tell the owner's last hours."
+brand_cats = ["phones"]
+details = ["phone_screen"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 15, rechargeable = true }
+reactions = { impact = { low = "none", medium = "crack", high = "shatter" } }
+
+[item.smartphone.composition.frame]
+material = "aluminum"
+share = 35
+[item.smartphone.composition.screen]
+material = "glass"
+share = 25
+[item.smartphone.composition.back]
+material = "polycarbonate"
+share = 20
+[item.smartphone.composition.circuit]
+material = "copper"
+share = 20
+
+[item.smartphone.features.light]
+radius_m = 4
+beam = "cone"
+duration_min = 300
+fuel = "battery"
+[item.smartphone.features.alarm]
+loudness = "loud"
+timer = true
+trigger = "timer"
+[item.smartphone.features.readable]
+kind = "note"
+
+[item.smartphone.capabilities]
+timekeep = 7
+
+[item.lanyard_badge]
+name = "ID badge"
+tags = ["cat.personal.id", "from.office", "from.medical", "from.school", "from.industrial", "flavor.readable", "slot.neck"]
+shape = "small"
+dims_mm = [120, 86, 10]
+mass_g = 20
+fill_pct = 15
+desc = "A photo ID card in a clear holder on a woven lanyard."
+glyph = "item.badge"
+why = "Names the wearer and their workplace (story, M21); badge readers need power (keycard vocabulary proposed)."
+details = ["badge_employer"]
+value_class = "junk"
+
+[item.lanyard_badge.composition.card]
+material = "pvc"
+share = 60
+[item.lanyard_badge.composition.lanyard]
+material = "polyester"
+share = 35
+[item.lanyard_badge.composition.clip]
+material = "mild_steel"
+share = 5
+
+[item.lanyard_badge.features.readable]
+kind = "label"
+[item.lanyard_badge.features.wearable]
+slot = "neck"
+layer = "accessory"
+coverage = []
+
+[item.photo]
+name = "photograph"
+tags = ["cat.personal.photo", "from.bedroom", "from.living", "from.office", "flavor.photo", "flavor.sentimental"]
+shape = "sheet"
+dims_mm = [152, 102, 1]
+mass_g = 4
+desc = "A creased 4x6 photo print."
+glyph = "item.photo"
+why = "World-building (N004): who someone loved; generation fills the subject."
+details = ["photo_subject"]
+value_class = "junk"
+
+[item.photo.composition.print]
+material = "paper"
+share = 100
+
+[item.photo.features.readable]
+kind = "photo"
+
+[item.cash]
+name = "cash"
+tags = ["cat.personal.cash", "from.bedroom", "from.street", "from.retail", "from.office", "use.tinder"]
+shape = "sheet"
+dims_mm = [156, 66, 3]
+mass_g = 15
+units = 15
+desc = "A folded wad of banknotes."
+glyph = "item.cash"
+why = "Early-aftermath looting target (ADR-0009) that is now worth nothing but good tinder; amounts via detail table."
+details = ["cash_wad"]
+value_class = "common"
+
+[item.cash.composition.notes]
+material = "paper"
+share = 100
+
+[item.jewelry]
+name = "jewelry"
+tags = ["cat.personal.jewelry", "from.bedroom", "from.retail", "flavor.collectible"]
+shape = "small"
+dims_mm = [60, 50, 20]
+mass_g = 40
+fill_pct = 30
+desc = "A small tangle of jewellery."
+glyph = "item.jewelry"
+why = "Looters' priority (value_class drives aftermath looting, ADR-0009); rings and lockets tell stories."
+details = ["jewelry_kind"]
+value_class = "valuable"
+
+[item.jewelry.composition.metal]
+material = "brass"
+share = 70
+[item.jewelry.composition.stones]
+material = "glass"
+share = 20
+[item.jewelry.composition.clasps]
+material = "stainless_steel"
+share = 10
+
+[item.cigarettes]
+name = "pack of cigarettes"
+tags = ["cat.personal.tobacco", "from.gas_station", "from.retail", "from.living", "from.street", "use.tinder"]
+shape = "block"
+dims_mm = [88, 55, 22]
+mass_g = 25
+units = 20
+desc = "A crushable paperboard pack of twenty filter cigarettes."
+glyph = "item.cigarettes"
+why = "Comfort and flavour; dry tobacco and paper are tinder; a lit cigarette is a slow ember (emits smoke when lit)."
+details = ["cigarette_pack"]
+value_class = "common"
+
+[item.cigarettes.composition.paper]
+material = "paper"
+share = 55
+[item.cigarettes.composition.tobacco]
+material = "food_dry"   # stand-in for dried leaf (no tobacco/plant material yet)
+share = 45
+
+[item.stuffed_toy]
+name = "stuffed toy"
+tags = ["cat.personal.toy", "from.bedroom", "from.retail", "from.vehicle", "flavor.sentimental"]
+shape = "fabric"
+dims_mm = [300, 200, 150]
+mass_g = 250
+fill_pct = 5
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+desc = "A well-loved plush toy with stitched eyes."
+glyph = "item.toy"
+why = "Children's rooms and cars (world-building, N004); stuffing muffles a noisy object when packed around it."
+brand_cats = ["toys"]
+details = ["stuffed_toy_kind"]
+value_class = "junk"
+
+[item.stuffed_toy.composition.plush]
+material = "polyester"
+share = 100
+
+[item.stuffed_toy.capabilities]
+cushion = 3

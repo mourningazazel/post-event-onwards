@@ -1,0 +1,110 @@
+# Industrial room types (world-catalog §3), pre-event baseline.
+
+[room.warehouse_floor]
+desc = "A warehouse floor: pallet racking and floor pallets, forklifts, drums, hand trucks."
+size_m2 = [500, 10000]
+floor = "ground"
+tags = ["from.industrial"]
+objects = [
+  { item = "metal_shelving", count = [10, 100], contains = ["warehouse_pallet"] },
+  { item = "pallet", count = [10, 120], contains = ["warehouse_pallet"] },
+  { item = "forklift", count = [1, 6] },
+  { item = "hand_truck", count = [2, 8] },
+  { item = "drum_55gal", count = [0, 20] },
+  { item = "fire_extinguisher", count = [2, 10] },
+]
+
+[room.workshop]
+desc = "A repair or fabrication workshop: workbenches and tool chests, parts shelving, a welder, a car on the lift."
+size_m2 = [30, 300]
+floor = "ground"
+tags = ["from.industrial", "from.garage"]
+objects = [
+  { item = "workbench", count = [1, 6], contains = ["workbench_tools"] },
+  { item = "toolbox", count = [1, 4], contains = ["workbench_tools"] },
+  { item = "metal_shelving", count = [2, 8], contains = ["garage_shelf"] },
+  { item = "metal_shelving", count = [1, 4], contains = ["factory_parts"] },
+  { item = "metal_shelving", count = [0, 4], contains = ["auto_parts_stock"] },
+  { item = "arc_welder", count = [1, 1], chance_pct = 50 },
+  { item = "car_sedan", count = [1, 2], chance_pct = 40 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 25 },
+  { item = "drum_55gal", count = [0, 4] },
+  { item = "portable_generator", count = [1, 1], chance_pct = 15 },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.loading_dock]
+desc = "A loading dock: inbound pallets, hand trucks and a forklift, flattened boxes."
+size_m2 = [40, 300]
+floor = "ground"
+tags = ["from.industrial"]
+objects = [
+  { item = "pallet", count = [4, 30], contains = ["warehouse_pallet"] },
+  { item = "hand_truck", count = [1, 4] },
+  { item = "forklift", count = [1, 1], chance_pct = 60 },
+  { item = "delivery_van", count = [1, 1], chance_pct = 25 },
+  { item = "cardboard_box", count = [5, 30] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.factory_floor]
+desc = "A factory floor: workbenches and parts racks, drums of oil, forklifts, workers' lockers."
+size_m2 = [500, 8000]
+floor = "ground"
+tags = ["from.industrial"]
+objects = [
+  { item = "workbench", count = [4, 20], contains = ["factory_parts"] },
+  { item = "metal_shelving", count = [4, 20], contains = ["factory_parts"] },
+  { item = "pallet", count = [5, 40], contains = ["warehouse_pallet"] },
+  { item = "drum_55gal", count = [2, 20] },
+  { item = "forklift", count = [1, 4] },
+  { item = "arc_welder", count = [0, 4] },
+  { item = "metal_locker", count = [5, 40], contains = ["pockets_generic"] },
+  { item = "fire_extinguisher", count = [2, 12] },
+]
+
+[room.boiler_room]
+desc = "A boiler or mechanical room: boilers and water heaters, a maintenance shelf and bench."
+size_m2 = [15, 80]
+floor = "basement"
+tags = ["from.utility"]
+objects = [
+  { item = "water_heater", count = [1, 3] },
+  { item = "metal_shelving", count = [1, 2], chance_pct = 60, contains = ["garage_shelf"] },
+  { item = "workbench", count = [1, 1], chance_pct = 40, contains = ["workbench_tools"] },
+  { item = "drum_55gal", count = [0, 3] },
+  { item = "fire_extinguisher", count = [1, 1] },
+]
+
+[room.storage_unit]
+desc = "A self-storage unit: someone's boxed life, spare furniture, and whatever they did not want at home."
+size_m2 = [5, 30]
+floor = "ground"
+tags = ["from.living"]
+objects = [
+  { item = "cardboard_box", count = [4, 30], contains = ["attic_boxes"] },
+  { item = "plastic_tub", count = [0, 10], contains = ["attic_boxes"] },
+  { item = "sofa", count = [1, 1], chance_pct = 30 },
+  { item = "mattress", count = [1, 1], chance_pct = 30 },
+  { item = "dresser", count = [1, 1], chance_pct = 30, contains = ["dresser_clothes"] },
+  { item = "dining_table", count = [1, 1], chance_pct = 20 },
+  { item = "metal_shelving", count = [1, 1], chance_pct = 30, contains = ["garage_shelf"] },
+  { item = "motorcycle", count = [1, 1], chance_pct = 5 },
+  { item = "safe", count = [1, 1], chance_pct = 3, contains = ["home_safe"] },
+]
+loose = ["storage_unit_extras"]
+
+[room.control_room]
+desc = "A control or security room: consoles and monitors, the camera recorder, radios, binders."
+size_m2 = [15, 60]
+floor = "any"
+tags = ["from.utility", "from.office"]
+objects = [
+  { item = "desk", count = [2, 6], contains = ["office_desk"] },
+  { item = "office_chair", count = [2, 6] },
+  { item = "desktop_pc", count = [2, 8] },
+  { item = "security_camera_dvr", count = [1, 1], chance_pct = 70 },
+  { item = "filing_cabinet", count = [1, 3], contains = ["desk_clutter"] },
+  { item = "metal_shelving", count = [1, 1], chance_pct = 50, contains = ["walkie_talkie", "flashlight", "emergency_radio"] },
+  { item = "fire_extinguisher", count = [1, 1] },
+]

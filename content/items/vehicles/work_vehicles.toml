@@ -1,0 +1,156 @@
+# Work and yard machines: farm, warehouse and lawn equipment as world objects.
+
+[item.tractor]
+name = "farm tractor"
+tags = ["cat.vehicle.tractor", "from.farm", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [4000, 2800, 2100]
+mass_g = 3800000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A utility tractor with a roll-over cab, huge rear tyres and cast-iron wheel weights."
+glyph = "obj.tractor"
+why = "Diesel to siphon, hydraulic hoses, a battery, a drawbar anchor; a lookout perch in open fields."
+brand_cats = ["vehicles"]
+details = ["vehicle_paint", "vehicle_condition"]
+value_class = "valuable"
+
+[item.tractor.composition.castings]
+material = "cast_iron"
+share = 45
+[item.tractor.composition.sheet]
+material = "mild_steel"
+share = 20
+[item.tractor.composition.tyres]
+material = "rubber"
+share = 15
+[item.tractor.composition.hydraulic_lines]
+material = "rubber"
+share = 2
+salvage = { item = "rubber_hose", count = 3, tool = "fasten>=3", time_s = 1200 }
+[item.tractor.composition.battery]
+material = "lead"
+share = 2
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.tractor.composition.cab_glass]
+material = "tempered_glass"
+share = 3
+[item.tractor.composition.seat]
+material = "pu_foam"
+share = 1
+[item.tractor.composition.interior]
+material = "polypropylene"
+share = 2
+[item.tractor.composition.weights]
+material = "cast_iron"
+share = 10
+
+[item.tractor.features.fuel_tank]
+capacity_ml = 150000
+fuel = ["diesel"]
+drain = "siphon"
+[item.tractor.features.climbable]
+difficulty = 2
+height_mm = 2800
+[item.tractor.features.anchor]
+max_load_g = 3000000
+
+[item.forklift]
+name = "forklift"
+tags = ["cat.vehicle.forklift", "from.industrial", "use.salvage", "hazard.pressurized", "hazard.flammable"]
+shape = "complex"
+dims_mm = [3400, 2150, 1200]
+mass_g = 4200000
+fixed = true
+blocks = "full"
+pressurized = true
+desc = "A counterbalanced warehouse forklift with a propane cylinder strapped across the back."
+glyph = "obj.forklift"
+why = "Its quick-release propane cylinder is a portable fuel supply (and a bomb in a fire); massive counterweight blocks a doorway."
+details = ["vehicle_condition"]
+value_class = "useful"
+
+[item.forklift.composition.counterweight]
+material = "cast_iron"
+share = 55
+[item.forklift.composition.frame]
+material = "mild_steel"
+share = 26
+[item.forklift.composition.mast]
+material = "carbon_steel"
+share = 8
+[item.forklift.composition.tyres]
+material = "rubber"
+share = 5
+[item.forklift.composition.lpg_cylinder]
+material = "mild_steel"
+share = 3
+salvage = { item = "propane_tank", count = 1, tool = "none", time_s = 120 }
+[item.forklift.composition.battery]
+material = "lead"
+share = 1
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.forklift.composition.hoses]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.forklift.composition.seat]
+material = "pu_foam"
+share = 1
+
+[item.forklift.features.fuel_tank]
+capacity_ml = 30000
+fuel = ["propane"]
+drain = "valve"
+[item.forklift.features.climbable]
+difficulty = 2
+height_mm = 2150
+
+[item.riding_mower]
+name = "riding mower"
+tags = ["cat.vehicle.mower", "from.garden", "from.garage", "from.farm", "use.salvage"]
+shape = "complex"
+dims_mm = [1800, 1300, 1100]
+mass_g = 200000
+blocks = "partial"
+use_noise = "very_loud"
+desc = "A lawn tractor with a 42-inch cutting deck and a small gasoline tank under the seat."
+glyph = "obj.riding_mower"
+why = "A few litres of gasoline, a small 12 V battery and mower blades; rolls in neutral."
+details = ["vehicle_condition"]
+value_class = "useful"
+
+[item.riding_mower.composition.deck]
+material = "mild_steel"
+share = 35
+[item.riding_mower.composition.frame]
+material = "mild_steel"
+share = 20
+[item.riding_mower.composition.engine]
+material = "aluminum"
+share = 15
+[item.riding_mower.composition.body]
+material = "abs"
+share = 10
+[item.riding_mower.composition.tyres]
+material = "rubber"
+share = 8
+[item.riding_mower.composition.seat]
+material = "pu_foam"
+share = 2
+[item.riding_mower.composition.blades]
+material = "carbon_steel"
+share = 4
+[item.riding_mower.composition.fuel_tank]
+material = "hdpe"
+share = 3
+[item.riding_mower.composition.battery]
+material = "lead"
+share = 3
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 300, set = { mass_g = 9000, dims_mm = [200, 175, 130], power_source = { voltage = "dc_12v", capacity_wh = 300, rechargeable = true } } }
+
+[item.riding_mower.features.fuel_tank]
+capacity_ml = 11000
+fuel = ["gasoline"]
+drain = "siphon"

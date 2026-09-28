@@ -98,3 +98,107 @@ count = 2
 
 [item.alarm_clock.capabilities]
 timekeep = 5
+
+# ---- domain D additions (world-catalog §6.D) ----
+
+[item.washing_machine]
+name = "washing machine"
+tags = ["cat.appliance.laundry", "from.living", "from.garage", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [1070, 690, 680]
+mass_g = 70000
+hollow = true
+blocks = "full"
+blocks_sight = false
+desc = "A front-loading washing machine with a porthole door."
+glyph = "obj.washer"
+why = "Salvage: fill hoses, drive motor and suspension springs; concrete counterweight makes it a heavy barricade."
+brand_cats = ["appliances"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 500 }
+
+[item.washing_machine.composition.cabinet]
+material = "mild_steel"
+share = 35
+[item.washing_machine.composition.counterweight]
+material = "concrete"
+share = 30
+[item.washing_machine.composition.drum]
+material = "stainless_steel"
+share = 12
+[item.washing_machine.composition.tub]
+material = "polypropylene"
+share = 8
+[item.washing_machine.composition.motor]
+material = "copper"
+share = 8
+salvage = { item = "electric_motor", count = 1, tool = "fasten>=2", time_s = 900 }
+[item.washing_machine.composition.fill_hoses]
+material = "rubber"
+share = 3
+salvage = { item = "rubber_hose", count = 2, tool = "none", time_s = 120 }
+[item.washing_machine.composition.springs]
+material = "carbon_steel"
+share = 2
+salvage = { item = "steel_spring", count = 2, tool = "fasten>=2", time_s = 600 }
+[item.washing_machine.composition.door_glass]
+material = "tempered_glass"
+share = 2
+
+[item.washing_machine.features.container]
+capacity_ml = 60000
+opening_mm = 300
+closable = true
+watertight = true
+compat = ["solid", "liquid"]
+
+[item.washing_machine.contents]
+substance = "water_foul"
+fill_pct = [0, 10]
+
+[item.clothes_dryer]
+name = "clothes dryer"
+tags = ["cat.appliance.laundry", "from.living", "from.garage", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [1070, 690, 680]
+mass_g = 50000
+hollow = true
+fill_pct = 5
+blocks = "full"
+blocks_sight = false
+desc = "An electric tumble dryer, lint screen furred with grey fluff."
+glyph = "obj.dryer"
+why = "Salvage: drive motor and heating element; the lint screen is prime tinder; heavy blocking box."
+brand_cats = ["appliances"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 5000 }
+
+[item.clothes_dryer.composition.cabinet]
+material = "mild_steel"
+share = 55
+[item.clothes_dryer.composition.drum]
+material = "mild_steel"
+share = 25
+[item.clothes_dryer.composition.motor]
+material = "copper"
+share = 10
+salvage = { item = "electric_motor", count = 1, tool = "fasten>=2", time_s = 900 }
+[item.clothes_dryer.composition.heating_element]
+material = "stainless_steel"
+share = 4
+[item.clothes_dryer.composition.belt]
+material = "rubber"
+share = 2
+[item.clothes_dryer.composition.lint_screen]
+material = "polyester"
+share = 1
+salvage = { item = "dryer_lint", count = 1, tool = "none", time_s = 5 }
+[item.clothes_dryer.composition.panel]
+material = "abs"
+share = 3
+
+[item.clothes_dryer.features.container]
+capacity_ml = 110000
+opening_mm = 380
+closable = true
+compat = ["solid"]

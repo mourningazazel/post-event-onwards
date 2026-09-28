@@ -101,3 +101,21 @@ value_class = "common"
 [item.bedsheet.composition.cloth]
 material = "cotton"
 share = 100
+
+# ---- domain D additions (world-catalog §6.D) ----
+
+[item.dryer_lint]
+name = "wad of dryer lint"
+tags = ["cat.fire.tinder", "from.living", "use.tinder"]
+shape = "small"
+dims_mm = [60, 40, 10]
+mass_g = 3
+fill_pct = 8
+desc = "A grey felted wad of cotton lint peeled off a dryer screen."
+glyph = "item.lint"
+why = "Classic survival tinder: catches a ferro-rod spark where paper won't."
+value_class = "junk"
+
+[item.dryer_lint.composition.fibre]
+material = "cotton"
+share = 100

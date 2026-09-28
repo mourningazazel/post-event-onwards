@@ -1,0 +1,186 @@
+# Barriers, fences, poles and big boxes: movement, sight lines, climbing and anchoring
+# (M17, M19). Barbed tops and overgrowth come from modifiers/outdoor_vehicles.toml.
+
+[item.jersey_barrier]
+name = "jersey barrier"
+tags = ["cat.street.barrier", "from.street", "from.construction", "use.barricade"]
+shape = "block"
+dims_mm = [3050, 810, 610]
+mass_g = 1900000
+fill_pct = 55
+fixed = true
+blocks = "partial"
+desc = "A ten-foot precast concrete highway divider with a sloped face."
+glyph = "obj.jersey_barrier"
+why = "Stops vehicles and slows crowds; waist-high, so people climb over it and you can see over it."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.jersey_barrier.composition.concrete]
+material = "concrete"
+share = 97
+[item.jersey_barrier.composition.rebar]
+material = "mild_steel"
+share = 3
+
+[item.jersey_barrier.features.climbable]
+difficulty = 1
+height_mm = 810
+
+[item.guardrail]
+name = "guardrail"
+tags = ["cat.street.guardrail", "from.street", "use.salvage"]
+shape = "complex"
+dims_mm = [3810, 700, 350]
+mass_g = 60000
+fill_pct = 1
+fixed = true
+blocks = "partial"
+desc = "A section of galvanised W-beam guardrail on a steel post."
+glyph = "obj.guardrail"
+why = "Knee-high line that trips crowds; posts are anchors; the beam unbolts into heavy scrap steel."
+value_class = "junk"
+
+[item.guardrail.composition.beam]
+material = "mild_steel"
+share = 60
+salvage = { item = "scrap_metal", count = 4, tool = "fasten>=4", time_s = 1800 }
+[item.guardrail.composition.post]
+material = "mild_steel"
+share = 40
+
+[item.guardrail.features.climbable]
+difficulty = 0
+height_mm = 700
+[item.guardrail.features.anchor]
+max_load_g = 1500000
+
+[item.utility_pole]
+name = "utility pole"
+tags = ["cat.street.pole", "from.street", "from.utility", "hazard.electrical"]
+shape = "rod"
+dims_mm = [12000, 2400, 300]
+mass_g = 500000
+fill_pct = 20
+fixed = true
+blocks = "partial"
+desc = "A creosoted wooden pole with a crossarm, insulators and sagging lines."
+glyph = "obj.utility_pole"
+why = "Unbreakable rope anchor; climbable only with real effort (steps start high); downed lines are a shock hazard while the grid is live."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.utility_pole.composition.pole]
+material = "softwood"
+share = 97
+[item.utility_pole.composition.hardware]
+material = "mild_steel"
+share = 3
+
+[item.utility_pole.features.climbable]
+difficulty = 8
+height_mm = 12000
+[item.utility_pole.features.anchor]
+max_load_g = 2000000
+
+[item.chain_link_fence]
+name = "chain-link fence"
+tags = ["cat.street.fence", "from.street", "from.industrial", "from.school"]
+shape = "sheet"
+dims_mm = [3000, 1830, 60]
+mass_g = 20000
+fill_pct = 1
+fixed = true
+blocks = "full"
+desc = "A ten-foot panel of six-foot galvanised chain-link between steel posts."
+glyph = "obj.fence_chain"
+why = "Blocks movement but not sight; the mesh gives toeholds, so it's an easy, rattling climb."
+modifiers = ["barbed_top", "vine_covered"]
+value_class = "junk"
+
+[item.chain_link_fence.composition.mesh]
+material = "mild_steel"
+share = 55
+[item.chain_link_fence.composition.posts]
+material = "mild_steel"
+share = 45
+
+[item.chain_link_fence.features.climbable]
+difficulty = 3
+height_mm = 1830
+[item.chain_link_fence.features.anchor]
+max_load_g = 500000
+
+[item.wooden_fence]
+name = "wooden fence"
+tags = ["cat.street.fence", "from.garden", "from.street", "use.salvage", "use.barricade"]
+shape = "sheet"
+dims_mm = [2440, 1830, 90]
+mass_g = 50000
+fill_pct = 25
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "An eight-foot section of six-foot pine privacy fence, pickets nailed to three rails."
+glyph = "obj.fence_wood"
+why = "Blocks sight and movement; no toeholds so a harder climb; pry the pickets off for barricade planks."
+modifiers = ["vine_covered"]
+value_class = "common"
+
+[item.wooden_fence.composition.pickets]
+material = "softwood"
+share = 60
+salvage = { item = "wood_plank", count = 6, tool = "pry>=4", time_s = 600, set = { dims_mm = [1830, 140, 16], mass_g = 2000 } }
+[item.wooden_fence.composition.rails]
+material = "softwood"
+share = 25
+salvage = { item = "wood_plank", count = 3, tool = "pry>=4", time_s = 600, set = { dims_mm = [2440, 89, 38], mass_g = 4100 } }
+[item.wooden_fence.composition.posts]
+material = "softwood"
+share = 12
+[item.wooden_fence.composition.nails]
+material = "mild_steel"
+share = 3
+
+[item.wooden_fence.features.climbable]
+difficulty = 4
+height_mm = 1830
+
+[item.shipping_container]
+name = "shipping container"
+tags = ["cat.street.shipping_container", "from.industrial", "use.shelter", "use.barricade"]
+shape = "container"
+dims_mm = [6058, 2591, 2438]
+mass_g = 2300000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A twenty-foot steel intermodal container with cargo doors held by locking bars."
+glyph = "obj.shipping_container"
+why = "Weatherproof steel room: lockable stash or refuge, sheer 2.6 m walls, freight loot inside."
+modifiers = ["container_40ft"]
+details = ["street_graffiti"]
+value_class = "useful"
+
+[item.shipping_container.composition.walls]
+material = "mild_steel"
+share = 88
+[item.shipping_container.composition.floor]
+material = "plywood"
+share = 10
+[item.shipping_container.composition.seals]
+material = "rubber"
+share = 2
+
+[item.shipping_container.features.container]
+capacity_ml = 33200000
+closable = true
+watertight = true
+compat = ["solid"]
+[item.shipping_container.features.lock]
+tier = 4
+keyed = true
+pickable = true
+[item.shipping_container.features.climbable]
+difficulty = 6
+height_mm = 2591

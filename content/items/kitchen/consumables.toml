@@ -1,0 +1,131 @@
+# Kitchen consumables: bags, foil, towels, soap (domain A). Each is one pack; `units` counts
+# what's inside. Only kept because each has survival uses beyond its kitchen job (N011).
+
+[item.trash_bags]
+name = "box of trash bags"
+tags = ["cat.household.bags", "from.kitchen", "from.grocery", "from.garage", "use.container", "use.shelter"]
+shape = "block"
+dims_mm = [250, 130, 75]
+mass_g = 700
+units = 40
+desc = "A box of forty 13-gallon drawstring trash bags."
+glyph = "item.box"
+why = "Rain catchment liners, ground sheets, emergency ponchos and bulk carry sacks; scent-proofing for bodies and waste."
+brand_cats = ["household"]
+value_class = "useful"
+
+[item.trash_bags.composition.bags]
+material = "ldpe"
+share = 90
+[item.trash_bags.composition.box]
+material = "paper"
+share = 10
+
+[item.trash_bags.features.container]
+capacity_ml = 49000
+opening_mm = 600
+closable = true
+sealable = false
+compat = ["liquid", "granular", "solid"]
+
+[item.trash_bags.capabilities]
+waterproof = 6                     # override: a bag with head and arm holes is a real emergency poncho
+
+[item.aluminum_foil]
+name = "aluminum foil"
+tags = ["cat.household.foil", "from.kitchen", "from.grocery", "use.cooking"]
+shape = "block"
+dims_mm = [310, 50, 50]
+mass_g = 380
+heat_resistant = true
+desc = "A 75-square-foot roll of aluminum foil in a box with a serrated edge."
+glyph = "item.foil"
+why = "Foil-packet cooking in coals, heat reflectors, lid for any pot, and blacking out windows so light doesn't show."
+brand_cats = ["household"]
+value_class = "common"
+
+[item.aluminum_foil.composition.foil]
+material = "aluminum"
+share = 80
+[item.aluminum_foil.composition.box]
+material = "paper"
+share = 20
+
+[item.zip_bags]
+name = "box of zip bags"
+tags = ["cat.household.bags", "from.kitchen", "from.grocery", "use.container"]
+shape = "block"
+dims_mm = [170, 90, 70]
+mass_g = 180
+fill_pct = 20                      # folded film in a mostly empty dispenser carton
+units = 20
+desc = "A box of twenty quart-size freezer bags with press-to-seal zippers."
+glyph = "item.box"
+why = "Waterproof pouches for matches, medicine and paper; seals a meat lure's scent until you open it."
+brand_cats = ["household"]
+value_class = "common"
+
+[item.zip_bags.composition.bags]
+material = "ldpe"
+share = 75
+[item.zip_bags.composition.box]
+material = "paper"
+share = 25
+
+[item.zip_bags.features.container]
+capacity_ml = 950
+opening_mm = 170
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid", "granular", "solid"]
+
+[item.paper_towels]
+name = "roll of paper towels"
+tags = ["cat.household.paper", "from.kitchen", "from.grocery", "from.office", "from.restaurant", "use.tinder"]
+shape = "block"
+dims_mm = [280, 140, 140]
+mass_g = 200
+fill_pct = 6                       # loosely wound paper: bulk density ~0.05 g/cm3
+desc = "A fat roll of two-ply paper towels."
+glyph = "item.paper_towels"
+why = "Dry tinder that catches from a match; mops spills and cleans wounds' surroundings (not sterile)."
+brand_cats = ["paper_goods"]
+value_class = "common"
+
+[item.paper_towels.composition.towel]
+material = "paper"
+share = 95
+[item.paper_towels.composition.core]
+material = "cardboard"
+share = 5
+
+[item.dish_soap]
+name = "dish soap"
+tags = ["cat.household.cleaner", "from.kitchen", "from.grocery", "from.restaurant", "use.soap", "use.hygiene"]
+shape = "container"
+dims_mm = [230, 80, 50]
+mass_g = 35
+desc = "A squeeze bottle of grease-cutting dish soap with a flip cap."
+glyph = "item.bottle"
+why = "Washes absorbed scent off skin and clothes (M14); makes floors slick."
+brand_cats = ["household"]
+value_class = "common"
+
+[item.dish_soap.composition.bottle]
+material = "pet"
+share = 85
+[item.dish_soap.composition.cap]
+material = "polypropylene"
+share = 15
+
+[item.dish_soap.features.container]
+capacity_ml = 590
+opening_mm = 8
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.dish_soap.contents]
+substance = "soap_liquid"
+fill_pct = [10, 100]

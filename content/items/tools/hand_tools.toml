@@ -106,3 +106,683 @@ girth_mm = 20
 [item.adjustable_wrench.capabilities]
 fasten = 4
 grip_tool = 2
+
+# ---------------------------------------------------------------- domain B additions
+# Capability overrides (authored values win over derived ones) are commented with the
+# derived value and the reason. derive.py ignores cross-section, so thin plates (saw blades)
+# and long wooden-handled heads over-score on pry/hammer; see the domain report.
+
+[item.sledgehammer]
+name = "sledgehammer"
+tags = ["cat.tool.hand", "from.construction", "from.garage", "from.farm", "from.fire_service", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [910, 200, 65]
+mass_g = 4500
+fill_pct = 20                      # a long thin handle with a block at one end
+durability = 10
+balance = "head"
+desc = "An eight-pound double-faced sledge on a yard-long hickory handle."
+glyph = "item.sledgehammer"
+why = "Maximum blunt force: breaks locks, hinges, block walls and car windows; slow, tiring, very loud."
+brand_cats = ["tools"]
+modifiers = ["heavy_duty", "cheap"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+
+[item.sledgehammer.composition.head]
+material = "carbon_steel"
+share = 80
+[item.sledgehammer.composition.handle]
+material = "hardwood"
+share = 20
+salvage = { item = "tool_handle", count = 1, tool = "hammer>=3", time_s = 300 }
+
+[item.sledgehammer.features.grip]
+hands = 2
+girth_mm = 38
+[item.sledgehammer.features.striking_face]
+area_mm2 = 2800
+
+# pry: derived 9 (steel head, long rod). A sledge has no thin lip to get under anything and
+# the lever load would go through a wooden handle.
+[item.sledgehammer.capabilities]
+pry = 3
+
+[item.hatchet]
+name = "hatchet"
+tags = ["cat.tool.hand", "from.garage", "from.outdoors", "from.garden", "from.farm", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [380, 160, 30]
+mass_g = 900
+fill_pct = 25
+durability = 8
+balance = "head"
+desc = "A one-handed hatchet with a hammer poll and a hickory handle."
+glyph = "item.hatchet"
+why = "Chops kindling and small limbs, drives stakes with the poll; light one-handed chopping weapon."
+brand_cats = ["tools", "outdoors"]
+modifiers = ["cheap", "heavy_duty"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+
+[item.hatchet.composition.head]
+material = "carbon_steel"
+share = 65
+salvage = { item = "hatchet_head", count = 1, tool = "hammer>=3", time_s = 300 }
+[item.hatchet.composition.handle]
+material = "hardwood"
+share = 35
+
+[item.hatchet.features.edge]
+length_mm = 90
+sharpness = 7
+[item.hatchet.features.striking_face]
+area_mm2 = 700
+[item.hatchet.features.grip]
+hands = 1
+girth_mm = 32
+
+[item.axe]
+name = "axe"
+tags = ["cat.tool.hand", "from.garage", "from.farm", "from.outdoors", "from.fire_service", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [900, 190, 45]
+mass_g = 2400
+fill_pct = 15
+durability = 9
+balance = "head"
+desc = "A full-size single-bit felling axe on a 36-inch hickory handle."
+glyph = "item.axe"
+why = "Best chopping tool: fells trees, splits firewood, hacks through doors and stud walls; heavy two-handed weapon."
+brand_cats = ["tools", "outdoors"]
+modifiers = ["cheap", "heavy_duty"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+
+[item.axe.composition.head]
+material = "carbon_steel"
+share = 66
+[item.axe.composition.handle]
+material = "hardwood"
+share = 34
+salvage = { item = "tool_handle", count = 1, tool = "hammer>=3", time_s = 300 }
+
+[item.axe.features.edge]
+length_mm = 115
+sharpness = 7
+[item.axe.features.grip]
+hands = 2
+girth_mm = 35
+
+# pry: derived 9. Firefighters do lever with the axe bit, but the wooden handle limits it.
+[item.axe.capabilities]
+pry = 7
+
+[item.handsaw]
+name = "handsaw"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool"]
+shape = "blade"
+dims_mm = [610, 150, 30]
+mass_g = 500
+fill_pct = 10
+durability = 7
+desc = "A 20-inch crosscut saw with coarse teeth and a plastic handle."
+glyph = "item.saw"
+why = "Cuts lumber, plywood, branches and drywall to size (barricades, splints, firewood); useless on metal."
+brand_cats = ["tools"]
+modifiers = ["cheap"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.handsaw.composition.blade]
+material = "carbon_steel"
+share = 70
+[item.handsaw.composition.handle]
+material = "polypropylene"
+share = 30
+
+[item.handsaw.features.saw_edge]
+length_mm = 500
+coarse = true
+[item.handsaw.features.grip]
+hands = 1
+girth_mm = 30
+
+# Derived pry 9 / hammer 6 treat a 1 mm springy plate as a solid steel bar.
+[item.handsaw.capabilities]
+pry = 1
+hammer = 1
+
+[item.hacksaw]
+name = "hacksaw"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "from.industrial", "use.tool"]
+shape = "complex"
+dims_mm = [450, 110, 25]
+mass_g = 600
+fill_pct = 5
+durability = 7
+desc = "A steel-framed hacksaw holding a fine-toothed 12-inch bi-metal blade."
+glyph = "item.hacksaw"
+why = "Cuts metal: pipe, rebar, chain, bolts, padlock shackles. Slow but quiet compared to a grinder."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.hacksaw.composition.frame]
+material = "mild_steel"
+share = 70
+[item.hacksaw.composition.blade]
+material = "tool_steel"
+share = 10
+[item.hacksaw.composition.handle]
+material = "polypropylene"
+share = 20
+
+[item.hacksaw.features.saw_edge]
+length_mm = 300
+coarse = false
+[item.hacksaw.features.grip]
+hands = 1
+girth_mm = 30
+
+# hammer: derived 6; an open tubular frame is not a striking tool.
+[item.hacksaw.capabilities]
+hammer = 2
+
+[item.pliers]
+name = "pliers"
+tags = ["cat.tool.hand", "from.garage", "from.kitchen", "from.construction", "from.vehicle", "use.tool"]
+shape = "complex"
+dims_mm = [200, 55, 18]
+mass_g = 250
+fill_pct = 20
+durability = 8
+desc = "A pair of slip-joint pliers with vinyl-dipped handles."
+glyph = "item.pliers"
+why = "Grips, twists and bends: tightens wire joints to full Hold, pulls nails and staples, turns small nuts."
+brand_cats = ["tools"]
+modifiers = ["cheap"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.pliers.composition.body]
+material = "carbon_steel"
+share = 88
+[item.pliers.composition.grips]
+material = "flexible_pvc"
+share = 12
+
+[item.pliers.features.grip]
+hands = 1
+girth_mm = 22
+
+[item.pliers.capabilities]
+grip_tool = 5
+fasten = 2
+
+[item.locking_pliers]
+name = "locking pliers"
+tags = ["cat.tool.hand", "from.garage", "from.vehicle", "from.industrial", "use.tool"]
+shape = "complex"
+dims_mm = [250, 80, 25]
+mass_g = 450
+fill_pct = 15
+durability = 9
+desc = "Ten-inch locking pliers with a knurled adjusting screw and a release lever."
+glyph = "item.pliers"
+why = "Clamps and stays clamped: turns rounded bolts and stripped valve stems, holds work, acts as a spare handle."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.locking_pliers.composition.body]
+material = "carbon_steel"
+share = 100
+
+[item.locking_pliers.features.grip]
+hands = 1
+girth_mm = 24
+
+[item.locking_pliers.capabilities]
+grip_tool = 8
+fasten = 3
+
+[item.wire_cutters]
+name = "wire cutters"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "from.utility", "use.tool"]
+shape = "complex"
+dims_mm = [200, 60, 18]
+mass_g = 220
+fill_pct = 20
+durability = 8
+desc = "Eight-inch diagonal cutters with hardened jaws."
+glyph = "item.cutters"
+why = "Snips steel wire, fence wire, zip ties and cable cleanly; opens chain-link fences quietly."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.wire_cutters.composition.head]
+material = "carbon_steel"
+share = 55
+[item.wire_cutters.composition.handles]
+material = "carbon_steel"
+share = 30
+[item.wire_cutters.composition.grips]
+material = "flexible_pvc"
+share = 15
+
+[item.wire_cutters.features.edge]
+length_mm = 20
+sharpness = 8
+[item.wire_cutters.features.grip]
+hands = 1
+girth_mm = 22
+
+[item.wire_cutters.capabilities]
+grip_tool = 2
+
+[item.bolt_cutters]
+name = "bolt cutters"
+tags = ["cat.tool.hand", "from.construction", "from.industrial", "from.fire_service", "from.police", "use.tool"]
+shape = "complex"
+dims_mm = [610, 180, 40]
+mass_g = 2300
+fill_pct = 8
+durability = 9
+desc = "Twenty-four-inch bolt cutters with long tubular handles and short hardened jaws."
+glyph = "item.bolt_cutters"
+why = "Compound-lever jaws shear chain, cable, fence and cheap padlock shackles in seconds; quiet access tool."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+
+[item.bolt_cutters.composition.head]
+material = "tool_steel"
+share = 30
+[item.bolt_cutters.composition.handles]
+material = "mild_steel"
+share = 60
+[item.bolt_cutters.composition.grips]
+material = "rubber"
+share = 10
+
+[item.bolt_cutters.features.edge]
+length_mm = 25
+sharpness = 8
+[item.bolt_cutters.features.grip]
+hands = 2
+girth_mm = 30
+
+# chop: derived 7 (edge x heavy tool). Shearing jaws cannot hack when swung.
+[item.bolt_cutters.capabilities]
+chop = 1
+
+[item.utility_knife]
+name = "utility knife"
+tags = ["cat.tool.knife", "from.garage", "from.construction", "from.office", "from.retail", "use.tool"]
+shape = "blade"
+dims_mm = [160, 30, 18]
+mass_g = 180
+fill_pct = 30
+durability = 6
+units = 5                          # spare replacement blades stored in the handle
+desc = "A die-cast retractable box cutter with spare blades stored in the handle."
+glyph = "item.knife_utility"
+why = "Razor-sharp and replaceable: cuts rope, hose, tarp, carpet, drywall and cardboard to size; poor weapon."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.utility_knife.composition.body]
+material = "aluminum"
+share = 80
+[item.utility_knife.composition.blade]
+material = "carbon_steel"
+share = 15
+[item.utility_knife.composition.grip]
+material = "rubber"
+share = 5
+
+[item.utility_knife.features.edge]
+length_mm = 25
+sharpness = 9
+[item.utility_knife.features.point]
+sharpness = 7
+width_mm = 2
+[item.utility_knife.features.grip]
+hands = 1
+girth_mm = 25
+
+# cut: derived 6 (keenness 9 x 7). Keen but no leverage: it can't shear steel wire or chain
+# the way cutters can (derive.py has no force term; see report).
+[item.utility_knife.capabilities]
+cut = 5
+
+[item.chisel]
+name = "wood chisel"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool"]
+shape = "rod"
+dims_mm = [250, 25, 25]
+mass_g = 200
+fill_pct = 40
+durability = 7
+desc = "A one-inch bevel-edge wood chisel with a strike cap on the handle."
+glyph = "item.chisel"
+why = "Pares wood, cuts hinge and lock mortises, and pries small gaps (window sashes, trim) others can't reach."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.chisel.composition.blade]
+material = "carbon_steel"
+share = 60
+[item.chisel.composition.handle]
+material = "polypropylene"
+share = 40
+
+[item.chisel.features.edge]
+length_mm = 25
+sharpness = 8
+[item.chisel.features.grip]
+hands = 1
+girth_mm = 30
+
+# cut: derived 6. A wood chisel pared against steel just chips its edge.
+[item.chisel.capabilities]
+cut = 5
+
+[item.metal_file]
+name = "metal file"
+tags = ["cat.tool.hand", "from.garage", "from.industrial", "from.farm", "use.tool"]
+shape = "rod"
+dims_mm = [300, 25, 6]
+mass_g = 200
+durability = 9
+desc = "A ten-inch mill bastard file with a push-on handle."
+glyph = "item.file"
+why = "Sharpens axes, shovels and mower blades; shapes metal slowly (key blanks, points on rebar)."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.metal_file.composition.blade]
+material = "tool_steel"
+share = 90
+[item.metal_file.composition.handle]
+material = "polypropylene"
+share = 10
+
+[item.metal_file.features.grip]
+hands = 1
+girth_mm = 28
+
+# pry: derived 5. A hardened file is glass-brittle and snaps when levered.
+[item.metal_file.capabilities]
+sharpen = 4
+pry = 1
+
+[item.whetstone]
+name = "whetstone"
+tags = ["cat.tool.hand", "from.kitchen", "from.garage", "from.outdoors", "use.tool"]
+shape = "block"
+dims_mm = [200, 50, 25]
+mass_g = 450
+desc = "A two-sided synthetic sharpening stone, coarse and fine."
+glyph = "item.whetstone"
+why = "Restores knife, axe and machete edges properly; blades dull with every use."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.whetstone.composition.stone]
+material = "ceramic"               # vitrified abrasive; brittle, cracks if dropped hard
+share = 100
+
+[item.whetstone.capabilities]
+sharpen = 7
+
+[item.tape_measure]
+name = "tape measure"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool"]
+shape = "complex"
+dims_mm = [80, 75, 40]
+mass_g = 350
+desc = "A 25-foot locking tape measure with a belt clip."
+glyph = "item.tape_measure"
+why = "Toolbox staple (world-building); measures gaps and boards; its spring-steel blade is a stiff probe or shim."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "junk"
+
+[item.tape_measure.composition.case]
+material = "abs"
+share = 50
+[item.tape_measure.composition.blade]
+material = "carbon_steel"
+share = 35
+[item.tape_measure.composition.spring]
+material = "carbon_steel"
+share = 15
+
+[item.tape_measure.features.strap]
+kind = "clip"
+load_g = 1000
+
+# hammer: derived 3; a hollow plastic case.
+[item.tape_measure.capabilities]
+hammer = 1
+
+[item.tire_iron]
+name = "tire iron"
+tags = ["cat.tool.hand", "from.vehicle", "from.garage", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [400, 150, 22]
+mass_g = 900
+fill_pct = 10
+durability = 10
+balance = "head"
+desc = "An L-shaped lug wrench with a socket on one end and a flat pry tip on the other."
+glyph = "item.tire_iron"
+why = "Removes wheel lug nuts, pops hubcaps and lids; found in almost every car trunk; heavy bludgeon."
+brand_cats = ["automotive"]
+value_class = "useful"
+
+[item.tire_iron.composition.bar]
+material = "carbon_steel"
+share = 100
+
+[item.tire_iron.features.grip]
+hands = 1
+girth_mm = 22
+
+[item.tire_iron.capabilities]
+fasten = 5                         # lug nuts and similar large nuts only (fixed socket)
+
+[item.pipe_wrench]
+name = "pipe wrench"
+tags = ["cat.tool.hand", "from.garage", "from.industrial", "from.utility", "from.construction", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [460, 110, 40]
+mass_g = 2300
+fill_pct = 15
+durability = 10
+balance = "head"
+desc = "An 18-inch cast-iron pipe wrench with serrated jaws."
+glyph = "item.wrench_pipe"
+why = "Turns pipe, big nuts and seized valves (water heater drains, gas shut-offs); a brutal club."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.pipe_wrench.composition.handle]
+material = "cast_iron"
+share = 70
+[item.pipe_wrench.composition.jaws]
+material = "carbon_steel"
+share = 30
+
+[item.pipe_wrench.features.grip]
+hands = 1
+girth_mm = 30
+
+# pry: derived 8. The jaws can't get under anything; it is a lever only as a cheater handle.
+[item.pipe_wrench.capabilities]
+fasten = 5
+grip_tool = 5
+pry = 3
+
+[item.shovel]
+name = "shovel"
+tags = ["cat.tool.garden", "from.garden", "from.garage", "from.construction", "from.farm", "use.tool", "use.weapon"]
+shape = "blade"
+dims_mm = [1480, 230, 80]
+mass_g = 2300
+fill_pct = 8
+durability = 8
+desc = "A long-handled round-point digging shovel."
+glyph = "item.shovel"
+why = "Digs pits, trenches and graves; moves sand, soil and rubble; the flat of the blade is a vicious weapon."
+brand_cats = ["tools"]
+modifiers = ["cheap", "heavy_duty"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.shovel.composition.blade]
+material = "carbon_steel"
+share = 55
+[item.shovel.composition.handle]
+material = "hardwood"
+share = 45
+salvage = { item = "tool_handle", count = 1, tool = "fasten>=2", time_s = 300 }
+
+[item.shovel.features.edge]
+length_mm = 230
+sharpness = 4
+[item.shovel.features.grip]
+hands = 2
+girth_mm = 35
+
+# pry: derived 9. Shovel blades bend when used as a pry bar.
+[item.shovel.capabilities]
+dig = 7
+scoop = 6
+pry = 5
+
+[item.pickaxe]
+name = "pickaxe"
+tags = ["cat.tool.garden", "from.construction", "from.farm", "from.garage", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [920, 460, 60]
+mass_g = 3400
+fill_pct = 8
+durability = 10
+balance = "head"
+desc = "A railroad pick with a five-pound head, pointed at one end and chisel-tipped at the other."
+glyph = "item.pickaxe"
+why = "Breaks hard ground, asphalt, frozen soil and masonry; digs where a shovel can't; heavy piercing weapon."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.pickaxe.composition.head]
+material = "carbon_steel"
+share = 68
+[item.pickaxe.composition.handle]
+material = "hardwood"
+share = 32
+salvage = { item = "tool_handle", count = 1, tool = "hammer>=3", time_s = 300 }
+
+[item.pickaxe.features.point]
+sharpness = 4
+width_mm = 12
+[item.pickaxe.features.grip]
+hands = 2
+girth_mm = 38
+
+# pry: derived 9; the wooden handle limits it, but the pick point is a good lever tip.
+[item.pickaxe.capabilities]
+dig = 8
+pry = 7
+
+[item.tin_snips]
+name = "tin snips"
+tags = ["cat.tool.hand", "from.construction", "from.garage", "from.industrial", "use.tool"]
+shape = "complex"
+dims_mm = [250, 80, 25]
+mass_g = 450
+fill_pct = 15
+durability = 8
+desc = "Compound-action aviation snips with color-coded grips."
+glyph = "item.snips"
+why = "Cuts sheet metal and flashing into plates (armour, patches, window covers) — nothing else in a toolbox does it cleanly."
+brand_cats = ["tools"]
+details = ["tool_wear_marks"]
+value_class = "useful"
+
+[item.tin_snips.composition.head]
+material = "carbon_steel"
+share = 60
+[item.tin_snips.composition.handles]
+material = "carbon_steel"
+share = 25
+[item.tin_snips.composition.grips]
+material = "flexible_pvc"
+share = 15
+
+[item.tin_snips.features.edge]
+length_mm = 35
+sharpness = 9
+[item.tin_snips.features.grip]
+hands = 1
+girth_mm = 25
+
+[item.hatchet_head]
+name = "hatchet head"
+tags = ["cat.tool.part.head", "from.garage", "from.farm", "use.salvage"]
+shape = "block"
+dims_mm = [160, 85, 30]
+mass_g = 600
+fill_pct = 25
+durability = 8
+desc = "A loose hatchet head, the broken stub of its handle still wedged in the eye."
+glyph = "item.axe_head"
+why = "Rehaft it on a tool handle, 2x4 or broom (Load vs Hold): a working hatchet again from a broken one."
+attach_surface = { kind = "smooth", contact_area_mm2 = 3000, wrap_girth_mm = 60 }
+value_class = "useful"
+
+[item.hatchet_head.composition.head]
+material = "carbon_steel"
+share = 100
+
+[item.hatchet_head.features.edge]
+length_mm = 90
+sharpness = 7
+[item.hatchet_head.features.striking_face]
+area_mm2 = 700
+
+[item.tool_handle]
+name = "hickory tool handle"
+tags = ["cat.tool.part.handle", "from.construction", "from.garage", "from.farm", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [710, 60, 35]
+mass_g = 700
+fill_pct = 50
+durability = 8
+desc = "A 28-inch replacement handle for axes, picks and sledges, sold with a steel wedge."
+glyph = "item.handle"
+why = "Rehafts found heads (Load vs Hold socket); the classic axe-handle club; spear haft."
+attach_surface = { kind = "porous", contact_area_mm2 = 12000, wrap_girth_mm = 150 }
+value_class = "common"
+
+[item.tool_handle.composition.handle]
+material = "hardwood"
+share = 100
+
+[item.tool_handle.features.grip]
+hands = 2
+girth_mm = 35
+[item.tool_handle.features.socket]
+end = "far"
+max_attach_mass_g = 4000
+max_attach_size_mm = 120
+accepts = ["blade", "block"]
+joints = ["epoxy", "wood_glue", "screw", "nail", "wire", "cord", "duct_tape"]

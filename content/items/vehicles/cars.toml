@@ -13,6 +13,7 @@ desc = "A mid-size four-door sedan."
 glyph = "obj.car"
 why = "Fuel (siphon), battery, hoses, trunk loot, car alarm lure, cover and barricade."
 brand_cats = ["vehicles"]
+details = ["vehicle_paint", "bumper_stickers", "vehicle_interior", "vehicle_condition"]
 value_class = "valuable"
 
 [item.car_sedan.composition.body]

@@ -1,0 +1,130 @@
+# Garden hand tools. Chainsaw and shovel belong to domain B (tools).
+
+[item.rake]
+name = "garden rake"
+tags = ["cat.garden.tool", "from.garden", "from.farm", "use.tool"]
+shape = "rod"
+dims_mm = [1680, 400, 90]
+mass_g = 1700
+fill_pct = 3
+durability = 7
+desc = "A steel bow rake with sixteen short tines on an ash handle."
+glyph = "item.rake"
+why = "Breaks and levels soil and gravel; long awkward reach weapon; tines-up, a classic yard hazard."
+brand_cats = ["tools"]
+value_class = "common"
+
+[item.rake.composition.head]
+material = "carbon_steel"
+share = 45
+[item.rake.composition.handle]
+material = "hardwood"
+share = 55
+
+[item.rake.features.grip]
+hands = 2
+girth_mm = 30
+[item.rake.features.point]
+sharpness = 2
+width_mm = 5
+
+[item.rake.capabilities]
+dig = 2
+scrape = 5
+
+[item.pitchfork]
+name = "pitchfork"
+tags = ["cat.garden.tool", "from.garden", "from.farm", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [1370, 260, 150]
+mass_g = 2000
+fill_pct = 3
+balance = "head"
+durability = 8
+desc = "A four-tine steel fork on a long ash handle."
+glyph = "item.pitchfork"
+why = "Two-handed piercing reach weapon that keeps a biter at arm's length; moves hay and loose material."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.pitchfork.composition.head]
+material = "carbon_steel"
+share = 50
+[item.pitchfork.composition.handle]
+material = "hardwood"
+share = 50
+
+[item.pitchfork.features.grip]
+hands = 2
+girth_mm = 35
+[item.pitchfork.features.point]
+sharpness = 5
+width_mm = 8
+
+[item.pitchfork.capabilities]
+scoop = 3
+
+[item.pruning_shears]
+name = "pruning shears"
+tags = ["cat.garden.tool", "from.garden", "use.tool"]
+shape = "blade"
+dims_mm = [210, 60, 20]
+mass_g = 250
+durability = 7
+desc = "Spring-loaded bypass hand pruners with aluminium handles."
+glyph = "item.shears"
+why = "Clean cuts through cord, hose, cloth and thin branches one-handed; quiet."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.pruning_shears.composition.blade]
+material = "carbon_steel"
+share = 40
+[item.pruning_shears.composition.handles]
+material = "aluminum"
+share = 50
+[item.pruning_shears.composition.spring]
+material = "mild_steel"
+share = 5
+[item.pruning_shears.composition.grips]
+material = "rubber"
+share = 5
+
+[item.pruning_shears.features.edge]
+length_mm = 60
+sharpness = 7
+[item.pruning_shears.features.grip]
+hands = 1
+girth_mm = 25
+
+[item.machete]
+name = "machete"
+tags = ["cat.tool.blade", "from.garden", "from.outdoors", "from.farm", "use.tool", "use.weapon"]
+shape = "blade"
+dims_mm = [610, 60, 25]
+mass_g = 550
+balance = "head"
+durability = 8
+desc = "An 18-inch carbon-steel machete with a moulded plastic grip."
+glyph = "item.machete"
+why = "Clears brush and hedges; a long one-handed chopping weapon that out-chops any knife."
+brand_cats = ["tools", "outdoors"]
+value_class = "valuable"
+attach_surface = { kind = "smooth", contact_area_mm2 = 4000, wrap_girth_mm = 90 }
+
+[item.machete.composition.blade]
+material = "carbon_steel"
+share = 80
+[item.machete.composition.handle]
+material = "polypropylene"
+share = 20
+
+[item.machete.features.edge]
+length_mm = 460
+sharpness = 6
+[item.machete.features.point]
+sharpness = 4
+width_mm = 50
+[item.machete.features.grip]
+hands = 1
+girth_mm = 32

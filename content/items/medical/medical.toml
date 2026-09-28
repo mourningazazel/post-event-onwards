@@ -1,0 +1,436 @@
+# Medical supplies (world-catalog §6.C; survival-actions §2.8, M15). Domain C.
+#
+# `medical` values, as used in this domain:
+#   bleed_stop, disinfect, pain, splint, antibiotic, burn_care: 0..10 effect strength
+#     (10 = purpose-built best in class: a windlass tourniquet on a limb bleed).
+#   sterile: 0..10 cleanliness of what touches the wound (10 = sealed sterile; ~3 = clean but
+#     not sterile; 0 = dirty or not a dressing).
+#   doses: number of uses in the item (tablets, dressings); `units` mirrors it for the UI.
+# Drug kinds and strengths come from detail tables (modifiers/clothing_personal.toml), not items.
+
+[item.bandage_box]
+name = "box of adhesive bandages"
+tags = ["cat.medical.dressing", "from.bathroom", "from.medical", "from.school", "from.office", "use.first_aid"]
+shape = "block"
+dims_mm = [100, 80, 40]
+mass_g = 60
+units = 30
+desc = "A carton of assorted sterile adhesive plasters."
+glyph = "item.bandage"
+why = "Covers small cuts and scrapes (M15): stops minor bleeding and keeps dirt out."
+medical = { bleed_stop = 2, sterile = 10, doses = 30 }
+brand_cats = ["first_aid"]
+value_class = "useful"
+
+[item.bandage_box.composition.carton]
+material = "cardboard"
+share = 30
+[item.bandage_box.composition.strips]
+material = "flexible_pvc"
+share = 40
+[item.bandage_box.composition.pads]
+material = "cotton"
+share = 20
+[item.bandage_box.composition.backing]
+material = "paper"
+share = 10
+
+[item.gauze_pads]
+name = "gauze pads"
+tags = ["cat.medical.dressing", "from.medical", "from.bathroom", "from.fire_service", "use.first_aid"]
+shape = "fabric"
+dims_mm = [110, 110, 50]
+mass_g = 45
+units = 10
+desc = "A pack of ten individually sealed sterile 4x4 gauze pads."
+glyph = "item.bandage"
+why = "The proper sterile dressing for real wounds (M15 bandage): packs and covers bleeding cuts and bites."
+medical = { bleed_stop = 5, sterile = 10, doses = 10 }
+brand_cats = ["first_aid"]
+value_class = "useful"
+
+[item.gauze_pads.composition.gauze]
+material = "cotton"
+share = 85
+[item.gauze_pads.composition.wrappers]
+material = "paper"
+share = 15
+
+[item.elastic_bandage]
+name = "elastic bandage"
+tags = ["cat.medical.dressing", "from.medical", "from.bathroom", "from.school", "use.first_aid"]
+shape = "fabric"
+dims_mm = [75, 55, 55]
+mass_g = 50
+desc = "A rolled woven elastic compression bandage with two metal clips."
+glyph = "item.bandage"
+why = "Holds dressings and splints in place and compresses sprains (binds a splint without tape)."
+medical = { bleed_stop = 2 }
+brand_cats = ["first_aid"]
+value_class = "useful"
+
+[item.elastic_bandage.composition.weave]
+material = "polyester"
+share = 60
+[item.elastic_bandage.composition.elastic]
+material = "rubber"
+share = 25
+[item.elastic_bandage.composition.cotton]
+material = "cotton"
+share = 15
+
+[item.elastic_bandage.capabilities]
+bind = 4
+
+[item.first_aid_kit]
+name = "first aid kit"
+tags = ["cat.medical.kit", "from.bathroom", "from.vehicle", "from.office", "from.school", "from.garage", "use.first_aid", "use.container"]
+shape = "container"
+dims_mm = [260, 190, 80]
+mass_g = 350
+desc = "A white hard-plastic first aid case with a green cross and a carry handle."
+glyph = "item.first_aid_kit"
+why = "A concentrated medical cache (M15): dressings, bandages, painkillers in one grab-and-go case."
+brand_cats = ["first_aid"]
+value_class = "valuable"
+
+[item.first_aid_kit.composition.case]
+material = "polypropylene"
+share = 90
+[item.first_aid_kit.composition.hinges]
+material = "mild_steel"
+share = 10
+
+[item.first_aid_kit.features.container]
+capacity_ml = 2500
+max_mass_g = 2000
+max_dim_mm = 240
+opening_mm = 240
+closable = true
+sealable = false
+compat = ["solid"]
+[item.first_aid_kit.features.grip]
+hands = 1
+girth_mm = 25
+
+[item.first_aid_kit.contents]
+items = ["bandage_box", "gauze_pads", "elastic_bandage", "painkillers", "burn_gel", "latex_gloves"]
+fill_pct = [30, 100]
+
+[item.painkillers]
+name = "painkillers"
+tags = ["cat.medical.medicine", "from.bathroom", "from.bedroom", "from.medical", "from.grocery", "from.office", "use.first_aid"]
+shape = "container"
+dims_mm = [95, 45, 45]
+mass_g = 30
+fill_pct = 20
+units = 50
+desc = "A child-proof bottle of over-the-counter pain relief tablets."
+glyph = "item.pills"
+why = "Dulls pain so an injured survivor can act (M15 pain); common in every home. Drug kind via detail table."
+medical = { pain = 4, doses = 50 }
+brand_cats = ["medicine"]
+details = ["painkiller_kind"]
+value_class = "useful"
+
+[item.painkillers.composition.bottle]
+material = "hdpe"
+share = 50
+[item.painkillers.composition.cap]
+material = "polypropylene"
+share = 10
+[item.painkillers.composition.tablets]
+material = "food_dry"   # starch/cellulose tablet mass (no pharmaceutical material)
+share = 40
+
+[item.antibiotics]
+name = "antibiotics"
+tags = ["cat.medical.medicine", "from.medical", "from.bathroom", "from.bedroom", "use.first_aid", "flavor.readable"]
+shape = "container"
+dims_mm = [70, 35, 35]
+mass_g = 25
+fill_pct = 25
+units = 20
+desc = "An amber prescription vial of antibiotic capsules, labelled with someone's name."
+glyph = "item.pills"
+why = "The only cure for an infected wound (M15 antibiotic); scarce and prized. Kind via detail table."
+medical = { antibiotic = 7, doses = 20 }
+brand_cats = ["medicine"]
+details = ["antibiotic_kind"]
+value_class = "rare"
+
+[item.antibiotics.composition.vial]
+material = "polypropylene"
+share = 60
+[item.antibiotics.composition.capsules]
+material = "food_dry"   # gelatin/starch capsule mass
+share = 40
+
+[item.antiseptic_bottle]
+name = "antiseptic"
+tags = ["cat.medical.antiseptic", "from.bathroom", "from.medical", "from.school", "use.first_aid"]
+shape = "container"
+dims_mm = [150, 60, 60]
+mass_g = 30
+desc = "A brown bottle of wound antiseptic solution."
+glyph = "item.bottle_small"
+why = "Best wound disinfectant (M15 disinfect): cleans bites and cuts before dressing."
+medical = { disinfect = 8 }
+brand_cats = ["first_aid", "medicine"]
+value_class = "useful"
+
+[item.antiseptic_bottle.composition.bottle]
+material = "hdpe"
+share = 85
+[item.antiseptic_bottle.composition.cap]
+material = "polypropylene"
+share = 15
+
+[item.antiseptic_bottle.features.container]
+capacity_ml = 240
+opening_mm = 10
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.antiseptic_bottle.contents]
+substance = "antiseptic"
+fill_pct = [0, 100]
+
+[item.rubbing_alcohol_bottle]
+name = "rubbing alcohol"
+tags = ["cat.medical.antiseptic", "from.bathroom", "from.medical", "from.grocery", "use.first_aid", "use.fuel", "hazard.flammable"]
+shape = "container"
+dims_mm = [190, 75, 50]
+mass_g = 35
+desc = "A pint bottle of 70% isopropyl alcohol."
+glyph = "item.bottle_small"
+why = "Disinfects wounds and tools (M15); fuel for alcohol stoves and a tinder booster (M3)."
+medical = { disinfect = 6 }
+brand_cats = ["first_aid", "medicine"]
+value_class = "useful"
+
+[item.rubbing_alcohol_bottle.composition.bottle]
+material = "hdpe"
+share = 90
+[item.rubbing_alcohol_bottle.composition.cap]
+material = "polypropylene"
+share = 10
+
+[item.rubbing_alcohol_bottle.features.container]
+capacity_ml = 473
+opening_mm = 18
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.rubbing_alcohol_bottle.contents]
+substance = "rubbing_alcohol"
+fill_pct = [0, 100]
+
+[item.suture_kit]
+name = "suture kit"
+tags = ["cat.medical.instrument", "from.medical", "from.outdoors", "use.first_aid", "use.tool"]
+shape = "complex"
+dims_mm = [180, 90, 30]
+mass_g = 120
+units = 5
+desc = "A zipped pouch with a needle driver, forceps, scissors, a scalpel and five sterile suture packs."
+glyph = "item.suture_kit"
+why = "Closes deep wounds (M15, sew >= 3) and gives field surgery its sharp blade (cut 5); needs medicine skill."
+medical = { sterile = 10, doses = 5 }
+brand_cats = ["first_aid"]
+value_class = "valuable"
+
+[item.suture_kit.composition.instruments]
+material = "stainless_steel"
+share = 60
+[item.suture_kit.composition.pouch]
+material = "nylon_fabric"
+share = 25
+[item.suture_kit.composition.packets]
+material = "paper"
+share = 10
+[item.suture_kit.composition.sutures]
+material = "nylon"
+share = 5
+
+[item.suture_kit.features.edge]
+length_mm = 40
+sharpness = 9
+
+[item.suture_kit.capabilities]
+sew = 5
+
+[item.tourniquet]
+name = "tourniquet"
+tags = ["cat.medical.tourniquet", "from.medical", "from.police", "from.fire_service", "from.outdoors", "use.first_aid"]
+shape = "complex"
+dims_mm = [190, 60, 40]
+mass_g = 75
+desc = "A windlass tourniquet: nylon strap, rigid rod and locking clip."
+glyph = "item.tourniquet"
+why = "Stops catastrophic limb bleeding in seconds (M15) — the only thing that saves a torn arm; useless on the torso or neck."
+medical = { bleed_stop = 9 }
+brand_cats = ["first_aid"]
+value_class = "valuable"
+
+[item.tourniquet.composition.strap]
+material = "nylon_fabric"
+share = 60
+[item.tourniquet.composition.windlass]
+material = "nylon"
+share = 40
+
+[item.splint_sam]
+name = "moldable splint"
+tags = ["cat.medical.splint", "from.medical", "from.fire_service", "from.outdoors", "from.school", "use.first_aid"]
+shape = "sheet"
+dims_mm = [915, 110, 4]
+mass_g = 115
+desc = "A roll-out aluminium splint sandwiched in closed-cell foam; rigid once curved."
+glyph = "item.splint"
+why = "Purpose-made splint for arms and legs (M15 splint 7); light enough to carry everywhere."
+medical = { splint = 7 }
+brand_cats = ["first_aid"]
+value_class = "useful"
+
+[item.splint_sam.composition.core]
+material = "aluminum"
+share = 70
+[item.splint_sam.composition.foam]
+material = "pu_foam"
+share = 30
+
+[item.crutches]
+name = "crutches"
+tags = ["cat.medical.mobility", "from.medical", "from.bedroom", "from.garage"]
+shape = "rod"
+dims_mm = [1300, 380, 150]
+mass_g = 2200
+fill_pct = 3
+desc = "A pair of adjustable aluminium underarm crutches with rubber tips."
+glyph = "item.crutches"
+why = "Walk on an injured leg (G05 injuries); each crutch is a long rigid splint or an awkward club with reach."
+value_class = "useful"
+
+[item.crutches.composition.tubes]
+material = "aluminum"
+share = 75
+[item.crutches.composition.pads]
+material = "rubber"
+share = 20
+[item.crutches.composition.bolts]
+material = "mild_steel"
+share = 5
+
+[item.crutches.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.crutches.capabilities]
+pry = 2      # thin-walled tube bends under leverage
+hammer = 4   # light hollow tube: awkward, glancing blows
+
+[item.stethoscope]
+name = "stethoscope"
+tags = ["cat.medical.instrument", "from.medical", "from.school", "use.tool"]
+shape = "complex"
+dims_mm = [700, 150, 40]
+mass_g = 170
+fill_pct = 5
+desc = "A dual-head stethoscope with PVC tubing."
+glyph = "item.stethoscope"
+why = "Doctor/nurse outfit item; pressed to a door it hears what's behind it (listen capability proposed); tubing siphons small amounts."
+value_class = "junk"
+
+[item.stethoscope.composition.tubing]
+material = "flexible_pvc"
+share = 55
+[item.stethoscope.composition.chestpiece]
+material = "stainless_steel"
+share = 35
+[item.stethoscope.composition.eartips]
+material = "silicone"
+share = 10
+
+[item.stethoscope.features.tube]
+inner_diameter_mm = 4
+length_mm = 550
+flexible = true
+
+[item.purification_tablets]
+name = "water purification tablets"
+tags = ["cat.medical.water", "from.outdoors", "from.medical", "from.retail", "use.water_treatment"]
+shape = "container"
+dims_mm = [70, 40, 40]
+mass_g = 40
+fill_pct = 30
+units = 50
+desc = "A small bottle of chlorine dioxide water purification tablets, one per litre."
+glyph = "item.pills"
+why = "Makes untreated water safe without fire or smoke (M22 purify); one tablet per litre."
+brand_cats = ["outdoors", "first_aid"]
+value_class = "valuable"
+
+[item.purification_tablets.composition.bottle]
+material = "hdpe"
+share = 60
+[item.purification_tablets.composition.tablets]
+material = "food_dry"   # compressed tablet mass (no chemical-solid material)
+share = 40
+
+[item.purification_tablets.capabilities]
+purify = 7
+
+[item.saline_bag]
+name = "saline bag"
+tags = ["cat.medical.fluid", "from.medical", "from.fire_service", "use.first_aid", "use.container"]
+shape = "container"
+dims_mm = [260, 150, 20]
+mass_g = 40
+desc = "A one-litre IV bag of sterile saline with a port."
+glyph = "item.iv_bag"
+why = "Sterile wound irrigation anyone can use; IV rehydration needs medicine skill (M15); drinkable in a pinch."
+medical = { sterile = 10, disinfect = 2 }
+value_class = "useful"
+
+[item.saline_bag.composition.bag]
+material = "flexible_pvc"
+share = 100
+
+[item.saline_bag.features.container]
+capacity_ml = 1000
+opening_mm = 5
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.saline_bag.contents]
+substance = "water"   # stand-in: 0.9% saline (no saline substance; see proposals)
+fill_pct = [100, 100]
+
+[item.burn_gel]
+name = "burn dressings"
+tags = ["cat.medical.dressing", "from.medical", "from.fire_service", "from.restaurant", "from.vehicle", "use.first_aid"]
+shape = "block"
+dims_mm = [150, 110, 30]
+mass_g = 90
+fill_pct = 50
+units = 5
+desc = "A carton of gel-soaked sterile burn dressings in foil pouches."
+glyph = "item.bandage"
+why = "Cools and covers burns (M15 burn_care) from firebombs and house fires (N007)."
+medical = { burn_care = 6, sterile = 10, pain = 2, doses = 5 }
+brand_cats = ["first_aid"]
+value_class = "useful"
+
+[item.burn_gel.composition.pads]
+material = "polyester"   # non-woven pads; gel mass approximated with them
+share = 50
+[item.burn_gel.composition.pouches]
+material = "aluminum"
+share = 15
+[item.burn_gel.composition.carton]
+material = "cardboard"
+share = 35

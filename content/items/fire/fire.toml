@@ -80,3 +80,56 @@ value_class = "common"
 [item.firewood.composition.wood]
 material = "softwood"
 share = 100
+
+# ---- domain D additions (world-catalog §6.D) ----
+
+[item.ferro_rod]
+name = "ferro rod"
+tags = ["cat.fire.ferro_rod", "from.outdoors", "from.garage", "use.fire_starter"]
+shape = "rod"
+dims_mm = [130, 25, 12]
+mass_g = 60
+desc = "A ferrocerium rod on a lanyard with a steel striker; scraped hard it throws white-hot sparks."
+glyph = "item.ferro_rod"
+why = "Thousands of lights, works soaking wet and in wind; needs dry tinder (sparks, not a flame)."
+brand_cats = ["fire_starters", "outdoors"]
+value_class = "valuable"
+
+[item.ferro_rod.composition.rod]
+material = "mild_steel"
+share = 60
+[item.ferro_rod.composition.striker]
+material = "carbon_steel"
+share = 25
+[item.ferro_rod.composition.handle]
+material = "hardwood"
+share = 15
+
+[item.ferro_rod.features.ignition]
+method = "spark"
+charges = 5000
+fails_when_wet = false
+needs_striker = true
+[item.ferro_rod.features.strap]
+kind = "lanyard"
+load_g = 500
+
+[item.charcoal_bag]
+name = "bag of charcoal"
+tags = ["cat.fuel.charcoal", "from.garden", "from.grocery", "from.gas_station", "from.retail", "use.fuel"]
+shape = "block"
+dims_mm = [450, 300, 120]
+mass_g = 7000
+desc = "A 7 kg paper sack of charcoal briquettes."
+glyph = "item.sack"
+why = "Hot, steady, low-smoke fuel for cooking and forge heat (metalworking); packs dense for carrying."
+brand_cats = ["fire_starters"]
+units = 90
+value_class = "useful"
+
+[item.charcoal_bag.composition.briquettes]
+material = "charcoal"
+share = 96
+[item.charcoal_bag.composition.sack]
+material = "paper"
+share = 4

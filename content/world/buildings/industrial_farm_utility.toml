@@ -1,0 +1,278 @@
+# Building types: industrial, farm and utility (world-catalog §2).
+# Conventions (footprint, materials, room counts, occupant time buckets, chance_pct, utilities):
+# see the header of buildings/residential.toml.
+#
+# Manual labour (warehouse pickers, factory line staff, yard hands) uses the construction_worker
+# profile: work boots, work trousers, hi-vis, gloves. Plant operators use mechanic.
+# Utility sites (power_substation, water_treatment, water_tower) drive the neighbourhood power
+# and water rolls (N007); they are placed by the generator, not by setting weights.
+
+[building.warehouse]
+desc = "A distribution warehouse: a tilt-up concrete box of pallet racking and floor stacks, a row of dock doors, a small office and break room; many run around the clock."
+footprint_m = [[50, 200], [30, 120]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "mild_steel"
+rooms = [
+  { room = "warehouse_floor", count = [1, 2], floor = "ground" },
+  { room = "loading_dock", count = [1, 3], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "private_office", count = [1, 4], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "any" },
+]
+occupants = [
+  { profile = "construction_worker", count = [5, 80], when = ["weekday_day"] },
+  { profile = "construction_worker", count = [2, 40], chance_pct = 60, when = ["evening", "night", "weekend_day"] },
+  { profile = "office_worker", count = [1, 8], when = ["weekday_day"] },
+  { profile = "trucker", count = [0, 6], when = ["weekday_day", "evening", "night"] },
+  { profile = "delivery_driver", count = [0, 6], when = ["weekday_day"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 40, when = ["night", "weekend_day"] },
+]
+outdoor = ["industrial_yard", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.industrial"]
+
+[building.factory]
+desc = "A manufacturing plant: production floors of machines and conveyors, a machine shop, raw-stock and finished-goods storage, docks, a boiler house and offices; shift work."
+footprint_m = [[60, 200], [40, 150]]
+floors = [1, 2]
+basement_pct = 15
+walls = "concrete"
+exterior = "brick"
+roof = "mild_steel"
+rooms = [
+  { room = "factory_floor", count = [1, 3], floor = "ground" },
+  { room = "warehouse_floor", count = [0, 2], floor = "ground" },
+  { room = "workshop", count = [1, 2], floor = "ground" },
+  { room = "loading_dock", count = [1, 3], floor = "ground" },
+  { room = "control_room", count = [0, 1], floor = "any" },
+  { room = "boiler_room", count = [0, 1], floor = "any" },
+  { room = "private_office", count = [2, 10], floor = "any" },
+  { room = "open_office", count = [0, 2], floor = "any" },
+  { room = "conference_room", count = [0, 2], floor = "any" },
+  { room = "break_room", count = [1, 2], floor = "any" },
+  { room = "server_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [2, 6], floor = "any" },
+]
+occupants = [
+  { profile = "construction_worker", count = [20, 300], when = ["weekday_day"] },
+  { profile = "construction_worker", count = [5, 120], chance_pct = 65, when = ["evening", "night"] },
+  { profile = "construction_worker", count = [5, 80], chance_pct = 40, when = ["weekend_day"] },
+  { profile = "mechanic", count = [1, 10], when = ["weekday_day"] },
+  { profile = "office_worker", count = [3, 40], when = ["weekday_day"] },
+  { profile = "janitor", count = [1, 4], when = ["weekday_day", "evening"] },
+  { profile = "security_guard", count = [1, 2], when = ["night", "weekend_day"] },
+  { profile = "trucker", count = [0, 4], when = ["weekday_day", "night"] },
+]
+outdoor = ["industrial_yard", "parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.industrial"]
+
+[building.auto_repair_garage]
+desc = "An auto repair shop: two to six service bays with lifts, air tools and a parts room, a greasy customer counter, a waiting room with old magazines."
+footprint_m = [[15, 30], [12, 25]]
+floors = [1, 1]
+basement_pct = 5
+walls = "concrete"
+exterior = "concrete"
+roof = "mild_steel"
+rooms = [
+  { room = "workshop", count = [1, 1], floor = "ground" },
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "mechanic", count = [1, 6], when = ["weekday_day"] },
+  { profile = "mechanic", count = [1, 3], chance_pct = 55, when = ["weekend_day"] },
+  { profile = "mechanic", count = [1, 1], chance_pct = 25, when = ["evening"] },
+  { profile = "retail_worker", count = [0, 1], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [0, 4], when = ["weekday_day", "weekend_day"] },
+]
+outdoor = ["parking_lot", "industrial_yard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.industrial", "cat.building.automotive"]
+
+[building.lumber_yard]
+desc = "A lumber yard: open sheds and yard stacks of dimensional lumber, plywood, block and bagged concrete, a contractor sales counter and a forklift-served loading area."
+footprint_m = [[30, 80], [20, 50]]
+floors = [1, 1]
+basement_pct = 0
+walls = "softwood"
+exterior = "mild_steel"
+roof = "mild_steel"
+rooms = [
+  { room = "warehouse_floor", count = [1, 2], floor = "ground" },
+  { room = "hardware_floor", count = [0, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "loading_dock", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 1], floor = "ground" },
+  { room = "restroom_public", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "construction_worker", count = [3, 20], when = ["weekday_day"] },
+  { profile = "construction_worker", count = [1, 8], chance_pct = 60, when = ["weekend_day"] },
+  { profile = "retail_worker", count = [1, 5], when = ["weekday_day", "weekend_day"] },
+  { profile = "trucker", count = [0, 3], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [0, 6], when = ["weekday_day", "weekend_day"] },
+]
+outdoor = ["construction_site", "industrial_yard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.industrial", "cat.building.construction"]
+
+[building.junkyard]
+desc = "A scrap and salvage yard behind corrugated fencing: acres of stripped and stacked cars, scrap piles, a crusher, and a cluttered office shack with a parts counter."
+footprint_m = [[8, 20], [8, 15]]
+floors = [1, 1]
+basement_pct = 0
+walls = "plywood"
+exterior = "mild_steel"
+roof = "mild_steel"
+rooms = [
+  { room = "private_office", count = [1, 1], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "stockroom", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "mechanic", count = [1, 4], when = ["weekday_day"] },
+  { profile = "mechanic", count = [1, 2], chance_pct = 50, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [0, 3], when = ["weekday_day", "weekend_day"] },
+]
+outdoor = ["industrial_yard", "highway_corridor"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.industrial", "cat.building.salvage"]
+
+[building.truck_stop]
+desc = "An interstate truck stop: diesel islands, a big travel store and trucker's lounge, a restaurant, showers and laundry, a truck service bay and acres of idling rigs."
+footprint_m = [[30, 60], [20, 40]]
+floors = [1, 1]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "grocery_floor", count = [1, 1], floor = "ground" },
+  { room = "store_floor_generic", count = [0, 1], floor = "ground" },
+  { room = "checkout", count = [1, 1], floor = "ground" },
+  { room = "dining_area", count = [1, 2], floor = "ground" },
+  { room = "commercial_kitchen", count = [1, 2], floor = "ground" },
+  { room = "walk_in_cooler", count = [1, 1], floor = "ground" },
+  { room = "stockroom", count = [1, 2], floor = "ground" },
+  { room = "bathroom", count = [2, 8], floor = "ground" },
+  { room = "laundry_room", count = [0, 1], floor = "ground" },
+  { room = "restroom_public", count = [2, 4], floor = "ground" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "private_office", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "trucker", count = [10, 120], when = ["night"] },
+  { profile = "trucker", count = [5, 50], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [2, 8], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 3], when = ["night"] },
+  { profile = "cook", count = [1, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "cook", count = [1, 2], when = ["night"] },
+  { profile = "mechanic", count = [0, 3], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 2], when = ["weekday_day", "night"] },
+  { profile = "at_home_adult", count = [2, 25], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 6], when = ["night"] },
+]
+outdoor = ["gas_station_forecourt", "parking_lot", "industrial_yard"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.retail", "cat.building.fuel", "cat.building.food"]
+
+[building.barn]
+desc = "A timber-framed or pole barn: stalls and pens, a hayloft, feed bins, tack and tool corners, a tractor bay; on the farm's well."
+footprint_m = [[12, 30], [18, 40]]
+floors = [1, 2]
+basement_pct = 5
+walls = "softwood"
+exterior = "softwood"
+roof = "mild_steel"
+rooms = [
+  { room = "barn_interior", count = [1, 2], floor = "any" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "farmer", count = [1, 2], chance_pct = 45, when = ["weekday_day", "weekend_day"] },
+  { profile = "farmer", count = [1, 1], chance_pct = 30, when = ["evening"] },
+  { profile = "farmer", count = [1, 1], chance_pct = 4, when = ["night"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 10, when = ["weekend_day", "evening"] },
+]
+outdoor = ["farmyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "well" }
+tags = ["cat.building.farm"]
+
+[building.power_substation]
+desc = "A fenced electrical substation: transformers, switchgear and bus bars on gravel inside a chain-link fence, with a small block control house; unmanned."
+footprint_m = [[30, 80], [30, 80]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "concrete"
+roof = "mild_steel"
+rooms = [
+  { room = "control_room", count = [1, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "mechanic", count = [1, 2], chance_pct = 3, when = ["weekday_day"] },
+]
+outdoor = ["industrial_yard"]
+loot_priority = "low"
+utilities = { power = "grid", water = "none" }
+tags = ["cat.building.utility", "cat.building.power"]
+
+[building.water_treatment]
+desc = "A water treatment plant: settling and filter basins, a pump house, chemical storage (chlorine, coagulants), a lab and control room; staffed around the clock."
+footprint_m = [[40, 150], [30, 100]]
+floors = [1, 2]
+basement_pct = 50
+walls = "concrete"
+exterior = "concrete"
+roof = "mild_steel"
+rooms = [
+  { room = "control_room", count = [1, 1], floor = "any" },
+  { room = "boiler_room", count = [1, 2], floor = "any" },
+  { room = "workshop", count = [1, 2], floor = "ground" },
+  { room = "stockroom", count = [1, 2], floor = "ground" },
+  { room = "private_office", count = [1, 4], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "any" },
+]
+occupants = [
+  { profile = "mechanic", count = [2, 8], when = ["weekday_day"] },
+  { profile = "mechanic", count = [1, 3], when = ["weekend_day", "evening", "night"] },
+  { profile = "office_worker", count = [1, 6], when = ["weekday_day"] },
+]
+outdoor = ["industrial_yard", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.utility", "cat.building.water"]
+
+[building.water_tower]
+desc = "An elevated water tank on steel legs or a single pedestal, with a caged ladder to a catwalk and a valve house at its foot; a landmark visible for miles."
+footprint_m = [[8, 20], [8, 20]]
+floors = [1, 1]
+basement_pct = 0
+walls = "concrete"
+exterior = "mild_steel"
+roof = "mild_steel"
+rooms = [
+  { room = "control_room", count = [0, 1], floor = "ground" },
+]
+occupants = []
+outdoor = []
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.utility", "cat.building.water", "cat.building.landmark"]

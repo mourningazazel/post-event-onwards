@@ -1,0 +1,217 @@
+# Home room types (world-catalog §3), pre-event baseline. Doors and windows are placed by the
+# building generator and are not listed. Objects are furniture and fixtures; containers carry
+# `contains` loot. `floor` is the usual storey; building records may override it.
+# Firearm placement (target ~1 in 3 homes): handguns in nightstand_drawer, long guns as low-chance
+# closet objects, and home_safe (low chance) in master bedroom, closet, basement and home office.
+
+[room.kitchen]
+desc = "A home kitchen: fridge, range, cabinets, pantry, sink; sometimes an eat-in table."
+size_m2 = [8, 25]
+floor = "ground"
+tags = ["from.kitchen"]
+objects = [
+  { item = "refrigerator", count = [1, 1], contains = ["fridge_contents", "freezer_contents"] },
+  { item = "stove_range", count = [1, 1] },
+  { item = "microwave", count = [1, 1], chance_pct = 90 },
+  { item = "kitchen_cabinet", count = [3, 8], contains = ["kitchen_cabinet_contents"] },
+  { item = "kitchen_cabinet", count = [1, 3], contains = ["pantry_shelf"] },
+  { item = "kitchen_cabinet", count = [2, 4], contains = ["kitchen_drawer"] },
+  { item = "kitchen_cabinet", count = [1, 1], contains = ["under_sink"] },
+  { item = "sink", count = [1, 1] },
+  { item = "dining_table", count = [1, 1], chance_pct = 35 },
+  { item = "dining_chair", count = [0, 4] },
+  { item = "smoke_detector", count = [1, 1], chance_pct = 80 },
+]
+loose = ["kitchen_counter"]
+
+[room.living_room]
+desc = "A living room: sofa and chairs around a TV, shelves, maybe a fireplace or stove."
+size_m2 = [15, 40]
+floor = "ground"
+tags = ["from.living"]
+objects = [
+  { item = "sofa", count = [1, 2] },
+  { item = "armchair", count = [0, 2] },
+  { item = "coffee_table", count = [1, 1], chance_pct = 85 },
+  { item = "television", count = [1, 1], chance_pct = 95 },
+  { item = "bookshelf", count = [0, 2], contains = ["bookshelf_home"] },
+  { item = "fireplace", count = [1, 1], chance_pct = 30, contains = ["firewood"] },
+  { item = "wood_stove", count = [1, 1], chance_pct = 5, contains = ["firewood"] },
+  { item = "radiator", count = [1, 2], chance_pct = 15 },
+  { item = "smoke_detector", count = [1, 1], chance_pct = 80 },
+]
+loose = ["living_room_surfaces"]
+
+[room.dining_room]
+desc = "A dining room: table and chairs, a sideboard with the good dishes and a bottle or two."
+size_m2 = [10, 25]
+floor = "ground"
+tags = ["from.living"]
+objects = [
+  { item = "dining_table", count = [1, 1] },
+  { item = "dining_chair", count = [4, 8] },
+  { item = "kitchen_cabinet", count = [1, 1], chance_pct = 45, contains = ["dining_sideboard"] },
+  { item = "radiator", count = [1, 1], chance_pct = 15 },
+]
+
+[room.bedroom_master]
+desc = "The main bedroom: bed, nightstands, dressers; sometimes a TV or a safe."
+size_m2 = [12, 30]
+floor = "any"
+tags = ["from.bedroom"]
+objects = [
+  { item = "bed_frame", count = [1, 1] },
+  { item = "mattress", count = [1, 1] },
+  { item = "nightstand", count = [1, 2], contains = ["nightstand_drawer"] },
+  { item = "dresser", count = [1, 2], contains = ["dresser_clothes"] },
+  { item = "wardrobe", count = [1, 1], chance_pct = 15, contains = ["closet_clothes"] },
+  { item = "alarm_clock", count = [1, 1], chance_pct = 60 },
+  { item = "television", count = [1, 1], chance_pct = 45 },
+  { item = "safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
+  { item = "smoke_detector", count = [1, 1], chance_pct = 75 },
+]
+loose = ["laundry_hamper"]
+
+[room.bedroom_child]
+desc = "A child's or teen's bedroom: bed, dresser, toy bin, a small desk."
+size_m2 = [9, 16]
+floor = "any"
+tags = ["from.bedroom"]
+objects = [
+  { item = "bed_frame", count = [1, 1] },
+  { item = "mattress", count = [1, 1] },
+  { item = "dresser", count = [1, 1], contains = ["dresser_clothes"] },
+  { item = "plastic_tub", count = [1, 2], contains = ["kids_room_stuff"] },
+  { item = "nightstand", count = [1, 1], chance_pct = 60, contains = ["kids_room_stuff"] },
+  { item = "desk", count = [1, 1], chance_pct = 40, contains = ["kids_room_stuff"] },
+  { item = "bookshelf", count = [1, 1], chance_pct = 50, contains = ["kids_room_stuff"] },
+  { item = "smoke_detector", count = [1, 1], chance_pct = 75 },
+]
+loose = ["kids_room_stuff", "laundry_hamper"]
+
+[room.bathroom]
+desc = "A home bathroom: toilet, sink with medicine cabinet, tub or shower, vanity."
+size_m2 = [3, 10]
+floor = "any"
+tags = ["from.bathroom"]
+objects = [
+  { item = "toilet", count = [1, 1] },
+  { item = "sink", count = [1, 2], contains = ["medicine_cabinet"] },
+  { item = "bathtub", count = [1, 1], chance_pct = 80 },
+  { item = "kitchen_cabinet", count = [1, 1], chance_pct = 85, contains = ["bathroom_cabinet"] },
+]
+
+[room.closet]
+desc = "A closet: hanging clothes, shoes and bags, boxes on the shelf; occasionally a long gun or safe."
+size_m2 = [1, 6]
+floor = "any"
+tags = ["from.bedroom"]
+objects = [
+  { item = "cardboard_box", count = [0, 3], contains = ["attic_boxes"] },
+  { item = "shotgun", count = [1, 1], chance_pct = 2 },
+  { item = "hunting_rifle", count = [1, 1], chance_pct = 2 },
+  { item = "semi_auto_rifle", count = [1, 1], chance_pct = 1 },
+  { item = "safe", count = [1, 1], chance_pct = 4, contains = ["home_safe"] },
+  { item = "water_heater", count = [1, 1], chance_pct = 5 },
+]
+loose = ["closet_clothes", "closet_clothes"]
+
+[room.laundry_room]
+desc = "A laundry room: washer and dryer, detergent shelf, utility sink, often the water heater."
+size_m2 = [3, 10]
+floor = "any"
+tags = ["from.bathroom"]
+objects = [
+  { item = "washing_machine", count = [1, 1], contains = ["laundry_hamper"] },
+  { item = "clothes_dryer", count = [1, 1], chance_pct = 90, contains = ["dresser_clothes"] },
+  { item = "kitchen_cabinet", count = [1, 2], contains = ["laundry_shelf"] },
+  { item = "sink", count = [1, 1], chance_pct = 40 },
+  { item = "water_heater", count = [1, 1], chance_pct = 30 },
+]
+loose = ["laundry_hamper"]
+
+[room.home_office]
+desc = "A home office or study: desk and computer, bookshelf, filing cabinet."
+size_m2 = [8, 16]
+floor = "any"
+tags = ["from.office"]
+objects = [
+  { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
+  { item = "office_chair", count = [1, 1] },
+  { item = "desktop_pc", count = [1, 1], chance_pct = 45 },
+  { item = "laptop", count = [1, 1], chance_pct = 50 },
+  { item = "bookshelf", count = [1, 2], chance_pct = 70, contains = ["bookshelf_home"] },
+  { item = "filing_cabinet", count = [1, 1], chance_pct = 50, contains = ["desk_clutter"] },
+  { item = "safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
+]
+
+[room.garage]
+desc = "An attached or detached garage: shelves of fluids and gear, workbench, mower, bikes, maybe a car."
+size_m2 = [18, 60]
+floor = "ground"
+tags = ["from.garage"]
+objects = [
+  { item = "metal_shelving", count = [1, 4], contains = ["garage_shelf"] },
+  { item = "workbench", count = [1, 1], chance_pct = 55, contains = ["workbench_tools"] },
+  { item = "car_sedan", count = [1, 1], chance_pct = 25 },
+  { item = "suv", count = [1, 1], chance_pct = 20 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 15 },
+  { item = "minivan", count = [1, 1], chance_pct = 8 },
+  { item = "motorcycle", count = [1, 1], chance_pct = 5 },
+  { item = "water_heater", count = [1, 1], chance_pct = 35 },
+  { item = "chest_freezer", count = [1, 1], chance_pct = 25, contains = ["freezer_contents"] },
+  { item = "refrigerator", count = [1, 1], chance_pct = 20, contains = ["fridge_contents"] },
+  { item = "lawn_mower", count = [1, 1], chance_pct = 55 },
+  { item = "riding_mower", count = [1, 1], chance_pct = 8 },
+  { item = "bicycle", count = [0, 3] },
+  { item = "ladder_step", count = [1, 1], chance_pct = 50 },
+  { item = "extension_ladder", count = [1, 1], chance_pct = 45 },
+  { item = "wheelbarrow", count = [1, 1], chance_pct = 20 },
+  { item = "portable_generator", count = [1, 1], chance_pct = 12 },
+  { item = "garden_hose", count = [1, 1], chance_pct = 40 },
+]
+
+[room.basement]
+desc = "A basement: water heater and storage shelving, maybe a freezer, workbench or finished den."
+size_m2 = [30, 120]
+floor = "basement"
+tags = ["from.garage"]
+objects = [
+  { item = "water_heater", count = [1, 1], chance_pct = 85 },
+  { item = "metal_shelving", count = [1, 4], contains = ["basement_storage"] },
+  { item = "cardboard_box", count = [2, 10], contains = ["attic_boxes"] },
+  { item = "chest_freezer", count = [1, 1], chance_pct = 30, contains = ["freezer_contents"] },
+  { item = "workbench", count = [1, 1], chance_pct = 35, contains = ["workbench_tools"] },
+  { item = "sofa", count = [1, 1], chance_pct = 30 },
+  { item = "television", count = [1, 1], chance_pct = 25 },
+  { item = "safe", count = [1, 1], chance_pct = 8, contains = ["home_safe"] },
+  { item = "smoke_detector", count = [1, 1], chance_pct = 60 },
+]
+
+[room.attic]
+desc = "An attic: stacked boxes and tubs of keepsakes, an old chair or dresser."
+size_m2 = [15, 80]
+floor = "upper"
+tags = ["from.living"]
+objects = [
+  { item = "cardboard_box", count = [3, 16], contains = ["attic_boxes"] },
+  { item = "plastic_tub", count = [0, 6], contains = ["attic_boxes"] },
+  { item = "dresser", count = [1, 1], chance_pct = 15, contains = ["attic_boxes"] },
+  { item = "armchair", count = [1, 1], chance_pct = 10 },
+]
+
+[room.shed]
+desc = "A backyard shed: yard tools, the mower and its fuel, a wheelbarrow."
+size_m2 = [4, 15]
+floor = "ground"
+tags = ["from.garden"]
+objects = [
+  { item = "metal_shelving", count = [0, 2], contains = ["shed_contents"] },
+  { item = "lawn_mower", count = [1, 1], chance_pct = 50 },
+  { item = "riding_mower", count = [1, 1], chance_pct = 8 },
+  { item = "wheelbarrow", count = [1, 1], chance_pct = 35 },
+  { item = "workbench", count = [1, 1], chance_pct = 20, contains = ["workbench_tools"] },
+  { item = "extension_ladder", count = [1, 1], chance_pct = 25 },
+  { item = "bicycle", count = [0, 1] },
+]
+loose = ["shed_contents"]

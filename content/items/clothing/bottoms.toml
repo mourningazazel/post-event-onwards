@@ -1,0 +1,443 @@
+# Clothing: bottoms, full-body garments and underwear (world-catalog §6.C). Domain C.
+# Conventions: see tops.toml header. Only one `pocket` feature per item is expressible, so a
+# garment's pocket feature is the sum of its pockets, with the largest pocket's max dimension.
+
+[item.jeans]
+name = "jeans"
+tags = ["cat.clothing.bottom", "from.bedroom", "from.retail", "slot.legs"]
+shape = "fabric"
+dims_mm = [1050, 450, 8]
+mass_g = 650
+absorbs_water = true
+absorbs_scent = true
+durability = 7
+encumbrance = 1
+armor = { blunt = 1, cut = 1, pierce = 0, bite = 2 }
+desc = "Heavy indigo denim five-pocket jeans with copper-coloured rivets."
+glyph = "item.trousers"
+why = "Everyday legwear; thick denim blunts shin and thigh bites a little (crawlers); heavy and cold when wet; cuts into strong strips."
+divisible = { mode = "sheet", needs = "cut>=1" }
+brand_cats = ["clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_fit"]
+value_class = "common"
+
+[item.jeans.composition.denim]
+material = "cotton"
+share = 98
+[item.jeans.composition.rivets]
+material = "brass"
+share = 2
+
+[item.jeans.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs", "shins"]
+insulation_clo10 = 2
+windproof = 3
+[item.jeans.features.pocket]
+name = "front and back pockets"
+capacity_ml = 900
+max_mass_g = 2000
+max_dim_mm = 170
+closable = false
+
+[item.work_pants]
+name = "work pants"
+tags = ["cat.clothing.bottom", "from.construction", "from.garage", "from.farm", "from.industrial", "slot.legs"]
+shape = "fabric"
+dims_mm = [1100, 500, 10]
+mass_g = 800
+absorbs_water = true
+absorbs_scent = true
+durability = 8
+encumbrance = 1
+armor = { blunt = 1, cut = 2, pierce = 1, bite = 2 }
+desc = "Double-front cotton duck canvas carpenter trousers with a hammer loop and ruler pocket."
+glyph = "item.trousers"
+why = "Tradesperson legwear: the toughest everyday cloth for the legs, with the most pocket space."
+divisible = { mode = "sheet", needs = "cut>=1" }
+brand_cats = ["clothing_outdoor", "clothing_basics"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "useful"
+
+[item.work_pants.composition.canvas]
+material = "cotton"
+share = 97
+[item.work_pants.composition.hardware]
+material = "brass"
+share = 3
+
+[item.work_pants.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs", "shins"]
+insulation_clo10 = 3
+windproof = 4
+[item.work_pants.features.pocket]
+name = "utility and cargo pockets"
+capacity_ml = 2000
+max_mass_g = 3000
+max_dim_mm = 250
+closable = false
+
+[item.suit_trousers]
+name = "suit trousers"
+tags = ["cat.clothing.bottom", "from.office", "from.bedroom", "from.church", "slot.legs"]
+shape = "fabric"
+dims_mm = [1050, 400, 5]
+mass_g = 400
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 1 }
+desc = "Pressed wool suit trousers with slash pockets."
+glyph = "item.trousers"
+why = "Office/churchgoer legwear (P-IT-03); wool stays warm-ish when damp."
+brand_cats = ["clothing_formal"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.suit_trousers.composition.cloth]
+material = "wool"
+share = 95
+[item.suit_trousers.composition.lining]
+material = "polyester"
+share = 5
+
+[item.suit_trousers.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs", "shins"]
+insulation_clo10 = 2
+windproof = 2
+[item.suit_trousers.features.pocket]
+name = "slash and back pockets"
+capacity_ml = 500
+max_mass_g = 1000
+max_dim_mm = 160
+closable = false
+
+[item.skirt]
+name = "skirt"
+tags = ["cat.clothing.bottom", "from.bedroom", "from.office", "from.school", "slot.legs"]
+shape = "fabric"
+dims_mm = [600, 500, 3]
+mass_g = 250
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A knee-length woven skirt."
+glyph = "item.skirt"
+why = "Common legwear that leaves the shins bare (crawler bites); tears into strips."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_basics", "clothing_formal"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "junk"
+
+[item.skirt.composition.cloth]
+material = "polyester"
+share = 60
+[item.skirt.composition.blend]
+material = "cotton"
+share = 40
+
+[item.skirt.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs"]
+insulation_clo10 = 1
+
+[item.shorts]
+name = "shorts"
+tags = ["cat.clothing.bottom", "from.bedroom", "from.outdoors", "from.retail", "slot.legs"]
+shape = "fabric"
+dims_mm = [550, 450, 5]
+mass_g = 250
+absorbs_water = true
+absorbs_scent = true
+durability = 5
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "Cotton twill cargo shorts."
+glyph = "item.shorts"
+why = "Summer legwear (seasonal outfits, content-model §3.1) that leaves the shins exposed."
+divisible = { mode = "sheet", needs = "cut>=1" }
+brand_cats = ["clothing_basics", "clothing_outdoor"]
+modifiers = ["child_size"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "junk"
+
+[item.shorts.composition.cloth]
+material = "cotton"
+share = 100
+
+[item.shorts.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs"]
+insulation_clo10 = 1
+[item.shorts.features.pocket]
+name = "front and cargo pockets"
+capacity_ml = 700
+max_mass_g = 1500
+max_dim_mm = 170
+closable = false
+
+[item.sweatpants]
+name = "sweatpants"
+tags = ["cat.clothing.bottom", "from.bedroom", "from.school", "from.retail", "slot.legs"]
+shape = "fabric"
+dims_mm = [1000, 450, 10]
+mass_g = 500
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 0
+armor = { blunt = 1, cut = 0, pierce = 0, bite = 1 }
+desc = "Loose cotton-fleece jogging bottoms with an elastic waist and cuffs."
+glyph = "item.trousers"
+why = "Home/jogger/sleeper legwear (P-IT-03): warm and quiet, soaks up water, tears into strips."
+divisible = { mode = "sheet", needs = "cut>=1" }
+brand_cats = ["clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.sweatpants.composition.fleece]
+material = "cotton"
+share = 70
+[item.sweatpants.composition.blend]
+material = "polyester"
+share = 30
+
+[item.sweatpants.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs", "shins"]
+insulation_clo10 = 3
+windproof = 1
+[item.sweatpants.features.pocket]
+name = "side pockets"
+capacity_ml = 400
+max_mass_g = 800
+max_dim_mm = 170
+closable = false
+
+[item.scrubs_pants]
+name = "scrubs pants"
+tags = ["cat.clothing.bottom", "from.medical", "slot.legs"]
+shape = "fabric"
+dims_mm = [1050, 400, 4]
+mass_g = 200
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "Drawstring medical scrubs trousers."
+glyph = "item.trousers"
+why = "Pairs with scrubs_top for hospital staff outfits; tears into clean strips."
+divisible = { mode = "sheet", needs = "none" }
+details = ["scrubs_colour", "clothing_fit"]
+value_class = "junk"
+
+[item.scrubs_pants.composition.cloth]
+material = "cotton"
+share = 55
+[item.scrubs_pants.composition.blend]
+material = "polyester"
+share = 45
+
+[item.scrubs_pants.features.wearable]
+slot = "legs"
+layer = "base"
+coverage = ["hips", "thighs", "shins"]
+insulation_clo10 = 2
+[item.scrubs_pants.features.pocket]
+name = "cargo pockets"
+capacity_ml = 600
+max_mass_g = 1000
+max_dim_mm = 180
+closable = false
+
+# ---- full body -------------------------------------------------------------------------------
+
+[item.pajamas]
+name = "pajamas"
+tags = ["cat.clothing.sleepwear", "from.bedroom", "slot.full_body"]
+shape = "fabric"
+dims_mm = [800, 600, 10]
+mass_g = 600
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A two-piece long-sleeved flannel pajama set."
+glyph = "item.pajamas"
+why = "What most people wore at 3 a.m. (content-model §3.1 sleeper profile); soft flannel tears into bandages."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "junk"
+
+[item.pajamas.composition.flannel]
+material = "cotton"
+share = 100
+
+[item.pajamas.features.wearable]
+slot = "full_body"
+layer = "base"
+coverage = ["torso", "upper_arms", "forearms", "hips", "thighs", "shins"]
+insulation_clo10 = 5
+
+[item.coveralls]
+name = "coveralls"
+tags = ["cat.clothing.workwear", "from.garage", "from.industrial", "from.farm", "from.utility", "slot.full_body"]
+shape = "fabric"
+dims_mm = [1500, 700, 8]
+mass_g = 1200
+absorbs_water = true
+absorbs_scent = true
+durability = 7
+encumbrance = 1
+armor = { blunt = 1, cut = 1, pierce = 0, bite = 1 }
+desc = "One-piece poly-cotton twill mechanic's coveralls with a two-way zip and many pockets."
+glyph = "item.coveralls"
+why = "Mechanic/janitor/farmer outfit (P-IT-03): one garment covers arms and legs, lots of pockets, takes the grime."
+divisible = { mode = "sheet", needs = "cut>=1" }
+details = ["clothing_colour", "uniform_marking", "clothing_fit"]
+value_class = "common"
+
+[item.coveralls.composition.twill]
+material = "cotton"
+share = 60
+[item.coveralls.composition.blend]
+material = "polyester"
+share = 35
+[item.coveralls.composition.zip]
+material = "brass"
+share = 5
+
+[item.coveralls.features.wearable]
+slot = "full_body"
+layer = "outer"
+coverage = ["torso", "upper_arms", "forearms", "hips", "thighs", "shins"]
+insulation_clo10 = 4
+windproof = 3
+[item.coveralls.features.pocket]
+name = "chest, hip, leg and rule pockets"
+capacity_ml = 1500
+max_mass_g = 3000
+max_dim_mm = 250
+closable = false
+
+[item.dress]
+name = "dress"
+tags = ["cat.clothing.dress", "from.bedroom", "from.church", "from.retail", "slot.full_body"]
+shape = "fabric"
+dims_mm = [1100, 500, 4]
+mass_g = 350
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 1
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A knee-length short-sleeved day dress."
+glyph = "item.dress"
+why = "Common outfit (office, church, evening) that leaves arms and shins bare; tears into strips."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_formal", "clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "junk"
+
+[item.dress.composition.cloth]
+material = "polyester"
+share = 70
+[item.dress.composition.blend]
+material = "cotton"
+share = 30
+
+[item.dress.features.wearable]
+slot = "full_body"
+layer = "base"
+coverage = ["torso", "upper_arms", "hips", "thighs"]
+insulation_clo10 = 2
+
+# ---- underwear -------------------------------------------------------------------------------
+
+[item.underwear]
+name = "underwear"
+tags = ["cat.clothing.underwear", "from.bedroom", "from.retail", "slot.legs"]
+shape = "fabric"
+dims_mm = [350, 300, 3]
+mass_g = 60
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+desc = "Cotton briefs or boxers."
+glyph = "item.underwear"
+why = "Completes every outfit (content-model §3.1); a clean change resets body scent (M14)."
+brand_cats = ["clothing_basics"]
+details = ["clothing_colour"]
+value_class = "junk"
+
+[item.underwear.composition.cloth]
+material = "cotton"
+share = 95
+[item.underwear.composition.elastic]
+material = "rubber"
+share = 5
+
+[item.underwear.features.wearable]
+slot = "legs"
+layer = "under"
+coverage = ["hips"]
+
+[item.socks]
+name = "socks"
+tags = ["cat.clothing.underwear", "from.bedroom", "from.retail", "slot.feet"]
+shape = "fabric"
+dims_mm = [450, 100, 10]
+mass_g = 80
+absorbs_water = true
+absorbs_scent = true
+durability = 2
+encumbrance = 0
+desc = "A pair of thick wool-blend crew socks."
+glyph = "item.socks"
+why = "Dry socks prevent trench foot (M12); a sock filled with gravel or batteries is a classic cosh; a pouch for loose small things."
+brand_cats = ["clothing_basics", "clothing_outdoor"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.socks.composition.knit]
+material = "wool"
+share = 70
+[item.socks.composition.blend]
+material = "polyester"
+share = 25
+[item.socks.composition.elastic]
+material = "rubber"
+share = 5
+
+[item.socks.features.wearable]
+slot = "feet"
+layer = "under"
+coverage = ["feet"]
+insulation_clo10 = 1
+[item.socks.features.container]
+capacity_ml = 700
+max_mass_g = 3000
+max_dim_mm = 250
+opening_mm = 70
+closable = false
+compat = ["solid", "granular"]

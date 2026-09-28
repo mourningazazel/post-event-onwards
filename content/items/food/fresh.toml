@@ -1,0 +1,90 @@
+# Perishable food (domain A): bread, produce, frozen food, raw meat. Spoilage runs on the clock
+# (aftermath spoilage, ADR-0011; fridges/freezers only help while powered, N007). Kinds come
+# from *_kind detail tables in modifiers/kitchen_food.toml.
+
+[item.bread_loaf]
+name = "sliced bread"
+tags = ["cat.food.bread", "from.kitchen", "from.grocery", "from.gas_station", "use.food"]
+shape = "block"
+dims_mm = [300, 125, 115]
+mass_g = 590
+fill_pct = 35                      # airy crumb: bulk density ~0.2 g/cm3
+desc = "A soft loaf of sliced bread in a twist-tied plastic bag."
+glyph = "item.bread"
+why = "Ready-to-eat calories in the first week; goes mouldy fast, so it dates a location's aftermath."
+brand_cats = ["bread"]
+details = ["bread_kind"]
+value_class = "common"
+food = { kcal = 1500, servings = 20, perishable = "short", needs_opening = false, cookable = false }
+
+[item.bread_loaf.composition.contents]
+material = "food_dry"
+share = 97
+[item.bread_loaf.composition.bag]
+material = "ldpe"
+share = 3
+
+[item.fresh_produce]
+name = "produce"
+tags = ["cat.food.produce", "from.kitchen", "from.grocery", "from.farm", "use.food"]
+shape = "bag"
+dims_mm = [350, 220, 110]
+mass_g = 1370
+fill_pct = 20                      # round fruit loosely packed in a mesh bag
+desc = "A mesh bag of fresh produce."
+glyph = "item.produce"
+why = "Water-rich food that also hydrates; spoils on a clock that differs by kind (lettuce in days, potatoes in months)."
+details = ["produce_kind"]
+value_class = "common"
+food = { kcal = 710, servings = 7, hydration_ml = 1150, perishable = "medium", needs_opening = false, cookable = false }
+
+[item.fresh_produce.composition.contents]
+material = "food_wet"
+share = 98
+[item.fresh_produce.composition.bag]
+material = "ldpe"
+share = 2
+
+[item.frozen_food]
+name = "frozen food"
+tags = ["cat.food.frozen", "from.kitchen", "from.grocery", "from.restaurant", "use.food"]
+shape = "block"
+dims_mm = [320, 320, 45]
+mass_g = 740
+fill_pct = 40                      # a flat item in a box with air around it
+desc = "A frozen meal in a printed cardboard box."
+glyph = "item.frozen"
+why = "Big calories that are only safe while the freezer runs; after the outage it thaws within days, then rots (lure/masking)."
+details = ["frozen_food_kind"]
+value_class = "common"
+food = { kcal = 1600, servings = 4, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 1 }
+
+[item.frozen_food.composition.contents]
+material = "food_wet"
+share = 90
+[item.frozen_food.composition.box]
+material = "cardboard"
+share = 10
+
+[item.meat_package]
+name = "meat"
+tags = ["cat.food.meat", "from.kitchen", "from.grocery", "from.restaurant", "use.food", "use.lure", "emits.flesh"]
+shape = "block"
+dims_mm = [230, 150, 50]
+mass_g = 480
+desc = "Raw meat on a foam tray under cling film."
+glyph = "item.meat"
+why = "Rich calories if cooked soon; raw flesh scent draws zombies (a throwable lure); spoils into rot (masking)."
+details = ["meat_kind"]
+value_class = "useful"
+food = { kcal = 1150, servings = 4, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 7 }
+
+[item.meat_package.composition.contents]
+material = "flesh"
+share = 96
+[item.meat_package.composition.tray]
+material = "eps_foam"
+share = 2
+[item.meat_package.composition.wrap]
+material = "ldpe"
+share = 2
