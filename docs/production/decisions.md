@@ -5,6 +5,29 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-28 · D-002 · Turn-based, with the world computed while waiting
+
+User decision. The world advances only when the player acts (a step or a
+wait is a turn); it never runs on a clock. Modern twist: the idle time
+between turns is used to compute ahead. The player's action changes only a
+small neighbourhood, so the next turn is computed speculatively while
+waiting and patched on input. Why: readable tactical play with no waiting
+on the simulation, and the 5,000-Dead budget spent when the player is not
+looking. Consequence: `World::step(action)` is the only way time moves; a
+`speculate / commit` pair must produce bit-identical state to `step`
+(golden test); rendering reads the last committed turn, never a
+speculation buffer.
+
+## 2026-09-28 · D-001 · `Dead`, `horde`, and how the Dead are described
+
+User decision. Code: `struct Dead` is one unit, `horde` is any collection
+(`std::vector<Dead>`, `step_horde`). Fiction: generically "the Dead"; a
+large group is "a Horde"; a specific one is described as the corpse it was
+("dead office worker", "mutilated cop", "armless child"), bearing unhealed
+wounds from the Event, discoloured or rotting. Consequence: `Hordeling` is
+gone; descriptions of individual Dead come from a corpse descriptor, not a
+type name.
+
 ## 2026-09-28 · The enemies are "the Dead", never "zombies"
 
 User decision. They behave like zombies; the word is banned everywhere for

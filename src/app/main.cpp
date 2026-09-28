@@ -2,7 +2,7 @@
 // lives in peo::core and never sees SDL. Keep it thin: anything with logic in
 // it belongs in core where it can be tested headlessly.
 
-#include "peo/core/horde.hpp"
+#include "peo/core/dead.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/scent.hpp"
 #include "peo/core/stage.hpp"
@@ -34,7 +34,7 @@ struct App {
     std::uint32_t stage_index = 0;
     Stage stage;
     ScentField scent{1, 1};
-    std::vector<Hordeling> horde;
+    std::vector<Dead> horde;
     Vec2i player{};
     Rng rng{1};
     Tick tick = 0;
@@ -107,14 +107,14 @@ void draw(App& app) {
                             static_cast<float>((p.y + kHudRows) * kCell), s);
     };
     glyph(app.stage.exit, ">", 120, 200, 255);
-    for (const Hordeling& u : app.horde) {
-        glyph(u.pos, "h", 220, 60, 60);
+    for (const Dead& d : app.horde) {
+        glyph(d.pos, "d", 220, 60, 60);
     }
     glyph(app.player, "@", 255, 255, 255);
 
     char hud[128];
     std::snprintf(hud, sizeof hud,
-                  "stage %u  tick %llu  horde %zu  [arrows/wasd move] [space pause] [s scent] %s",
+                  "stage %u  tick %llu  dead %zu  [arrows/wasd move] [space pause] [s scent] %s",
                   app.stage_index, static_cast<unsigned long long>(app.tick), app.horde.size(),
                   app.paused ? "PAUSED" : "");
     SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);

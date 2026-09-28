@@ -12,7 +12,7 @@ frontend feeds it input and draws its state.
                               ├─ grid.hpp   dense row-major Grid<T>; Grid<bool> is bytes
                               ├─ scent.hpp  ScentField: deposit / step / strongest_neighbour
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
-                              └─ horde.hpp  Hordeling, step_horde
+                              └─ dead.hpp   Dead, step_horde
 ```
 
 ## Core systems
@@ -36,11 +36,50 @@ index)` is a pure hash, so any stage can be regenerated on demand and never
 needs saving. `generate_stage` is currently random walls with a carved entry
 and exit; room/cave generators replace it behind the same signature.
 
-### Hordes (`horde.hpp`)
+### The Dead (`dead.hpp`)
 
-`Hordeling` is deliberately tiny; thousands must tick per frame. `step_horde`
-is one pass over a vector. When profiling asks, the vector becomes
+`Dead` is deliberately tiny; thousands must step per turn. `step_horde` is
+one pass over a vector. When profiling asks, the vector becomes
 struct-of-arrays without changing callers.
+
+## Turn model (decision D-002)
+
+Time moves only through `World::step(Action)`. An `Action` is a step in a
+direction, a wait, or later an interaction. Order within a turn:
+
+1. apply the player's action (move, deposit scent at the new cell);
+2. scent step (diffuse + decay, all layers);
+3. the Dead step (gradient climb, contact resolution).
+
+### Computing while waiting
+
+Steps 2 and 3 barely depend on the player's action. Scent diffusion is
+linear, so `diffuse(field + δ) == diffuse(field) + diffuse(δ)`, and a
+deposit δ at one cell touches only that cell and its four neighbours
+after one step. A Dead's move depends only on the scent in its eight
+neighbours, so only the Dead within two cells of the player's new position
+can change their minds.
+
+So the world computes the next turn speculatively while the player thinks
+(assume "wait"), and on input patches the small player neighbourhood:
+
+```
+idle:   spec = speculate(world_T)            // full-field work, off the input path
+input:  world_T+1 = commit(spec, action)     // O(neighbourhood) patch, then clamp floor
+```
+
+Rules that make this safe:
+- `commit(speculate(w), a)` must equal `step(w, a)` bit for bit; a golden
+  test enforces it for every action on random worlds.
+- Core exposes `speculate` and `commit` as pure functions on plain data;
+  the frontend owns the worker thread and the buffers. Core never spawns
+  threads, so determinism and tests stay single-threaded.
+- The renderer reads the last committed `World` only. A speculation buffer
+  is never drawn.
+- Lookahead deeper than one turn is allowed only for the "wait" action
+  (an idle player is the common case); a step discards deeper speculation.
+- The non-linear floor clamp is applied after patching, so it cannot break
+  linearity.
 
 ## Frontend (`src/app/main.cpp`)
 
@@ -55,13 +94,15 @@ should move to core with a test.
 |----------|------|
 | Determinism | `stage: generation is deterministic`, `rng: same seed` |
 | Scent physics | `scent: mass is conserved`, `walls block scent` |
-| Horde correctness | `horde: units never enter walls` |
-| Horde scale | `horde: a thousand units tick` |
+| The Dead | `dead: the dead never enter walls` |
+| Scale | `dead: a thousand dead step` |
+| Turn model | `world: commit(speculate) == step` (PEO-007) |
 
 ## Planned seams (not built)
 
-- `World`: owns current stage, scent layers, horde, player; `tick()` is the
-  single simulation entry point the frontend calls.
+- `World`: owns current stage, scent layers, horde, player; `step(Action)`
+  is the single simulation entry point the frontend calls (PEO-002).
+- `speculate` / `commit`: the compute-while-waiting pair above (PEO-007).
 - `Replay`: input log + seed = reproducible run; the Architect's tool for
   reviewing bugs it cannot see.
 - `Profile`: per-system tick timings the Builder reports back.

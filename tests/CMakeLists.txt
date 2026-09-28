@@ -9,7 +9,7 @@ add_executable(peo_core_tests
     core/test_grid.cpp
     core/test_scent.cpp
     core/test_stage.cpp
-    core/test_horde.cpp)
+    core/test_dead.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 
 add_test(NAME core COMMAND peo_core_tests --no-intro)

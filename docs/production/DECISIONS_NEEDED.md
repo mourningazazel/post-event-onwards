@@ -19,16 +19,4 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-## D-002 · Real-time ticks or turn-based movement?              (raised by architect · 2026-09-28 · PEO-002)
-Why now: the current frontend runs the world at a fixed 10 Hz whether or not the player acts; classic roguelikes advance the world only when the player moves. PEO-002 (World) will bake this into the core API.
-Affects: gameplay · rewrite: small now, large after PEO-002
-- A) Real-time, fixed tick — pressure never stops; standing still is a choice with a cost. Hordes feel like a flood.   ← recommended
-- B) Turn-based — world advances one tick per player action; tactical, readable, traditional. Scent still spreads per turn.
-- C) Hybrid — turn-based, but the world auto-ticks after N seconds of idling.
-
-## D-001 · What are the enemies called in code?                (raised by architect · 2026-09-28 · PEO-002)
-Why now: the fiction calls them the Dead; the code currently says `Hordeling` / `step_horde`. Renaming is free before PEO-002 lands and costly after.
-Affects: abstraction · rewrite: small now, medium later
-- A) `Dead` for one unit, `horde` for the collection (`std::vector<Dead>`, `step_horde`) — matches fiction, "horde" stays as the group noun.   ← recommended
-- B) Keep `Hordeling` — neutral, already written.
-- C) Something else; tell me the word and I will use it everywhere.
+_No open decisions._

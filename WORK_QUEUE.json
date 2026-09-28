@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 7,
+  "next_id": 8,
   "items": [
     {
       "id": "PEO-001",
@@ -28,7 +28,7 @@
         ],
         "acceptance": [
           "python3 tools/verify.py --frontend passes on the developer's machine",
-          "the game window opens, @ moves with arrows/WASD, h units approach the player",
+          "the game window opens, @ moves with arrows/WASD, d glyphs (the Dead) approach the player",
           "the report note contains OS, compiler, first-build time, and the Release-preset numbers below"
         ],
         "tests": [
@@ -36,11 +36,11 @@
         ],
         "manual": [
           "Launch ./build/dev/bin/peo 7. Expect an 80x45 map of # and . with @ near the left edge and > near the right.",
-          "Stand still 30 ticks (3 s). Expect red h glyphs to converge on @ from multiple directions.",
+          "Stand still 3 s (the prototype is still real-time until PEO-002). Expect red d glyphs to converge on @ from multiple directions.",
           "Shift+S toggles the scent view. Expect a gradient (@ + : .) centred on the player that follows you as you walk.",
           "Walk into the > cell. Expect the HUD stage counter to become 1 and a denser map.",
           "Press N five times. Expect stage 6 to have visibly more walls than stage 0.",
-          "Build the release preset and run it: watch the HUD for hitching while 40 h units move. Report anything not smooth.",
+          "Build the release preset and run it: watch the HUD for hitching while 40 d glyphs move. Report anything not smooth.",
           "Perf baseline: run ./build/headless-release/tests/peo_core_tests -tc='*thousand*' -d and report the duration doctest prints."
         ],
         "out_of_scope": [
@@ -65,46 +65,52 @@
       "id": "PEO-002",
       "order": 20,
       "type": "feature",
-      "title": "Introduce World as the single tick owner",
+      "title": "Introduce World as the turn-based step owner",
       "status": "Pending",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
       "created": "2026-09-28",
       "brief": {
-        "goal": "Frontend calls one World::tick(); all simulation state lives in core.",
+        "goal": "The game is turn-based: World::step(Action) is the only way time moves, the frontend holds no simulation state, and the world waits for the player.",
         "context": [
-          "docs/architecture.md",
+          "docs/architecture.md#turn-model-decision-d-002",
+          "docs/production/decisions.md",
           "src/app/main.cpp",
           "src/core/include/peo/core/scent.hpp",
-          "src/core/include/peo/core/horde.hpp",
+          "src/core/include/peo/core/dead.hpp",
           "src/core/include/peo/core/stage.hpp",
-          "tests/core/test_horde.cpp"
+          "tests/core/test_dead.cpp"
         ],
         "units": [
-          "core: add src/core/include/peo/core/world.hpp with class World { explicit World(Seed); void load_stage(uint32_t); bool try_move_player(Vec2i delta); void tick(); const Stage& stage() const; const ScentField& scent() const; const std::vector<Hordeling>& horde() const; Vec2i player() const; Tick tick_count() const; uint32_t stage_index() const; }. Constants kInitialHorde and kPlayerScent move into a WorldParams struct with defaults.",
-          "core: implement src/core/src/world.cpp by moving load_stage/try_move/simulate out of main.cpp verbatim; reaching the exit inside try_move_player loads the next stage. Add world.cpp to src/core/CMakeLists.txt.",
-          "test: tests/core/test_world.cpp — 'same seed same world after 100 ticks' (compare player, horde positions, scent total for two Worlds), 'player cannot enter walls', 'reaching exit advances stage_index'. Register in tests/CMakeLists.txt.",
-          "app: main.cpp keeps only SDL setup, key mapping, and draw(); App holds a World and calls world.tick() on the fixed timestep.",
-          "docs: update the 'Planned seams' section of docs/architecture.md: World is built."
+          "core: add src/core/include/peo/core/action.hpp: enum class ActionKind { Step, Wait }; struct Action { ActionKind kind; Vec2i dir; static Action step(Vec2i); static Action wait(); }.",
+          "core: add src/core/include/peo/core/world.hpp: struct WorldParams { int initial_dead = 40; float player_scent = 1.0F; ScentParams scent; }; class World { public: World(Seed, WorldParams = {}); void load_stage(uint32_t); void step(Action); const Stage& stage() const; const ScentField& scent() const; const std::vector<Dead>& horde() const; Vec2i player() const; Tick turn() const; uint32_t stage_index() const; }. No clock, no thread, no SDL.",
+          "core: implement src/core/src/world.cpp by moving load_stage/try_move/simulate out of main.cpp. step(): apply action (a Step into a wall becomes a Wait, still consumes the turn), deposit scent at player cell, scent.step(&blocked), step_horde, ++turn; reaching the exit loads the next stage at the end of the turn. Add both files to src/core/CMakeLists.txt.",
+          "test: tests/core/test_world.cpp — 'same seed same world after 100 turns' (two Worlds fed the same actions: equal player, horde, scent.total()), 'step into wall consumes the turn but does not move', 'wait advances the turn and the dead approach', 'reaching exit advances stage_index'. Register in tests/CMakeLists.txt; suite stays under 500 ms.",
+          "app: main.cpp keeps SDL setup, key mapping, draw(). App holds a World and a 'dirty' flag; a key press calls world.step(Action) exactly once; nothing advances on a timer. Remove kTickMs, last_tick_ms and the pause toggle (a turn-based game has no pause). Keep Shift+S scent view and N next stage.",
+          "docs: in docs/architecture.md 'Planned seams', mark World as built and note the file names."
         ],
         "acceptance": [
-          "src/app/main.cpp contains no simulation logic: no ScentField, Rng or Hordeling manipulation, only World calls and drawing",
-          "the three new world tests pass and the suite stays under 500 ms",
-          "the game plays exactly as before (manual steps below)"
+          "src/app/main.cpp contains no ScentField, Rng, Dead or Stage manipulation; only World calls, input mapping and drawing",
+          "the world does not change while the player is idle for 10 seconds",
+          "one key press moves the player one cell and the Dead one step at most",
+          "the four new world tests pass; whole suite under 500 ms"
         ],
         "tests": [
           "tests/core/test_world.cpp (new)",
           "all existing suites"
         ],
         "manual": [
-          "Run ./build/dev/bin/peo 7 and repeat PEO-001 steps 1-4. Behaviour must be identical.",
-          "Pause with space, walk, unpause: hordelings must not teleport (tick catch-up bug check)."
+          "Run ./build/dev/bin/peo 7. Do nothing for 10 s: nothing on screen may change.",
+          "Press right 20 times: @ moves one cell per press; the d glyphs close in one cell per press.",
+          "Hold a movement key: movement must feel immediate with no queued lag after release (report the OS key-repeat feel).",
+          "Press . or space (wait): the Dead advance one step while @ stays.",
+          "Walk into > : stage counter increments and the map changes."
         ],
         "out_of_scope": [
-          "new mechanics (blood, fire) — PEO-003",
-          "renaming existing core headers",
-          "changing tunable values"
+          "compute-while-waiting (speculate/commit) — PEO-007",
+          "blood or other scent layers — PEO-003",
+          "corpse descriptors for individual Dead — later item"
         ]
       },
       "notes": [
@@ -112,6 +118,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "briefed; Architect will write test_world.cpp expectations on request, Builder may write them per unit 3"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "re-briefed for D-002 (turn-based) and D-001 (Dead). Supersedes the earlier real-time brief."
         }
       ],
       "references": [
@@ -126,7 +137,7 @@
       "id": "PEO-003",
       "order": 30,
       "type": "feature",
-      "title": "Blood scent layer on hordeling contact",
+      "title": "Blood scent layer on contact with the Dead",
       "status": "Pending",
       "severity": "S3",
       "effort": "M",
@@ -141,7 +152,13 @@
         "manual": [],
         "out_of_scope": []
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "title: Blood scent layer on contact with the Dead"
+        }
+      ],
       "references": [
         "docs/production/vision.md"
       ],
@@ -225,6 +242,71 @@
       "notes": [],
       "references": [
         "docs/architecture.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-007",
+      "order": 70,
+      "type": "feature",
+      "title": "Compute the next turn while waiting for input",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Between turns the world speculates the next turn assuming Wait; on input, commit() patches only the player's neighbourhood and produces state bit-identical to step().",
+        "context": [
+          "docs/architecture.md#computing-while-waiting",
+          "docs/production/decisions.md",
+          "src/core/include/peo/core/world.hpp",
+          "src/core/include/peo/core/scent.hpp",
+          "src/core/include/peo/core/dead.hpp"
+        ],
+        "units": [
+          "core: make ScentField::step linear-then-clamp explicitly: split into step_linear(blocked) and clamp_floor(); step() calls both. Add ScentField::patch_deposit(Vec2i at, float amount): applies diffuse(δ) for a single deposit to the 5 affected cells (respecting walls exactly as step_linear does), assuming the field is already post-step_linear. Test: for random fields and deposits, step_linear on (field+δ) equals step_linear(field) then patch_deposit(δ), exactly (use == not Approx; choose operation order so this holds).",
+          "core: add struct Speculation { ScentField scent; std::vector<Dead> horde; Tick turn; } and World::speculate() const -> Speculation: the full turn assuming Action::wait() and no player deposit. Pure; no member mutation.",
+          "core: add World::commit(Speculation&&, Action): apply the action, patch_deposit at the player's cell, clamp_floor, then re-run the move decision only for Dead within 2 cells of the player's new cell (reset them from the pre-turn positions kept in the Speculation), resolve contact, adopt the result. Add static bool World::equivalent(const World&, const World&) for tests.",
+          "test: golden test in tests/core/test_world.cpp: for 200 random (seed, action sequence) pairs, run A: step(action) each turn, B: commit(speculate(), action) each turn; assert equivalent() after every turn. Include steps into walls and stage transitions.",
+          "test: perf sanity (headless-release): at 200x120 with 5000 Dead, report microseconds for speculate() and commit() via doctest -d; commit must be under 1 ms on the Builder's machine (record the number).",
+          "app: main.cpp spawns one std::jthread that, whenever the world is idle and no speculation exists, computes world.speculate() into a buffer; the input handler calls commit() if a fresh speculation exists, else step(). The renderer reads only the committed World. Add an on-screen HUD flag 'spec:hit/miss' for the manual test.",
+          "docs: architecture.md 'Computing while waiting' gets the final function names and the measured numbers."
+        ],
+        "acceptance": [
+          "golden test passes for 200 random sequences: commit(speculate()) is bit-identical to step()",
+          "commit() under 1 ms and speculate() under 16 ms at 200x120 with 5000 Dead on the Builder's machine (release)",
+          "core spawns no threads; the only thread lives in src/app/main.cpp",
+          "in game, HUD shows spec:hit on nearly every turn when playing at human speed"
+        ],
+        "tests": [
+          "tests/core/test_scent.cpp linearity test",
+          "tests/core/test_world.cpp golden test",
+          "all existing suites"
+        ],
+        "manual": [
+          "Run the release build with seed 7. Play 100 turns at normal speed: HUD should read spec:hit almost always; report the miss count.",
+          "Mash a movement key as fast as possible for 5 s: no crash, no visual glitch, misses allowed; report feel.",
+          "Compare a 50-turn walk in debug vs release with the same key sequence: the Dead must end in the same cells (determinism across builds)."
+        ],
+        "out_of_scope": [
+          "multi-turn lookahead beyond one Wait turn",
+          "struct-of-arrays for Dead",
+          "GPU or SIMD scent"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed. Architect owns the golden-test design; Builder may ask for the linearity test to be written first."
+        }
+      ],
+      "references": [
+        "docs/architecture.md",
+        "docs/production/decisions.md"
       ],
       "depends_on": [
         "PEO-002"

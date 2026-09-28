@@ -18,7 +18,7 @@ Turn an item into something the Builder can finish without asking.
    `python3 tools/work_queue.py brief <id> --file <path>`.
    - Units: ordered, commit-sized, each named with its layer: `core:`,
      `test:`, `app:`, `docs:`.
-   - Acceptance: observable. "`ctest` passes", "in game, hordelings stop at
+   - Acceptance: observable. "`ctest` passes", "in game, the Dead stop at
      the wall".
    - Manual: what the Builder should do and what to look for, including
      one perf observation when the change touches a per-tick loop.

@@ -1,11 +1,11 @@
-#include "peo/core/horde.hpp"
+#include "peo/core/dead.hpp"
 
 namespace peo::core {
 
-std::size_t step_horde(std::vector<Hordeling>& horde, const ScentField& scent,
+std::size_t step_horde(std::vector<Dead>& horde, const ScentField& scent,
                        const Grid<bool>& blocked) noexcept {
     std::size_t moved = 0;
-    for (Hordeling& unit : horde) {
+    for (Dead& unit : horde) {
         if (unit.cooldown > 0) {
             --unit.cooldown;
             continue;
