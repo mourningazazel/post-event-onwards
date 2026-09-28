@@ -71,7 +71,13 @@ Starter set (grows with each feature):
 - `nested-containers-stress`
 - `save-load-mid-cascade`
 - `walk-between-towns`
-- `succession-after-death`
+- `permadeath-ends-run`
+- `turned-80-vs-99`
+- `clock-sweep-7-to-1825`
+- `revisit-after-months`
+- `fire-collapse`
+- `encampment-overrun`
+- `rural-well-water`
 
 ### 3. Scripted and automatic players
 

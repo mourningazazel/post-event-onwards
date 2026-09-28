@@ -20,7 +20,8 @@ Every generator (L0–L5, ADR-0007) produces the world in **three conceptual pas
    - Doors in their normal state, vehicles in use.
    - **Identical for a given seed in every stage.**
 2. **Event:** the instant of turning.
-   - Everyone turns except about 1 in 100.
+   - Everyone turns except about 1 in 100. *(Refined by ADR-0011: the turned fraction is rolled
+     per world, from 80% to 99%.)*
    - Each non-turned person generates a **struggle trace**: remains, forced doors and windows,
      dropped belongings, blood.
    - Moving vehicles crash or stop.
@@ -61,6 +62,8 @@ Aftermath behaviour lives in content data:
 - Stage switching is cheap and coherent, and purpose tests can compare stages of one seed
   directly: supplies and zombie counts must fall monotonically.
 - Saves record the stage (`elapsed_days`) with the world seed, and it never changes for a run.
+  *(Superseded by [ADR-0011](0011-global-event-clock-and-world-event.md): the clock advances
+  during play, and areas generate at the current clock.)*
 - Frozen, instantiated content (ADR-0002) is frozen *after* the aftermath pass, so what the
   player sees is exactly the stage's state.
 - **No NPC systems are needed** (N005). The other survivors exist only as aftermath effects and

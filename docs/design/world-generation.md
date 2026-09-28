@@ -143,17 +143,70 @@ presets: **1 week = 7, 1 month = 30, 1 year = 365**. Aftermath effects are monot
 of turning. Buildings no struggle ever opened **stay sealed with their occupants inside**, at
 every stage.
 
-### Open questions (N005 follow-ups)
+The table's three columns are **samples of one continuous clock**, not fixed modes (ADR-0011).
+All six N005 follow-up questions were answered in N007; see below.
 
-1. **When did the event happen?** Time of day and day of week decide where people were: homes at
-   night, offices and schools by day. Is it fixed in the lore, or rolled per world seed?
-2. **Traces of other survivors.** Since NPCs are never met, can the player find signs of them:
-   barricades, notes, abandoned camps, bodies of later casualties?
-3. **Zombie decay.** Over a year, do zombies physically deteriorate (slower, weaker), or are there
-   just fewer of them?
-4. **Nature at one year.** Overgrowth in streets, wildlife? This changes terrain footing (streets
-   become underbrush) and therefore crowd movement.
-5. **Utilities.** Does power and water fail instantly, or over the first days or weeks? This
-   affects spoilage (fridges and freezers) and lighting at 1 week.
-6. **Fires.** Did the event start fires (stoves, crashes) that burned areas, more visible at later
-   stages?
+## Event parameters, clock, utilities, fires ([N007](notes/N007-event-parameters-clock-utilities-fires.md), [ADR-0011](../adr/0011-global-event-clock-and-world-event.md))
+
+### Per-world event
+
+- **Rolled per world seed:** the moment of the event (time of day, day of week) and the
+  **turned fraction (80–99%)**. Both are shown on the opening splash screen.
+- **Moment of the event:** decides where occupants were (home, work, school, commuting). That
+  sets baseline occupancy, and therefore where zombies start.
+- **Turned fraction** scales everything survivors left behind:
+
+  | Effect of more survivors (lower turned %) | Why |
+  |---|---|
+  | More **dead bodies** | Survivors died; the zombies didn't |
+  | More **struggle damage** and forced entries | More fights at the event |
+  | More **looting and scarcity** over time | More people going through supplies |
+  | More **barricades** | Survivors fortified before dying or leaving |
+  | More **notes** and **encampments** | Survivors lived long enough to write and build |
+
+- **Encampments hold concentrated useful supplies, but are deserted for a reason.** The reason
+  is generated and visible in the evidence:
+  - usually **overrun**: zombie presence, breached barricades, remains
+  - rarely **owner died elsewhere**: intact, untouched, "ripe for the taking"
+
+### The global clock as a gradient
+
+- **Every aftermath curve is a continuous, monotonic function of days-since-event** and
+  saturates at long times. It must stay sensible at 5 years.
+- **Overgrowth:** realistic growth by climate and biome. Cracks → weeds → brush → saplings.
+  Changes terrain footing (streets slowly turn into underbrush) and blocks sight.
+- **Environmental damage:** weathering, water damage through broken windows and roofs, rust,
+  collapse risk rising with time.
+- **Areas generate at the current clock.** Revisited stored areas catch up from the clock they
+  were last updated at (ADR-0011, item 4).
+
+### Utilities
+
+| Utility | Unit | Chance of working | Notes |
+|---|---|---|---|
+| **Power** | A **neighbourhood** (city generation's district/neighbourhood unit) | May or may not work at week 1; **falls with time**; **lower still as density drops** | A gradient, so there's no sudden city/wilderness break. Affects lights, fridges and freezers (spoilage), electric doors, pumps. |
+| **Water** | Neighbourhood (mains) | **Much higher** than power, still falling slowly with time | |
+| **Water, very sparse properties** | Single property | **High regardless of time** (wells) | Rural and isolated homesteads |
+
+### Fires
+
+- **World-generation events:** a single building or a cluster (spreading along adjacent
+  buildings). Their probability and extent are data.
+- **Intensity scales with the burned area.** Light damage means scorching and smoke damage.
+  Severe damage means **missing walls and floors**.
+- **Structural support rule (shared with digging).** A floor or roof cell needs support from below
+  within a span limit. When support is lost, through fire or excavation, the unsupported part
+  **collapses**. Its contents fall to the next supported level, using the falling calculation
+  (P-WO-06).
+- **Charred items:** each item's condition is rolled against the burn intensity and the item's
+  material. Results: *working*, *barely working* or *broken* (G03 D3.5).
+- **Smoke scent:** burned areas emit a **smoke channel** that decays with time since the fire. By
+  the dominance matrix it **masks and modifies** other scents nearby (scent-mobs.md).
+
+### Zombies over time
+
+- Damage output stays roughly constant.
+- **Tissue fragility per body part rises with the clock** (in monthly steps), so limbs and
+  appendages become easier to damage and sever (walkthrough G05).
+- Combined with falling supplies, this gives the difficulty ↔ reward gradient: **early is harder
+  and richer; late is easier and poorer.**

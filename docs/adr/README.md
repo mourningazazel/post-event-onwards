@@ -15,5 +15,6 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0006](0006-scent-driven-mobs.md) | Scent-driven blind mobs as the core enemy mechanic | Accepted (details proposed) |
 | [0007](0007-endless-staged-world.md) | Endless world with staged, persistent generation | Accepted (structure proposed; river handling superseded by 0010) |
 | [0008](0008-project-license-mit.md) | Project license — MIT | Accepted |
-| [0009](0009-baseline-plus-aftermath-generation.md) | World generation = baseline + event + time-driven aftermath (the 3 stages) | Accepted (parameters proposed) |
+| [0009](0009-baseline-plus-aftermath-generation.md) | World generation = baseline + event + time-driven aftermath (the 3 stages) | Accepted (fixed-stage part superseded by 0011) |
 | [0010](0010-rivers-as-lazy-long-features.md) | Rivers are long features, generated lazily at finer detail | Accepted (parameters proposed) |
+| [0011](0011-global-event-clock-and-world-event.md) | One global days-since-event clock; per-world event parameters | Accepted (curves proposed) |
