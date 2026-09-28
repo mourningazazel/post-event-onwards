@@ -19,8 +19,8 @@ design of the Generation, Streaming/LOD and Persistence systems.
 
 | Level | Scale (example) | Contents | Lifetime |
 |---|---|---|---|
-| **L0 Macro** | Evaluated anywhere, on demand | Continuous fields from world-coordinate noise (elevation, moisture, temperature), mountain ranges, drainage basins | Never stored; always regenerable |
-| **L1 Region** | e.g. 1024×1024 tiles | Biomes, rivers, lakes, road network, **settlement sites and their identities** (size, culture, faction, era), points of interest | Small; cached widely |
+| **L0 Macro** | Evaluated anywhere, on demand | Continuous fields from world-coordinate noise (elevation, moisture, temperature), mountain ranges (no drainage simulation; rivers come later, see "Rivers (N006)") | Never stored; always regenerable |
+| **L1 Region** | e.g. 1024×1024 tiles | Biomes, rivers (lazy long features, ADR-0010), lakes, road network, **settlement sites and their identities** (size, culture, faction, era), points of interest | Small; cached widely |
 | **L2 Settlement** | One city | Outline, districts, street graph, blocks, lots, **building identities** (type, footprint, floors, owner, condition) | Medium; kept for the cities near the player |
 | **L3 Structure** | One building or site | Floor plans, rooms, doors, stairs, basements, z-levels | Materialized near the player |
 | **L4 Tile** | Chunk (32×32 × z) | Terrain, material, furniture, fixtures | Materialized near the player |
@@ -43,12 +43,9 @@ Anything that crosses a boundary must be decided at a level whose cell covers bo
   cells' site function (microseconds). No neighbour detail is generated.
 - **Roads between cities.** Plan them on the settlement-site graph, which is cheap, before any
   city is detailed.
-- **Rivers and mountain ranges are the hard case in an endless world.**
-  - Drainage is inherently non-local, because a river's path depends on terrain far upstream.
-  - Standard mitigation: compute coarse drainage on a *very* coarse grid with overlapping margins,
-    so the result for a cell doesn't depend on where evaluation started, then refine locally.
-  - **This is the biggest technical risk in world generation.** It deserves its own spike before
-    the design is locked.
+- **Mountain ranges** come from the continuous L0 noise, so they are consistent everywhere.
+- **Rivers:** ~~drainage simulation~~ replaced by a simple lazy long-feature generator (see
+  "Rivers (N006)" below, and ADR-0010).
 
 ### Principle 3: persistence means overrides on a generated baseline
 
@@ -109,8 +106,23 @@ entities carry **stable IDs** (see ADR-0002).
 - **Detailed terrain is the expensive part.** It has to be bounded by the rings and stored as
   columns, not voxels: a 512×512-tile detailed window in column form is a few MB.
   Full-3D chunks exist only inside structures and excavations.
-- **The rivers risk is unchanged, and scale makes it more visible.** Large rivers crossing many
-  regions need the coarse-drainage-with-margins approach. That spike comes first.
+- **Rivers are no longer a risk** (N006, ADR-0010). They are lazy long features, with no drainage
+  computation.
+
+## Rivers (N006)
+
+- **When:** created by the river generator as L1/L2 detail is generated, not in top-level
+  geography.
+- **Shape:** a source and a mouth far beyond the area being generated. The source is the end at
+  higher macro elevation, and a mouth may be a lake. They are joined by a smooth, meandering path
+  that is refined per area.
+- **Spacing:** whether an area spawns a river is decided by a seeded roll that must beat
+  neighbouring candidates within a spacing radius. Candidate paths near an existing river are
+  suppressed. Spacing and length ranges are data, tuned for a realistic density.
+- **Consistency:** every area checks the candidates within the maximum river length, so the same
+  seed produces the same rivers **in any exploration order and at every stage**.
+- **Terrain follows the river:** at tile detail the river carves its bed and banks. A river
+  reaching another river joins it as a tributary.
 
 ## Aftermath model: the three stages ([N005](notes/N005-the-event-and-aftermath-stages.md), [ADR-0009](../adr/0009-baseline-plus-aftermath-generation.md))
 

@@ -20,5 +20,7 @@
 - World coordinates are 64-bit integers.
 - Cross-boundary features (rivers, roads, ranges) must be decided at a level whose cell spans the
   boundary. Rivers in an endless world are the main technical risk and get a dedicated spike.
+  *(River handling superseded by [ADR-0010](0010-rivers-as-lazy-long-features.md): rivers are
+  lazy long features, with no drainage simulation, and are no longer a risk.)*
 - Generator versioning and a freeze-on-materialization policy (ADR-0002) are needed so updates
   don't corrupt visited areas.

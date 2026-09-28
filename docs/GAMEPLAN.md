@@ -235,7 +235,7 @@ fields**: a splat step, then blur and decay. They use the same kernel infrastruc
 2. **Diffusion fields**: scent, sound, heat, fire spread, gas, search heatmaps. Pure stencils,
    the best GPU fit.
 3. **World generation stencils**: cellular-automata cave passes, noise post-processing, erosion
-   and flow accumulation for rivers, template matching.
+   carving river beds (ADR-0010), template matching.
 4. **Lighting** with many sources.
 
 **Mechanics.** Dispatch at the end of turn N and consume the results at the start of turn N+1,
@@ -326,7 +326,8 @@ so the CPU never stalls on the GPU. Apple silicon's unified memory keeps readbac
 ### Phase 6 — Generation pipeline v1
 
 - **Deliverables:**
-  - macro layer: fBm height, moisture and temperature → biomes → rivers (flow accumulation)
+  - macro layer: fBm height, moisture and temperature → biomes; rivers as lazy long features
+    (ADR-0010)
   - regions: zone flood-fill → per-zone painters
   - caves: cellular automata on GPU plus a connectivity pass
   - city v1: site selection → road skeleton (arterials plus growth) → blocks → lots → buildings

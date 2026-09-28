@@ -13,6 +13,7 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0004](0004-open-source-and-dependency-licensing.md) | Open source and dependency licensing policy | Accepted |
 | [0005](0005-turn-model.md) | Player-stepped turns with level-of-detail simulation | Accepted |
 | [0006](0006-scent-driven-mobs.md) | Scent-driven blind mobs as the core enemy mechanic | Accepted (details proposed) |
-| [0007](0007-endless-staged-world.md) | Endless world with staged, persistent generation | Accepted (structure proposed) |
+| [0007](0007-endless-staged-world.md) | Endless world with staged, persistent generation | Accepted (structure proposed; river handling superseded by 0010) |
 | [0008](0008-project-license-mit.md) | Project license — MIT | Accepted |
 | [0009](0009-baseline-plus-aftermath-generation.md) | World generation = baseline + event + time-driven aftermath (the 3 stages) | Accepted (parameters proposed) |
+| [0010](0010-rivers-as-lazy-long-features.md) | Rivers are long features, generated lazily at finer detail | Accepted (parameters proposed) |
