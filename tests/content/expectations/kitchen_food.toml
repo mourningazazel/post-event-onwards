@@ -1,0 +1,516 @@
+# Domain A (kitchen, food, drink) expectations: pinned derivations, reactions, names from
+# modifiers, and food values (N002 intended-use tests). Values hand-computed from derive.py.
+
+# ---------------------------------------------------------------- cookware as weapons/tools
+[[expect]]
+item = "frying_pan"
+path = "cap.hammer"
+op = "=="
+value = 9
+why = "(log2(2300/50) + cast iron 6/3) x 1.2 striking face = 9.03: the skillet is a top-tier bludgeon"
+
+[[expect]]
+item = "frying_pan"
+path = "impact.medium"
+op = "=="
+value = "none"
+why = "authored: a thick cast-iron skillet survives a thrown/swung hit"
+
+[[expect]]
+item = "frying_pan"
+path = "impact.high"
+op = "=="
+value = "crack"
+why = "cast iron cracks from a hard high-energy impact"
+
+[[expect]]
+item = "frying_pan"
+path = "heat_resistant"
+op = "=="
+value = true
+
+[[expect]]
+item = "frying_pan"
+mods = ["aluminum_cookware"]
+path = "name"
+op = "=="
+value = "aluminum frying pan"
+
+[[expect]]
+item = "frying_pan"
+mods = ["aluminum_cookware"]
+path = "cap.hammer"
+op = "=="
+value = 7
+why = "920 g aluminum: (log2(18.4) + 4/3) x 1.2 = 6.64 — lighter pan, weaker hit"
+
+[[expect]]
+item = "frying_pan"
+mods = ["aluminum_cookware"]
+path = "impact.medium"
+op = "=="
+value = "dent"
+why = "authored cast-iron reactions removed; aluminum (tough) dents"
+
+[[expect]]
+item = "frying_pan"
+mods = ["aluminum_cookware"]
+path = "tags"
+op = "has"
+value = "hazard.fumes"
+why = "overheated nonstick coating gives off toxic fumes"
+
+[[expect]]
+item = "cleaver"
+path = "cap.cut"
+op = "=="
+value = 4
+why = "sharpness 6 x stainless edge_holding 6 / 10 = 3.6"
+
+[[expect]]
+item = "cleaver"
+path = "cap.chop"
+op = "=="
+value = 3
+why = "cut 4 x 800/1200 x 1.3 head-heavy = 3.47; the only kitchen item that chops"
+
+[[expect]]
+item = "cleaver"
+path = "cap.pierce"
+op = "=="
+value = 0
+why = "a cleaver has no point"
+
+[[expect]]
+item = "can_opener"
+path = "cap.can_open"
+op = ">="
+value = 5
+
+[[expect]]
+item = "rolling_pin"
+path = "cap.hammer"
+op = "=="
+value = 5
+why = "log2(800/50) + hardwood 4/3 = 5.33"
+
+[[expect]]
+item = "rolling_pin"
+path = "cap.pry"
+op = "=="
+value = 1
+why = "authored override: a round pin has no edge to lever with"
+
+[[expect]]
+item = "cutlery"
+path = "cap.can_open"
+op = "=="
+value = 1
+why = "the slow spoon-on-the-seam method"
+
+[[expect]]
+item = "cutlery"
+path = "cap.fasten"
+op = "=="
+value = 1
+why = "a table knife as a poor screwdriver: not enough for fasten>=2 salvage"
+
+[[expect]]
+item = "cutlery"
+path = "cap.hammer"
+op = "=="
+value = 2
+
+[[expect]]
+item = "fire_extinguisher"
+path = "cap.extinguish"
+op = ">="
+value = 5
+
+[[expect]]
+item = "fire_extinguisher"
+path = "pressurized"
+op = "=="
+value = true
+
+[[expect]]
+item = "fire_extinguisher"
+path = "reactions.heat.high"
+op = "=="
+value = "burst"
+
+[[expect]]
+item = "fire_extinguisher"
+path = "cap.hammer"
+op = "=="
+value = 8
+why = "log2(3900/50) + steel 6/3 = 8.29: a heavy steel cylinder"
+
+# ---------------------------------------------------------------- vessels
+[[expect]]
+item = "mug"
+path = "impact.low"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "dinner_plate"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "dinner_plate"
+path = "throw_range"
+op = "=="
+value = 9
+why = "fair aero (flies flat) 9 x 1.0 at 550 g"
+
+[[expect]]
+item = "kettle"
+path = "use_noise"
+op = "=="
+value = "loud"
+why = "the whistle at the boil is a noise event"
+
+[[expect]]
+item = "vacuum_flask"
+path = "cap.insulate"
+op = ">="
+value = 6
+
+[[expect]]
+item = "plastic_tub"
+path = "cap.seal"
+op = "=="
+value = 1
+why = "airtight lid: scent containment"
+
+[[expect]]
+item = "zip_bags"
+path = "cap.seal"
+op = "=="
+value = 1
+
+[[expect]]
+item = "water_filter_pitcher"
+path = "cap.filter"
+op = ">="
+value = 1
+
+[[expect]]
+item = "water_filter_pitcher"
+path = "cap.purify"
+op = "=="
+value = 0
+why = "carbon filters don't kill pathogens"
+
+# ---------------------------------------------------------------- canned food
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili"]
+path = "name"
+op = "=="
+value = "canned chili"
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili"]
+path = "food.kcal"
+op = "=="
+value = 520
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili"]
+path = "food.needs_opening"
+op = "=="
+value = true
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_luncheon_meat"]
+path = "food.needs_opening"
+op = "=="
+value = false
+why = "pull-ring tin"
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_tuna"]
+path = "dims_mm"
+op = "=="
+value = [85, 85, 40]
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili", "opened"]
+path = "name"
+op = "=="
+value = "canned chili (opened)"
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili", "spoiled"]
+path = "name"
+op = "=="
+value = "spoiled canned chili"
+
+[[expect]]
+item = "canned_food"
+mods = ["canned_chili", "spoiled"]
+path = "tags"
+op = "has"
+value = "emits.rot"
+
+[[expect]]
+item = "canned_food"
+path = "impact.medium"
+op = "=="
+value = "dent"
+why = "authored: the steel can dents; the heavier contents don't make it split"
+
+[[expect]]
+item = "canned_food"
+path = "reactions.heat.high"
+op = "=="
+value = "burst"
+why = "a sealed can in a fire bursts"
+
+[[expect]]
+item = "canned_food"
+path = "food.perishable"
+op = "=="
+value = "shelf_stable"
+
+# ---------------------------------------------------------------- other packaged food
+[[expect]]
+item = "jar_food"
+path = "impact.low"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "jar_food"
+mods = ["jar_peanut_butter"]
+path = "name"
+op = "=="
+value = "creamy peanut butter"
+
+[[expect]]
+item = "jar_food"
+mods = ["jar_peanut_butter"]
+path = "impact.medium"
+op = "=="
+value = "none"
+why = "PET jar: doesn't shatter"
+
+[[expect]]
+item = "jar_food"
+mods = ["jar_peanut_butter"]
+path = "food.kcal"
+op = "=="
+value = 2670
+
+[[expect]]
+item = "boxed_dry_food"
+mods = ["boxed_cereal"]
+path = "name"
+op = "=="
+value = "breakfast cereal"
+
+[[expect]]
+item = "boxed_dry_food"
+mods = ["boxed_cereal"]
+path = "brand_cats"
+op = "=="
+value = ["cereal"]
+
+[[expect]]
+item = "snack_bar"
+mods = ["snack_chocolate_bar"]
+path = "name"
+op = "=="
+value = "chocolate bar"
+
+[[expect]]
+item = "honey_jar"
+path = "medical.burn_care"
+op = ">="
+value = 1
+
+[[expect]]
+item = "honey_jar"
+path = "food.perishable"
+op = "=="
+value = "shelf_stable"
+
+[[expect]]
+item = "baby_formula"
+path = "value_class"
+op = "=="
+value = "valuable"
+
+# ---------------------------------------------------------------- perishables
+[[expect]]
+item = "meat_package"
+path = "tags"
+op = "has"
+value = "emits.flesh"
+why = "raw meat is a scent lure"
+
+[[expect]]
+item = "meat_package"
+path = "food.raw_risk"
+op = ">="
+value = 5
+
+[[expect]]
+item = "meat_package"
+mods = ["meat_chicken_breast"]
+path = "name"
+op = "=="
+value = "raw chicken breasts"
+
+[[expect]]
+item = "meat_package"
+mods = ["spoiled"]
+path = "tags"
+op = "has"
+value = "emits.rot"
+why = "spoiled meat turns from lure (flesh) into masking agent (rot)"
+
+[[expect]]
+item = "fresh_produce"
+mods = ["produce_potatoes"]
+path = "food.perishable"
+op = "=="
+value = "long"
+
+[[expect]]
+item = "fresh_produce"
+mods = ["produce_lettuce"]
+path = "food.perishable"
+op = "=="
+value = "very_short"
+
+[[expect]]
+item = "frozen_food"
+path = "food.perishable"
+op = "=="
+value = "very_short"
+
+[[expect]]
+item = "bread_loaf"
+mods = ["bread_tortillas"]
+path = "food.perishable"
+op = "=="
+value = "medium"
+why = "tortillas outlast loaves"
+
+# ---------------------------------------------------------------- drinks and staples
+[[expect]]
+item = "bottled_water"
+path = "contents.substance"
+op = "=="
+value = "water"
+
+[[expect]]
+item = "bottled_water"
+mods = ["water_gallon"]
+path = "features.container.capacity_ml"
+op = "=="
+value = 3785
+
+[[expect]]
+item = "soda_can"
+path = "pressurized"
+op = "=="
+value = true
+
+[[expect]]
+item = "soda_can"
+mods = ["canned_beer"]
+path = "contents.substance"
+op = "=="
+value = "beer"
+
+[[expect]]
+item = "soda_can"
+mods = ["canned_beer"]
+path = "name"
+op = "=="
+value = "canned beer"
+
+[[expect]]
+item = "soda_can"
+mods = ["soda_two_liter"]
+path = "tags"
+op = "has"
+value = "cat.container.bottle"
+
+[[expect]]
+item = "bag_of_rice"
+path = "contents.substance"
+op = "=="
+value = "rice"
+
+[[expect]]
+item = "bag_of_rice"
+path = "cap.contain_granular"
+op = "=="
+value = 1
+
+[[expect]]
+item = "pet_food_bag"
+path = "contents.substance"
+op = "=="
+value = "pet_kibble"
+
+# ---------------------------------------------------------------- appliances
+[[expect]]
+item = "stove_range"
+path = "cap.heat"
+op = ">="
+value = 6
+
+[[expect]]
+item = "stove_range"
+mods = ["gas_range"]
+path = "name"
+op = "=="
+value = "gas kitchen range"
+
+[[expect]]
+item = "stove_range"
+mods = ["gas_range"]
+path = "features.heat_source.fuel"
+op = "has"
+value = "propane"
+
+[[expect]]
+item = "microwave"
+path = "tags"
+op = "has"
+value = "hazard.electrical"
+why = "the high-voltage capacitor holds a charge"
+
+[[expect]]
+item = "chest_freezer"
+path = "composition.coolant_line.salvage.item"
+op = "=="
+value = "copper_tubing"
+
+[[expect]]
+item = "chest_freezer"
+path = "cap.seal"
+op = "=="
+value = 1
+why = "gasketed lid holds odours in"
+
+[[expect]]
+item = "chest_freezer"
+path = "mass_g"
+op = ">="
+value = 20000
+why = "heavy enough to barricade with"

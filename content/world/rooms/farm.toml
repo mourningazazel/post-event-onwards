@@ -1,0 +1,21 @@
+# Farm room types (world-catalog §3), pre-event baseline.
+
+[room.barn_interior]
+desc = "Inside a working barn: hay, feed and fencing, the tractor, fuel drums, a workbench, a meat freezer."
+size_m2 = [80, 600]
+floor = "ground"
+tags = ["from.farm"]
+objects = [
+  { item = "hay_bale", count = [10, 200] },
+  { item = "metal_shelving", count = [1, 4], contains = ["farm_barn_stock"] },
+  { item = "workbench", count = [1, 1], chance_pct = 60, contains = ["workbench_tools"] },
+  { item = "tractor", count = [1, 1], chance_pct = 50 },
+  { item = "riding_mower", count = [1, 1], chance_pct = 10 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 15 },
+  { item = "wheelbarrow", count = [1, 2] },
+  { item = "drum_55gal", count = [0, 4] },
+  { item = "water_trough", count = [1, 2], chance_pct = 40 },
+  { item = "chest_freezer", count = [1, 1], chance_pct = 15, contains = ["freezer_contents"] },
+  { item = "extension_ladder", count = [1, 1], chance_pct = 40 },
+]
+loose = ["farm_barn_stock"]

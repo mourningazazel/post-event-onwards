@@ -1,0 +1,169 @@
+# Kitchen appliances (domain A): world objects that matter as heat, storage, barricades and
+# salvage. The refrigerator exemplar lives in items/appliances/. Power is gated by the engine
+# (M9: power_use vs the neighbourhood grid state, N007); gas burners run without it.
+
+[item.stove_range]
+name = "kitchen range"
+tags = ["cat.appliance.kitchen", "from.kitchen", "use.cooking", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [910, 760, 660]
+mass_g = 68000
+hollow = true
+blocks = "full"
+desc = "A freestanding 30-inch range: four burners over an enamelled oven."
+glyph = "obj.stove"
+why = "Cooks and boils while the power (or gas) lasts; the gas variant still lights with a match in an outage; salvage wire and springs; heavy barricade."
+brand_cats = ["appliances"]
+modifiers = ["gas_range"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 3000 }
+
+[item.stove_range.composition.cabinet]
+material = "mild_steel"
+share = 50
+salvage = { item = "sheet_metal", count = 2, tool = "fasten>=2", time_s = 900 }
+[item.stove_range.composition.oven_liner]
+material = "mild_steel"
+share = 20
+[item.stove_range.composition.racks]
+material = "mild_steel"
+share = 8
+[item.stove_range.composition.door_glass]
+material = "tempered_glass"
+share = 8
+[item.stove_range.composition.burners]
+material = "mild_steel"
+share = 6
+[item.stove_range.composition.wiring]
+material = "copper"
+share = 3
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [3000, 4, 4] }, tool = "fasten>=2", time_s = 600 }
+[item.stove_range.composition.door_springs]
+material = "carbon_steel"
+share = 2
+salvage = { item = "steel_spring", count = 2, tool = "fasten>=2", time_s = 300 }
+[item.stove_range.composition.controls]
+material = "abs"
+share = 3
+
+[item.stove_range.features.heat_source]
+output = 8
+[item.stove_range.features.container]
+capacity_ml = 140000
+closable = true
+sealable = false
+compat = ["solid"]
+[item.stove_range.features.surface]
+area_mm2 = 500000
+
+[item.microwave]
+name = "microwave oven"
+tags = ["cat.appliance.kitchen", "from.kitchen", "from.office", "use.salvage", "hazard.electrical"]
+shape = "complex"
+dims_mm = [520, 410, 300]
+mass_g = 14000
+hollow = true
+desc = "A countertop microwave with a glass turntable and a keypad door."
+glyph = "obj.microwave"
+why = "Useless without power, rich in salvage: transformer copper, small motors, a glass plate. Its capacitor can still bite."
+brand_cats = ["appliances"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 1500 }
+
+[item.microwave.composition.case]
+material = "mild_steel"
+share = 40
+[item.microwave.composition.transformer_core]
+material = "mild_steel"
+share = 22
+[item.microwave.composition.transformer_winding]
+material = "copper"
+share = 8
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [20000, 1, 1] }, tool = "fasten>=2", time_s = 1200 }
+[item.microwave.composition.magnetron]
+material = "mild_steel"
+share = 7
+[item.microwave.composition.turntable_plate]
+material = "glass"
+share = 8
+[item.microwave.composition.fan_motor]
+material = "mild_steel"
+share = 4
+salvage = { item = "electric_motor", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.microwave.composition.front_panel]
+material = "abs"
+share = 6
+[item.microwave.composition.door_window]
+material = "polycarbonate"
+share = 5
+
+[item.microwave.features.heat_source]
+output = 4
+[item.microwave.features.container]
+capacity_ml = 31000
+closable = true
+sealable = false
+compat = ["solid", "liquid"]
+
+[item.chest_freezer]
+name = "chest freezer"
+tags = ["cat.appliance.kitchen", "from.kitchen", "from.garage", "from.restaurant", "use.container", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [950, 850, 560]
+mass_g = 32000
+hollow = true
+blocks = "full"
+desc = "A white 7-cubic-foot chest freezer with a gasketed lift lid and a small key lock."
+glyph = "obj.freezer"
+why = "Holds frozen food about two days after the power dies, then a sealed box of rot; lockable, airtight storage; copper and springs; pushable barricade."
+brand_cats = ["appliances"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 100 }
+
+[item.chest_freezer.composition.cabinet]
+material = "mild_steel"
+share = 47
+salvage = { item = "sheet_metal", count = 2, tool = "fasten>=2", time_s = 900 }
+[item.chest_freezer.composition.liner]
+material = "aluminum"
+share = 10
+[item.chest_freezer.composition.insulation]
+material = "pu_foam"
+share = 10
+[item.chest_freezer.composition.compressor]
+material = "mild_steel"
+share = 25
+[item.chest_freezer.composition.coolant_line]
+material = "copper"
+share = 3
+salvage = { item = "copper_tubing", count = 1, tool = "fasten>=2", time_s = 900 }
+[item.chest_freezer.composition.lid_springs]
+material = "carbon_steel"
+share = 2
+salvage = { item = "steel_spring", count = 2, tool = "fasten>=2", time_s = 300 }
+[item.chest_freezer.composition.gasket]
+material = "rubber"
+share = 2
+[item.chest_freezer.composition.wiring]
+material = "copper"
+share = 1
+
+[item.chest_freezer.features.container]
+capacity_ml = 198000
+opening_mm = 800
+closable = true
+sealable = true
+watertight = true
+compat = ["solid", "liquid"]
+[item.chest_freezer.features.lid]
+kind = "hinged"
+reclosable = true
+[item.chest_freezer.features.lock]
+tier = 1
+keyed = true
+pickable = true
+[item.chest_freezer.features.surface]
+area_mm2 = 500000
+
+[item.chest_freezer.capabilities]
+insulate = 7                       # override: ~2 days of hold-over cold; the derived rule only reads wearables

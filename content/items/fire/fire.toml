@@ -1,0 +1,135 @@
+# Fire starting, tinder and fuel. Exemplar file.
+
+[item.matchbook]
+name = "book of matches"
+tags = ["cat.fire.matches", "from.kitchen", "from.restaurant", "from.retail", "use.fire_starter", "hazard.flammable"]
+shape = "small"
+dims_mm = [45, 35, 8]
+mass_g = 5
+desc = "A cardboard matchbook with a striker strip."
+glyph = "item.matches"
+why = "Cheap ignition; fails when wet; a lit match can be thrown onto a fuel spill."
+units = 20
+value_class = "useful"
+
+[item.matchbook.composition.book]
+material = "paper"
+share = 100
+
+[item.matchbook.features.ignition]
+method = "strike"
+charges = 20
+fails_when_wet = true
+needs_striker = false
+
+[item.lighter]
+name = "disposable lighter"
+tags = ["cat.fire.lighter", "from.living", "from.gas_station", "from.retail", "use.fire_starter", "hazard.flammable"]
+shape = "small"
+dims_mm = [80, 25, 12]
+mass_g = 20
+desc = "A plastic butane lighter."
+glyph = "item.lighter"
+why = "Reliable ignition that works after rain; limited fuel."
+brand_cats = ["tobacco_accessories"]
+value_class = "valuable"
+
+[item.lighter.composition.body]
+material = "polypropylene"
+share = 70
+[item.lighter.composition.wheel]
+material = "mild_steel"
+share = 30
+
+[item.lighter.features.ignition]
+method = "flame"
+charges = 300
+fails_when_wet = false
+
+[item.newspaper]
+name = "newspaper"
+tags = ["cat.paper.newspaper", "from.living", "from.street", "from.retail", "use.tinder", "use.fuel", "flavor.readable"]
+shape = "sheet"
+dims_mm = [600, 350, 5]
+mass_g = 250
+desc = "A folded newspaper from the week of the event."
+glyph = "item.paper"
+why = "Tinder and insulation; headlines tell the story of the event (flavour)."
+divisible = { mode = "sheet", needs = "none" }
+details = ["newspaper_headlines"]
+value_class = "junk"
+
+[item.newspaper.composition.paper]
+material = "paper"
+share = 100
+
+[item.newspaper.features.readable]
+kind = "note"
+
+[item.firewood]
+name = "firewood"
+tags = ["cat.fuel.wood", "from.garden", "from.farm", "use.fuel"]
+shape = "rod"
+dims_mm = [400, 100, 100]
+mass_g = 2000
+desc = "A split log of seasoned firewood."
+glyph = "item.log"
+why = "Sustained fire fuel; club in a pinch; friction-fire stock for experts (N012)."
+value_class = "common"
+
+[item.firewood.composition.wood]
+material = "softwood"
+share = 100
+
+# ---- domain D additions (world-catalog §6.D) ----
+
+[item.ferro_rod]
+name = "ferro rod"
+tags = ["cat.fire.ferro_rod", "from.outdoors", "from.garage", "use.fire_starter"]
+shape = "rod"
+dims_mm = [130, 25, 12]
+mass_g = 60
+desc = "A ferrocerium rod on a lanyard with a steel striker; scraped hard it throws white-hot sparks."
+glyph = "item.ferro_rod"
+why = "Thousands of lights, works soaking wet and in wind; needs dry tinder (sparks, not a flame)."
+brand_cats = ["fire_starters", "outdoors"]
+value_class = "valuable"
+
+[item.ferro_rod.composition.rod]
+material = "mild_steel"
+share = 60
+[item.ferro_rod.composition.striker]
+material = "carbon_steel"
+share = 25
+[item.ferro_rod.composition.handle]
+material = "hardwood"
+share = 15
+
+[item.ferro_rod.features.ignition]
+method = "spark"
+charges = 5000
+fails_when_wet = false
+needs_striker = true
+[item.ferro_rod.features.strap]
+kind = "lanyard"
+load_g = 500
+
+[item.charcoal_bag]
+name = "bag of charcoal"
+tags = ["cat.fuel.charcoal", "from.garden", "from.grocery", "from.gas_station", "from.retail", "use.fuel"]
+shape = "block"
+dims_mm = [450, 300, 120]
+mass_g = 7000
+desc = "A 7 kg paper sack of charcoal briquettes."
+glyph = "item.sack"
+why = "Hot, steady, low-smoke fuel for cooking and forge heat (metalworking); packs dense for carrying."
+brand_cats = ["fire_starters"]
+units = 90
+value_class = "useful"
+
+[item.charcoal_bag.composition.briquettes]
+material = "charcoal"
+share = 96
+[item.charcoal_bag.composition.sack]
+material = "paper"
+share = 4

@@ -1,0 +1,114 @@
+# Bulk dry staples (domain A). These are bags holding a granular substance (M1): calories,
+# perishability and density live on the substance (substances/granular.toml), so a half-used bag
+# is simply less substance. mass_g is the empty bag.
+
+[item.bag_of_rice]
+name = "bag of rice"
+tags = ["cat.food.staple", "from.kitchen", "from.grocery", "from.restaurant", "use.food"]
+shape = "bag"
+dims_mm = [300, 190, 70]
+mass_g = 20
+fill_pct = 1                       # a thin film bag; the rice is contents
+desc = "A five-pound plastic bag of long-grain white rice."
+glyph = "item.sack"
+why = "Cheapest, longest-keeping calories (about 8,000 kcal per bag); needs water, fuel and a pot."
+brand_cats = ["dry_food"]
+value_class = "useful"
+
+[item.bag_of_rice.composition.bag]
+material = "ldpe"
+share = 100
+
+[item.bag_of_rice.features.container]
+capacity_ml = 2700
+closable = false
+sealable = false
+compat = ["granular"]
+
+[item.bag_of_rice.contents]
+substance = "rice"
+fill_pct = [20, 100]
+
+[item.bag_of_flour]
+name = "bag of flour"
+tags = ["cat.food.staple", "from.kitchen", "from.grocery", "from.restaurant", "use.food"]
+shape = "bag"
+dims_mm = [280, 165, 95]
+mass_g = 45
+fill_pct = 1
+desc = "A five-pound paper sack of all-purpose flour."
+glyph = "item.sack"
+why = "Dense calories that must be cooked (flatbread on a pan); the paper sack is ruined by water."
+brand_cats = ["dry_food"]
+value_class = "common"
+
+[item.bag_of_flour.composition.bag]
+material = "paper"
+share = 100
+
+[item.bag_of_flour.features.container]
+capacity_ml = 3850
+closable = false
+sealable = false
+compat = ["granular"]
+
+[item.bag_of_flour.contents]
+substance = "flour"
+fill_pct = [20, 100]
+
+[item.bag_of_sugar]
+name = "bag of sugar"
+tags = ["cat.food.staple", "from.kitchen", "from.grocery", "from.restaurant", "use.food"]
+shape = "bag"
+dims_mm = [230, 150, 90]
+mass_g = 35
+fill_pct = 1
+desc = "A four-pound paper sack of granulated sugar."
+glyph = "item.sack"
+why = "Calories that never spoil and need no cooking; turns to a solid brick if it gets wet."
+brand_cats = ["dry_food"]
+value_class = "common"
+
+[item.bag_of_sugar.composition.bag]
+material = "paper"
+share = 100
+
+[item.bag_of_sugar.features.container]
+capacity_ml = 2150
+closable = false
+sealable = false
+compat = ["granular"]
+
+[item.bag_of_sugar.contents]
+substance = "sugar"
+fill_pct = [20, 100]
+
+[item.pet_food_bag]
+name = "bag of pet food"
+tags = ["cat.food.pet", "from.kitchen", "from.garage", "from.grocery", "from.farm", "use.food"]
+shape = "bag"
+dims_mm = [610, 380, 130]
+mass_g = 180
+fill_pct = 1
+desc = "A fifteen-pound bag of dry dog food with a paper outer and a plastic liner."
+glyph = "item.sack"
+why = "Overlooked by looters; edible in desperation; bulky kibble calories (about 24,000 kcal)."
+brand_cats = ["pet_food"]
+value_class = "common"
+
+[item.pet_food_bag.composition.bag]
+material = "paper"
+share = 70
+[item.pet_food_bag.composition.liner]
+material = "polypropylene"
+share = 30
+
+[item.pet_food_bag.features.container]
+capacity_ml = 15500
+closable = false
+sealable = false
+compat = ["granular"]
+
+[item.pet_food_bag.contents]
+substance = "pet_kibble"
+fill_pct = [20, 100]

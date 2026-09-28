@@ -1,0 +1,87 @@
+# Human-powered wheeled things: hauling (M20) with noise (M13).
+
+[item.bicycle]
+name = "bicycle"
+tags = ["cat.vehicle.bicycle", "from.garage", "from.street", "from.school"]
+shape = "complex"
+dims_mm = [1750, 1050, 620]
+mass_g = 14000
+fill_pct = 2
+blocks = "partial"
+desc = "An aluminium-framed hybrid bicycle with a rear rack."
+glyph = "obj.bicycle"
+why = "Rideable (N013): 2 tiles per turn, stopping takes an extra turn, so you can plough into things; quiet; also a pushable hauler."
+brand_cats = ["sporting_goods"]
+details = ["vehicle_paint", "bicycle_condition"]
+value_class = "useful"
+
+[item.bicycle.composition.frame]
+material = "aluminum"
+share = 45
+[item.bicycle.composition.wheels]
+material = "aluminum"
+share = 20
+[item.bicycle.composition.tyres]
+material = "rubber"
+share = 12
+[item.bicycle.composition.drivetrain]
+material = "mild_steel"
+share = 15
+[item.bicycle.composition.saddle]
+material = "pu_foam"
+share = 3
+[item.bicycle.composition.fittings]
+material = "polypropylene"
+share = 5
+
+[item.bicycle.features.wheels]
+load_g = 30000
+terrain = "rough"
+rattle = "quiet"
+[item.bicycle.features.grip]
+hands = 2
+girth_mm = 32
+
+[item.shopping_cart]
+name = "shopping cart"
+tags = ["cat.vehicle.cart", "from.grocery", "from.retail", "from.street", "use.container"]
+shape = "complex"
+dims_mm = [1030, 950, 560]
+mass_g = 16000
+fill_pct = 1
+blocks = "partial"
+desc = "A nesting steel-wire shopping cart with a fold-down child seat."
+glyph = "obj.cart"
+why = "Hauls ~150 kg on pavement, but its rattle carries down the street; rolls into a barricade gap."
+details = ["cart_quirk"]
+value_class = "useful"
+
+[item.shopping_cart.composition.basket]
+material = "mild_steel"
+share = 80
+[item.shopping_cart.composition.handle]
+material = "polypropylene"
+share = 10
+[item.shopping_cart.composition.casters]
+material = "rubber"
+share = 10
+
+[item.shopping_cart.features.container]
+capacity_ml = 125000
+max_mass_g = 150000
+closable = false
+compat = ["solid"]
+[item.shopping_cart.features.wheels]
+load_g = 150000
+terrain = "smooth"
+rattle = "loud"
+[item.shopping_cart.features.grip]
+hands = 2
+girth_mm = 30
+
+[item.bicycle.features.rideable]
+tiles_per_turn = 2
+stop_turns = 1
+crash_chance_pct = 25
+terrain = "smooth"
+rattle = "quiet"

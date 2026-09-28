@@ -1,0 +1,409 @@
+# Power tools, power sources for them, and vehicle/electrical kit (domain B).
+# Power: corded tools declare power_use ac_mains (grid while it lasts, then a generator);
+# cordless tools take a drill_battery in a slot (cat.battery.drill). The 18-20 V tool-pack
+# class has no voltage id yet, so packs use dc_small (proposal: dc_tool, see report).
+
+[item.cordless_drill]
+name = "cordless drill"
+tags = ["cat.tool.power", "from.garage", "from.construction", "use.tool"]
+shape = "complex"
+dims_mm = [230, 200, 80]
+mass_g = 1400
+durability = 7
+use_noise = "normal"
+desc = "An 18-volt drill/driver with a keyless chuck, a belt clip and a case of bits."
+glyph = "item.drill"
+why = "Drives screws fast (plywood window boards), bores holes in wood, sheet metal and fuel tanks; needs a charged pack."
+brand_cats = ["power_tools"]
+modifiers = ["cheap"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+power_use = { voltage = "dc_small", watts = 400 }
+
+[item.cordless_drill.composition.housing]
+material = "nylon"
+share = 35
+[item.cordless_drill.composition.motor]
+material = "copper"
+share = 20
+[item.cordless_drill.composition.gearbox]
+material = "mild_steel"
+share = 30
+[item.cordless_drill.composition.chuck]
+material = "carbon_steel"
+share = 15
+
+[item.cordless_drill.features.grip]
+hands = 1
+girth_mm = 40
+[item.cordless_drill.features.slot]
+accepts = "cat.battery.drill"
+count = 1
+
+[item.cordless_drill.capabilities]
+drill = 6
+fasten = 7
+
+[item.drill_battery]
+name = "drill battery"
+tags = ["cat.battery.drill", "from.garage", "from.construction", "use.power"]
+shape = "block"
+dims_mm = [115, 80, 65]
+mass_g = 400
+durability = 6
+desc = "A slide-on 18-volt 2 Ah lithium-ion tool pack with a charge gauge."
+glyph = "item.battery_pack"
+why = "Runs every cordless tool of its platform; rechargeable from a generator; burns fiercely if crushed or heated."
+brand_cats = ["power_tools"]
+modifiers = ["drill_battery_high_capacity"]
+value_class = "valuable"
+power_source = { voltage = "dc_small", capacity_wh = 36, rechargeable = true }
+
+[item.drill_battery.composition.cells]
+material = "mild_steel"
+share = 60
+[item.drill_battery.composition.case]
+material = "nylon"
+share = 30
+[item.drill_battery.composition.contacts]
+material = "copper"
+share = 10
+
+[item.drill_battery.reactions.heat]
+medium = "burst"
+high = "ignite"
+
+[item.angle_grinder]
+name = "angle grinder"
+tags = ["cat.tool.power", "from.garage", "from.construction", "from.industrial", "use.tool", "hazard.electrical"]
+shape = "complex"
+dims_mm = [300, 120, 100]
+mass_g = 2200
+durability = 7
+use_noise = "very_loud"
+desc = "A 4.5-inch corded angle grinder with a side handle and a thin cut-off disc."
+glyph = "item.grinder"
+why = "Cuts anything metal — hardened padlocks, security chain, rebar — and grinds edges fast; screaming loud, throws sparks."
+brand_cats = ["power_tools"]
+modifiers = ["cordless_platform", "cheap"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+power_use = { voltage = "ac_mains", watts = 900 }
+
+[item.angle_grinder.composition.housing]
+material = "nylon"
+share = 30
+[item.angle_grinder.composition.motor]
+material = "copper"
+share = 25
+salvage = { item = "electric_motor", count = 1, set = { mass_g = 600, dims_mm = [110, 55, 55] }, tool = "fasten>=2", time_s = 600 }
+[item.angle_grinder.composition.gear_head]
+material = "aluminum"
+share = 25
+[item.angle_grinder.composition.spindle]
+material = "mild_steel"
+share = 15
+[item.angle_grinder.composition.disc]
+material = "ceramic"
+share = 5
+
+[item.angle_grinder.features.grip]
+hands = 2
+girth_mm = 55
+
+# saw: authored. An abrasive cut-off disc has no teeth (no saw_edge), and it outcuts any saw:
+# 9 beats tool_steel (8), so hardened shackles and security chain are grinder work.
+[item.angle_grinder.capabilities]
+saw = 9
+sharpen = 6
+
+[item.circular_saw]
+name = "circular saw"
+tags = ["cat.tool.power", "from.garage", "from.construction", "use.tool", "hazard.electrical"]
+shape = "complex"
+dims_mm = [360, 250, 230]
+mass_g = 4000
+durability = 7
+use_noise = "very_loud"
+desc = "A 7-1/4-inch corded circular saw with a carbide-tipped framing blade."
+glyph = "item.circular_saw"
+why = "Rips plywood and lumber to size in seconds (mass barricading, shelters); needs mains or generator power."
+brand_cats = ["power_tools"]
+modifiers = ["cordless_platform", "cheap"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+power_use = { voltage = "ac_mains", watts = 1400 }
+
+[item.circular_saw.composition.housing]
+material = "nylon"
+share = 20
+[item.circular_saw.composition.shoe]
+material = "aluminum"
+share = 25
+[item.circular_saw.composition.motor]
+material = "copper"
+share = 30
+salvage = { item = "electric_motor", count = 1, set = { mass_g = 1200, dims_mm = [140, 70, 70] }, tool = "fasten>=2", time_s = 900 }
+[item.circular_saw.composition.blade]
+material = "carbon_steel"
+share = 10
+[item.circular_saw.composition.guard]
+material = "mild_steel"
+share = 15
+
+[item.circular_saw.features.saw_edge]
+length_mm = 184
+coarse = true
+[item.circular_saw.features.grip]
+hands = 2
+girth_mm = 40
+
+# hammer: derived ~9 from mass; a hollow housing around a spinning blade is not a bludgeon.
+[item.circular_saw.capabilities]
+hammer = 3
+
+[item.chainsaw]
+name = "chainsaw"
+tags = ["cat.tool.power", "from.garage", "from.farm", "from.outdoors", "from.utility", "use.tool", "hazard.fumes", "hazard.flammable"]
+shape = "complex"
+dims_mm = [900, 280, 250]
+mass_g = 5400
+fill_pct = 5                       # mostly a thin bar sticking out of a compact body
+durability = 7
+use_noise = "very_loud"
+desc = "A 40 cc gas chainsaw with an 18-inch bar and a pull-start."
+glyph = "item.chainsaw"
+why = "Fells trees and cuts downed timber and wooden walls fast; eats two-stroke fuel; heard for blocks; kicks back."
+brand_cats = ["power_tools"]
+details = ["tool_wear_marks"]
+value_class = "valuable"
+
+[item.chainsaw.composition.engine]
+material = "aluminum"
+share = 30
+[item.chainsaw.composition.housing]
+material = "nylon"
+share = 20
+[item.chainsaw.composition.bar]
+material = "carbon_steel"
+share = 30
+[item.chainsaw.composition.chain]
+material = "tool_steel"
+share = 10
+[item.chainsaw.composition.fittings]
+material = "mild_steel"
+share = 10
+
+[item.chainsaw.features.saw_edge]
+length_mm = 450
+coarse = true
+[item.chainsaw.features.grip]
+hands = 2
+girth_mm = 35
+[item.chainsaw.features.fuel_tank]
+capacity_ml = 400
+fuel = ["gasoline"]                # two-stroke mix; no premix substance yet (see report)
+drain = "valve"
+
+[item.chainsaw.contents]
+substance = "gasoline"
+fill_pct = [0, 60]
+
+[item.arc_welder]
+name = "stick welder"
+tags = ["cat.tool.welder", "cat.tool.power", "from.garage", "from.farm", "from.industrial", "use.fastener", "use.tool", "hazard.electrical", "hazard.fumes"]
+shape = "complex"
+dims_mm = [340, 250, 150]
+mass_g = 7000
+durability = 8
+use_noise = "loud"                 # arc crackle; weld_join's very_loud includes chipping/grinding
+units = 300                        # cm of weld from the box of rods kept with it
+desc = "A 140-amp inverter stick welder with its leads, clamp and a box of 1/8-inch rods."
+glyph = "item.welder"
+why = "The strongest joint (weld Hold): armour plates, bars over windows, rebar weapons; needs heavy power, skill 6, and lights up the night."
+brand_cats = ["power_tools"]
+value_class = "rare"
+power_use = { voltage = "ac_mains", watts = 3500 }
+
+[item.arc_welder.composition.case]
+material = "mild_steel"
+share = 40
+[item.arc_welder.composition.transformer]
+material = "copper"
+share = 25
+salvage = { item = "copper_wire", count = 2, tool = "fasten>=2", time_s = 1200 }
+[item.arc_welder.composition.leads]
+material = "copper"
+share = 20
+[item.arc_welder.composition.lead_jackets]
+material = "rubber"
+share = 15
+
+[item.arc_welder.features.strap]
+kind = "handle"
+load_g = 10000
+
+[item.arc_welder.capabilities]
+weld = 6
+
+[item.propane_torch]
+name = "propane torch"
+tags = ["cat.tool.torch", "from.garage", "from.construction", "from.utility", "use.tool", "use.fire_starter", "hazard.flammable"]
+shape = "complex"
+dims_mm = [200, 60, 45]
+mass_g = 250
+durability = 8
+use_noise = "quiet"
+desc = "A trigger-start plumber's torch head that screws onto a propane cylinder."
+glyph = "item.torch"
+why = "Lights fires in the rain, thaws and frees seized bolts, sweats copper pipe; screws onto the same cylinders as camp stoves."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.propane_torch.composition.body]
+material = "brass"
+share = 70
+[item.propane_torch.composition.nozzle]
+material = "stainless_steel"
+share = 20
+[item.propane_torch.composition.trigger]
+material = "abs"
+share = 10
+
+[item.propane_torch.features.slot]
+accepts = "cat.fuel.canister"
+count = 1
+[item.propane_torch.features.heat_source]
+output = 7
+fuel = ["propane"]
+[item.propane_torch.features.ignition]
+method = "flame"
+charges = 3000
+fails_when_wet = false
+[item.propane_torch.features.grip]
+hands = 1
+girth_mm = 35
+
+[item.portable_generator]
+name = "portable generator"
+tags = ["cat.power.generator", "from.garage", "from.construction", "from.farm", "use.power", "hazard.fumes", "hazard.flammable", "hazard.electrical"]
+shape = "complex"
+dims_mm = [610, 460, 460]
+mass_g = 50000
+durability = 7
+use_noise = "very_loud"
+desc = "A 3,500-watt open-frame gasoline generator on a wheel kit, with two household outlets."
+glyph = "obj.generator"
+why = "Mains power when the grid is down (fridges, tools, welders, chargers) — but roars, reeks and kills with fumes indoors."
+brand_cats = ["power_tools"]
+modifiers = ["generator_inverter"]
+value_class = "valuable"
+power_source = { voltage = "ac_mains", output_w = 3500, rechargeable = false }
+
+[item.portable_generator.composition.frame]
+material = "mild_steel"
+share = 30
+[item.portable_generator.composition.engine]
+material = "aluminum"
+share = 25
+[item.portable_generator.composition.alternator_windings]
+material = "copper"
+share = 15
+salvage = { item = "copper_wire", count = 4, tool = "fasten>=3", time_s = 1800 }
+[item.portable_generator.composition.alternator_core]
+material = "mild_steel"
+share = 15
+[item.portable_generator.composition.tank]
+material = "mild_steel"
+share = 10
+[item.portable_generator.composition.panel]
+material = "abs"
+share = 5
+
+[item.portable_generator.features.fuel_tank]
+capacity_ml = 15000
+fuel = ["gasoline"]
+drain = "siphon"
+[item.portable_generator.features.wheels]
+load_g = 60000
+terrain = "rough"
+rattle = "normal"
+[item.portable_generator.features.grip]
+hands = 2
+girth_mm = 30
+
+[item.portable_generator.contents]
+substance = "gasoline"
+fill_pct = [0, 60]
+
+[item.jumper_cables]
+name = "jumper cables"
+tags = ["cat.automotive.cables", "from.vehicle", "from.garage", "use.power", "use.salvage"]
+shape = "cord"
+dims_mm = [4900, 25, 12]
+mass_g = 2000
+durability = 8
+desc = "A tangle of 16-foot, 6-gauge jumper cables with red and black clamps."
+glyph = "item.cables"
+why = "Moves 12 V power between batteries (jump a car, feed 12 V gear); heavy copper for salvage; lashing in a pinch."
+brand_cats = ["automotive"]
+value_class = "useful"
+
+[item.jumper_cables.composition.cable]
+material = "copper"
+share = 55
+salvage = { item = "copper_wire", count = 2, tool = "cut>=4", time_s = 300 }
+[item.jumper_cables.composition.insulation]
+material = "flexible_pvc"
+share = 30
+[item.jumper_cables.composition.clamps]
+material = "mild_steel"
+share = 15
+
+[item.car_jack]
+name = "scissor jack"
+tags = ["cat.automotive.jack", "from.vehicle", "from.garage", "use.tool"]
+shape = "complex"
+dims_mm = [430, 110, 100]
+mass_g = 3000
+durability = 8
+desc = "A car's spare-tire scissor jack with its folding crank handle."
+glyph = "item.jack"
+why = "Lifts a car corner (freeing someone pinned, pulling a tank or battery), or braced in a door frame spreads it open — slowly and quietly."
+brand_cats = ["automotive"]
+value_class = "useful"
+
+[item.car_jack.composition.frame]
+material = "mild_steel"
+share = 90
+[item.car_jack.composition.screw]
+material = "carbon_steel"
+share = 10
+
+# pry: authored (complex shapes derive none). Slow, braced screw-driven spreading force.
+# Proposal: a dedicated `lift` capability (see report).
+[item.car_jack.capabilities]
+pry = 6
+
+[item.extension_cord]
+name = "extension cord"
+tags = ["cat.electrical.cord", "from.garage", "from.construction", "from.living", "use.power", "use.salvage"]
+shape = "cord"
+dims_mm = [15240, 9, 9]
+mass_g = 1600
+durability = 7
+desc = "A 50-foot orange outdoor extension cord, 14 gauge, three-prong."
+glyph = "item.cord"
+why = "Runs generator power to where it's needed (keep the generator outside); copper for salvage; a long lashing line."
+value_class = "useful"
+
+[item.extension_cord.composition.conductors]
+material = "copper"
+share = 55
+salvage = { item = "copper_wire", count = 3, tool = "cut>=2", time_s = 600 }
+[item.extension_cord.composition.jacket]
+material = "flexible_pvc"
+share = 43
+[item.extension_cord.composition.plugs]
+material = "brass"
+share = 2

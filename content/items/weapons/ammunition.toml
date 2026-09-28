@@ -1,0 +1,213 @@
+# Ammunition boxes and magazines. Boxes carry `units` rounds and a cat.ammo.<caliber> tag that
+# firearm/magazine slots accept. Cartridges cook off (burst) in a fire.
+# ammo_38spl is an addition to the §6.E id list: the revolver's caliber.
+
+[item.ammo_9mm]
+name = "box of 9mm cartridges"
+tags = ["cat.ammo.9mm", "from.police", "from.bedroom", "from.retail", "use.ammo"]
+shape = "block"
+dims_mm = [100, 60, 38]
+mass_g = 640
+units = 50
+desc = "Fifty full-metal-jacket 9 mm pistol rounds in a cardboard box with a plastic tray."
+glyph = "item.ammo_box"
+why = "Pistol and magazine feed; the most common handgun round, still scarce after looting."
+brand_cats = ["ammunition"]
+value_class = "valuable"
+
+[item.ammo_9mm.composition.bullets]
+material = "lead"
+share = 45
+[item.ammo_9mm.composition.jackets]
+material = "copper"
+share = 10
+[item.ammo_9mm.composition.cases]
+material = "brass"
+share = 35
+[item.ammo_9mm.composition.box]
+material = "cardboard"
+share = 7
+[item.ammo_9mm.composition.tray]
+material = "polypropylene"
+share = 3
+
+[item.ammo_9mm.reactions.heat]
+high = "burst"
+
+[item.ammo_38spl]
+name = "box of .38 Special cartridges"
+tags = ["cat.ammo.38spl", "from.bedroom", "from.retail", "use.ammo"]
+shape = "block"
+dims_mm = [100, 75, 42]
+mass_g = 800
+units = 50
+desc = "Fifty lead round-nose .38 Special revolver rounds."
+glyph = "item.ammo_box"
+why = "Revolver feed; old boxes turn up in closets and nightstands."
+brand_cats = ["ammunition"]
+value_class = "valuable"
+
+[item.ammo_38spl.composition.bullets]
+material = "lead"
+share = 60
+[item.ammo_38spl.composition.cases]
+material = "brass"
+share = 30
+[item.ammo_38spl.composition.box]
+material = "cardboard"
+share = 7
+[item.ammo_38spl.composition.tray]
+material = "polypropylene"
+share = 3
+
+[item.ammo_38spl.reactions.heat]
+high = "burst"
+
+[item.ammo_12ga]
+name = "box of 12-gauge shells"
+tags = ["cat.ammo.12ga", "from.bedroom", "from.police", "from.farm", "from.retail", "use.ammo"]
+shape = "block"
+dims_mm = [130, 65, 65]
+mass_g = 1100
+units = 25
+desc = "Twenty-five 12-gauge buckshot shells with plastic hulls and brass heads."
+glyph = "item.ammo_box"
+why = "Shotgun feed; heavy and bulky per shot."
+brand_cats = ["ammunition"]
+details = ["shotshell_load"]
+value_class = "valuable"
+
+[item.ammo_12ga.composition.shot]
+material = "lead"
+share = 62
+[item.ammo_12ga.composition.heads]
+material = "brass"
+share = 8
+[item.ammo_12ga.composition.hulls]
+material = "hdpe"
+share = 20
+[item.ammo_12ga.composition.box]
+material = "cardboard"
+share = 10
+
+[item.ammo_12ga.reactions.heat]
+high = "burst"
+
+[item.ammo_308]
+name = "box of .308 cartridges"
+tags = ["cat.ammo.308", "from.bedroom", "from.outdoors", "from.farm", "from.retail", "use.ammo"]
+shape = "block"
+dims_mm = [80, 75, 62]
+mass_g = 540
+units = 20
+desc = "Twenty soft-point .308 hunting rounds standing in a foam-lined box."
+glyph = "item.ammo_box"
+why = "Hunting-rifle feed; long reach, few rounds per box."
+brand_cats = ["ammunition"]
+value_class = "valuable"
+
+[item.ammo_308.composition.bullets]
+material = "lead"
+share = 40
+[item.ammo_308.composition.jackets]
+material = "copper"
+share = 12
+[item.ammo_308.composition.cases]
+material = "brass"
+share = 38
+[item.ammo_308.composition.box]
+material = "cardboard"
+share = 7
+[item.ammo_308.composition.tray]
+material = "polypropylene"
+share = 3
+
+[item.ammo_308.reactions.heat]
+high = "burst"
+
+[item.ammo_556]
+name = "box of 5.56 mm cartridges"
+tags = ["cat.ammo.556", "from.police", "from.bedroom", "from.retail", "use.ammo"]
+shape = "block"
+dims_mm = [60, 55, 45]
+mass_g = 280
+units = 20
+desc = "Twenty 5.56 mm rifle rounds in a small cardboard box."
+glyph = "item.ammo_box"
+why = "Semi-automatic rifle feed; light, so more can be carried."
+brand_cats = ["ammunition"]
+value_class = "valuable"
+
+[item.ammo_556.composition.bullets]
+material = "lead"
+share = 30
+[item.ammo_556.composition.jackets]
+material = "copper"
+share = 15
+[item.ammo_556.composition.cases]
+material = "brass"
+share = 45
+[item.ammo_556.composition.box]
+material = "cardboard"
+share = 7
+[item.ammo_556.composition.tray]
+material = "polypropylene"
+share = 3
+
+[item.ammo_556.reactions.heat]
+high = "burst"
+
+[item.magazine_pistol]
+name = "pistol magazine"
+tags = ["cat.magazine.pistol_9mm", "from.police", "from.bedroom", "from.retail", "use.ammo"]
+shape = "complex"
+dims_mm = [125, 33, 25]
+mass_g = 80
+desc = "A 15-round double-stack 9 mm pistol magazine, polymer over a steel liner."
+glyph = "item.magazine"
+why = "Each loaded spare is a fast reload; a pistol without one is a club."
+brand_cats = ["firearms"]
+value_class = "useful"
+
+[item.magazine_pistol.composition.body]
+material = "nylon"
+share = 45
+[item.magazine_pistol.composition.liner]
+material = "carbon_steel"
+share = 35
+[item.magazine_pistol.composition.spring]
+material = "carbon_steel"
+share = 15
+[item.magazine_pistol.composition.follower]
+material = "nylon"
+share = 5
+
+[item.magazine_pistol.features.slot]
+accepts = "cat.ammo.9mm"
+count = 15
+
+[item.magazine_rifle]
+name = "rifle magazine"
+tags = ["cat.magazine.rifle_556", "from.police", "from.bedroom", "from.retail", "use.ammo"]
+shape = "complex"
+dims_mm = [190, 70, 23]
+mass_g = 120
+desc = "A curved 30-round aluminium 5.56 mm rifle magazine."
+glyph = "item.magazine"
+why = "Semi-automatic rifle feed; spare loaded magazines are the reload."
+brand_cats = ["firearms"]
+value_class = "useful"
+
+[item.magazine_rifle.composition.body]
+material = "aluminum"
+share = 75
+[item.magazine_rifle.composition.spring]
+material = "carbon_steel"
+share = 15
+[item.magazine_rifle.composition.follower]
+material = "nylon"
+share = 10
+
+[item.magazine_rifle.features.slot]
+accepts = "cat.ammo.556"
+count = 30

@@ -1,0 +1,257 @@
+# Electronic devices: radios, power, computers, screens. Domain D (world-catalog §6.D).
+# Most computers/screens earn their place as salvage (copper wire, batteries) and as world-building;
+# radios and walkie-talkies are noise lures; power banks and solar panels keep small devices alive
+# after the grid fails (N007). `tv_remote` and `alarm_clock` live in items/appliances/.
+
+[item.emergency_radio]
+name = "emergency radio"
+tags = ["cat.electronics.radio", "from.living", "from.garage", "from.outdoors", "from.retail", "use.power", "use.light_source", "use.signal", "use.lure"]
+shape = "complex"
+dims_mm = [170, 80, 65]
+mass_g = 400
+desc = "A hand-crank weather radio with a built-in LED torch, a USB outlet and a siren button."
+glyph = "item.radio"
+why = "Cranked, it recharges itself (and a phone, slowly); siren is a noise lure; broadcasts are lore (M21)."
+brand_cats = ["radios"]
+value_class = "valuable"
+power_source = { voltage = "dc_small", capacity_wh = 4, rechargeable = true, output_w = 2 }
+
+[item.emergency_radio.composition.case]
+material = "abs"
+share = 70
+[item.emergency_radio.composition.crank_dynamo]
+material = "copper"
+share = 15
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [3000, 1, 1], mass_g = 20 }, tool = "fasten>=2", time_s = 300 }
+[item.emergency_radio.composition.speaker]
+material = "mild_steel"
+share = 10
+[item.emergency_radio.composition.lens]
+material = "polycarbonate"
+share = 5
+
+[item.emergency_radio.features.light]
+radius_m = 4
+beam = "cone"
+duration_min = 60
+fuel = "battery"
+[item.emergency_radio.features.alarm]
+loudness = "loud"
+timer = false
+trigger = "touch"
+[item.emergency_radio.features.slot]
+accepts = "cat.battery.aa"
+count = 3
+[item.emergency_radio.features.strap]
+kind = "handle"
+load_g = 2000
+
+[item.emergency_radio.capabilities]
+noise = 6
+
+[item.walkie_talkie]
+name = "walkie-talkie"
+tags = ["cat.electronics.radio", "from.police", "from.fire_service", "from.construction", "from.retail", "from.outdoors", "use.lure", "use.signal"]
+shape = "complex"
+dims_mm = [190, 60, 35]
+mass_g = 180
+desc = "A handheld two-way radio. Its partner may be somewhere nearby."
+glyph = "item.walkie"
+why = "Remote noise lure: leave one set to full volume, press call on the other from safety."
+brand_cats = ["radios"]
+value_class = "useful"
+power_use = { voltage = "dc_small", watts = 1 }
+
+[item.walkie_talkie.composition.case]
+material = "abs"
+share = 75
+[item.walkie_talkie.composition.antenna]
+material = "rubber"
+share = 5
+[item.walkie_talkie.composition.circuit]
+material = "copper"
+share = 10
+[item.walkie_talkie.composition.speaker]
+material = "mild_steel"
+share = 10
+
+[item.walkie_talkie.features.alarm]
+loudness = "loud"
+timer = false
+trigger = "remote"
+[item.walkie_talkie.features.slot]
+accepts = "cat.battery.aa"
+count = 3
+[item.walkie_talkie.features.strap]
+kind = "clip"
+load_g = 500
+
+[item.walkie_talkie.capabilities]
+noise = 5
+
+[item.power_bank]
+name = "power bank"
+tags = ["cat.electronics.power", "from.office", "from.bedroom", "from.vehicle", "from.retail", "use.power"]
+shape = "block"
+dims_mm = [140, 70, 16]
+mass_g = 230
+desc = "A pocket lithium battery pack with two USB ports, four charge LEDs."
+glyph = "item.power_bank"
+why = "Stored power for USB devices (phones, headlamps, radios) after the grid is gone (M9)."
+brand_cats = ["batteries", "phones"]
+value_class = "valuable"
+power_source = { voltage = "dc_small", capacity_wh = 37, rechargeable = true, output_w = 10 }
+
+[item.power_bank.composition.cells]
+material = "aluminum"
+share = 60
+[item.power_bank.composition.case]
+material = "abs"
+share = 30
+[item.power_bank.composition.circuit]
+material = "copper"
+share = 10
+
+[item.solar_charger]
+name = "solar charger"
+tags = ["cat.electronics.power", "from.outdoors", "from.retail", "use.power"]
+shape = "sheet"
+dims_mm = [280, 170, 30]
+mass_g = 600
+fill_pct = 30
+desc = "A folding three-panel solar charger with a USB output; it stores nothing itself."
+glyph = "item.solar_panel"
+why = "The only renewable power a walker can carry: recharges power banks and radios in daylight."
+brand_cats = ["outdoors", "batteries"]
+value_class = "rare"
+power_source = { voltage = "dc_small", capacity_wh = 0, rechargeable = false, output_w = 21 }
+
+[item.solar_charger.composition.cells]
+material = "glass"
+share = 35
+[item.solar_charger.composition.fabric]
+material = "nylon_fabric"
+share = 45
+[item.solar_charger.composition.wiring]
+material = "copper"
+share = 5
+[item.solar_charger.composition.backing]
+material = "pet"
+share = 15
+
+[item.laptop]
+name = "laptop"
+tags = ["cat.electronics.computer", "from.office", "from.bedroom", "from.school", "from.living", "use.power", "use.salvage"]
+shape = "sheet"
+dims_mm = [360, 250, 20]
+mass_g = 1800
+fill_pct = 50
+desc = "A thin laptop, lid closed. Its battery may still hold a charge."
+glyph = "item.laptop"
+why = "50 Wh battery that can top up a phone over USB; copper salvage; a dead owner's life on the screen."
+brand_cats = ["computers"]
+details = ["device_wear"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 50, rechargeable = true, output_w = 15 }
+power_use = { voltage = "ac_mains", watts = 45 }
+
+[item.laptop.composition.case]
+material = "aluminum"
+share = 40
+[item.laptop.composition.screen]
+material = "glass"
+share = 15
+[item.laptop.composition.battery]
+material = "aluminum"
+share = 20
+[item.laptop.composition.board]
+material = "abs"
+share = 17
+[item.laptop.composition.wiring]
+material = "copper"
+share = 8
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [1000, 1, 1], mass_g = 10 }, tool = "fasten>=2", time_s = 300 }
+
+[item.desktop_pc]
+name = "desktop computer"
+tags = ["cat.electronics.computer", "from.office", "from.school", "from.bedroom", "use.salvage"]
+shape = "complex"
+dims_mm = [450, 430, 200]
+mass_g = 8000
+fill_pct = 8
+desc = "A beige-grey tower PC with a tangle of cables behind it."
+glyph = "obj.computer"
+why = "Salvage only: power-supply copper and a steel case; dead weight otherwise."
+brand_cats = ["computers"]
+value_class = "junk"
+power_use = { voltage = "ac_mains", watts = 250 }
+
+[item.desktop_pc.composition.case]
+material = "mild_steel"
+share = 60
+[item.desktop_pc.composition.boards]
+material = "abs"
+share = 20
+[item.desktop_pc.composition.power_supply]
+material = "copper"
+share = 12
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [6000, 2, 2], mass_g = 150 }, tool = "fasten>=2", time_s = 600 }
+[item.desktop_pc.composition.drives]
+material = "aluminum"
+share = 8
+
+[item.television]
+name = "television"
+tags = ["cat.electronics.tv", "from.living", "from.bedroom", "from.restaurant", "use.salvage"]
+shape = "sheet"
+dims_mm = [1240, 720, 80]
+mass_g = 16000
+fill_pct = 10
+desc = "A 55-inch flat-screen television."
+glyph = "obj.tv"
+why = "Salvage copper; a thrown or smashed screen is a loud crash (M13); a symbol of the dead world."
+brand_cats = ["appliances"]
+value_class = "junk"
+power_use = { voltage = "ac_mains", watts = 100 }
+
+[item.television.composition.panel]
+material = "glass"
+share = 40
+[item.television.composition.back]
+material = "abs"
+share = 30
+[item.television.composition.frame]
+material = "mild_steel"
+share = 20
+[item.television.composition.boards]
+material = "copper"
+share = 10
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [2000, 1, 1], mass_g = 30 }, tool = "fasten>=2", time_s = 300 }
+
+[item.security_camera_dvr]
+name = "security DVR"
+tags = ["cat.electronics.security", "from.retail", "from.office", "from.gas_station", "from.grocery", "flavor.readable", "use.salvage"]
+shape = "complex"
+dims_mm = [300, 230, 55]
+mass_g = 1500
+desc = "A camera recorder box in a back office; its drive holds the last days of footage."
+glyph = "item.dvr"
+why = "With power, plays back the moment of the event on the shop floor (lore, M21); copper salvage."
+brand_cats = ["computers"]
+value_class = "junk"
+power_use = { voltage = "ac_mains", watts = 25 }
+
+[item.security_camera_dvr.composition.case]
+material = "mild_steel"
+share = 60
+[item.security_camera_dvr.composition.drive]
+material = "aluminum"
+share = 25
+[item.security_camera_dvr.composition.board]
+material = "copper"
+share = 15
+salvage = { item = "copper_wire", count = 1, set = { dims_mm = [1500, 1, 1], mass_g = 15 }, tool = "fasten>=2", time_s = 300 }
+
+[item.security_camera_dvr.features.readable]
+kind = "photo"
+coverage = "recorded footage of the premises"

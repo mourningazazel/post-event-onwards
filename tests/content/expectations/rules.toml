@@ -1,0 +1,49 @@
+# Pins for cross-cutting derivation rules added during reconciliation (N011 review).
+
+# Wieldability gate (derive.WIELD_MAX_G): too heavy to swing or lever.
+[[expect]]
+item = "drum_55gal"
+path = "cap.hammer"
+op = "=="
+value = 0
+why = "a 55-gallon drum is not a weapon; its value is mass for blocking"
+
+[[expect]]
+item = "portable_generator"
+path = "cap.hammer"
+op = "=="
+value = 0
+
+[[expect]]
+item = "car_sedan"
+path = "cap.pry"
+op = "=="
+value = 0
+why = "fixed objects derive no tool capabilities"
+
+[[expect]]
+item = "sledgehammer"
+path = "cap.hammer"
+op = ">="
+value = 8
+why = "the heaviest wieldable blunt tool stays top-tier"
+
+# Slicing cap (derive.SLICE_CAP): no knife parts steel, glass or stone.
+[[expect]]
+item = "hunting_knife"
+path = "cap.cut"
+op = "<="
+value = 5
+
+[[expect]]
+item = "glass_shards"
+path = "cap.cut"
+op = "<="
+value = 5
+
+[[expect]]
+item = "bolt_cutters"
+path = "cap.cut"
+op = ">="
+value = 7
+why = "shearing leverage is authored above the slicing cap"

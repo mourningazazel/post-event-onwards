@@ -1,0 +1,141 @@
+# Metals. Fields (all materials):
+# family, density_mg_cm3, hardness 0..10, toughness (brittle|fragile|moderate|tough|very_tough),
+# rigidity 0..10, edge_holding 0..10, flammability (none|low|moderate|high|extreme),
+# fuel_value_kj_g, melts_c, water (waterproof|absorbs|rusts|ruined|swells|dissolves),
+# conductivity (conductor|insulator), struck_sound (clang|clink|crash|thud|thunk|clack|crunch|rattle|none),
+# surface (smooth|rough|porous|fibrous|oily|round|irregular), desc
+
+[material.mild_steel]
+family = "metal"
+density_mg_cm3 = 7850
+hardness = 6
+toughness = "tough"
+rigidity = 9
+edge_holding = 4
+flammability = "none"
+melts_c = 1450
+water = "rusts"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "smooth"
+desc = "Structural steel: pipes, sheet, rebar, frames, car bodies, cans (tinplate)."
+
+[material.carbon_steel]
+family = "metal"
+density_mg_cm3 = 7850
+hardness = 7
+toughness = "tough"
+rigidity = 9
+edge_holding = 7
+flammability = "none"
+melts_c = 1450
+water = "rusts"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "smooth"
+desc = "Hardened steel: hand tools, axe heads, machetes, leaf springs, crowbars."
+
+[material.stainless_steel]
+family = "metal"
+density_mg_cm3 = 8000
+hardness = 6
+toughness = "tough"
+rigidity = 9
+edge_holding = 6
+flammability = "none"
+melts_c = 1450
+water = "waterproof"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "smooth"
+desc = "Kitchen knives, cookware, sinks, cutlery, appliances."
+
+[material.tool_steel]
+family = "metal"
+density_mg_cm3 = 7800
+hardness = 8
+toughness = "very_tough"
+rigidity = 10
+edge_holding = 9
+flammability = "none"
+melts_c = 1450
+water = "rusts"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "smooth"
+desc = "Files, chisels, drill bits, hacksaw blades, premium blades."
+
+[material.cast_iron]
+family = "metal"
+density_mg_cm3 = 7200
+hardness = 6
+toughness = "moderate"
+rigidity = 10
+edge_holding = 1
+flammability = "none"
+melts_c = 1200
+water = "rusts"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "rough"
+desc = "Skillets, radiators, manhole covers, old pipes, weights. Can crack under sharp impact."
+
+[material.aluminum]
+family = "metal"
+density_mg_cm3 = 2700
+hardness = 4
+toughness = "tough"
+rigidity = 7
+edge_holding = 2
+flammability = "none"
+melts_c = 660
+water = "waterproof"
+conductivity = "conductor"
+struck_sound = "clink"
+surface = "smooth"
+desc = "Bats, ladders, cans, pans, window frames, sheet."
+
+[material.copper]
+family = "metal"
+density_mg_cm3 = 8960
+hardness = 4
+toughness = "tough"
+rigidity = 6
+edge_holding = 2
+flammability = "none"
+melts_c = 1085
+water = "waterproof"
+conductivity = "conductor"
+struck_sound = "clink"
+surface = "smooth"
+desc = "Wiring, refrigeration/plumbing tubing. Valuable salvage; bends by hand when thin."
+
+[material.brass]
+family = "metal"
+density_mg_cm3 = 8500
+hardness = 5
+toughness = "tough"
+rigidity = 8
+edge_holding = 3
+flammability = "none"
+melts_c = 930
+water = "waterproof"
+conductivity = "conductor"
+struck_sound = "clang"
+surface = "smooth"
+desc = "Keys, lock cylinders, fittings, valves, ammunition casings."
+
+[material.lead]
+family = "metal"
+density_mg_cm3 = 11340
+hardness = 2
+toughness = "tough"
+rigidity = 3
+edge_holding = 0
+flammability = "none"
+melts_c = 327
+water = "waterproof"
+conductivity = "conductor"
+struck_sound = "thud"
+surface = "smooth"
+desc = "Car battery plates, fishing weights, old flashing. Toxic."

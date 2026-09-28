@@ -1,0 +1,72 @@
+# Vehicles as world objects (non-functional per setting, N005/P-WO-03). Exemplar file.
+
+[item.car_sedan]
+name = "sedan"
+tags = ["cat.vehicle.car", "from.street", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [4800, 1850, 1450]
+mass_g = 1450000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A mid-size four-door sedan."
+glyph = "obj.car"
+why = "Fuel (siphon), battery, hoses, trunk loot, car alarm lure, cover and barricade."
+brand_cats = ["vehicles"]
+details = ["vehicle_paint", "bumper_stickers", "vehicle_interior", "vehicle_condition"]
+value_class = "valuable"
+
+[item.car_sedan.composition.body]
+material = "mild_steel"
+share = 55
+[item.car_sedan.composition.engine]
+material = "cast_iron"
+share = 12
+[item.car_sedan.composition.interior]
+material = "polypropylene"
+share = 12
+[item.car_sedan.composition.tyres]
+material = "rubber"
+share = 5
+[item.car_sedan.composition.seats]
+material = "pu_foam"
+share = 5
+[item.car_sedan.composition.upholstery]
+material = "polyester"
+share = 3
+[item.car_sedan.composition.windows]
+material = "tempered_glass"
+share = 3
+[item.car_sedan.composition.battery]
+material = "lead"
+share = 1
+salvage = { item = "car_battery", count = 1, tool = "fasten>=2", time_s = 600 }
+[item.car_sedan.composition.fuel_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 2, tool = "fasten>=2", time_s = 600 }
+[item.car_sedan.composition.brake_lines]
+material = "copper"
+share = 1
+salvage = { item = "copper_tubing", count = 2, tool = "fasten>=3", time_s = 1200 }
+
+[item.car_sedan.features.fuel_tank]
+capacity_ml = 55000
+fuel = ["gasoline"]
+drain = "siphon"
+[item.car_sedan.features.container]
+capacity_ml = 400000
+closable = true
+sealable = false
+compat = ["solid"]
+[item.car_sedan.features.lock]
+tier = 3
+keyed = true
+pickable = true
+[item.car_sedan.features.alarm]
+loudness = "extreme"
+timer = false
+trigger = "touch"
+[item.car_sedan.features.climbable]
+difficulty = 2
+height_mm = 1450

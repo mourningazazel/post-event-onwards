@@ -1,0 +1,496 @@
+# Building types: residential (world-catalog §2). Schema: registry/schemas.toml [schema.building].
+#
+# Conventions shared by every buildings/*.toml file:
+#
+# - footprint_m = [[width_min, width_max], [depth_min, depth_max]] in metres, per building.
+# - walls = interior partition finish; exterior = outer wall cladding/structure (what a player
+#   breaches from outside); roof = roof covering. Material ids from content/materials/.
+#   vinyl siding = pvc, aluminium siding = aluminum, stucco/block/tilt-up = concrete.
+# - rooms: counts are for the WHOLE building. Multi-unit buildings (duplex, apartments) list the
+#   total across all units; the generator groups them into units of one kitchen + living room
+#   + bedrooms + bathroom. floor: ground | upper | basement | any. Rooms on "basement" only
+#   exist when the basement roll (basement_pct) succeeds. "attic" on "upper" sits under the roof.
+# - occupants: who was inside at the event (N005/N007, P-IT-03), by time bucket:
+#     night        23:00-06:00 any day
+#     weekday_day  08:00-17:00 Mon-Fri
+#     weekend_day  08:00-17:00 Sat-Sun
+#     evening      17:00-23:00 any day
+#   Commute hours (06-08) blend the neighbouring buckets. Each entry spawns count=[min,max]
+#   (uniform) with probability chance_pct (default 100). Customers, visitors and guests use the
+#   casual profiles at_home_adult / retiree / child_student / teen_student.
+#   Residential households: ~2.5 people per US household, ~10% of homes vacant; weekday daytime
+#   ~40% of residents at home (retirees, home-makers, remote workers, pre-schoolers).
+# - loot_priority: how early other survivors stripped the place (aftermath looting, N005).
+# - utilities: power = grid | none, water = mains | well | none. A "well" property keeps water
+#   regardless of the neighbourhood roll (N007); power always follows the neighbourhood roll.
+
+[building.ranch_house]
+desc = "A single-storey detached house, long and low under a shallow gable roof, typically 2-4 bedrooms with an attached garage; the commonest American post-war house."
+footprint_m = [[13, 25], [8, 14]]
+floors = [1, 1]
+basement_pct = 40
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "dining_room", count = [0, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "ground" },
+  { room = "bedroom_child", count = [1, 3], floor = "ground" },
+  { room = "bathroom", count = [1, 2], floor = "ground" },
+  { room = "closet", count = [2, 4], floor = "ground" },
+  { room = "laundry_room", count = [0, 1], floor = "ground" },
+  { room = "home_office", count = [0, 1], floor = "ground" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+  { room = "shed", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 4], chance_pct = 90, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 25, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 65, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 85, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 30, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 18, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.colonial_house]
+desc = "A two-storey detached house with a symmetrical front, living spaces downstairs and bedrooms upstairs, often with a full basement."
+footprint_m = [[10, 16], [8, 12]]
+floors = [2, 2]
+basement_pct = 65
+walls = "gypsum_board"
+exterior = "pvc"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "dining_room", count = [1, 1], floor = "ground" },
+  { room = "home_office", count = [0, 1], floor = "ground" },
+  { room = "bathroom", count = [0, 1], floor = "ground" },
+  { room = "laundry_room", count = [0, 1], floor = "any" },
+  { room = "bedroom_master", count = [1, 1], floor = "upper" },
+  { room = "bedroom_child", count = [2, 3], floor = "upper" },
+  { room = "bathroom", count = [1, 2], floor = "upper" },
+  { room = "closet", count = [3, 5], floor = "any" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+  { room = "shed", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [2, 5], chance_pct = 92, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 20, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 18, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 88, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 2], chance_pct = 25, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.bungalow]
+desc = "A small one-and-a-half-storey house with a deep front porch and a low roof; pre-war urban and small-town streets. A detached single garage out back is common."
+footprint_m = [[8, 12], [10, 15]]
+floors = [1, 2]
+basement_pct = 50
+walls = "gypsum_board"
+exterior = "softwood"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "dining_room", count = [0, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "ground" },
+  { room = "bedroom_child", count = [1, 2], floor = "any" },
+  { room = "bathroom", count = [1, 1], floor = "ground" },
+  { room = "closet", count = [1, 3], floor = "any" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 3], chance_pct = 88, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 28, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 1], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 1], chance_pct = 12, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 60, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 80, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 22, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 12, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.split_level]
+desc = "A 1960s-70s house staggered over three half-levels: living and kitchen at entry level, bedrooms half a flight up, a den and garage half a flight down."
+footprint_m = [[11, 18], [8, 12]]
+floors = [2, 3]
+basement_pct = 30
+walls = "gypsum_board"
+exterior = "pvc"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 2], floor = "any" },
+  { room = "dining_room", count = [0, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "upper" },
+  { room = "bedroom_child", count = [2, 3], floor = "upper" },
+  { room = "bathroom", count = [2, 3], floor = "any" },
+  { room = "closet", count = [3, 5], floor = "any" },
+  { room = "laundry_room", count = [1, 1], floor = "any" },
+  { room = "home_office", count = [0, 1], floor = "any" },
+  { room = "garage", count = [1, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "shed", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [2, 5], chance_pct = 91, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 25, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 68, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 86, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 35, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 2], chance_pct = 22, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.mcmansion]
+desc = "A large two-storey new-build house with a three-car garage, 4-6 bedrooms, open-plan kitchen and a finished basement; brick front and siding elsewhere."
+footprint_m = [[18, 30], [12, 20]]
+floors = [2, 2]
+basement_pct = 70
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 2], floor = "ground" },
+  { room = "dining_room", count = [1, 1], floor = "ground" },
+  { room = "home_office", count = [1, 2], floor = "any" },
+  { room = "laundry_room", count = [1, 1], floor = "any" },
+  { room = "bathroom", count = [1, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "upper" },
+  { room = "bedroom_child", count = [3, 5], floor = "upper" },
+  { room = "bathroom", count = [2, 4], floor = "upper" },
+  { room = "closet", count = [4, 8], floor = "any" },
+  { room = "garage", count = [1, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+]
+occupants = [
+  { profile = "sleeper", count = [2, 6], chance_pct = 93, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 12, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 50, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 18, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [2, 2], chance_pct = 85, when = ["evening"] },
+  { profile = "child_student", count = [1, 3], chance_pct = 45, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 2], chance_pct = 35, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.townhouse]
+desc = "One unit of a row of narrow two-to-three-storey attached houses sharing side walls, often with a tuck-under garage; suburban and newer urban infill."
+footprint_m = [[6, 8], [12, 18]]
+floors = [2, 3]
+basement_pct = 25
+walls = "gypsum_board"
+exterior = "pvc"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "any" },
+  { room = "living_room", count = [1, 1], floor = "any" },
+  { room = "dining_room", count = [0, 1], floor = "any" },
+  { room = "bedroom_master", count = [1, 1], floor = "upper" },
+  { room = "bedroom_child", count = [1, 2], floor = "upper" },
+  { room = "bathroom", count = [2, 3], floor = "any" },
+  { room = "closet", count = [2, 4], floor = "any" },
+  { room = "laundry_room", count = [0, 1], floor = "any" },
+  { room = "home_office", count = [0, 1], floor = "any" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 4], chance_pct = 90, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 18, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 1], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 1], chance_pct = 12, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 62, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 82, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 25, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 12, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.attached"]
+
+[building.rowhouse]
+desc = "An old brick terraced house in an unbroken city row: narrow, deep, two or three storeys, a front stoop, a cellar and a small back yard onto an alley."
+footprint_m = [[4, 7], [10, 18]]
+floors = [2, 3]
+basement_pct = 75
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "dining_room", count = [0, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "upper" },
+  { room = "bedroom_child", count = [1, 2], floor = "upper" },
+  { room = "bathroom", count = [1, 2], floor = "any" },
+  { room = "closet", count = [1, 3], floor = "upper" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 4], chance_pct = 88, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 25, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 45, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 62, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 82, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 28, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 15, when = ["weekend_day", "evening"] },
+]
+outdoor = ["backyard", "alley"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.attached"]
+
+[building.duplex]
+desc = "A two-family house: two mirror-image units side by side (or one above the other), each with its own entrance, kitchen and bedrooms."
+footprint_m = [[14, 20], [9, 13]]
+floors = [1, 2]
+basement_pct = 40
+walls = "gypsum_board"
+exterior = "pvc"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [2, 2], floor = "any" },
+  { room = "living_room", count = [2, 2], floor = "any" },
+  { room = "bedroom_master", count = [2, 2], floor = "any" },
+  { room = "bedroom_child", count = [0, 4], floor = "any" },
+  { room = "bathroom", count = [2, 4], floor = "any" },
+  { room = "closet", count = [2, 6], floor = "any" },
+  { room = "laundry_room", count = [0, 2], floor = "any" },
+  { room = "garage", count = [0, 2], floor = "ground" },
+  { room = "basement", count = [1, 2], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [2, 7], chance_pct = 90, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 30, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 60, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 25, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 3], chance_pct = 80, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [2, 4], chance_pct = 88, when = ["evening"] },
+  { profile = "child_student", count = [1, 3], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 2], chance_pct = 25, when = ["weekend_day", "evening"] },
+]
+outdoor = ["front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.multi_unit"]
+
+[building.walkup_apartment]
+desc = "A three-to-five-storey brick apartment block with a shared stair and no elevator, 2-4 flats per floor, a basement laundry and boiler room."
+footprint_m = [[15, 30], [12, 25]]
+floors = [3, 5]
+basement_pct = 60
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [6, 20], floor = "any" },
+  { room = "living_room", count = [6, 20], floor = "any" },
+  { room = "bedroom_master", count = [6, 20], floor = "any" },
+  { room = "bedroom_child", count = [2, 16], floor = "any" },
+  { room = "bathroom", count = [6, 22], floor = "any" },
+  { room = "closet", count = [6, 30], floor = "any" },
+  { room = "laundry_room", count = [0, 1], floor = "basement" },
+  { room = "boiler_room", count = [1, 1], floor = "basement" },
+  { room = "storage_unit", count = [0, 20], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [8, 40], chance_pct = 100, when = ["night"] },
+  { profile = "retiree", count = [1, 6], chance_pct = 80, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [3, 12], when = ["weekday_day"] },
+  { profile = "child_student", count = [0, 4], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [5, 22], when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [6, 28], when = ["evening"] },
+  { profile = "child_student", count = [1, 8], when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [0, 5], when = ["weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 25, when = ["weekday_day"] },
+]
+outdoor = ["alley", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.multi_unit"]
+
+[building.highrise_apartment]
+desc = "A concrete residential tower of 8-40 storeys, 6-12 flats per floor off a central elevator core, with a staffed lobby, basement plant and tenant storage cages."
+footprint_m = [[25, 50], [20, 40]]
+floors = [8, 40]
+basement_pct = 90
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "concrete"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "kitchen", count = [50, 400], floor = "upper" },
+  { room = "living_room", count = [50, 400], floor = "upper" },
+  { room = "bedroom_master", count = [50, 400], floor = "upper" },
+  { room = "bedroom_child", count = [10, 300], floor = "upper" },
+  { room = "bathroom", count = [55, 500], floor = "upper" },
+  { room = "closet", count = [60, 600], floor = "upper" },
+  { room = "laundry_room", count = [1, 4], floor = "any" },
+  { room = "restroom_public", count = [0, 2], floor = "ground" },
+  { room = "gymnasium", count = [0, 1], floor = "any" },
+  { room = "boiler_room", count = [1, 1], floor = "basement" },
+  { room = "storage_unit", count = [0, 80], floor = "basement" },
+  { room = "server_room", count = [0, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [80, 900], when = ["night"] },
+  { profile = "retiree", count = [8, 90], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [25, 280], when = ["weekday_day"] },
+  { profile = "child_student", count = [3, 40], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [45, 480], when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [60, 620], when = ["evening"] },
+  { profile = "child_student", count = [8, 110], when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [4, 60], when = ["weekend_day", "evening"] },
+  { profile = "security_guard", count = [1, 2], chance_pct = 70, when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 3], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [0, 3], when = ["weekday_day"] },
+]
+outdoor = ["downtown_street", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.multi_unit", "cat.building.highrise"]
+
+[building.mobile_home]
+desc = "A factory-built single- or double-wide home on a steel chassis, skirted and blocked up on piers: thin walls, a metal roof, a propane tank alongside."
+footprint_m = [[4, 8], [14, 24]]
+floors = [1, 1]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "aluminum"
+roof = "mild_steel"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "ground" },
+  { room = "bedroom_child", count = [0, 2], floor = "ground" },
+  { room = "bathroom", count = [1, 2], floor = "ground" },
+  { room = "closet", count = [1, 3], floor = "ground" },
+  { room = "laundry_room", count = [0, 1], floor = "ground" },
+  { room = "shed", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 4], chance_pct = 88, when = ["night"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 30, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 50, when = ["weekday_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 18, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 82, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 30, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 1], chance_pct = 15, when = ["weekend_day", "evening"] },
+]
+outdoor = ["trailer_park", "front_yard", "backyard"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.residential", "cat.building.house"]
+
+[building.farmhouse]
+desc = "A two-storey clapboard farmhouse with a mudroom, a big kitchen, a root cellar and outbuildings, on its own well and septic far from neighbours."
+footprint_m = [[10, 16], [9, 14]]
+floors = [2, 2]
+basement_pct = 65
+walls = "gypsum_board"
+exterior = "softwood"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "dining_room", count = [1, 1], floor = "ground" },
+  { room = "laundry_room", count = [1, 1], floor = "ground" },
+  { room = "home_office", count = [0, 1], floor = "ground" },
+  { room = "bathroom", count = [1, 1], floor = "ground" },
+  { room = "bedroom_master", count = [1, 1], floor = "any" },
+  { room = "bedroom_child", count = [2, 4], floor = "upper" },
+  { room = "bathroom", count = [0, 1], floor = "upper" },
+  { room = "closet", count = [2, 4], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "shed", count = [1, 2], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 5], chance_pct = 93, when = ["night"] },
+  { profile = "farmer", count = [1, 2], chance_pct = 55, when = ["weekday_day", "weekend_day"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 25, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 1], chance_pct = 40, when = ["weekday_day", "weekend_day"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "farmer", count = [1, 1], chance_pct = 70, when = ["evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 70, when = ["evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 35, when = ["weekend_day", "evening"] },
+  { profile = "teen_student", count = [1, 2], chance_pct = 22, when = ["weekend_day", "evening"] },
+]
+outdoor = ["farmyard", "front_yard", "backyard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "well" }
+tags = ["cat.building.residential", "cat.building.house", "cat.building.farm"]
+
+[building.cabin]
+desc = "A small wooden cabin in the woods or by a lake, often a weekend or hunting place: one main room with a wood stove, a loft, a well and a woodpile."
+footprint_m = [[6, 10], [6, 12]]
+floors = [1, 1]
+basement_pct = 10
+walls = "softwood"
+exterior = "softwood"
+roof = "asphalt"
+rooms = [
+  { room = "kitchen", count = [1, 1], floor = "ground" },
+  { room = "living_room", count = [1, 1], floor = "ground" },
+  { room = "bedroom_master", count = [0, 1], floor = "ground" },
+  { room = "bedroom_child", count = [0, 2], floor = "ground" },
+  { room = "bathroom", count = [0, 1], floor = "ground" },
+  { room = "closet", count = [0, 2], floor = "ground" },
+  { room = "attic", count = [0, 1], floor = "upper" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+  { room = "shed", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [1, 4], chance_pct = 35, when = ["night"] },
+  { profile = "outdoorsman", count = [1, 3], chance_pct = 15, when = ["weekday_day"] },
+  { profile = "retiree", count = [1, 2], chance_pct = 10, when = ["weekday_day", "evening"] },
+  { profile = "outdoorsman", count = [1, 3], chance_pct = 35, when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 2], chance_pct = 15, when = ["weekend_day", "evening"] },
+  { profile = "child_student", count = [1, 2], chance_pct = 8, when = ["weekend_day", "evening"] },
+]
+outdoor = ["backyard", "campground"]
+loot_priority = "low"
+utilities = { power = "grid", water = "well" }
+tags = ["cat.building.residential", "cat.building.house", "cat.building.remote"]

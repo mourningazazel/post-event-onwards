@@ -1,0 +1,18 @@
+# Unit conventions (all integers; deterministic across platforms, SYSTEMS.md R8)
+#
+# length      mm            (dims_mm, lengths, diameters)
+# area        mm2
+# volume      ml            (1 L = 1000 ml)
+# mass        g
+# density     mg per cm3    (water = 1000, steel = 7850)  -> field suffix _mg_cm3
+# liquid dens mg per ml     (water = 1000, gasoline = 740)
+# temperature degrees C     (field suffix _c; may be negative)
+# time        s             (field suffix _s), or min / days where named
+# energy      kJ per g      (fuel_value_kj_g)
+# power       W             (watts), Wh for battery capacity
+# quality     0..10         (hardness, rigidity, edge_holding, capabilities, armor)
+# percent     0..100        (share, fill_pct)
+# insulation  clo x 10      (insulation_clo10: 10 = 1 clo, a light business suit)
+
+[meta]
+version = 1

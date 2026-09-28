@@ -1,0 +1,90 @@
+# Skills (N012, N014). Scale 1..100:
+#   1 never heard of it · 10 can use it fine · 30 skilled · 50 done it for ten years
+#   51..100 advanced through savant: beyond any real person, reachable only through the game's
+#   accelerated training (use + reading).
+# Effects on actions (actions.toml): every action shows a success percentage. Below the
+# action's `unlock` it is 0%; it rises linearly to `ceiling` (default 95, never 100) at
+# `difficulty`. Each point above `difficulty` speeds the action up (time x 0.985 per point),
+# lowers noise one step per 20 points, and substitutes for tool quality (`tool_substitution`
+# capability points per skill point). Failure draws an outcome from the action's `on_fail`.
+# Tools may carry `tool_min_skill` (e.g. lockpicks: security 10): below it they cannot be used.
+# Books: items with features.readable.kind = "manual" or "book" and a `teaches` table
+# { skill, difficulty, read_time_min, gain_chance_pct, window } (N015): reading takes game time,
+# gives at most one point once, and teaches nothing outside difficulty +/- window.
+# `expert` lists what each band makes possible, so content and UI speak the same language.
+
+[skill.athletics]
+desc = "Climbing, jumping, running, swimming, carrying."
+expert = ["60: climb brick walls using mortar gaps", "75: leap a 2-tile rooftop gap", "90: carry 2x normal load at full speed"]
+
+[skill.stealth]
+desc = "Moving quietly, staying unnoticed, scent and noise discipline."
+expert = ["50: sprint at 'normal' noise", "70: controlled breathing/sweat — own scent emission reduced 30%", "90: walk through a dense idle crowd without contact"]
+
+[skill.melee]
+desc = "Fighting with hand weapons, improvised or not."
+expert = ["40: targeted limb strikes", "65: sever a limb with a kitchen knife", "85: improvised weapons at full effectiveness"]
+
+[skill.throwing]
+desc = "Throwing objects accurately and far."
+expert = ["40: +50% range", "60: land a thrown jug on the exact tile at 8 tiles", "80: knock one of the Dead down with a thrown brick"]
+
+[skill.marksmanship]
+desc = "Firearms and aiming."
+expert = ["50: reliable headshots at range", "75: shoot without breaking stride"]
+
+[skill.archery]
+desc = "Bows, crossbows, and making arrows."
+expert = ["40: craft serviceable arrows from dowels and scrap", "70: recover arrows intact almost always"]
+
+[skill.carpentry]
+desc = "Woodwork: barricades, furniture, structures."
+expert = ["40: board a window in half the time with half the nails", "60: build a braced wall from salvaged doors", "80: reinforce a house into a fort in a day"]
+
+[skill.metalworking]
+desc = "Welding, cutting, forging, fabrication."
+expert = ["30: weld", "50: forge a blade from a leaf spring over a charcoal fire", "75: forge-weld without a proper forge"]
+
+[skill.mechanics]
+desc = "Machines: generators, pumps, engines (non-running vehicles for parts), appliances."
+expert = ["30: repair a small engine", "50: rebuild a generator from two broken ones", "70: salvage twice the useful parts"]
+
+[skill.electronics]
+desc = "Wiring, batteries, radios, solar, circuits."
+expert = ["30: wire a battery bank", "50: backfeed a house from a generator safely", "70: build a remote-triggered noise lure from phone parts"]
+
+[skill.construction]
+desc = "Digging, masonry, structural work, plumbing."
+expert = ["30: dig a stand-up pit in a day", "50: judge structural support at a glance", "70: tunnel under a building without collapse"]
+
+[skill.tailoring]
+desc = "Sewing, leatherwork, armour from cloth/leather/scrap."
+expert = ["30: sew bite-resistant forearm guards", "60: layered armour without mobility loss"]
+
+[skill.medicine]
+desc = "First aid through surgery."
+expert = ["20: proper bandaging", "40: suturing, setting fractures", "60: field surgery", "80: amputations with high survival"]
+
+[skill.cooking]
+desc = "Food preparation and preservation."
+expert = ["25: cook anything edible safely", "45: smoke/salt/can food for long shelf life", "65: turn marginal food safe"]
+
+[skill.survival]
+desc = "Fire, water, shelter, foraging, weather and wind reading."
+expert = ["25: fire in the rain", "45: friction fire without any tools", "60: read wind shifts in advance", "75: purify water with improvised filters reliably"]
+
+[skill.security]
+desc = "Locks, safes, alarms."
+expert = ["25: pick simple locks", "50: open most locks with improvised picks", "75: open safes by feel"]
+
+[skill.chemistry]
+desc = "Safe, abstract chemistry: fuels, soap, purification, scent agents (no explosive recipes)."
+expert = ["30: make soap and bleach dilutions", "50: brew strong repellent scent agents", "70: incendiaries that burn twice as long (abstract effect)"]
+
+[skill.scavenging]
+desc = "Searching efficiently, spotting value, judging condition."
+expert = ["30: judge spoilage/condition at a glance", "50: find hidden stashes", "70: search a room in half the time"]
+
+[skill.trapping]
+desc = "Traps, snares, alarms, pits."
+expert = ["30: tripwire alarms", "50: spike pits and deadfalls quickly", "70: chained traps"]

@@ -1,0 +1,60 @@
+# N013: clothing is a major defence and damage is body-part specific.
+
+[[expect]]
+item = "leather_jacket"
+path = "features.wearable.coverage"
+op = "has"
+value = "forearms"
+why = "forearms are bitten when fending off; a thick jacket stops bites"
+
+[[expect]]
+item = "leather_jacket"
+path = "armor.bite"
+op = ">="
+value = 5
+
+[[expect]]
+item = "scarf"
+path = "features.wearable.coverage"
+op = "has"
+value = "neck"
+why = "a bare neck is the deadly case; something on the neck matters"
+
+[[expect]]
+item = "t_shirt"
+path = "armor.bite"
+op = "<="
+value = 1
+why = "a T-shirt stops nothing"
+
+[[expect]]
+item = "bicycle"
+path = "features.rideable.tiles_per_turn"
+op = "=="
+value = 2
+
+[[expect]]
+item = "bicycle"
+path = "features.rideable.stop_turns"
+op = "=="
+value = 1
+
+[[expect]]
+item = "lockpick_set"
+path = "value_class"
+op = "=="
+value = "rare"
+
+[[expect]]
+item = "door_steel"
+path = "features.lock.extra"
+op = "has"
+value = "security_bar"
+
+[[expect]]
+item = "door_exterior"
+mods = ["door_barred"]
+path = "features.lock.extra"
+op = "has"
+value = "security_bar"
+why = "generation can bar ordinary front doors too"

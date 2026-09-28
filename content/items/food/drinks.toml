@@ -1,0 +1,75 @@
+# Packaged drinks (domain A). Drinks are containers holding a substance (M1): hydration and
+# kcal come from the substance (substances/liquids.toml), so they can be poured, boiled, mixed
+# or spilled like any liquid. mass_g is the empty package.
+
+[item.bottled_water]
+name = "bottled water"
+tags = ["cat.drink.water", "cat.container.bottle", "from.kitchen", "from.grocery", "from.gas_station", "from.office", "from.vehicle", "use.drink", "use.container"]
+shape = "container"
+dims_mm = [205, 65, 65]
+mass_g = 12
+desc = "A half-litre bottle of spring water with a plastic screw cap."
+glyph = "item.bottle"
+why = "Safe water in a sealed, refillable, light bottle: the single most important find in the first weeks."
+brand_cats = ["water"]
+modifiers = ["water_gallon"]
+value_class = "useful"
+
+[item.bottled_water.composition.bottle]
+material = "pet"
+share = 85
+[item.bottled_water.composition.cap]
+material = "polypropylene"
+share = 15
+
+[item.bottled_water.features.container]
+capacity_ml = 500
+opening_mm = 28
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid"]
+[item.bottled_water.features.lid]
+kind = "screw"
+reclosable = true
+
+[item.bottled_water.contents]
+substance = "water"
+fill_pct = [100, 100]
+
+[item.soda_can]
+name = "canned soda"
+tags = ["cat.drink.soda", "cat.container.can", "from.kitchen", "from.grocery", "from.gas_station", "from.office", "from.school", "use.drink"]
+shape = "container"
+dims_mm = [122, 66, 66]
+mass_g = 15
+pressurized = true                 # carbonated: bursts when heated, frozen or punctured hard
+desc = "A 12-ounce aluminum can of soda with a ring-pull tab."
+glyph = "item.soda_can"
+why = "Sugar and water with no tool needed; the empty can is a light rattling noisemaker for tripwires."
+brand_cats = ["soda"]
+details = ["soda_can_kind"]
+modifiers = ["soda_two_liter"]
+value_class = "common"
+
+[item.soda_can.composition.can]
+material = "aluminum"
+share = 100
+
+[item.soda_can.features.container]
+capacity_ml = 355
+opening_mm = 20
+closable = false
+sealable = false
+compat = ["liquid"]
+
+[item.soda_can.contents]
+substance = "soda"
+fill_pct = [100, 100]
+
+[item.soda_can.reactions.impact]
+low = "none"
+medium = "dent"
+high = "burst"
+[item.soda_can.reactions.heat]
+high = "burst"

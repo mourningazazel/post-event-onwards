@@ -1,0 +1,129 @@
+[material.flesh]
+family = "organic"
+density_mg_cm3 = 1060
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "low"
+water = "absorbs"
+conductivity = "conductor"
+struck_sound = "slap"
+surface = "irregular"
+desc = "Human/dead/animal tissue; raw meat. Emits blood when cut, rot when decaying."
+
+[material.bone]
+family = "organic"
+density_mg_cm3 = 1900
+hardness = 4
+toughness = "moderate"
+rigidity = 8
+edge_holding = 3
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "crack"
+surface = "rough"
+desc = "Skeleton; dead bone becomes brittle with the clock (G05)."
+
+[material.food_dry]
+family = "organic"
+density_mg_cm3 = 600
+hardness = 1
+toughness = "fragile"
+rigidity = 2
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 16
+water = "ruined"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "irregular"
+desc = "Crackers, cereal, pasta, chips, bread (bulk)."
+
+[material.food_wet]
+family = "organic"
+density_mg_cm3 = 1000
+hardness = 1
+toughness = "fragile"
+rigidity = 1
+edge_holding = 0
+flammability = "none"
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "slap"
+surface = "irregular"
+desc = "Fresh produce, cooked food, canned contents, dairy solids."
+
+[material.wax]
+family = "organic"
+density_mg_cm3 = 900
+hardness = 1
+toughness = "fragile"
+rigidity = 3
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 42
+melts_c = 60
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "smooth"
+desc = "Candles, crayons, fire-starter coatings."
+
+[material.charcoal]
+family = "organic"
+density_mg_cm3 = 300
+hardness = 1
+toughness = "fragile"
+rigidity = 3
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 30
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "crunch"
+surface = "porous"
+desc = "Grill briquettes; long hot fuel; water filter layer."
+
+[material.soil]
+family = "earth"
+density_mg_cm3 = 1300
+hardness = 1
+toughness = "fragile"
+rigidity = 1
+edge_holding = 0
+flammability = "none"
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "irregular"
+desc = "Topsoil, yards, parks. Easy digging."
+
+[material.clay_soil]
+family = "earth"
+density_mg_cm3 = 1700
+hardness = 2
+toughness = "moderate"
+rigidity = 2
+edge_holding = 0
+flammability = "none"
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "irregular"
+desc = "Dense subsoil: hard digging, holds shape for pits."
+
+[material.sand]
+family = "earth"
+density_mg_cm3 = 1600
+hardness = 1
+toughness = "fragile"
+rigidity = 0
+edge_holding = 0
+flammability = "none"
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "irregular"
+desc = "Sandbags, playgrounds, beaches. Smothers fire; filter layer."

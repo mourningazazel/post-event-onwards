@@ -1,0 +1,460 @@
+# Domain B pinned derivations and data relationships (tools, construction, fasteners, fuel,
+# salvage). Values hand-computed from tools/content/derive.py; "authored" marks overrides.
+
+# ---- saws vs materials (saw_edge: coarse 5, fine 7; grinder authored 9) ----
+[[expect]]
+item = "handsaw"
+path = "cap.saw"
+op = "=="
+value = 5
+why = "coarse wood saw: beats softwood 3 / hardwood 4 / plywood 3, not mild steel 6"
+
+[[expect]]
+item = "hacksaw"
+path = "cap.saw"
+op = "=="
+value = 7
+why = "fine metal saw: mild steel 6 and carbon steel 7, not hardened tool steel 8"
+
+[[expect]]
+item = "circular_saw"
+path = "cap.saw"
+op = "=="
+value = 5
+why = "carbide framing blade is a coarse wood saw"
+
+[[expect]]
+item = "chainsaw"
+path = "cap.saw"
+op = "=="
+value = 5
+
+[[expect]]
+item = "angle_grinder"
+path = "cap.saw"
+op = "=="
+value = 9
+why = "authored: abrasive disc outcuts tool steel (8)"
+
+# ---- cutting edges ----
+[[expect]]
+item = "bolt_cutters"
+path = "cap.cut"
+op = "=="
+value = 7
+why = "sharpness 8 x tool-steel head edge_holding 9 / 10 = 7.2: shears mild and carbon steel"
+
+[[expect]]
+item = "bolt_cutters"
+path = "cap.chop"
+op = "=="
+value = 1
+why = "authored override of derived 7: shear jaws don't hack"
+
+[[expect]]
+item = "wire_cutters"
+path = "cap.cut"
+op = "=="
+value = 6
+why = "8 x carbon steel 7 / 10 = 5.6: cuts mild-steel wire (6)"
+
+[[expect]]
+item = "tin_snips"
+path = "cap.cut"
+op = "=="
+value = 6
+why = "9 x 7 / 10 = 6.3: cuts galvanized sheet (mild steel 6)"
+
+[[expect]]
+item = "utility_knife"
+path = "cap.cut"
+op = "=="
+value = 5
+why = "authored override of derived 6: keen, but no leverage to shear steel"
+
+[[expect]]
+item = "axe"
+path = "cap.chop"
+op = "=="
+value = 7
+why = "cut 5 x min(1, 2400/1200) x 1.3 head balance = 6.5"
+
+[[expect]]
+item = "hatchet"
+path = "cap.chop"
+op = "=="
+value = 5
+why = "cut 5 x 900/1200 x 1.3 = 4.9"
+
+[[expect]]
+item = "hatchet_head"
+path = "cap.chop"
+op = "=="
+value = 3
+why = "a loose head has no haft leverage: 5 x 600/1200 = 2.5"
+
+[[expect]]
+item = "glass_shards"
+path = "cap.pierce"
+op = "=="
+value = 7
+
+[[expect]]
+item = "glass_shards"
+path = "impact.low"
+op = "=="
+value = "shatter"
+
+# ---- blunt force ----
+[[expect]]
+item = "sledgehammer"
+path = "cap.hammer"
+op = "=="
+value = 10
+why = "(log2(4500/50) + 7/3) x 1.2 striking face = 10.6, clamped"
+
+[[expect]]
+item = "hatchet"
+path = "cap.hammer"
+op = "=="
+value = 8
+why = "hammer poll: (log2(18) + 7/3) x 1.2 = 7.8"
+
+[[expect]]
+item = "tire_iron"
+path = "cap.hammer"
+op = "=="
+value = 7
+
+[[expect]]
+item = "handsaw"
+path = "cap.hammer"
+op = "=="
+value = 1
+why = "authored override: a thin springy plate"
+
+# ---- pry values ----
+[[expect]]
+item = "sledgehammer"
+path = "cap.pry"
+op = "=="
+value = 3
+why = "authored override of derived 9: no lip to get under anything"
+
+[[expect]]
+item = "tire_iron"
+path = "cap.pry"
+op = "=="
+value = 6
+why = "rigidity 9 x 400/600"
+
+[[expect]]
+item = "chisel"
+path = "cap.pry"
+op = "=="
+value = 4
+why = "9 x 250/600 = 3.75: just enough for pry_open (4)"
+
+[[expect]]
+item = "hatchet"
+path = "cap.pry"
+op = "=="
+value = 6
+
+[[expect]]
+item = "rebar"
+path = "cap.pry"
+op = "=="
+value = 9
+
+[[expect]]
+item = "lumber_2x4"
+path = "cap.pry"
+op = "=="
+value = 6
+why = "softwood rigidity 6 x full length"
+
+[[expect]]
+item = "metal_file"
+path = "cap.pry"
+op = "<"
+value = 4
+why = "authored: hardened files snap when levered"
+
+[[expect]]
+item = "car_jack"
+path = "cap.pry"
+op = ">="
+value = 4
+why = "authored: braced screw force spreads a door frame"
+
+# ---- binding ----
+[[expect]]
+item = "nylon_rope"
+path = "cap.bind"
+op = "=="
+value = 7
+why = "cord of very tough nylon fibre"
+
+[[expect]]
+item = "paracord"
+path = "cap.bind"
+op = "=="
+value = 5
+why = "authored override of derived 7: thin 4 mm line"
+
+[[expect]]
+item = "baling_wire"
+path = "cap.bind"
+op = "=="
+value = 6
+why = "metal cord"
+
+[[expect]]
+item = "copper_wire"
+path = "cap.bind"
+op = "=="
+value = 6
+
+[[expect]]
+item = "steel_chain"
+path = "cap.bind"
+op = "=="
+value = 6
+
+[[expect]]
+item = "extension_cord"
+path = "cap.bind"
+op = "=="
+value = 6
+why = "copper-cored cord lashes like wire"
+
+# ---- authored tool capabilities ----
+[[expect]]
+item = "shovel"
+path = "cap.dig"
+op = ">="
+value = 3
+why = "meets the dig action"
+
+[[expect]]
+item = "pickaxe"
+path = "cap.dig"
+op = ">"
+value = 7
+why = "breaks ground a shovel can't"
+
+[[expect]]
+item = "whetstone"
+path = "cap.sharpen"
+op = ">"
+value = 4
+why = "a proper stone beats a file"
+
+[[expect]]
+item = "arc_welder"
+path = "cap.weld"
+op = ">="
+value = 5
+why = "meets the weld fastener tool requirement"
+
+[[expect]]
+item = "cordless_drill"
+path = "cap.fasten"
+op = ">="
+value = 2
+
+[[expect]]
+item = "locking_pliers"
+path = "cap.grip_tool"
+op = ">="
+value = 3
+why = "full Hold on wire joints"
+
+[[expect]]
+item = "propane_torch"
+path = "cap.ignite"
+op = "=="
+value = 6
+
+[[expect]]
+item = "steel_wool"
+path = "cap.ignite"
+op = "=="
+value = 2
+why = "electric ignition (needs a battery across it)"
+
+# ---- fasteners carry their registry tags and units ----
+[[expect]]
+item = "instant_glue"
+path = "tags"
+op = "has"
+value = "cat.fastener.glue.instant"
+
+[[expect]]
+item = "epoxy"
+path = "tags"
+op = "has"
+value = "cat.fastener.glue.epoxy"
+
+[[expect]]
+item = "wood_glue"
+path = "tags"
+op = "has"
+value = "cat.fastener.glue.wood"
+
+[[expect]]
+item = "zip_ties"
+path = "tags"
+op = "has"
+value = "cat.fastener.zip_tie"
+
+[[expect]]
+item = "screws_box"
+path = "tags"
+op = "has"
+value = "cat.fastener.screw"
+
+[[expect]]
+item = "arc_welder"
+path = "tags"
+op = "has"
+value = "cat.tool.welder"
+
+[[expect]]
+item = "nylon_rope"
+path = "units"
+op = ">"
+value = 0
+
+[[expect]]
+item = "baling_wire"
+path = "tags"
+op = "has"
+value = "use.fastener"
+
+# ---- power ----
+[[expect]]
+item = "portable_generator"
+path = "power_source.voltage"
+op = "=="
+value = "ac_mains"
+
+[[expect]]
+item = "portable_generator"
+path = "use_noise"
+op = "=="
+value = "very_loud"
+
+[[expect]]
+item = "portable_generator"
+path = "tags"
+op = "has"
+value = "hazard.fumes"
+
+[[expect]]
+item = "portable_generator"
+mods = ["generator_inverter"]
+path = "use_noise"
+op = "=="
+value = "loud"
+why = "inverter models are much quieter"
+
+[[expect]]
+item = "cordless_drill"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.battery.drill"
+
+[[expect]]
+item = "angle_grinder"
+mods = ["cordless_platform"]
+path = "features.slot.accepts"
+op = "=="
+value = "cat.battery.drill"
+why = "cordless variant takes the drill pack"
+
+[[expect]]
+item = "angle_grinder"
+mods = ["cordless_platform"]
+path = "name"
+op = "=="
+value = "cordless angle grinder"
+
+[[expect]]
+item = "drill_battery"
+mods = ["drill_battery_high_capacity"]
+path = "power_source.capacity_wh"
+op = "=="
+value = 90
+
+# ---- fuel ----
+[[expect]]
+item = "gas_can"
+path = "contents.substance"
+op = "=="
+value = "gasoline"
+
+[[expect]]
+item = "gas_can"
+mods = ["fuel_can_diesel"]
+path = "name"
+op = "=="
+value = "diesel can"
+
+[[expect]]
+item = "gas_can"
+mods = ["fuel_can_diesel"]
+path = "contents.substance"
+op = "=="
+value = "diesel"
+
+[[expect]]
+item = "propane_tank"
+path = "reactions.heat.high"
+op = "=="
+value = "burst"
+why = "cylinders burst in fires"
+
+[[expect]]
+item = "fuel_canister"
+path = "tags"
+op = "has"
+value = "cat.fuel.canister"
+why = "fits camp_stove and propane_torch slots"
+
+# ---- security tiers and salvage ----
+[[expect]]
+item = "steel_chain"
+mods = ["security_chain"]
+path = "composition.links.material"
+op = "=="
+value = "tool_steel"
+why = "hardened chain (8) beats bolt cutters and hacksaws (7); only a grinder cuts it"
+
+[[expect]]
+item = "padlock"
+mods = ["padlock_hardened"]
+path = "features.lock.tier"
+op = "=="
+value = 5
+
+[[expect]]
+item = "hatchet"
+path = "composition.head.salvage.item"
+op = "=="
+value = "hatchet_head"
+
+[[expect]]
+item = "leaf_spring"
+path = "tags"
+op = "has"
+value = "cat.stock.blade"
+why = "blade stock for expert forging (N012)"
+
+[[expect]]
+item = "nylon_rope"
+mods = ["rope_100ft"]
+path = "dims_mm"
+op = "=="
+value = [30480, 10, 10]

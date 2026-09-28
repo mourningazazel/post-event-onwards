@@ -1,0 +1,242 @@
+# Building materials and stock (domain B). Exemplars wood_plank, steel_pipe, brick are in
+# materials.toml. Rigid sheets divide in `length` mode (cut to size), never `sheet` mode,
+# which means hand-tearable cloth (tear_strips, bandage).
+
+[item.lumber_2x4]
+name = "2x4"
+tags = ["cat.construction.lumber", "from.construction", "from.garage", "use.barricade", "use.fuel", "use.weapon"]
+shape = "rod"
+dims_mm = [2438, 89, 38]
+mass_g = 4000
+durability = 7
+desc = "An eight-foot kiln-dried spruce 2x4 stud."
+glyph = "item.lumber"
+why = "Door bars and bracing, frames, handles and hafts, a heavy club; firewood when cut."
+attach_surface = { kind = "porous", contact_area_mm2 = 20000, wrap_girth_mm = 254 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "saw>=5" }
+details = ["lumber_marks"]
+value_class = "useful"
+
+[item.lumber_2x4.composition.wood]
+material = "softwood"
+share = 100
+
+[item.lumber_2x4.features.grip]
+hands = 2
+girth_mm = 60
+[item.lumber_2x4.features.socket]
+end = "far"
+max_attach_mass_g = 2500
+max_attach_size_mm = 110
+accepts = ["blade", "block", "small"]
+joints = ["nail", "screw", "cord", "wire", "duct_tape", "zip_tie", "epoxy", "wood_glue"]
+
+[item.plywood_sheet]
+name = "plywood sheet"
+tags = ["cat.construction.sheet", "from.construction", "from.garage", "use.barricade", "use.shelter", "use.fuel"]
+shape = "sheet"
+dims_mm = [2440, 1220, 12]
+mass_g = 18000
+durability = 7
+desc = "A four-by-eight sheet of half-inch CDX plywood."
+glyph = "item.plywood"
+why = "Covers a whole window or doorway in one piece (screwed or nailed); shelters, floors, walls."
+attach_surface = { kind = "porous", contact_area_mm2 = 100000 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "saw>=5" }
+modifiers = ["plywood_thick", "wet"]
+details = ["lumber_marks"]
+value_class = "useful"
+
+[item.plywood_sheet.composition.panel]
+material = "plywood"
+share = 100
+
+[item.cinder_block]
+name = "cinder block"
+tags = ["cat.construction.masonry", "from.construction", "from.garden", "from.street", "use.barricade"]
+shape = "block"
+dims_mm = [397, 194, 194]
+mass_g = 15900
+hollow = true
+durability = 7
+desc = "A standard hollow 8-by-8-by-16-inch concrete block."
+glyph = "item.cinder_block"
+why = "Stackable barricade mass, a step up to a window, weight for traps and tarps; dropped from height it crushes."
+attach_surface = { kind = "rough", contact_area_mm2 = 77000, wrap_girth_mm = 780 }
+value_class = "junk"
+
+[item.cinder_block.composition.block]
+material = "concrete"
+share = 100
+
+[item.rebar]
+name = "rebar"
+tags = ["cat.construction.rebar", "from.construction", "from.industrial", "use.weapon", "use.tool"]
+shape = "rod"
+dims_mm = [3048, 13, 13]
+mass_g = 3000
+durability = 9
+desc = "A ten-foot length of #4 ribbed reinforcing bar."
+glyph = "item.rebar"
+why = "Cut to length: spear shafts and spikes, stakes, window bars (welded), levers; ribbed surface grips lashings."
+attach_surface = { kind = "rough", contact_area_mm2 = 5000, wrap_girth_mm = 41 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "saw>=7" }
+modifiers = ["rusted"]
+value_class = "common"
+
+[item.rebar.composition.bar]
+material = "mild_steel"
+share = 100
+
+[item.rebar.features.grip]
+hands = 2
+girth_mm = 13
+[item.rebar.features.socket]
+end = "far"
+max_attach_mass_g = 1500
+max_attach_size_mm = 60
+accepts = ["blade", "block", "small", "sphere"]
+joints = ["duct_tape", "cord", "wire", "zip_tie", "epoxy", "weld"]
+
+[item.sheet_metal]
+name = "sheet metal"
+tags = ["cat.construction.sheet_metal", "from.construction", "from.garage", "from.industrial", "use.barricade"]
+shape = "sheet"
+dims_mm = [914, 610, 1]
+mass_g = 2000
+durability = 8
+desc = "A 24-by-36-inch sheet of thin galvanized steel."
+glyph = "item.sheet_metal"
+why = "Snipped into bite-resistant armour plates and patches; covers windows and holes; a loud rattle trap."
+attach_surface = { kind = "smooth", contact_area_mm2 = 50000 }
+divisible = { mode = "length", min_piece_mm = 50, needs = "cut>=6" }
+value_class = "useful"
+
+[item.sheet_metal.composition.sheet]
+material = "mild_steel"
+share = 100
+
+[item.pallet]
+name = "wooden pallet"
+tags = ["cat.construction.pallet", "from.industrial", "from.construction", "from.retail", "from.street", "use.barricade", "use.fuel", "use.salvage"]
+shape = "sheet"
+dims_mm = [1219, 1016, 140]
+mass_g = 22000
+fill_pct = 25
+durability = 5
+desc = "A standard 48-by-40-inch stringer pallet."
+glyph = "obj.pallet"
+why = "Free planks and 2x4s by prying; boards a window whole; fences, beds off wet floors, firewood."
+modifiers = ["wet"]
+value_class = "common"
+
+[item.pallet.composition.deck_boards]
+material = "softwood"
+share = 60
+salvage = { item = "wood_plank", count = 7, set = { dims_mm = [1016, 90, 16], mass_g = 800 }, tool = "pry>=4", time_s = 900 }
+[item.pallet.composition.stringers]
+material = "softwood"
+share = 36
+salvage = { item = "lumber_2x4", count = 3, set = { dims_mm = [1219, 89, 38] , mass_g = 2000 }, tool = "pry>=4", time_s = 300 }
+[item.pallet.composition.nails]
+material = "mild_steel"
+share = 4
+
+[item.tarp]
+name = "tarp"
+tags = ["cat.construction.tarp", "from.garage", "from.construction", "from.outdoors", "from.farm", "use.shelter"]
+shape = "fabric"
+dims_mm = [3050, 2440, 1]
+mass_g = 700
+durability = 6
+desc = "An eight-by-ten-foot woven polyethylene tarp with grommets every few feet."
+glyph = "item.tarp"
+why = "Roof patches, rain catchment, lean-to shelter, ground sheet, hides loot and drags loads; blocks sight through windows."
+divisible = { mode = "length", min_piece_mm = 300, needs = "cut>=1" }
+details = ["tarp_colour"]
+value_class = "useful"
+
+[item.tarp.composition.weave]
+material = "hdpe"
+share = 85
+[item.tarp.composition.coating]
+material = "ldpe"
+share = 10
+[item.tarp.composition.grommets]
+material = "aluminum"
+share = 5
+
+# waterproof: authored (derived only from wearable); keeping rain off is the point of it.
+[item.tarp.capabilities]
+waterproof = 9
+
+[item.plastic_sheeting]
+name = "plastic sheeting"
+tags = ["cat.construction.sheeting", "from.construction", "from.garage", "use.shelter"]
+shape = "fabric"
+dims_mm = [7620, 3048, 1]
+mass_g = 3250
+desc = "A folded 10-by-25-foot roll of clear 6-mil polyethylene."
+glyph = "item.plastic_roll"
+why = "Taped over openings it seals a room against rain, smoke and scent; lets light through windows; solar stills and rain catchment."
+divisible = { mode = "length", min_piece_mm = 300, needs = "cut>=1" }
+value_class = "useful"
+
+[item.plastic_sheeting.composition.film]
+material = "ldpe"
+share = 100
+
+[item.plastic_sheeting.capabilities]
+waterproof = 8
+
+[item.sandbag]
+name = "sandbag"
+tags = ["cat.construction.sandbag", "from.construction", "from.utility", "use.barricade", "use.container"]
+shape = "bag"
+dims_mm = [660, 355, 2]
+mass_g = 70
+desc = "An empty woven polypropylene sandbag with a tie string."
+glyph = "item.sandbag"
+why = "Filled with sand or soil it stacks into walls that absorb impacts, block doors and dam water; smothers fires."
+modifiers = ["sandbag_filled"]
+value_class = "common"
+
+[item.sandbag.composition.bag]
+material = "polypropylene"
+share = 100
+
+[item.sandbag.features.container]
+capacity_ml = 20000
+max_mass_g = 30000
+opening_mm = 330
+closable = true
+sealable = false
+compat = ["granular", "solid"]
+
+[item.concrete_mix_bag]
+name = "bag of concrete mix"
+tags = ["cat.construction.concrete", "from.construction", "use.barricade"]
+shape = "bag"
+dims_mm = [610, 406, 127]
+mass_g = 250
+fill_pct = 1                       # the paper sack itself; the mix is contents
+desc = "An 80-pound multi-wall paper sack of ready concrete mix."
+glyph = "item.sack"
+why = "Mixed with water it sets posts, fills doors and walls permanently (construction skill); a 36 kg barricade block as-is."
+value_class = "common"
+
+[item.concrete_mix_bag.composition.sack]
+material = "paper"
+share = 100
+
+[item.concrete_mix_bag.features.container]
+capacity_ml = 25000
+max_mass_g = 37000
+closable = false
+sealable = false
+compat = ["granular"]
+
+# Closest substance: cement_powder (proposal: concrete_mix — cement + sand + gravel).
+[item.concrete_mix_bag.contents]
+substance = "cement_powder"
+fill_pct = [100, 100]

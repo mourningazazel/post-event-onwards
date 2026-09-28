@@ -1,0 +1,727 @@
+{
+  "schema": 1,
+  "next_id": 23,
+  "items": [
+    {
+      "id": "PEO-001",
+      "order": 10,
+      "type": "chore",
+      "title": "Builder bootstrap: build, run, record baseline",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The game builds and runs on the developer's machine and a first perf baseline is recorded in the queue.",
+        "context": [
+          "README.md",
+          "docs/roles.md",
+          "docs/testing.md",
+          "CMakePresets.json"
+        ],
+        "units": [
+          "chore: run python3 tools/bootstrap.py; fix anything it reports missing (SDL3 is fetched automatically if not installed)",
+          "chore: cmake --preset dev (win-dev on Windows) && cmake --build --preset dev && ctest --preset dev; note the first-build wall time",
+          "chore: run ./build/dev/bin/peo 7 and complete every manual step below",
+          "docs: if any step on this OS needed an extra package or flag, add it to README.md under Build (one line each)"
+        ],
+        "acceptance": [
+          "python3 tools/verify.py --frontend passes on the developer's machine",
+          "the game window opens, @ moves with arrows/WASD, d glyphs (the Dead) approach the player",
+          "the report note contains OS, compiler, first-build time, and the Release-preset numbers below"
+        ],
+        "tests": [
+          "ctest --preset dev (all 21 core cases)"
+        ],
+        "manual": [
+          "Launch ./build/dev/bin/peo 7. Expect an 80x45 map of # and . with @ near the left edge and > near the right.",
+          "Stand still 3 s (the prototype is still real-time until PEO-002). Expect red d glyphs to converge on @ from multiple directions.",
+          "Shift+S toggles the scent view. Expect a gradient (@ + : .) centred on the player that follows you as you walk.",
+          "Walk into the > cell. Expect the HUD stage counter to become 1 and a denser map.",
+          "Press N five times. Expect stage 6 to have visibly more walls than stage 0.",
+          "Build the release preset and run it: watch the HUD for hitching while 40 d glyphs move. Report anything not smooth.",
+          "Perf baseline: run ./build/headless-release/tests/peo_core_tests -tc='*thousand*' -d and report the duration doctest prints."
+        ],
+        "out_of_scope": [
+          "gameplay changes of any kind; record ideas with /work",
+          "adding fonts, colours or tiles"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed; start here"
+        }
+      ],
+      "references": [
+        "README.md",
+        "docs/roles.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-002",
+      "order": 20,
+      "type": "feature",
+      "title": "Introduce World as the turn-based step owner",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The game is turn-based: World::step(Action) is the only way time moves, the frontend holds no simulation state, and the world waits for the player.",
+        "context": [
+          "docs/architecture.md#turn-model-decision-d-002",
+          "docs/production/decisions.md",
+          "src/app/main.cpp",
+          "src/core/include/peo/core/scent.hpp",
+          "src/core/include/peo/core/dead.hpp",
+          "src/core/include/peo/core/stage.hpp",
+          "tests/core/test_dead.cpp"
+        ],
+        "units": [
+          "core: add src/core/include/peo/core/action.hpp: enum class ActionKind { Step, Wait }; struct Action { ActionKind kind; Vec2i dir; static Action step(Vec2i); static Action wait(); }.",
+          "core: add src/core/include/peo/core/world.hpp: struct WorldParams { int initial_dead = 40; float player_scent = 1.0F; ScentParams scent; }; class World { public: World(Seed, WorldParams = {}); void load_stage(uint32_t); void step(Action); const Stage& stage() const; const ScentField& scent() const; const std::vector<Dead>& horde() const; Vec2i player() const; Tick turn() const; uint32_t stage_index() const; }. No clock, no thread, no SDL.",
+          "core: implement src/core/src/world.cpp by moving load_stage/try_move/simulate out of main.cpp. step(): apply action (a Step into a wall becomes a Wait, still consumes the turn), deposit scent at player cell, scent.step(&blocked), step_horde, ++turn; reaching the exit loads the next stage at the end of the turn. Add both files to src/core/CMakeLists.txt.",
+          "test: tests/core/test_world.cpp — 'same seed same world after 100 turns' (two Worlds fed the same actions: equal player, horde, scent.total()), 'step into wall consumes the turn but does not move', 'wait advances the turn and the dead approach', 'reaching exit advances stage_index'. Register in tests/CMakeLists.txt; suite stays under 500 ms.",
+          "app: main.cpp keeps SDL setup, key mapping, draw(). App holds a World and a 'dirty' flag; a key press calls world.step(Action) exactly once; nothing advances on a timer. Remove kTickMs, last_tick_ms and the pause toggle (a turn-based game has no pause). Keep Shift+S scent view and N next stage.",
+          "docs: in docs/architecture.md 'Planned seams', mark World as built and note the file names."
+        ],
+        "acceptance": [
+          "src/app/main.cpp contains no ScentField, Rng, Dead or Stage manipulation; only World calls, input mapping and drawing",
+          "the world does not change while the player is idle for 10 seconds",
+          "one key press moves the player one cell and the Dead one step at most",
+          "the four new world tests pass; whole suite under 500 ms"
+        ],
+        "tests": [
+          "tests/core/test_world.cpp (new)",
+          "all existing suites"
+        ],
+        "manual": [
+          "Run ./build/dev/bin/peo 7. Do nothing for 10 s: nothing on screen may change.",
+          "Press right 20 times: @ moves one cell per press; the d glyphs close in one cell per press.",
+          "Hold a movement key: movement must feel immediate with no queued lag after release (report the OS key-repeat feel).",
+          "Press . or space (wait): the Dead advance one step while @ stays.",
+          "Walk into > : stage counter increments and the map changes."
+        ],
+        "out_of_scope": [
+          "compute-while-waiting (speculate/commit) — PEO-007",
+          "blood or other scent layers — PEO-003",
+          "corpse descriptors for individual Dead — later item"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed; Architect will write test_world.cpp expectations on request, Builder may write them per unit 3"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "re-briefed for D-002 (turn-based) and D-001 (Dead). Supersedes the earlier real-time brief."
+        }
+      ],
+      "references": [
+        "docs/architecture.md",
+        "src/app/main.cpp"
+      ],
+      "depends_on": [
+        "PEO-001"
+      ]
+    },
+    {
+      "id": "PEO-003",
+      "order": 30,
+      "type": "feature",
+      "title": "Blood scent layer on contact with the Dead",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Touching the player leaves blood, a second scent layer hordes follow more strongly than trail.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "title: Blood scent layer on contact with the Dead"
+        }
+      ],
+      "references": [
+        "docs/production/vision.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-004",
+      "order": 40,
+      "type": "perf",
+      "title": "Benchmark ScentField::step at 200x120",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A headless-release benchmark prints microseconds per step and the number is recorded for the vision target.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/production/vision.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-005",
+      "order": 50,
+      "type": "feature",
+      "title": "Cave stage generator behind generate_stage",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Stages alternate between open random walls and cellular-automata caves with a guaranteed entry-exit path.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "src/core/include/peo/core/stage.hpp"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-006",
+      "order": 60,
+      "type": "feature",
+      "title": "Replay: seed plus input log reproduces a run headlessly",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A replay file lets the Architect reproduce any Builder-reported bug in a test.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/architecture.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-007",
+      "order": 70,
+      "type": "feature",
+      "title": "Compute the next turn while waiting for input",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Between turns the world speculates the next turn assuming Wait; on input, commit() patches only the player's neighbourhood and produces state bit-identical to step().",
+        "context": [
+          "docs/architecture.md#computing-while-waiting",
+          "docs/production/decisions.md",
+          "src/core/include/peo/core/world.hpp",
+          "src/core/include/peo/core/scent.hpp",
+          "src/core/include/peo/core/dead.hpp"
+        ],
+        "units": [
+          "core: make ScentField::step linear-then-clamp explicitly: split into step_linear(blocked) and clamp_floor(); step() calls both. Add ScentField::patch_deposit(Vec2i at, float amount): applies diffuse(δ) for a single deposit to the 5 affected cells (respecting walls exactly as step_linear does), assuming the field is already post-step_linear. Test: for random fields and deposits, step_linear on (field+δ) equals step_linear(field) then patch_deposit(δ), exactly (use == not Approx; choose operation order so this holds).",
+          "core: add struct Speculation { ScentField scent; std::vector<Dead> horde; Tick turn; } and World::speculate() const -> Speculation: the full turn assuming Action::wait() and no player deposit. Pure; no member mutation.",
+          "core: add World::commit(Speculation&&, Action): apply the action, patch_deposit at the player's cell, clamp_floor, then re-run the move decision only for Dead within 2 cells of the player's new cell (reset them from the pre-turn positions kept in the Speculation), resolve contact, adopt the result. Add static bool World::equivalent(const World&, const World&) for tests.",
+          "test: golden test in tests/core/test_world.cpp: for 200 random (seed, action sequence) pairs, run A: step(action) each turn, B: commit(speculate(), action) each turn; assert equivalent() after every turn. Include steps into walls and stage transitions.",
+          "test: perf sanity (headless-release): at 200x120 with 5000 Dead, report microseconds for speculate() and commit() via doctest -d; commit must be under 1 ms on the Builder's machine (record the number).",
+          "app: main.cpp spawns one std::jthread that, whenever the world is idle and no speculation exists, computes world.speculate() into a buffer; the input handler calls commit() if a fresh speculation exists, else step(). The renderer reads only the committed World. Add an on-screen HUD flag 'spec:hit/miss' for the manual test.",
+          "docs: architecture.md 'Computing while waiting' gets the final function names and the measured numbers."
+        ],
+        "acceptance": [
+          "golden test passes for 200 random sequences: commit(speculate()) is bit-identical to step()",
+          "commit() under 1 ms and speculate() under 16 ms at 200x120 with 5000 Dead on the Builder's machine (release)",
+          "core spawns no threads; the only thread lives in src/app/main.cpp",
+          "in game, HUD shows spec:hit on nearly every turn when playing at human speed"
+        ],
+        "tests": [
+          "tests/core/test_scent.cpp linearity test",
+          "tests/core/test_world.cpp golden test",
+          "all existing suites"
+        ],
+        "manual": [
+          "Run the release build with seed 7. Play 100 turns at normal speed: HUD should read spec:hit almost always; report the miss count.",
+          "Mash a movement key as fast as possible for 5 s: no crash, no visual glitch, misses allowed; report feel.",
+          "Compare a 50-turn walk in debug vs release with the same key sequence: the Dead must end in the same cells (determinism across builds)."
+        ],
+        "out_of_scope": [
+          "multi-turn lookahead beyond one Wait turn",
+          "struct-of-arrays for Dead",
+          "GPU or SIMD scent"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed. Architect owns the golden-test design; Builder may ask for the linearity test to be written first."
+        }
+      ],
+      "references": [
+        "docs/architecture.md",
+        "docs/production/decisions.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-008",
+      "order": 80,
+      "type": "feature",
+      "title": "Content loader: registry, materials, items, modifiers into runtime tables",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The game reads content/ at startup through toml++ and exposes derived capabilities exactly as tools/content/derive.py computes them, proven by a golden comparison test.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "content/README.md",
+        "tools/content/derive.py",
+        "docs/architecture.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-009",
+      "order": 90,
+      "type": "design",
+      "title": "Weighted-draw movement for the Dead with aggregates and company pull",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "step_horde becomes the round-3 weighted draw (scent, aggregate, company, repellent, footing terms) and the swarm-accumulation and fan-out scenarios pass headlessly.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-007"
+      ]
+    },
+    {
+      "id": "PEO-010",
+      "order": 100,
+      "type": "design",
+      "title": "Triggers, sound events and speeds",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Touch, sight and human-class sound trigger units that steer by general direction at x1.5/x2 speed, expire displaced, and pull idle Dead only through weights; sound events are kind + dB.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
+    },
+    {
+      "id": "PEO-011",
+      "order": 110,
+      "type": "design",
+      "title": "Trips, contests and trample",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Push contests can trip; trips cascade in a frenzy; moving over a prone unit rolls blunt damage; frenzy-trips and trample-damage scenarios pass.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "Scope folds into shared occupancy (ADR-0013): contests happen on and between shared tiles, not only swaps."
+        }
+      ],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
+    },
+    {
+      "id": "PEO-012",
+      "order": 120,
+      "type": "design",
+      "title": "Skills 1-100: success percentage, failure outcomes, multi-skill, tool gates",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "An action resolver computes per-skill and aggregate chances from unlock/difficulty/ceiling, draws failure outcomes, and refuses skill-gated tools; expectations in tests/content prove the curve.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md",
+        "content/registry/actions.toml"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-013",
+      "order": 130,
+      "type": "design",
+      "title": "Quality on every item: degradation curves and broken text",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Every archetype has quality handling; time and situation set quality at generation; broken and broken_disables exist on every item that does something; lint enforces it.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/content-model.md"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-014",
+      "order": 140,
+      "type": "research",
+      "title": "Building census, category retail and persona houses (content plan)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "content/world/census.toml, retail_categories.toml and personas/ exist with first-pass numbers per setting, and the world catalogue id contract lists every new building type.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/world-catalog.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-015",
+      "order": 150,
+      "type": "research",
+      "title": "Drugs, paraphernalia and pharmacy stock (content)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A realistic spread of narcotics, pharmaceuticals and paraphernalia as archetypes plus modifiers, a drug property block, and locked urban pharmacy stock; no mechanics yet.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-016",
+      "order": 160,
+      "type": "design",
+      "title": "Mood and Sanity data model",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Mood (Depressed..Manic) and Sanity live on the character with the hooks the design names (exhaustion, addiction, failure shifts, hallucination events); hidden by default.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G04-characters.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-017",
+      "order": 170,
+      "type": "feature",
+      "title": "Maps as rare knowledge items that mark general locations",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "city_hall and transit_stop exist; a read map marks POI areas on the player's map before generation and generation lands inside the mark.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/world-catalog.md"
+      ],
+      "depends_on": [
+        "PEO-005"
+      ]
+    },
+    {
+      "id": "PEO-018",
+      "order": 180,
+      "type": "feature",
+      "title": "Ambient crow text",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Periodic ambient text about crows appears at a data-driven rate; no creature exists.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/production/vision.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-019",
+      "order": 190,
+      "type": "design",
+      "title": "Lock kinds, tier bands and security-weighted placement",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Lock records carry a kind with a tier band; picking and bashing difficulty derive from the tier; generation picks lock kinds weighted by building, container and security markers; expectations prove the weights.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md",
+        "content/registry/features.toml"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-020",
+      "order": 200,
+      "type": "design",
+      "title": "Generated books by library section with difficulty, read time and one-point gain",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A book generator produces thousands of titles per library section with teaches {difficulty, read_time_min, gain_chance_pct, window}; reading passes game time and grants at most one point once; gates hold at both ends.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md"
+      ],
+      "depends_on": [
+        "PEO-012"
+      ]
+    },
+    {
+      "id": "PEO-021",
+      "order": 210,
+      "type": "design",
+      "title": "Death: the player rises as a vision tracker; respawn 1-2 miles away",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "On death without brain destruction a vision-tracking Dead with the old stats and gear appears at the run's start; the new character spawns between 1 and 2 miles from it; decapitation or brain destruction prevents rising.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G04-characters.md"
+      ],
+      "depends_on": [
+        "PEO-010"
+      ]
+    },
+    {
+      "id": "PEO-022",
+      "order": 220,
+      "type": "design",
+      "title": "Shared tile occupancy with capacity, trip, knock-out and trample",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Occupancy is a count per tile with a capacity; steps in crowded tiles roll trip or knock-out; prone units are trampled; the rule checker enforces capacity.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/adr/0013-tile-scale-and-shared-occupancy.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
+    }
+  ]
+}

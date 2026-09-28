@@ -1,0 +1,291 @@
+# Settings (zones), world-catalog §1. Schema: registry/schemas.toml [schema.setting].
+#
+# - density: resident (night-time) people per km2, except where the catalogue gives a daytime
+#   figure (commercial_strip, industrial). Building weights and occupant counts (buildings/*.toml)
+#   are tuned so the night population of a typical neighbourhood lands in this range.
+# - buildings: relative weights by building COUNT (not floor area) for ordinary lots.
+#   Institutional sites (hospital, medical_clinic, police_station, fire_station, school, library,
+#   church) and utility sites (power_substation, water_treatment, water_tower) are NOT in these
+#   lists: the generator places them with spacing rules per population served (world-catalog §1).
+# - outdoor: sets placed on streets and open land between buildings (buildings carry their own
+#   yard/lot sets).
+# - power_base_pct / water_base_pct: chance a neighbourhood's grid power / mains water still
+#   works at the reference clock of day 7 (N007). The clock curve lowers both with time; power
+#   falls faster and is lower the sparser the setting, so there is no hard city/wilderness break.
+#   Properties with water = "well" ignore the neighbourhood water roll.
+# - lot_m: typical lot frontage in metres.
+
+[setting.downtown_core]
+desc = "The city centre: office and apartment towers, hotels and banks over street-level shops and cafes, parking structures, alleys, and heavy traffic frozen in place."
+density = [10000, 25000]
+buildings = [
+  { building = "office_tower", w = 18 },
+  { building = "office_lowrise", w = 12 },
+  { building = "highrise_apartment", w = 14 },
+  { building = "walkup_apartment", w = 6 },
+  { building = "hotel", w = 5 },
+  { building = "bank", w = 5 },
+  { building = "parking_garage", w = 8 },
+  { building = "coffee_shop", w = 8 },
+  { building = "fast_food", w = 5 },
+  { building = "bar", w = 5 },
+  { building = "diner", w = 2 },
+  { building = "convenience_store", w = 5 },
+  { building = "pharmacy", w = 3 },
+  { building = "clothing_store", w = 4 },
+  { building = "bookstore", w = 2 },
+  { building = "liquor_store", w = 2 },
+  { building = "sporting_goods", w = 1 },
+  { building = "post_office", w = 1 },
+]
+outdoor = [
+  { set = "downtown_street", w = 60 },
+  { set = "alley", w = 25 },
+  { set = "parking_lot", w = 8 },
+  { set = "construction_site", w = 4 },
+  { set = "emergency_scene", w = 3 },
+]
+power_base_pct = 55
+water_base_pct = 90
+lot_m = [20, 60]
+tags = ["cat.setting.urban", "cat.setting.dense"]
+
+[setting.urban_residential]
+desc = "Older inner-city neighbourhoods: rowhouses and walk-ups, duplexes on narrow lots, corner stores, laundromats and bars, with alleys behind."
+density = [5000, 12000]
+buildings = [
+  { building = "rowhouse", w = 30 },
+  { building = "walkup_apartment", w = 18 },
+  { building = "duplex", w = 12 },
+  { building = "townhouse", w = 5 },
+  { building = "bungalow", w = 6 },
+  { building = "highrise_apartment", w = 2 },
+  { building = "convenience_store", w = 5 },
+  { building = "laundromat", w = 3 },
+  { building = "bar", w = 3 },
+  { building = "liquor_store", w = 2 },
+  { building = "diner", w = 2 },
+  { building = "fast_food", w = 2 },
+  { building = "coffee_shop", w = 2 },
+  { building = "pharmacy", w = 1 },
+  { building = "clothing_store", w = 1 },
+  { building = "auto_repair_garage", w = 2 },
+  { building = "office_lowrise", w = 2 },
+]
+outdoor = [
+  { set = "residential_street", w = 50 },
+  { set = "alley", w = 22 },
+  { set = "downtown_street", w = 10 },
+  { set = "park_grounds", w = 8 },
+  { set = "construction_site", w = 3 },
+  { set = "emergency_scene", w = 3 },
+]
+power_base_pct = 50
+water_base_pct = 88
+lot_m = [5, 15]
+tags = ["cat.setting.urban"]
+
+[setting.commercial_strip]
+desc = "A commercial arterial: strip malls, big-box stores and supermarkets behind wide parking lots, gas stations, fast food, motels and auto shops. Few residents; busy by day."
+density = [500, 2000]
+buildings = [
+  { building = "strip_mall", w = 15 },
+  { building = "fast_food", w = 15 },
+  { building = "gas_station", w = 12 },
+  { building = "supermarket", w = 6 },
+  { building = "big_box_store", w = 5 },
+  { building = "motel", w = 5 },
+  { building = "auto_repair_garage", w = 6 },
+  { building = "auto_parts_store", w = 5 },
+  { building = "convenience_store", w = 5 },
+  { building = "pharmacy", w = 4 },
+  { building = "office_lowrise", w = 4 },
+  { building = "hardware_store", w = 3 },
+  { building = "liquor_store", w = 3 },
+  { building = "clothing_store", w = 3 },
+  { building = "bank", w = 3 },
+  { building = "diner", w = 3 },
+  { building = "coffee_shop", w = 3 },
+  { building = "bar", w = 3 },
+  { building = "gun_store", w = 2 },
+  { building = "sporting_goods", w = 2 },
+  { building = "laundromat", w = 2 },
+  { building = "self_storage", w = 2 },
+]
+outdoor = [
+  { set = "parking_lot", w = 55 },
+  { set = "residential_street", w = 18 },
+  { set = "alley", w = 10 },
+  { set = "construction_site", w = 6 },
+  { set = "emergency_scene", w = 4 },
+]
+power_base_pct = 45
+water_base_pct = 85
+lot_m = [30, 120]
+tags = ["cat.setting.urban", "cat.setting.commercial"]
+
+[setting.suburb]
+desc = "Single-family subdivisions: ranch houses, colonials and split-levels on curving streets and cul-de-sacs, townhouse rows, neighbourhood parks and an elementary school."
+density = [1000, 3000]
+buildings = [
+  { building = "ranch_house", w = 25 },
+  { building = "colonial_house", w = 20 },
+  { building = "split_level", w = 12 },
+  { building = "townhouse", w = 10 },
+  { building = "mcmansion", w = 8 },
+  { building = "bungalow", w = 6 },
+  { building = "duplex", w = 4 },
+  { building = "walkup_apartment", w = 3 },
+  { building = "gas_station", w = 1 },
+  { building = "convenience_store", w = 1 },
+]
+outdoor = [
+  { set = "residential_street", w = 65 },
+  { set = "park_grounds", w = 12 },
+  { set = "construction_site", w = 4 },
+  { set = "emergency_scene", w = 2 },
+]
+power_base_pct = 40
+water_base_pct = 85
+lot_m = [18, 35]
+tags = ["cat.setting.suburban"]
+
+[setting.industrial]
+desc = "An industrial district: warehouses and factories, truck yards, auto shops, lumber and scrap yards, self-storage; crowded on weekday shifts, empty at weekends."
+density = [100, 1000]
+buildings = [
+  { building = "warehouse", w = 30 },
+  { building = "factory", w = 15 },
+  { building = "auto_repair_garage", w = 12 },
+  { building = "self_storage", w = 8 },
+  { building = "lumber_yard", w = 5 },
+  { building = "junkyard", w = 5 },
+  { building = "office_lowrise", w = 5 },
+  { building = "gas_station", w = 3 },
+  { building = "truck_stop", w = 2 },
+  { building = "auto_parts_store", w = 2 },
+  { building = "fast_food", w = 2 },
+  { building = "bar", w = 2 },
+]
+outdoor = [
+  { set = "industrial_yard", w = 45 },
+  { set = "parking_lot", w = 20 },
+  { set = "alley", w = 15 },
+  { set = "construction_site", w = 10 },
+  { set = "emergency_scene", w = 2 },
+]
+power_base_pct = 40
+water_base_pct = 80
+lot_m = [40, 200]
+tags = ["cat.setting.industrial"]
+
+[setting.small_town]
+desc = "A small town: a Main Street of diner, hardware store, bar, bank and post office, older houses and trailers on big lots, a fire station and churches, farms at the edge."
+density = [300, 1500]
+buildings = [
+  { building = "ranch_house", w = 20 },
+  { building = "bungalow", w = 15 },
+  { building = "colonial_house", w = 8 },
+  { building = "mobile_home", w = 6 },
+  { building = "farmhouse", w = 4 },
+  { building = "duplex", w = 3 },
+  { building = "barn", w = 2 },
+  { building = "diner", w = 4 },
+  { building = "gas_station", w = 4 },
+  { building = "hardware_store", w = 3 },
+  { building = "bar", w = 3 },
+  { building = "convenience_store", w = 3 },
+  { building = "auto_repair_garage", w = 3 },
+  { building = "pharmacy", w = 2 },
+  { building = "bank", w = 2 },
+  { building = "office_lowrise", w = 2 },
+  { building = "fast_food", w = 2 },
+  { building = "post_office", w = 1 },
+  { building = "supermarket", w = 1 },
+  { building = "liquor_store", w = 1 },
+  { building = "clothing_store", w = 1 },
+  { building = "gun_store", w = 1 },
+  { building = "sporting_goods", w = 1 },
+  { building = "auto_parts_store", w = 1 },
+  { building = "laundromat", w = 1 },
+  { building = "motel", w = 1 },
+]
+outdoor = [
+  { set = "residential_street", w = 50 },
+  { set = "downtown_street", w = 18 },
+  { set = "parking_lot", w = 10 },
+  { set = "park_grounds", w = 8 },
+  { set = "farmyard", w = 4 },
+  { set = "emergency_scene", w = 2 },
+]
+power_base_pct = 30
+water_base_pct = 75
+lot_m = [15, 40]
+tags = ["cat.setting.small_town"]
+
+[setting.rural]
+desc = "Open country: farms and homesteads on their own wells, barns and fields, trailers on acreage, hunting cabins, woods, and long empty county roads."
+density = [5, 100]
+buildings = [
+  { building = "barn", w = 28 },
+  { building = "farmhouse", w = 25 },
+  { building = "mobile_home", w = 20 },
+  { building = "ranch_house", w = 10 },
+  { building = "cabin", w = 8 },
+  { building = "gas_station", w = 1 },
+  { building = "convenience_store", w = 1 },
+  { building = "auto_repair_garage", w = 1 },
+  { building = "junkyard", w = 1 },
+  { building = "bar", w = 1 },
+  { building = "gun_store", w = 1 },
+]
+outdoor = [
+  { set = "farmyard", w = 40 },
+  { set = "highway_corridor", w = 18 },
+  { set = "trailer_park", w = 15 },
+  { set = "campground", w = 5 },
+  { set = "construction_site", w = 2 },
+  { set = "emergency_scene", w = 1 },
+]
+power_base_pct = 15
+water_base_pct = 60
+lot_m = [100, 800]
+tags = ["cat.setting.rural", "cat.setting.sparse"]
+
+[setting.highway]
+desc = "An interstate corridor: lanes of cars and semis stopped where their drivers turned, pile-ups, interchanges with truck stops, gas stations, fast food and motels."
+density = [0, 10]
+buildings = [
+  { building = "gas_station", w = 30 },
+  { building = "fast_food", w = 25 },
+  { building = "truck_stop", w = 20 },
+  { building = "motel", w = 20 },
+  { building = "diner", w = 5 },
+  { building = "convenience_store", w = 5 },
+]
+outdoor = [
+  { set = "highway_corridor", w = 80 },
+  { set = "emergency_scene", w = 10 },
+  { set = "parking_lot", w = 10 },
+]
+power_base_pct = 10
+water_base_pct = 40
+lot_m = [50, 300]
+tags = ["cat.setting.transport", "cat.setting.sparse"]
+
+[setting.park_forest]
+desc = "City parks, state forest and lakeshore: trails, campgrounds, picnic areas and scattered cabins; almost nobody was here when it happened."
+density = [0, 10]
+buildings = [
+  { building = "cabin", w = 100 },
+]
+outdoor = [
+  { set = "park_grounds", w = 40 },
+  { set = "campground", w = 40 },
+  { set = "parking_lot", w = 12 },
+  { set = "emergency_scene", w = 1 },
+]
+power_base_pct = 10
+water_base_pct = 30
+lot_m = [100, 1000]
+tags = ["cat.setting.nature", "cat.setting.sparse"]

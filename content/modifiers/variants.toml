@@ -1,0 +1,39 @@
+# Generic variant modifiers that derive new items from archetypes without new files (N011).
+# name_part composes "small cooking pot", "heavy-duty duct tape", etc.
+
+[modifier.size_small]
+kind = "variant"
+name_part = { slot = "variant", text = "small", order = 20 }
+desc = "a smaller version"
+ops = [ { path = "dims_mm", op = "mul", value = 0.7 }, { path = "mass_g", op = "mul", value = 0.4 } ]
+
+[modifier.size_large]
+kind = "variant"
+name_part = { slot = "variant", text = "large", order = 20 }
+desc = "a larger version"
+ops = [ { path = "dims_mm", op = "mul", value = 1.3 }, { path = "mass_g", op = "mul", value = 2.2 } ]
+
+[modifier.container_half]
+kind = "variant"
+applies_to = { tags_any = ["cat.container"] }
+name_part = { slot = "variant", text = "half-size", order = 21 }
+ops = [ { path = "features.container.capacity_ml", op = "mul", value = 0.5 }, { path = "mass_g", op = "mul", value = 0.6 } ]
+
+[modifier.heavy_duty]
+kind = "variant"
+name_part = { slot = "variant", text = "heavy-duty", order = 22 }
+desc = "a heavier, sturdier build"
+ops = [ { path = "durability", op = "add", value = 2 }, { path = "mass_g", op = "mul", value = 1.3 } ]
+
+[modifier.cheap]
+kind = "variant"
+name_part = { slot = "variant", text = "cheap", order = 22 }
+desc = "a flimsy budget version"
+ops = [ { path = "durability", op = "add", value = -2 }, { path = "mass_g", op = "mul", value = 0.8 } ]
+
+[modifier.aluminum_body]
+kind = "material"
+applies_to = { tags_any = ["cat.tool", "cat.construction", "cat.sports"] }
+name_part = { slot = "variant", text = "aluminum", order = 25 }
+desc = "made of aluminum rather than steel or wood"
+ops = [ { path = "mass_g", op = "mul", value = 0.6 } ]

@@ -1,0 +1,53 @@
+# N013 rules: bicycles, lock entry, body-part coverage.
+
+[chain.ride_bicycle]
+title = "Ride a bicycle (2 tiles/turn, extra stopping turn)"
+source = "N013"
+[[chain.ride_bicycle.steps]]
+action = "ride"
+bind = { vehicle = "bicycle" }
+
+[chain.shopping_cart_not_rideable]
+title = "Negative control: a shopping cart is not rideable"
+source = "N013"
+expect_fail = true
+[[chain.shopping_cart_not_rideable.steps]]
+action = "ride"
+bind = { vehicle = "shopping_cart" }
+
+[chain.pick_front_door]
+title = "A lockpick set opens a pickable front door silently"
+source = "N013"
+[[chain.pick_front_door.steps]]
+action = "pick_lock"
+bind = { picks = "lockpick_set", lock = "door_exterior" }
+
+[chain.bash_interior_knob]
+title = "Bash off an interior privacy knob with a claw hammer"
+source = "N013"
+[[chain.bash_interior_knob.steps]]
+action = "bash_lock"
+bind = { tool = "claw_hammer", door = "door_interior" }
+
+[chain.bash_front_door]
+title = "A front door's knob plus deadbolt (resistance 7) yields to a claw hammer or a sledge"
+source = "N013"
+[[chain.bash_front_door.steps]]
+action = "bash_lock"
+bind = { tool = "sledgehammer", door = "door_exterior" }
+
+[chain.bash_front_door_with_knife_fails]
+title = "Negative control: a kitchen knife pommel is not enough against knob + deadbolt"
+source = "N013"
+expect_fail = true
+[[chain.bash_front_door_with_knife_fails.steps]]
+action = "bash_lock"
+bind = { tool = "kitchen_knife", door = "door_exterior" }
+
+[chain.barred_steel_door_resists]
+title = "Negative control: a barred commercial steel door defeats even a sledgehammer"
+source = "N013 ('some doors will have other locks that make entry less feasible with brute strength')"
+expect_fail = true
+[[chain.barred_steel_door_resists.steps]]
+action = "bash_lock"
+bind = { tool = "sledgehammer", door = "door_steel" }

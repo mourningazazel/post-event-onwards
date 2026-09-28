@@ -1,0 +1,120 @@
+[material.cotton]
+family = "textile"
+density_mg_cm3 = 1540
+hardness = 1
+toughness = "tough"
+rigidity = 0
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 16
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "T-shirts, jeans (denim), towels, sheets, rags, bandages. Absorbs scent and water; good tinder."
+
+[material.wool]
+family = "textile"
+density_mg_cm3 = 1310
+hardness = 1
+toughness = "tough"
+rigidity = 0
+edge_holding = 0
+flammability = "low"
+fuel_value_kj_g = 20
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "Coats, sweaters, socks, blankets. Warm even when damp; resists catching fire."
+
+[material.polyester]
+family = "textile"
+density_mg_cm3 = 1380
+hardness = 1
+toughness = "tough"
+rigidity = 0
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 23
+melts_c = 250
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "Fleece, sportswear, jacket shells, bags. Melts onto skin when burning."
+
+[material.nylon_fabric]
+family = "textile"
+density_mg_cm3 = 1150
+hardness = 1
+toughness = "very_tough"
+rigidity = 0
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 30
+melts_c = 220
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "Backpacks, tents, windbreakers, webbing, paracord."
+
+[material.aramid]
+family = "textile"
+density_mg_cm3 = 1440
+hardness = 2
+toughness = "very_tough"
+rigidity = 0
+edge_holding = 0
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "Para-aramid fibre: police vests, cut-resistant gloves, firefighter gear. Bite resistant."
+
+[material.leather]
+family = "textile"
+density_mg_cm3 = 860
+hardness = 2
+toughness = "tough"
+rigidity = 2
+edge_holding = 0
+flammability = "low"
+fuel_value_kj_g = 18
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "slap"
+surface = "fibrous"
+desc = "Jackets, boots, belts, gloves, furniture. Good bite protection when thick."
+
+[material.paper]
+family = "paper"
+density_mg_cm3 = 800
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 16
+water = "ruined"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "fibrous"
+desc = "Books, notes, maps, magazines, labels. Tinder."
+
+[material.cardboard]
+family = "paper"
+density_mg_cm3 = 150
+hardness = 1
+toughness = "moderate"
+rigidity = 3
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 15
+water = "ruined"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "fibrous"
+desc = "Corrugated boxes (bulk density incl. air), cereal boxes. Tinder and fuel; weak armour."

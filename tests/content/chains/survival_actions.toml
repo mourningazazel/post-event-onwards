@@ -1,0 +1,170 @@
+# Feasibility chains from docs/design/survival-actions.md §4 (N011).
+# Each step binds real content to an action's roles; tools/content/test.py evaluates every
+# requirement. A chain failing means content or rules no longer support an intended use (N002).
+
+[chain.firebomb]
+title = "Owner's firebomb: jug + salvaged fridge hose + siphoned gasoline + match"
+source = "N011, survival-actions.md §4.1"
+
+[[chain.firebomb.steps]]
+action = "pour_out"
+bind = { container = "milk_jug" }
+
+[[chain.firebomb.steps]]
+action = "disassemble"
+bind = { target = "refrigerator", tool = "screwdriver" }
+yields = "rubber_hose"
+
+[[chain.firebomb.steps]]
+action = "cut_to_length"
+bind = { target = "rubber_hose", tool = "kitchen_knife" }
+
+[[chain.firebomb.steps]]
+action = "siphon"
+bind = { tube = "rubber_hose", source = "car_sedan", dest = "milk_jug", liquid = "gasoline" }
+fuel = "gasoline"
+
+[[chain.firebomb.steps]]
+action = "throw"
+bind = { item = "milk_jug" }
+contents = { substance = "gasoline", ml = 3000 }
+expect_impact = "split"
+expect_range_min = 3
+
+[[chain.firebomb.steps]]
+action = "light_fire_source"
+bind = { igniter = "matchbook" }
+
+[[chain.firebomb.steps]]
+action = "ignite_tile"
+bind = { igniter = "matchbook", fuel = "gasoline" }
+
+[chain.alarm_lure]
+title = "Alarm clock lure powered by batteries from a TV remote"
+source = "survival-actions.md §4.2"
+
+[[chain.alarm_lure.steps]]
+action = "disassemble"
+bind = { target = "tv_remote" }
+yields = "battery_aa"
+
+[[chain.alarm_lure.steps]]
+action = "insert_battery"
+bind = { device = "alarm_clock", battery = "battery_aa" }
+
+[[chain.alarm_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "alarm_clock" }
+
+[chain.barricade_front_door]
+title = "Sofa against the door, fence planks nailed across"
+source = "survival-actions.md §4.3"
+
+[[chain.barricade_front_door.steps]]
+action = "block_with_furniture"
+bind = { furniture = "sofa" }
+
+[[chain.barricade_front_door.steps]]
+action = "pry_open"
+bind = { tool = "crowbar" }
+
+[[chain.barricade_front_door.steps]]
+action = "barricade_opening"
+bind = { boards = "wood_plank", fasteners = "nails_box", tool = "claw_hammer" }
+
+[chain.water_heater_water]
+title = "Drain the water heater, boil it on a camp stove, or treat it with bleach"
+source = "survival-actions.md §4.4"
+
+[[chain.water_heater_water.steps]]
+action = "fill_container"
+bind = { dest = "cooking_pot", liquid = "water_untreated" }
+
+[[chain.water_heater_water.steps]]
+action = "purify_water_boil"
+bind = { pot = "cooking_pot", heat = "camp_stove" }
+
+[[chain.water_heater_water.steps]]
+action = "purify_water_chemical"
+bind = { agent = "bleach_jug", water = "cooking_pot" }
+
+[chain.improvised_spear]
+title = "Kitchen knife taped to a broom handle"
+source = "survival-actions.md §4.5, content-model §7"
+
+[[chain.improvised_spear.steps]]
+action = "attach"
+bind = { base = "broom", head = "kitchen_knife", fastener = "duct_tape" }
+
+[chain.splint]
+title = "Splint from a ruler and a torn T-shirt"
+source = "survival-actions.md §4.6"
+
+[[chain.splint.steps]]
+action = "tear_strips"
+bind = { target = "t_shirt" }
+
+[[chain.splint.steps]]
+action = "splint"
+bind = { rigid = "ruler", binding = "t_shirt" }
+
+[chain.rope_escape]
+title = "Knotted bedsheets tied to a radiator"
+source = "survival-actions.md §4.7"
+
+[[chain.rope_escape.steps]]
+action = "bind"
+bind = { binding = "bedsheet" }
+
+[[chain.rope_escape.steps]]
+action = "rope_descent"
+bind = { rope = "garden_hose", anchor = "radiator" }
+
+[chain.scent_mask]
+title = "Corpse gore smeared on clothes before a supermarket run"
+source = "survival-actions.md §4.8, P-SC-03"
+
+[[chain.scent_mask.steps]]
+action = "apply_scent"
+bind = { agent = "corpse_gore" }
+
+[chain.car_battery_lamp]
+title = "Car battery pulled and wired to a 12 V work light"
+source = "survival-actions.md §4.9"
+
+[[chain.car_battery_lamp.steps]]
+action = "disassemble"
+bind = { target = "car_sedan", tool = "adjustable_wrench" }
+yields = "car_battery"
+
+[[chain.car_battery_lamp.steps]]
+action = "wire_12v"
+bind = { battery = "car_battery", device = "work_light_12v" }
+
+[chain.glass_bottle_noise]
+title = "Throw a glass bottle across the street to pull hearing Dead away"
+source = "survival-actions.md §2.3"
+
+[[chain.glass_bottle_noise.steps]]
+action = "throw_noise_lure"
+bind = { item = "glass_bottle" }
+expect_impact = "shatter"
+expect_range_min = 6
+
+[chain.diesel_does_not_catch]
+title = "Negative control: a diesel puddle must NOT be ignitable by a match"
+source = "survival-actions.md §4.1 realism note"
+expect_fail = true
+
+[[chain.diesel_does_not_catch.steps]]
+action = "ignite_tile"
+bind = { igniter = "matchbook", fuel = "diesel" }
+
+[chain.expert_friction_fire]
+title = "Beyond-realistic survivalist starts a fire with no tools (N012)"
+source = "N012"
+
+[[chain.expert_friction_fire.steps]]
+action = "friction_fire"
+bind = { tinder = "newspaper", wood = "firewood" }
+min_skill = 45

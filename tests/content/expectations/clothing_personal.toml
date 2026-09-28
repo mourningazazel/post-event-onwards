@@ -1,0 +1,329 @@
+# Domain C expectations: clothing, bags, personal effects, hygiene, medical (N002, N011).
+# Pins realism claims so later edits can't silently break them.
+
+# ---- bite armour ordering (M16): leather jacket > hoodie > T-shirt --------------------------
+[[expect]]
+item = "leather_jacket"
+path = "armor.bite"
+op = ">="
+value = 5
+why = "thick cowhide resists human teeth: the best everyday bite armour"
+
+[[expect]]
+item = "hoodie"
+path = "armor.bite"
+op = "=="
+value = 1
+why = "heavy cotton fleece: token padding, above a T-shirt, far below leather"
+
+[[expect]]
+item = "t_shirt"
+path = "armor.bite"
+op = "=="
+value = 0
+why = "thin jersey offers nothing against a bite"
+
+[[expect]]
+item = "police_vest"
+path = "armor.bite"
+op = ">="
+value = 8
+why = "layered aramid panels: teeth cannot get through"
+
+[[expect]]
+item = "police_vest"
+path = "armor.pierce"
+op = "<="
+value = 3
+why = "soft ballistic armour is not stab-rated; spikes and ice picks get through"
+
+[[expect]]
+item = "jeans"
+path = "armor.bite"
+op = "=="
+value = 2
+why = "thick denim blunts bites a little, better than a hoodie"
+
+[[expect]]
+item = "work_boots"
+path = "features.wearable.coverage"
+op = "has"
+value = "shins"
+why = "eight-inch boots protect the ankles and lower shins that crawlers bite"
+
+[[expect]]
+item = "leather_jacket"
+mods = ["faux_leather"]
+path = "armor.bite"
+op = "=="
+value = 2
+why = "vinyl imitation leather tears under teeth"
+
+[[expect]]
+item = "leather_jacket"
+mods = ["faux_leather"]
+path = "name"
+op = "=="
+value = "faux leather jacket"
+
+# ---- warmth and weather (M12) -----------------------------------------------------------------
+[[expect]]
+item = "winter_coat"
+path = "features.wearable.insulation_clo10"
+op = ">="
+value = 20
+why = "a heavy parka is ~2-3 clo"
+
+[[expect]]
+item = "winter_coat"
+path = "cap.insulate"
+op = "=="
+value = 8
+why = "insulate = clo10 25 / 3 = 8.3"
+
+[[expect]]
+item = "rain_jacket"
+path = "cap.waterproof"
+op = ">="
+value = 8
+why = "coated nylon shell with taped seams"
+
+[[expect]]
+item = "rubber_boots"
+path = "cap.waterproof"
+op = "=="
+value = 10
+
+[[expect]]
+item = "rain_jacket"
+path = "features.wearable.insulation_clo10"
+op = "<="
+value = 3
+why = "a shell keeps rain out, not cold"
+
+# ---- cloth into bindings (M6/M7) --------------------------------------------------------------
+[[expect]]
+item = "t_shirt"
+path = "cap.bind"
+op = "=="
+value = 3
+why = "torn cotton strips bind (divisible sheet textile)"
+
+[[expect]]
+item = "bandana"
+path = "cap.bind"
+op = "=="
+value = 3
+
+[[expect]]
+item = "elastic_bandage"
+path = "cap.bind"
+op = ">="
+value = 2
+why = "binds a splint without tape"
+
+# ---- names with state modifiers (N010) --------------------------------------------------------
+[[expect]]
+item = "jeans"
+mods = ["bloody"]
+path = "name"
+op = "=="
+value = "bloody jeans"
+
+[[expect]]
+item = "hoodie"
+mods = ["child_size", "bloody"]
+path = "name"
+op = "=="
+value = "bloody child's hoodie"
+
+[[expect]]
+item = "winter_coat"
+mods = ["gore_caked"]
+path = "tags"
+op = "has"
+value = "emits.rot"
+why = "gore-caked clothing carries rot scent (masking)"
+
+[[expect]]
+item = "hoodie"
+mods = ["child_size"]
+path = "mass_g"
+op = "<="
+value = 250
+why = "child sizes weigh about a third of adult (650 x 0.35)"
+
+# ---- scent (M14) ------------------------------------------------------------------------------
+[[expect]]
+item = "perfume_bottle"
+path = "tags"
+op = "has"
+value = "emits.perfume.2"
+
+[[expect]]
+item = "perfume_bottle"
+path = "contents.substance"
+op = "=="
+value = "perfume"
+
+[[expect]]
+item = "hoodie"
+path = "absorbs_scent"
+op = "=="
+value = true
+
+[[expect]]
+item = "soap_bar"
+path = "tags"
+op = "has"
+value = "use.soap"
+
+# ---- hazards ----------------------------------------------------------------------------------
+[[expect]]
+item = "deodorant_spray"
+path = "pressurized"
+op = "=="
+value = true
+
+[[expect]]
+item = "deodorant_spray"
+path = "tags"
+op = "has"
+value = "hazard.flammable"
+
+[[expect]]
+item = "deodorant_spray"
+path = "reactions.heat.medium"
+op = "=="
+value = "burst"
+why = "aerosol cans burst in a fire (M3)"
+
+[[expect]]
+item = "perfume_bottle"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+
+# ---- bags and pockets (G03 D3.1) -------------------------------------------------------------
+[[expect]]
+item = "hiking_pack"
+path = "features.container.capacity_ml"
+op = ">="
+value = 50000
+
+[[expect]]
+item = "hiking_pack"
+path = "features.strap.load_g"
+op = ">="
+value = 20000
+
+[[expect]]
+item = "jeans"
+path = "features.pocket.max_dim_mm"
+op = ">="
+value = 150
+why = "a phone fits in a jeans pocket"
+
+[[expect]]
+item = "briefcase"
+path = "features.lock.combination"
+op = "=="
+value = true
+
+# ---- personal effects ------------------------------------------------------------------------
+[[expect]]
+item = "smartphone"
+path = "cap.light"
+op = "=="
+value = 4
+
+[[expect]]
+item = "smartphone"
+path = "power_source.voltage"
+op = "=="
+value = "dc_small"
+
+[[expect]]
+item = "smartphone"
+path = "impact.medium"
+op = "=="
+value = "crack"
+why = "a thrown phone cracks its screen rather than vanishing"
+
+[[expect]]
+item = "house_key"
+path = "tags"
+op = "has"
+value = "use.key"
+
+[[expect]]
+item = "photo"
+path = "tags"
+op = "has"
+value = "flavor.photo"
+
+# ---- medical (M15) ---------------------------------------------------------------------------
+[[expect]]
+item = "tourniquet"
+path = "medical.bleed_stop"
+op = ">="
+value = 9
+
+[[expect]]
+item = "gauze_pads"
+path = "medical.sterile"
+op = "=="
+value = 10
+
+[[expect]]
+item = "sanitary_pads"
+path = "medical.bleed_stop"
+op = ">="
+value = 3
+why = "absorbent pads are a real improvised dressing"
+
+[[expect]]
+item = "sanitary_pads"
+path = "medical.sterile"
+op = "<"
+value = 10
+why = "clean but not sterile"
+
+[[expect]]
+item = "suture_kit"
+path = "cap.sew"
+op = ">="
+value = 3
+
+[[expect]]
+item = "suture_kit"
+path = "cap.cut"
+op = ">="
+value = 5
+why = "scalpel: sharpness 9 x stainless 6 / 10 = 5.4; enough for field surgery"
+
+[[expect]]
+item = "razor"
+path = "cap.cut"
+op = "<="
+value = 1
+why = "guarded disposable blades barely cut"
+
+[[expect]]
+item = "crutches"
+path = "cap.pry"
+op = "<="
+value = 2
+why = "thin aluminium tube bends as a lever (authored override of derived 7)"
+
+[[expect]]
+item = "purification_tablets"
+path = "cap.purify"
+op = ">="
+value = 5
+
+[[expect]]
+item = "first_aid_kit"
+path = "contents.items"
+op = "has"
+value = "gauze_pads"

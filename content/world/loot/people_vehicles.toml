@@ -1,0 +1,244 @@
+# Vehicle, personal and survivor-trace loot tables (world-catalog §7).
+# car_*, wallet, purse, backpack and pockets are pre-event baseline. encampment_stash and
+# struggle_debris are event/aftermath traces (N007): the aftermath pass places them, and their
+# entries may carry event states (bloody, broken, empty) because that is what they depict.
+
+# ---------------------------------------------------------------- vehicles
+
+[loot.car_trunk]
+desc = "A car trunk or cargo area: the roadside kit, sports and work gear, shopping, a bag or two."
+rolls = [1, 5]
+empty_chance_pct = 20
+entries = [
+  { item = "car_jack", w = 10, count = [1, 1] },
+  { item = "tire_iron", w = 10, count = [1, 1] },
+  { item = "jumper_cables", w = 8, count = [1, 1] },
+  { item = "road_flare", w = 3, count = [2, 6] },
+  { item = "gas_can", w = 2, count = [1, 1], substance = "gasoline", fill_pct = [5, 100] },
+  { item = "gas_can", w = 1, count = [1, 1], mods = ["empty"] },
+  { item = "motor_oil_bottle", w = 3, count = [1, 2], substance = "motor_oil", fill_pct = [10, 100] },
+  { item = "first_aid_kit", w = 3, count = [1, 1] },
+  { item = "flashlight", w = 3, count = [1, 1] },
+  { item = "bottled_water", w = 5, count = [2, 24] },
+  { item = "canned_food", w = 3, count = [2, 12] },
+  { item = "boxed_dry_food", w = 3, count = [1, 6] },
+  { item = "fresh_produce", w = 2, count = [2, 8] },
+  { item = "soda_can", w = 2, count = [6, 24] },
+  { item = "toilet_paper", w = 2, count = [6, 24] },
+  { item = "duffel_bag", w = 4, count = [1, 1] },
+  { item = "hiking_pack", w = 1, count = [1, 1] },
+  { item = "laptop_bag", w = 2, count = [1, 1] },
+  { item = "cooler", w = 2, count = [1, 1] },
+  { item = "baseball_bat", w = 2, count = [1, 2] },
+  { item = "golf_club", w = 3, count = [6, 14] },
+  { item = "sports_pads", w = 1, count = [1, 2] },
+  { item = "sleeping_bag", w = 1, count = [1, 2] },
+  { item = "tent", w = 1, count = [1, 1] },
+  { item = "tarp", w = 1, count = [1, 1] },
+  { item = "toolbox", w = 2, count = [1, 1] },
+  { item = "work_gloves", w = 2, count = [1, 1] },
+  { item = "cardboard_box", w = 3, count = [1, 3] },
+  { item = "stuffed_toy", w = 1, count = [1, 2] },
+  { item = "winter_coat", w = 1, count = [1, 1] },
+]
+
+[loot.car_glovebox]
+desc = "A glovebox and console: maps, napkins, pens, a flashlight, pills, change; now and then a handgun."
+rolls = [1, 4]
+empty_chance_pct = 10
+entries = [
+  { item = "paper_towels", w = 10, count = [1, 1] },
+  { item = "pen", w = 10, count = [1, 3] },
+  { item = "road_atlas", w = 6, count = [1, 1] },
+  { item = "city_map", w = 6, count = [1, 2] },
+  { item = "flashlight", w = 7, count = [1, 1] },
+  { item = "painkillers", w = 6, count = [1, 1], mods = ["opened"] },
+  { item = "eyeglasses", w = 6, count = [1, 1] },
+  { item = "snack_bar", w = 6, count = [1, 3] },
+  { item = "cash", w = 6, count = [1, 1] },
+  { item = "hand_sanitizer_bottle", w = 4, count = [1, 1], substance = "hand_sanitizer", fill_pct = [10, 100] },
+  { item = "lighter", w = 4, count = [1, 1] },
+  { item = "cigarettes", w = 4, count = [1, 1] },
+  { item = "bandage_box", w = 3, count = [1, 1] },
+  { item = "power_bank", w = 3, count = [1, 1] },
+  { item = "car_key", w = 2, count = [1, 1] },
+  { item = "notebook", w = 2, count = [1, 1] },
+  { item = "zip_ties", w = 1, count = [1, 1] },
+  { item = "pepper_spray", w = 2, count = [1, 1] },
+  { item = "pistol", w = 3, count = [1, 1] },
+  { item = "revolver", w = 1, count = [1, 1] },
+  { item = "ammo_9mm", w = 1, count = [5, 20] },
+]
+
+# ---------------------------------------------------------------- personal carry
+
+[loot.wallet_contents]
+desc = "What is in a wallet besides cards: cash, a photo, sometimes a spare key."
+rolls = [1, 2]
+empty_chance_pct = 10
+entries = [
+  { item = "cash", w = 70, count = [1, 1] },
+  { item = "photo", w = 25, count = [1, 2] },
+  { item = "house_key", w = 5, count = [1, 1] },
+]
+
+[loot.purse_contents]
+desc = "A handbag or purse: wallet, phone, keys, cosmetics and hygiene, pills, snacks."
+rolls = [3, 7]
+empty_chance_pct = 2
+entries = [
+  { item = "wallet", w = 16, count = [1, 1] },
+  { item = "smartphone", w = 8, count = [1, 1] },
+  { item = "car_key", w = 9, count = [1, 1] },
+  { item = "house_key", w = 9, count = [1, 2] },
+  { item = "painkillers", w = 6, count = [1, 1], mods = ["opened"] },
+  { item = "hand_sanitizer_bottle", w = 6, count = [1, 1], substance = "hand_sanitizer", fill_pct = [10, 100] },
+  { item = "perfume_bottle", w = 4, count = [1, 1], substance = "perfume", fill_pct = [10, 100], mods = ["size_small"] },
+  { item = "sanitary_pads", w = 5, count = [1, 3] },
+  { item = "pen", w = 6, count = [1, 3] },
+  { item = "notebook", w = 2, count = [1, 1] },
+  { item = "eyeglasses", w = 5, count = [1, 1] },
+  { item = "snack_bar", w = 5, count = [1, 3] },
+  { item = "cigarettes", w = 3, count = [1, 1] },
+  { item = "lighter", w = 3, count = [1, 1] },
+  { item = "power_bank", w = 3, count = [1, 1] },
+  { item = "pepper_spray", w = 3, count = [1, 1] },
+  { item = "bandage_box", w = 2, count = [1, 1] },
+  { item = "photo", w = 2, count = [1, 2] },
+  { item = "jewelry", w = 2, count = [1, 2] },
+  { item = "pistol", w = 1, count = [1, 1] },
+]
+
+[loot.backpack_school]
+desc = "A student's backpack: books and notebooks, pens, lunch and snacks, a hoodie, a phone."
+rolls = [3, 7]
+empty_chance_pct = 2
+entries = [
+  { item = "book", w = 18, count = [1, 4] },
+  { item = "notebook", w = 16, count = [1, 5] },
+  { item = "pen", w = 10, count = [2, 8] },
+  { item = "marker", w = 5, count = [1, 6] },
+  { item = "snack_bar", w = 10, count = [1, 4] },
+  { item = "bottled_water", w = 6, count = [1, 1] },
+  { item = "plastic_tub", w = 4, count = [1, 1] },
+  { item = "fresh_produce", w = 3, count = [1, 1] },
+  { item = "soda_can", w = 3, count = [1, 1] },
+  { item = "hoodie", w = 5, count = [1, 1] },
+  { item = "t_shirt", w = 2, count = [1, 1] },
+  { item = "shorts", w = 2, count = [1, 1] },
+  { item = "sneakers", w = 2, count = [1, 1] },
+  { item = "smartphone", w = 4, count = [1, 1] },
+  { item = "power_bank", w = 2, count = [1, 1] },
+  { item = "laptop", w = 3, count = [1, 1] },
+  { item = "lanyard_badge", w = 2, count = [1, 1] },
+  { item = "house_key", w = 3, count = [1, 1] },
+  { item = "cash", w = 2, count = [1, 1] },
+  { item = "hand_sanitizer_bottle", w = 2, count = [1, 1], substance = "hand_sanitizer", fill_pct = [10, 100] },
+  { item = "stuffed_toy", w = 1, count = [1, 1] },
+]
+
+[loot.pockets_generic]
+desc = "Everyday pocket contents: phone, wallet, keys; smokes, lighter, pills, a pen, loose cash."
+rolls = [1, 4]
+empty_chance_pct = 5
+entries = [
+  { item = "smartphone", w = 20, count = [1, 1] },
+  { item = "wallet", w = 18, count = [1, 1] },
+  { item = "house_key", w = 16, count = [1, 2] },
+  { item = "car_key", w = 12, count = [1, 1] },
+  { item = "cash", w = 6, count = [1, 1] },
+  { item = "cigarettes", w = 5, count = [1, 1] },
+  { item = "lighter", w = 5, count = [1, 1] },
+  { item = "matchbook", w = 1, count = [1, 1] },
+  { item = "pen", w = 4, count = [1, 1] },
+  { item = "painkillers", w = 2, count = [1, 1], mods = ["opened"] },
+  { item = "snack_bar", w = 3, count = [1, 1] },
+  { item = "lanyard_badge", w = 3, count = [1, 1] },
+  { item = "eyeglasses", w = 2, count = [1, 1] },
+  { item = "power_bank", w = 1, count = [1, 1] },
+  { item = "utility_knife", w = 1, count = [1, 1] },
+  { item = "pepper_spray", w = 1, count = [1, 1] },
+]
+
+# ---------------------------------------------------------------- survivor traces (N007)
+
+[loot.encampment_stash]
+desc = "A dead or departed survivor's stash: concentrated food, water, medicine, weapons, fire and light."
+rolls = [4, 12]
+empty_chance_pct = 0
+entries = [
+  { item = "canned_food", w = 14, count = [2, 16] },
+  { item = "boxed_dry_food", w = 5, count = [1, 6] },
+  { item = "snack_bar", w = 6, count = [2, 12] },
+  { item = "bottled_water", w = 10, count = [2, 18] },
+  { item = "milk_jug", w = 3, count = [1, 4], substance = "water", fill_pct = [20, 100] },
+  { item = "honey_jar", w = 1, count = [1, 2] },
+  { item = "first_aid_kit", w = 4, count = [1, 1] },
+  { item = "bandage_box", w = 3, count = [1, 3] },
+  { item = "painkillers", w = 4, count = [1, 3] },
+  { item = "antibiotics", w = 2, count = [1, 2] },
+  { item = "purification_tablets", w = 2, count = [1, 3] },
+  { item = "water_pump_filter", w = 1, count = [1, 1] },
+  { item = "pistol", w = 2, count = [1, 1] },
+  { item = "shotgun", w = 2, count = [1, 1] },
+  { item = "ammo_9mm", w = 2, count = [5, 40] },
+  { item = "ammo_12ga", w = 2, count = [3, 20] },
+  { item = "baseball_bat", w = 3, count = [1, 1] },
+  { item = "machete", w = 2, count = [1, 1] },
+  { item = "hatchet", w = 2, count = [1, 1] },
+  { item = "crowbar", w = 3, count = [1, 1] },
+  { item = "flashlight", w = 4, count = [1, 2] },
+  { item = "battery_aa", w = 3, count = [4, 16] },
+  { item = "battery_d", w = 2, count = [2, 8] },
+  { item = "emergency_radio", w = 2, count = [1, 1] },
+  { item = "walkie_talkie", w = 1, count = [1, 2] },
+  { item = "candle", w = 3, count = [2, 10] },
+  { item = "lighter", w = 3, count = [1, 3] },
+  { item = "matchbook", w = 2, count = [1, 4] },
+  { item = "ferro_rod", w = 1, count = [1, 1] },
+  { item = "camp_stove", w = 2, count = [1, 1] },
+  { item = "fuel_canister", w = 2, count = [1, 4] },
+  { item = "propane_tank", w = 1, count = [1, 1], substance = "propane", fill_pct = [10, 90] },
+  { item = "gas_can", w = 2, count = [1, 2], substance = "gasoline", fill_pct = [10, 100] },
+  { item = "sleeping_bag", w = 3, count = [1, 2] },
+  { item = "tarp", w = 2, count = [1, 2] },
+  { item = "nylon_rope", w = 2, count = [1, 2] },
+  { item = "duct_tape", w = 2, count = [1, 2] },
+  { item = "hiking_pack", w = 2, count = [1, 1] },
+  { item = "road_atlas", w = 1, count = [1, 1] },
+  { item = "city_map", w = 2, count = [1, 1] },
+  { item = "survivor_note", w = 3, count = [1, 3] },
+  { item = "cigarettes", w = 2, count = [1, 4] },
+  { item = "glass_bottle", w = 2, count = [1, 3], substance = "liquor", fill_pct = [5, 100] },
+  { item = "trash_bags", w = 1, count = [1, 1] },
+]
+
+[loot.struggle_debris]
+desc = "What a fight at the moment of the turning left on the floor: glass, dropped things, improvised weapons."
+rolls = [2, 6]
+empty_chance_pct = 0
+entries = [
+  { item = "glass_shards", w = 20, count = [1, 3] },
+  { item = "sneakers", w = 6, count = [1, 1] },
+  { item = "dress_shoes", w = 3, count = [1, 1] },
+  { item = "smartphone", w = 7, count = [1, 1], mods = ["broken"] },
+  { item = "eyeglasses", w = 5, count = [1, 1] },
+  { item = "house_key", w = 4, count = [1, 1] },
+  { item = "car_key", w = 3, count = [1, 1] },
+  { item = "wallet", w = 3, count = [1, 1] },
+  { item = "handbag", w = 3, count = [1, 1] },
+  { item = "kitchen_knife", w = 5, count = [1, 1], mods = ["bloody"] },
+  { item = "baseball_bat", w = 3, count = [1, 1], mods = ["bloody"] },
+  { item = "golf_club", w = 2, count = [1, 1], mods = ["bloody"] },
+  { item = "claw_hammer", w = 2, count = [1, 1], mods = ["bloody"] },
+  { item = "fire_extinguisher", w = 2, count = [1, 1], mods = ["empty"] },
+  { item = "flashlight", w = 3, count = [1, 1] },
+  { item = "dinner_plate", w = 3, count = [1, 4] },
+  { item = "mug", w = 2, count = [1, 2] },
+  { item = "t_shirt", w = 3, count = [1, 1], mods = ["bloody"] },
+  { item = "towel", w = 2, count = [1, 1], mods = ["bloody"] },
+  { item = "pistol", w = 1, count = [1, 1] },
+  { item = "ammo_9mm", w = 1, count = [1, 8] },
+  { item = "pepper_spray", w = 1, count = [1, 1], mods = ["empty"] },
+  { item = "photo", w = 1, count = [1, 1] },
+]

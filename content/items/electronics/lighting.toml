@@ -1,0 +1,241 @@
+# Light sources: electric, liquid-fuel, candle and chemical. Domain D (world-catalog §6.D).
+# light.radius_m is what capability `light` derives from (M11). Durations are for one fill /
+# one set of fresh alkaline cells on a practical setting. Masses exclude batteries and fuel.
+# Non-electric lights use cat.light.*; electric ones cat.electronics.light.
+
+[item.flashlight]
+name = "flashlight"
+tags = ["cat.electronics.light", "from.living", "from.bedroom", "from.garage", "from.vehicle", "from.retail", "use.light_source"]
+shape = "rod"
+dims_mm = [160, 32, 32]
+mass_g = 120
+desc = "An aluminium LED flashlight that takes two AA cells."
+glyph = "item.flashlight"
+why = "Directed portable light for searching dark rooms (M11); the everyday AA-battery device."
+brand_cats = ["lighting"]
+modifiers = ["flashlight_d_cell"]
+value_class = "valuable"
+power_use = { voltage = "dc_small", watts = 1 }
+
+[item.flashlight.composition.body]
+material = "aluminum"
+share = 75
+[item.flashlight.composition.lens]
+material = "polycarbonate"
+share = 10
+[item.flashlight.composition.switch]
+material = "rubber"
+share = 5
+[item.flashlight.composition.circuit]
+material = "copper"
+share = 10
+
+[item.flashlight.features.light]
+radius_m = 10
+beam = "cone"
+duration_min = 360
+fuel = "battery"
+[item.flashlight.features.slot]
+accepts = "cat.battery.aa"
+count = 2
+[item.flashlight.features.grip]
+hands = 1
+girth_mm = 32
+
+[item.headlamp]
+name = "headlamp"
+tags = ["cat.electronics.light", "from.outdoors", "from.garage", "from.construction", "use.light_source", "slot.head"]
+shape = "complex"
+dims_mm = [120, 60, 45]
+mass_g = 90
+desc = "An LED headlamp on an elastic strap."
+glyph = "item.headlamp"
+why = "Hands-free light: work, climb and fight in the dark without giving up a hand."
+brand_cats = ["lighting", "outdoors"]
+value_class = "valuable"
+power_use = { voltage = "dc_small", watts = 1 }
+
+[item.headlamp.composition.housing]
+material = "abs"
+share = 50
+[item.headlamp.composition.strap]
+material = "polyester"
+share = 30
+[item.headlamp.composition.lens]
+material = "polycarbonate"
+share = 10
+[item.headlamp.composition.circuit]
+material = "copper"
+share = 10
+
+[item.headlamp.features.light]
+radius_m = 8
+beam = "cone"
+duration_min = 480
+fuel = "battery"
+[item.headlamp.features.slot]
+accepts = "cat.battery.aa"
+count = 2
+[item.headlamp.features.wearable]
+slot = "head"
+layer = "accessory"
+
+[item.battery_lantern]
+name = "battery lantern"
+tags = ["cat.electronics.light", "from.garage", "from.outdoors", "from.living", "use.light_source"]
+shape = "complex"
+dims_mm = [250, 150, 150]
+mass_g = 700
+hollow = true
+desc = "A camping-style LED lantern with a carry handle; four D cells in the base."
+glyph = "item.lantern"
+why = "Lights a whole room for days on one set of D cells; no flame, no smoke."
+brand_cats = ["lighting", "outdoors"]
+value_class = "valuable"
+power_use = { voltage = "dc_small", watts = 2 }
+
+[item.battery_lantern.composition.body]
+material = "abs"
+share = 70
+[item.battery_lantern.composition.globe]
+material = "polycarbonate"
+share = 20
+[item.battery_lantern.composition.circuit]
+material = "copper"
+share = 10
+
+[item.battery_lantern.features.light]
+radius_m = 6
+beam = "omni"
+duration_min = 3000
+fuel = "battery"
+[item.battery_lantern.features.slot]
+accepts = "cat.battery.d"
+count = 4
+[item.battery_lantern.features.strap]
+kind = "handle"
+load_g = 5000
+
+[item.kerosene_lantern]
+name = "kerosene lantern"
+tags = ["cat.light.lantern", "from.farm", "from.outdoors", "from.garage", "use.light_source", "hazard.flammable"]
+shape = "complex"
+dims_mm = [260, 160, 150]
+mass_g = 900
+hollow = true
+desc = "A tin hurricane lantern with a glass globe and a wick you wind up and down."
+glyph = "item.lantern_oil"
+why = "Light that runs on found fuel for weeks after batteries are gone; a dropped one starts a fire."
+brand_cats = ["outdoors"]
+value_class = "useful"
+
+[item.kerosene_lantern.composition.body]
+material = "mild_steel"
+share = 75
+[item.kerosene_lantern.composition.globe]
+material = "glass"
+share = 20
+[item.kerosene_lantern.composition.wick]
+material = "cotton"
+share = 5
+
+[item.kerosene_lantern.features.light]
+radius_m = 5
+beam = "omni"
+duration_min = 1200
+fuel = "liquid"
+[item.kerosene_lantern.features.fuel_tank]
+capacity_ml = 500
+fuel = ["kerosene"]
+[item.kerosene_lantern.features.strap]
+kind = "handle"
+load_g = 3000
+
+[item.candle]
+name = "candle"
+tags = ["cat.light.candle", "from.living", "from.kitchen", "from.church", "from.bedroom", "use.light_source", "hazard.flammable"]
+shape = "block"
+dims_mm = [100, 75, 75]
+mass_g = 380
+desc = "A thick pillar candle."
+glyph = "item.candle"
+why = "Cheap, silent, long-burning light; an open flame to relight tinder from; a fire risk left alone."
+details = ["candle_kind"]
+modifiers = ["candle_scented"]
+brand_cats = ["household"]
+value_class = "useful"
+
+[item.candle.composition.wax]
+material = "wax"
+share = 98
+[item.candle.composition.wick]
+material = "cotton"
+share = 2
+
+[item.candle.features.light]
+radius_m = 2
+beam = "omni"
+duration_min = 3000
+fuel = "candle"
+
+[item.candle.reactions.heat]
+low = "warm"
+medium = "melt"
+high = "ignite"
+
+[item.glow_stick]
+name = "glow stick"
+tags = ["cat.light.chemical", "from.outdoors", "from.retail", "from.fire_service", "use.light_source", "use.signal"]
+shape = "rod"
+dims_mm = [150, 15, 15]
+mass_g = 25
+hollow = true
+desc = "A snap-to-activate chemical light stick."
+glyph = "item.glowstick"
+why = "Flameless, silent, waterproof light for twelve hours; thrown, it marks a tile or a route."
+brand_cats = ["outdoors"]
+value_class = "useful"
+
+[item.glow_stick.composition.tube]
+material = "ldpe"
+share = 60
+[item.glow_stick.composition.ampoule]
+material = "glass"
+share = 15
+[item.glow_stick.composition.fluid]
+material = "pet"
+share = 25
+
+[item.glow_stick.features.light]
+radius_m = 2
+beam = "omni"
+duration_min = 720
+fuel = "chemical"
+
+# Moved from items/misc/exemplars.toml (id kept).
+[item.work_light_12v]
+name = "12 V work light"
+tags = ["cat.electronics.light", "from.garage", "from.vehicle", "use.light_source"]
+shape = "complex"
+dims_mm = [200, 150, 100]
+mass_g = 800
+desc = "A clamp-on LED work light with battery clips."
+glyph = "item.lamp"
+why = "Bright long-lasting light off a car battery (car battery lamp chain)."
+value_class = "useful"
+power_use = { voltage = "dc_12v", watts = 36 }
+
+[item.work_light_12v.composition.housing]
+material = "aluminum"
+share = 60
+[item.work_light_12v.composition.lens]
+material = "polycarbonate"
+share = 30
+[item.work_light_12v.composition.wiring]
+material = "copper"
+share = 10
+
+[item.work_light_12v.features.light]
+radius_m = 8
+beam = "cone"
+fuel = "battery"

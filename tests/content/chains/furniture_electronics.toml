@@ -1,0 +1,219 @@
+# Domain D feasibility chains: furniture, fixtures, electronics, paper, fire (N011).
+# Steps that need domain B ids (battery_9v, battery_d, steel_spring) are left out until those
+# items exist; their data relationships are pinned in expectations/furniture_electronics.toml.
+
+[chain.read_manual_and_map]
+title = "Read a found skill manual, a city map and a survivor's note"
+source = "N012, survival-actions.md §2.14"
+
+[[chain.read_manual_and_map.steps]]
+action = "read"
+bind = { text = "skill_manual" }
+
+[[chain.read_manual_and_map.steps]]
+action = "read"
+bind = { text = "city_map" }
+
+[[chain.read_manual_and_map.steps]]
+action = "read"
+bind = { text = "survivor_note" }
+
+[chain.flashlight_from_remote]
+title = "Batteries out of a TV remote into a flashlight"
+source = "survival-actions.md §2.11"
+
+[[chain.flashlight_from_remote.steps]]
+action = "disassemble"
+bind = { target = "tv_remote" }
+yields = "battery_aa"
+
+[[chain.flashlight_from_remote.steps]]
+action = "insert_battery"
+bind = { device = "flashlight", battery = "battery_aa" }
+
+[[chain.flashlight_from_remote.steps]]
+action = "insert_battery"
+bind = { device = "headlamp", battery = "battery_aa" }
+
+[chain.walkie_remote_lure]
+title = "Leave one walkie-talkie across the street, call it from safety"
+source = "survival-actions.md §2.3"
+
+[[chain.walkie_remote_lure.steps]]
+action = "insert_battery"
+bind = { device = "walkie_talkie", battery = "battery_aa" }
+
+[[chain.walkie_remote_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "walkie_talkie" }
+
+[chain.smoke_detector_lure]
+title = "Tape a smoke alarm's test button down and throw it into a parked car"
+source = "survival-actions.md §2.3"
+
+[[chain.smoke_detector_lure.steps]]
+action = "bind"
+bind = { binding = "duct_tape" }
+
+[[chain.smoke_detector_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "smoke_detector" }
+
+[[chain.smoke_detector_lure.steps]]
+action = "throw"
+bind = { item = "smoke_detector" }
+
+[chain.break_in]
+title = "Smash a house window with a brick; pry a front door with a crowbar"
+source = "survival-actions.md §2.10"
+
+[[chain.break_in.steps]]
+action = "smash"
+bind = { tool = "brick" }
+
+[[chain.break_in.steps]]
+action = "pry_open"
+bind = { tool = "crowbar" }
+
+[chain.furniture_barricade]
+title = "Dresser against the door, bookshelf pulled apart for boards, nailed across the window"
+source = "survival-actions.md §4.3"
+
+[[chain.furniture_barricade.steps]]
+action = "block_with_furniture"
+bind = { furniture = "dresser" }
+
+[[chain.furniture_barricade.steps]]
+action = "block_with_furniture"
+bind = { furniture = "bookshelf" }
+
+[[chain.furniture_barricade.steps]]
+action = "disassemble"
+bind = { target = "bookshelf", tool = "claw_hammer" }
+yields = "wood_plank"
+
+[[chain.furniture_barricade.steps]]
+action = "barricade_opening"
+bind = { boards = "wood_plank", fasteners = "nails_box", tool = "claw_hammer" }
+
+[chain.bed_frame_escape]
+title = "Hose tied to the bed frame for an upper-floor escape; slats pulled for boards"
+source = "survival-actions.md §4.7"
+
+[[chain.bed_frame_escape.steps]]
+action = "rope_descent"
+bind = { rope = "garden_hose", anchor = "bed_frame" }
+
+[[chain.bed_frame_escape.steps]]
+action = "disassemble"
+bind = { target = "bed_frame" }
+yields = "wood_plank"
+
+[chain.ferro_rod_fire]
+title = "Chair smashed to kindling, dryer lint tinder, lit with a ferro rod"
+source = "survival-actions.md §2.5"
+
+[[chain.ferro_rod_fire.steps]]
+action = "disassemble"
+bind = { target = "dining_chair", tool = "claw_hammer" }
+yields = "firewood"
+
+[[chain.ferro_rod_fire.steps]]
+action = "disassemble"
+bind = { target = "clothes_dryer" }
+yields = "dryer_lint"
+
+[[chain.ferro_rod_fire.steps]]
+action = "make_fire"
+bind = { igniter = "ferro_rod", tinder = "dryer_lint", fuel = "firewood" }
+
+[[chain.ferro_rod_fire.steps]]
+action = "make_fire"
+bind = { igniter = "ferro_rod", tinder = "paper_ream", fuel = "charcoal_bag" }
+
+[chain.cistern_and_heater_water]
+title = "Toilet cistern and water heater water, boiled on a wood stove or in the fireplace"
+source = "survival-actions.md §2.6, §4.4"
+
+[[chain.cistern_and_heater_water.steps]]
+action = "fill_container"
+bind = { dest = "milk_jug", liquid = "water_untreated" }
+
+[[chain.cistern_and_heater_water.steps]]
+action = "disassemble"
+bind = { target = "washing_machine" }
+yields = "rubber_hose"
+
+[[chain.cistern_and_heater_water.steps]]
+action = "siphon"
+bind = { tube = "rubber_hose", source = "water_heater", dest = "cooking_pot", liquid = "water" }
+fuel = "water"
+
+[[chain.cistern_and_heater_water.steps]]
+action = "purify_water_boil"
+bind = { pot = "cooking_pot", heat = "wood_stove" }
+
+[[chain.cistern_and_heater_water.steps]]
+action = "purify_water_boil"
+bind = { pot = "cooking_pot", heat = "fireplace" }
+
+[chain.office_break_in]
+title = "Negative control: paper clips from desk clutter can NOT pick a lock (only a lockpick set can, N013)"
+source = "N013"
+expect_fail = true
+
+[[chain.office_break_in.steps]]
+action = "pick_lock"
+bind = { picks = "desk_clutter" }
+
+[chain.stockroom_climb]
+title = "Climb a steel shelving unit to reach a high window"
+source = "survival-actions.md §2.1"
+
+[[chain.stockroom_climb.steps]]
+action = "climb"
+bind = { fixture = "metal_shelving" }
+
+[chain.expert_safe]
+title = "A security master opens a home safe by feel (N012)"
+source = "N012, skills.toml security 15"
+
+[[chain.expert_safe.steps]]
+action = "crack_safe_by_feel"
+min_skill = 75
+
+# ---------------------------------------------------------------- negative controls
+[chain.chair_is_not_a_barricade]
+title = "Negative control: a 6 kg dining chair can't hold a door on its own"
+source = "M17 realism"
+expect_fail = true
+
+[[chain.chair_is_not_a_barricade.steps]]
+action = "block_with_furniture"
+bind = { furniture = "dining_chair" }
+
+[chain.car_battery_in_flashlight]
+title = "Negative control: a car battery doesn't fit a flashlight's AA slot"
+source = "M9 slot matching"
+expect_fail = true
+
+[[chain.car_battery_in_flashlight.steps]]
+action = "insert_battery"
+bind = { device = "flashlight", battery = "car_battery" }
+
+[chain.safe_without_expert]
+title = "Negative control: an untrained survivor cannot crack a safe by feel"
+source = "N012 expert gate"
+expect_fail = true
+
+[[chain.safe_without_expert.steps]]
+action = "crack_safe_by_feel"
+
+[chain.book_is_not_a_lighter]
+title = "Negative control: a book is tinder, not an ignition source"
+source = "M3"
+expect_fail = true
+
+[[chain.book_is_not_a_lighter.steps]]
+action = "make_fire"
+bind = { igniter = "book", tinder = "dryer_lint", fuel = "firewood" }

@@ -1,0 +1,507 @@
+# Fixtures: built-in world objects (fixed = true unless noted). Domain D (world-catalog §6.D).
+# Gameplay roles: access (doors/windows: lock tiers, impact outcomes, boardable openings), water
+# sources (toilet cistern, water heater, bathtub, taps), fixed heat (fireplace, wood stove) and
+# alarms. `radiator` lives in items/household/household.toml (exemplar).
+#
+# Impact overrides (reactions.impact) are authored where the material default would be wrong for
+# an assembly: a solid door does not "bend", a tempered storefront shrugs off a pebble.
+# Lock tiers: see the scale in items/furniture/furniture.toml.
+
+# ---------------------------------------------------------------- doors
+[item.door_interior]
+name = "interior door"
+tags = ["cat.fixture.door", "from.living", "from.bedroom", "from.bathroom", "from.office"]
+shape = "sheet"
+dims_mm = [2030, 760, 35]
+mass_g = 11000
+fill_pct = 30
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A hollow-core interior door: two thin fibreboard skins over a cardboard honeycomb."
+glyph = "obj.door"
+why = "Weakest door: a privacy latch any coin opens, and a kick splits the skin (fast, loud entry)."
+details = ["door_look"]
+value_class = "junk"
+
+[item.door_interior.composition.skins]
+material = "particleboard"
+share = 55
+[item.door_interior.composition.frame]
+material = "softwood"
+share = 30
+[item.door_interior.composition.core]
+material = "cardboard"
+share = 10
+[item.door_interior.composition.hardware]
+material = "mild_steel"
+share = 5
+
+[item.door_interior.features.lock]
+tier = 1
+keyed = false
+pickable = true
+kind = "knob"
+bash_resist = 2          # privacy knob: a kick or a hammer pops it
+[item.door_interior.features.boardable]
+width_mm = 760
+height_mm = 2030
+
+[item.door_interior.reactions.impact]
+low = "crack"
+medium = "split"
+high = "split"
+
+[item.door_exterior]
+name = "front door"
+tags = ["cat.fixture.door", "from.living"]
+shape = "sheet"
+dims_mm = [2030, 910, 45]
+mass_g = 36000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A solid-wood exterior door with a deadbolt above the knob."
+glyph = "obj.door_front"
+why = "Real barrier: keyed deadbolt (key, picks or pry bar), shrugs off kicks; worth barricading."
+details = ["door_look"]
+value_class = "junk"
+
+[item.door_exterior.composition.slab]
+material = "hardwood"
+share = 90
+[item.door_exterior.composition.lockset]
+material = "brass"
+share = 6
+[item.door_exterior.composition.hinges]
+material = "mild_steel"
+share = 4
+
+[item.door_exterior.features.lock]
+tier = 4
+keyed = true
+pickable = true
+kind = "knob"
+bash_resist = 4          # entry knob; bash it off with a hammer...
+extra = ["deadbolt"]      # ...but most front doors also have a deadbolt (N013)
+[item.door_exterior.features.boardable]
+width_mm = 910
+height_mm = 2030
+
+[item.door_exterior.reactions.impact]
+low = "none"
+medium = "none"
+high = "crack"
+
+[item.door_steel]
+name = "steel door"
+tags = ["cat.fixture.door", "from.office", "from.retail", "from.industrial", "from.police", "from.medical", "from.school"]
+shape = "sheet"
+dims_mm = [2130, 910, 45]
+mass_g = 50000
+fill_pct = 20
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A commercial hollow-metal door in a welded steel frame, with a closer and a mortise lock."
+glyph = "obj.door_steel"
+why = "Hard access: commercial lock, dents instead of breaking; the safest door to hole up behind."
+value_class = "junk"
+
+[item.door_steel.composition.skin]
+material = "mild_steel"
+share = 80
+[item.door_steel.composition.core]
+material = "polystyrene"
+share = 8
+[item.door_steel.composition.lockset]
+material = "stainless_steel"
+share = 12
+
+[item.door_steel.features.lock]
+tier = 7
+keyed = true
+pickable = true
+kind = "deadbolt"
+bash_resist = 6
+extra = ["security_bar"]  # commercial rear doors: brute force is impractical (N013)
+[item.door_steel.features.boardable]
+width_mm = 910
+height_mm = 2130
+
+[item.door_steel.reactions.impact]
+low = "none"
+medium = "none"
+high = "dent"
+
+# ---------------------------------------------------------------- windows
+[item.window_house]
+name = "window"
+tags = ["cat.fixture.window", "from.living", "from.bedroom", "from.kitchen", "hazard.sharp_debris"]
+shape = "sheet"
+dims_mm = [1220, 910, 80]
+mass_g = 18000
+fill_pct = 10
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A double-hung vinyl window with two panes of ordinary glass."
+glyph = "obj.window"
+why = "Quick, loud way in (shatters, leaves shards); a view out; the first thing to board up."
+details = ["window_look"]
+value_class = "junk"
+
+[item.window_house.composition.glass]
+material = "glass"
+share = 60
+[item.window_house.composition.frame]
+material = "pvc"
+share = 35
+[item.window_house.composition.hardware]
+material = "mild_steel"
+share = 5
+
+[item.window_house.features.lock]
+tier = 1
+keyed = false
+pickable = true
+[item.window_house.features.boardable]
+width_mm = 910
+height_mm = 1220
+
+[item.window_house.reactions.impact]
+low = "crack"
+medium = "shatter"
+high = "shatter"
+
+[item.window_storefront]
+name = "storefront window"
+tags = ["cat.fixture.window", "from.retail", "from.grocery", "from.restaurant", "from.office"]
+shape = "sheet"
+dims_mm = [2400, 1800, 100]
+mass_g = 130000
+fill_pct = 12
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A floor-to-ceiling pane of tempered glass in an aluminium storefront frame."
+glyph = "obj.window_large"
+why = "Tempered: ignores light hits, then bursts into blunt cubes (no shard hazard) with a huge crash."
+details = ["window_look"]
+value_class = "junk"
+
+[item.window_storefront.composition.glass]
+material = "tempered_glass"
+share = 85
+[item.window_storefront.composition.frame]
+material = "aluminum"
+share = 15
+
+[item.window_storefront.features.boardable]
+width_mm = 2400
+height_mm = 1800
+
+[item.window_storefront.reactions.impact]
+low = "none"
+medium = "shatter"
+high = "shatter"
+
+# ---------------------------------------------------------------- plumbing and water sources
+[item.toilet]
+name = "toilet"
+tags = ["cat.fixture.plumbing", "from.bathroom"]
+shape = "complex"
+dims_mm = [760, 700, 450]
+mass_g = 40000
+hollow = true
+fixed = true
+blocks = "partial"
+desc = "A vitreous china toilet. The tank behind the seat holds clean-looking water."
+glyph = "obj.toilet"
+why = "Cistern holds ~6 L of water that was clean tap water at the event: a real survival source (boil it)."
+value_class = "common"
+
+[item.toilet.composition.bowl_and_tank]
+material = "ceramic"
+share = 92
+[item.toilet.composition.seat]
+material = "polypropylene"
+share = 5
+[item.toilet.composition.flush_valve]
+material = "pvc"
+share = 3
+
+[item.toilet.features.container]
+capacity_ml = 6000
+opening_mm = 400
+closable = true
+compat = ["liquid"]
+[item.toilet.features.seat]
+comfort = 2
+sleepable = false
+
+[item.toilet.contents]
+substance = "water_untreated"
+fill_pct = [80, 100]
+
+[item.bathtub]
+name = "bathtub"
+tags = ["cat.fixture.plumbing", "from.bathroom"]
+shape = "container"
+dims_mm = [1520, 760, 500]
+mass_g = 50000
+fixed = true
+blocks = "partial"
+desc = "A white enamelled steel bathtub."
+glyph = "obj.bathtub"
+why = "Biggest household water store; survivors filled tubs in the first days (contents by aftermath)."
+value_class = "common"
+
+[item.bathtub.composition.tub]
+material = "mild_steel"
+share = 90
+[item.bathtub.composition.enamel]
+material = "glass"
+share = 8
+[item.bathtub.composition.drain]
+material = "brass"
+share = 2
+
+[item.bathtub.features.container]
+capacity_ml = 250000
+opening_mm = 1400
+closable = false
+watertight = true
+compat = ["liquid", "solid"]
+[item.bathtub.features.valve]
+needs = "none"
+
+[item.bathtub.contents]
+substance = "water_untreated"
+fill_pct = [0, 30]
+
+[item.sink]
+name = "sink"
+tags = ["cat.fixture.plumbing", "from.bathroom", "from.kitchen"]
+shape = "complex"
+dims_mm = [600, 480, 350]
+mass_g = 15000
+hollow = true
+fixed = true
+blocks = "partial"
+desc = "A porcelain basin with a chrome mixer tap."
+glyph = "obj.sink"
+why = "Tap water while the neighbourhood's mains still work (N007, water outlasts power)."
+value_class = "junk"
+
+[item.sink.composition.basin]
+material = "ceramic"
+share = 85
+[item.sink.composition.tap]
+material = "brass"
+share = 10
+[item.sink.composition.trap]
+material = "pvc"
+share = 5
+
+[item.sink.features.container]
+capacity_ml = 12000
+opening_mm = 450
+closable = false
+compat = ["liquid"]
+[item.sink.features.valve]
+needs = "none"
+
+[item.water_heater]
+name = "water heater"
+tags = ["cat.fixture.plumbing", "from.garage", "from.living", "use.salvage"]
+shape = "container"
+dims_mm = [1500, 560, 560]
+mass_g = 60000
+fill_pct = 20
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A 40-gallon tank water heater in the basement or garage, drain valve at the bottom."
+glyph = "obj.water_heater"
+why = "~150 L of water trapped at the event: drain it at the valve (crack a tap upstairs to let air in)."
+brand_cats = ["appliances"]
+value_class = "useful"
+
+[item.water_heater.composition.tank]
+material = "mild_steel"
+share = 80
+[item.water_heater.composition.insulation]
+material = "pu_foam"
+share = 5
+[item.water_heater.composition.jacket]
+material = "mild_steel"
+share = 10
+[item.water_heater.composition.connectors]
+material = "copper"
+share = 3
+salvage = { item = "copper_tubing", count = 2, set = { dims_mm = [450, 20, 20], mass_g = 250 }, tool = "fasten>=2", time_s = 300 }
+[item.water_heater.composition.drain_valve]
+material = "brass"
+share = 2
+
+[item.water_heater.features.container]
+capacity_ml = 150000
+opening_mm = 20
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid"]
+[item.water_heater.features.valve]
+needs = "fasten>=2"
+
+[item.water_heater.contents]
+substance = "water"
+fill_pct = [90, 100]
+
+[item.kitchen_cabinet]
+name = "kitchen cabinet"
+tags = ["cat.fixture.cabinet", "from.kitchen", "from.restaurant", "from.office"]
+shape = "complex"
+dims_mm = [900, 870, 600]
+mass_g = 40000
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A base cabinet run section with a laminate countertop."
+glyph = "obj.cabinet"
+why = "The kitchen's loot container (kitchen_cabinet_contents, under_sink); counter as a work surface."
+details = ["furniture_finish"]
+value_class = "common"
+
+[item.kitchen_cabinet.composition.carcass]
+material = "particleboard"
+share = 70
+[item.kitchen_cabinet.composition.countertop]
+material = "particleboard"
+share = 25
+[item.kitchen_cabinet.composition.hinges]
+material = "mild_steel"
+share = 5
+
+[item.kitchen_cabinet.features.container]
+capacity_ml = 250000
+max_dim_mm = 550
+closable = true
+compat = ["solid"]
+[item.kitchen_cabinet.features.surface]
+area_mm2 = 540000
+workbench = false
+
+# ---------------------------------------------------------------- heat
+[item.fireplace]
+name = "fireplace"
+tags = ["cat.fixture.heating", "from.living"]
+shape = "complex"
+dims_mm = [1500, 1200, 600]
+mass_g = 1200000
+fixed = true
+blocks = "full"
+blocks_sight = true
+heat_resistant = true
+desc = "A brick fireplace with a steel grate and a chimney damper."
+glyph = "obj.fireplace"
+why = "Indoor fire without burning the house down: heat, cooking, boiling water; smoke vents up the flue."
+value_class = "useful"
+
+[item.fireplace.composition.masonry]
+material = "brick"
+share = 95
+[item.fireplace.composition.grate]
+material = "cast_iron"
+share = 4
+[item.fireplace.composition.damper]
+material = "mild_steel"
+share = 1
+
+[item.fireplace.features.heat_source]
+output = 5
+fuel = ["use.fuel"]
+[item.fireplace.features.container]
+capacity_ml = 150000
+opening_mm = 900
+closable = false
+compat = ["solid"]
+
+[item.wood_stove]
+name = "wood stove"
+tags = ["cat.fixture.heating", "from.living", "from.farm", "from.garage"]
+shape = "complex"
+dims_mm = [760, 660, 610]
+mass_g = 180000
+hollow = true
+fixed = true
+blocks = "full"
+blocks_sight = false
+heat_resistant = true
+desc = "A squat cast-iron wood stove on a stone hearth, with a glass door and a flat cooktop."
+glyph = "obj.wood_stove"
+why = "Efficient fixed heat: warms a room on little fuel and boils water on its top (cabins, farmhouses)."
+value_class = "valuable"
+
+[item.wood_stove.composition.body]
+material = "cast_iron"
+share = 95
+[item.wood_stove.composition.door_glass]
+material = "glass"
+share = 2
+[item.wood_stove.composition.flue_collar]
+material = "mild_steel"
+share = 3
+
+[item.wood_stove.features.heat_source]
+output = 8
+fuel = ["use.fuel"]
+[item.wood_stove.features.surface]
+area_mm2 = 250000
+workbench = false
+[item.wood_stove.features.container]
+capacity_ml = 60000
+opening_mm = 350
+closable = true
+compat = ["solid"]
+
+# ---------------------------------------------------------------- safety
+[item.smoke_detector]
+name = "smoke detector"
+tags = ["cat.fixture.safety", "from.living", "from.bedroom", "from.kitchen", "from.office", "use.lure", "use.salvage"]
+shape = "complex"
+dims_mm = [130, 130, 45]
+mass_g = 190
+desc = "A ceiling smoke alarm that twists off its mounting plate. Holding the test button makes it shriek."
+glyph = "item.smoke_detector"
+why = "Noise lure: tape the test button down and it screams until the battery dies; source of 9 V batteries."
+brand_cats = ["household"]
+value_class = "common"
+use_noise = "very_loud"
+power_use = { voltage = "dc_small", watts = 1 }
+
+[item.smoke_detector.composition.housing]
+material = "abs"
+share = 68
+[item.smoke_detector.composition.horn]
+material = "ceramic"
+share = 5
+[item.smoke_detector.composition.circuit]
+material = "copper"
+share = 3
+[item.smoke_detector.composition.battery]
+material = "mild_steel"
+share = 24
+salvage = { item = "battery_9v", count = 1, tool = "none", time_s = 10 }
+
+[item.smoke_detector.features.alarm]
+loudness = "very_loud"
+timer = false
+trigger = "touch"
+[item.smoke_detector.features.slot]
+accepts = "cat.battery.9v"
+count = 1
+
+[item.smoke_detector.capabilities]
+noise = 7

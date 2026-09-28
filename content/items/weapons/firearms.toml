@@ -1,0 +1,204 @@
+# Firearms (survival-actions §5 Q2: realistic US availability, extreme noise, scarce ammo).
+# Generic types only, no real models. Feeding: pistol and rifle take a magazine (slot accepts a
+# cat.magazine.* tag); revolver, shotgun and bolt rifle load cartridges directly (cat.ammo.*).
+# Ranged-fire vocabulary (range, accuracy, damage) doesn't exist yet: see the domain E report.
+
+[item.pistol]
+name = "pistol"
+tags = ["cat.weapon.firearm.pistol", "from.police", "from.bedroom", "from.retail", "from.vehicle", "use.weapon"]
+shape = "complex"
+dims_mm = [205, 140, 32]
+mass_g = 700
+use_noise = "extreme"
+durability = 9
+desc = "A polymer-framed semi-automatic 9 mm pistol with a steel slide."
+glyph = "item.pistol"
+why = "The most common handgun in homes and on police belts: compact, one-handed, 15 rounds, and every shot is heard for blocks."
+brand_cats = ["firearms"]
+details = ["firearm_finish"]
+value_class = "valuable"
+
+[item.pistol.composition.slide]
+material = "carbon_steel"
+share = 50
+[item.pistol.composition.barrel]
+material = "carbon_steel"
+share = 15
+[item.pistol.composition.internals]
+material = "carbon_steel"
+share = 8
+[item.pistol.composition.frame]
+material = "nylon"
+share = 27
+
+[item.pistol.features.grip]
+hands = 1
+girth_mm = 30
+[item.pistol.features.slot]
+accepts = "cat.magazine.pistol_9mm"
+count = 1
+
+[item.revolver]
+name = "revolver"
+tags = ["cat.weapon.firearm.revolver", "from.bedroom", "from.retail", "from.vehicle", "use.weapon"]
+shape = "complex"
+dims_mm = [240, 150, 40]
+mass_g = 1000
+use_noise = "extreme"
+durability = 10
+desc = "A six-shot double-action .38 Special revolver with a four-inch barrel."
+glyph = "item.revolver"
+why = "Simple and reliable after years in a drawer: no magazine to lose, but six shots and a slow reload."
+brand_cats = ["firearms"]
+details = ["firearm_finish"]
+value_class = "valuable"
+
+[item.revolver.composition.frame]
+material = "carbon_steel"
+share = 45
+[item.revolver.composition.cylinder]
+material = "carbon_steel"
+share = 20
+[item.revolver.composition.barrel]
+material = "carbon_steel"
+share = 20
+[item.revolver.composition.grips]
+material = "rubber"
+share = 10
+[item.revolver.composition.internals]
+material = "carbon_steel"
+share = 5
+
+[item.revolver.features.grip]
+hands = 1
+girth_mm = 32
+[item.revolver.features.slot]
+accepts = "cat.ammo.38spl"
+count = 6
+
+[item.shotgun]
+name = "shotgun"
+tags = ["cat.weapon.firearm.shotgun", "from.bedroom", "from.police", "from.outdoors", "from.farm", "from.retail", "use.weapon"]
+shape = "complex"
+dims_mm = [1200, 190, 60]
+mass_g = 3400
+use_noise = "extreme"
+durability = 9
+desc = "A pump-action 12-gauge shotgun with a tube magazine under the barrel."
+glyph = "item.shotgun"
+why = "Devastating at door-to-door range, found in farmhouses and cruiser racks; heavy, slow to load, deafening."
+brand_cats = ["firearms"]
+details = ["firearm_furniture", "firearm_finish"]
+value_class = "valuable"
+
+[item.shotgun.composition.barrel]
+material = "carbon_steel"
+share = 35
+[item.shotgun.composition.receiver]
+material = "aluminum"
+share = 15
+[item.shotgun.composition.stock]
+material = "hardwood"
+share = 30
+[item.shotgun.composition.forend]
+material = "hardwood"
+share = 8
+[item.shotgun.composition.internals]
+material = "carbon_steel"
+share = 12
+
+[item.shotgun.features.grip]
+hands = 2
+girth_mm = 35
+[item.shotgun.features.slot]
+accepts = "cat.ammo.12ga"
+count = 5
+[item.shotgun.features.strap]
+kind = "shoulder"
+load_g = 5000
+
+[item.hunting_rifle]
+name = "hunting rifle"
+tags = ["cat.weapon.firearm.rifle", "from.bedroom", "from.outdoors", "from.farm", "from.retail", "use.weapon"]
+shape = "complex"
+dims_mm = [1100, 200, 75]
+mass_g = 3700
+use_noise = "extreme"
+durability = 9
+desc = "A scoped bolt-action .308 deer rifle with a walnut stock and a sling."
+glyph = "item.rifle"
+why = "Precise long-range shots from a rooftop, four rounds between reloads; the scope doubles as a spotting glass."
+brand_cats = ["firearms"]
+details = ["firearm_furniture", "firearm_finish"]
+value_class = "valuable"
+
+[item.hunting_rifle.composition.barrel]
+material = "carbon_steel"
+share = 35
+[item.hunting_rifle.composition.action]
+material = "carbon_steel"
+share = 20
+[item.hunting_rifle.composition.stock]
+material = "hardwood"
+share = 30
+[item.hunting_rifle.composition.scope]
+material = "aluminum"
+share = 10
+[item.hunting_rifle.composition.lenses]
+material = "glass"
+share = 3
+[item.hunting_rifle.composition.sling]
+material = "nylon_fabric"
+share = 2
+
+[item.hunting_rifle.features.grip]
+hands = 2
+girth_mm = 35
+[item.hunting_rifle.features.slot]
+accepts = "cat.ammo.308"
+count = 4
+[item.hunting_rifle.features.strap]
+kind = "shoulder"
+load_g = 6000
+[item.hunting_rifle.features.mount]
+standard = "scope_base"
+
+[item.semi_auto_rifle]
+name = "semi-automatic rifle"
+tags = ["cat.weapon.firearm.rifle", "from.police", "from.bedroom", "from.retail", "use.weapon"]
+shape = "complex"
+dims_mm = [890, 230, 65]
+mass_g = 2900
+use_noise = "extreme"
+durability = 9
+desc = "A light 5.56 mm semi-automatic carbine with a collapsible stock and an accessory rail."
+glyph = "item.rifle_carbine"
+why = "Light, fast-handling, 30-round magazines; rare and hotly looted; empties a magazine and a neighbourhood's attention at once."
+brand_cats = ["firearms"]
+details = ["firearm_finish"]
+value_class = "rare"
+
+[item.semi_auto_rifle.composition.barrel]
+material = "carbon_steel"
+share = 35
+[item.semi_auto_rifle.composition.receivers]
+material = "aluminum"
+share = 30
+[item.semi_auto_rifle.composition.bolt]
+material = "carbon_steel"
+share = 15
+[item.semi_auto_rifle.composition.furniture]
+material = "nylon"
+share = 20
+
+[item.semi_auto_rifle.features.grip]
+hands = 2
+girth_mm = 30
+[item.semi_auto_rifle.features.slot]
+accepts = "cat.magazine.rifle_556"
+count = 1
+[item.semi_auto_rifle.features.strap]
+kind = "shoulder"
+load_g = 5000
+[item.semi_auto_rifle.features.mount]
+standard = "picatinny"

@@ -1,0 +1,5 @@
+# Remaining exemplars used by the survival chains. Domain authors may move these into their
+# domain directories (keep ids stable).
+#
+# Moved out (ids unchanged): garden_hose -> items/garden/yard.toml,
+# camp_stove -> items/outdoors/camping.toml.

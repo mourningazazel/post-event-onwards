@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: docs, queue & content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python3 tools/validate_docs.py
+      - run: python3 tools/content/lint.py
+      - run: python3 tools/content/test.py
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y clang-format-18
+      - run: |
+          clang-format-18 --dry-run -Werror $(git ls-files 'src/**/*.cpp' 'src/**/*.hpp' 'tests/**/*.cpp' 'tests/**/*.hpp')
+
+  core-tests:
+    name: core tests (${{ matrix.cxx }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { cc: gcc-13, cxx: g++-13, pkgs: g++-13 }
+          - { cc: clang-18, cxx: clang++-18, pkgs: "clang-18 libclang-rt-18-dev" }
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build ${{ matrix.pkgs }}
+      - run: cmake --preset headless
+      - run: cmake --build --preset headless
+      - run: ctest --preset headless
+
+  core-release:
+    name: core tests (release)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - run: cmake --preset headless-release
+      - run: cmake --build --preset headless-release
+      - run: ctest --preset headless-release
+
+  frontend:
+    name: frontend build (linux, SDL3 from source)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build build-essential libx11-dev libxext-dev libxrandr-dev \
+            libxcursor-dev libxi-dev libxss-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
+            libgl1-mesa-dev libasound2-dev libpulse-dev libdbus-1-dev libudev-dev
+      - uses: actions/cache@v4
+        with:
+          path: build/release/_deps
+          key: sdl3-${{ hashFiles('cmake/FindOrFetchSDL3.cmake') }}
+      - run: cmake --preset release
+      - run: cmake --build --preset release
+      - run: ctest --preset release
