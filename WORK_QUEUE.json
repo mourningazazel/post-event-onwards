@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 27,
+  "next_id": 28,
   "items": [
     {
       "id": "PEO-002",
@@ -858,6 +858,51 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "Brief corrected: kPlayerScent already exists at src/app/main.cpp:26 as 1.0F, so the unit raises it rather than introducing it. Starting tuning values (diffusion 0.8, decay 0.01, floor 1e-6) are carried over from branch claude/fervent-curie-iqonhg, which reached the same numbers independently; that branch's pinning test asserted only sample > 0.0F against a 1e-6 floor, which passes on the tail crossing rather than a usable scent level, so the tests here assert a strictly decreasing gradient and actual Dead convergence instead."
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-027",
+      "order": 270,
+      "type": "chore",
+      "title": "Headless test suite is at its 500 ms budget",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The headless suite has measurable headroom under its stated budget again, or the budget is restated with evidence behind it.",
+        "context": [
+          "AGENTS.md (the suite runs in under 500 ms)",
+          "tests/CMakeLists.txt",
+          "tests/core/",
+          "docs/testing.md"
+        ],
+        "units": [
+          "test: measure where the time goes. Run the headless suite with doctest's -d flag (peo_core_tests -d) and record the slowest cases. The thousand-dead stepping case is the obvious suspect, but measure rather than assume.",
+          "test: either bring the slowest cases back under budget without weakening what they assert, or — if 500 ms is simply the wrong number for a suite this size now — propose a new budget in AGENTS.md backed by the measured numbers. Do not delete or skip a case to buy time."
+        ],
+        "acceptance": [
+          "ctest --preset headless completes with visible headroom under the stated budget, and the report records the per-case numbers",
+          "if the budget changed instead, AGENTS.md states the new number and docs/production/decisions.md records why, with measurements"
+        ],
+        "tests": [
+          "ctest --preset headless"
+        ],
+        "manual": [],
+        "out_of_scope": [
+          "skipping, disabling or weakening any test to get under the number",
+          "optimising the simulation itself — measure first and raise a separate item if the sim is the cause"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "Raised after PR #5: ctest --preset headless reported 0.50 s against the 500 ms budget in AGENTS.md, with no code change in that PR to explain it. Sitting exactly on the line, so the next test added breaches it — and PEO-026 adds two new cases (a scent reach case and a Dead convergence case), so this will bite during that item. Worth measuring before the Builder starts PEO-026."
         }
       ],
       "references": [],
