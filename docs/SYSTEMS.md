@@ -27,6 +27,7 @@ later features are compositions of existing building blocks, and changes stay lo
 | R12 | **No singletons.** Dependencies are passed explicitly in a context struct at construction. | Testability, and multiple worlds (e.g. a gen-preview tool) side by side |
 | R13 | **Configuration is layered:** defaults → data → user config → command line, typed and validated in one place. | Tuning without recompiling |
 | R14 | **Architecture decisions are recorded as ADRs** (`docs/adr/`) before implementation. | Future contributors and future-us know *why* |
+| R15 | **The game is playable headless from day one** (owner note N001, `design/playtest-harness.md`). Every system exposes its state to the gameplay rule checker. Every feature lands with at least one **scenario plus playtest** (a key script or bot policy with expectations), not only unit tests. | Claude plays the real game throughout development. Cross-system gameplay bugs are caught when they're introduced, and each one becomes a permanent replay test. |
 
 ## 2. Proposed major systems (bottom layer first)
 
@@ -46,8 +47,16 @@ Foundation    Core (containers, handles, hashing, RNG, maths) · Diagnostics (lo
               profiling, metrics) · Jobs & Budget Manager · Platform (window, filesystem, time) ·
               Config · Serialization
                                    │
-Tools         Map-gen viewer · Content validator · Replay/diff tool · Benchmark harness
+Tools         Playtest Harness (rl-play, scenarios, bots, rule checker, replays) ·
+              Map-gen viewer · Content validator · Replay/diff tool · Benchmark harness
 ```
+
+The **Playtest Harness** is built alongside the first engine systems, not at the end. It needs
+three things:
+
+- Input & Commands, for scripted keys.
+- A text backend for the Renderer, so Claude can read the screen.
+- The determinism contract (R8), so runs can be replayed.
 
 Design-relevant notes per system:
 

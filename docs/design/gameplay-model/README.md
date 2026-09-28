@@ -36,6 +36,7 @@ and handles the technical internals behind each decision.
 | G10 | Time, needs and survival: hunger, thirst, fatigue, temperature, infection | Planned |
 | G11 | Persistence as a gameplay rule: what the world remembers, what decays, what resets | Planned |
 | G12 | Extensibility: content packs, mod hooks, scripting, future-system slots | Planned |
+| G13 | Gameplay rules and playtesting: what must always hold, what may break for realism, standard test scenarios (owner note N001, `../playtest-harness.md`) | Planned |
 
 **Planned topics — first questions to answer:**
 
@@ -56,3 +57,6 @@ and handles the technical internals behind each decision.
   beyond migration?
 - **G12:** Should all content live in data files moddable by players? When would scripting be
   worth its cost?
+- **G13:** Which rules are laws the checker enforces, e.g. item conservation, no two units in
+  one cell, saving and reloading changes nothing? Which may break for realism, e.g. can the player
+  get permanently stuck in a pit they dug? Should the shipped game include a wizard/debug mode?
