@@ -7,7 +7,7 @@
       "order": 10,
       "type": "chore",
       "title": "Builder bootstrap: build, run, record baseline",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -53,6 +53,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "briefed; start here"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
