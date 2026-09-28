@@ -3,75 +3,6 @@
   "next_id": 27,
   "items": [
     {
-      "id": "PEO-001",
-      "order": 10,
-      "type": "chore",
-      "title": "Builder bootstrap: build, run, record baseline",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "brief": {
-        "goal": "The game builds and runs on the developer's machine and a first perf baseline is recorded in the queue.",
-        "context": [
-          "README.md",
-          "docs/roles.md",
-          "docs/testing.md",
-          "CMakePresets.json"
-        ],
-        "units": [
-          "chore: run python3 tools/bootstrap.py; fix anything it reports missing (SDL3 is fetched automatically if not installed)",
-          "chore: cmake --preset dev (win-dev on Windows) && cmake --build --preset dev && ctest --preset dev; note the first-build wall time",
-          "chore: run ./build/dev/bin/peo 7 and complete every manual step below",
-          "docs: if any step on this OS needed an extra package or flag, add it to README.md under Build (one line each)"
-        ],
-        "acceptance": [
-          "python3 tools/verify.py --frontend passes on the developer's machine",
-          "the game window opens, @ moves with arrows/WASD, d glyphs (the Dead) approach the player",
-          "the report note contains OS, compiler, first-build time, and the Release-preset numbers below"
-        ],
-        "tests": [
-          "ctest --preset dev (all 21 core cases)"
-        ],
-        "manual": [
-          "Launch ./build/dev/bin/peo 7. Expect an 80x45 map of # and . with @ near the left edge and > near the right.",
-          "Stand still 3 s (the prototype is still real-time until PEO-002). Expect red d glyphs to converge on @ from multiple directions.",
-          "Shift+S toggles the scent view. Expect a gradient (@ + : .) centred on the player that follows you as you walk.",
-          "Walk into the > cell. Expect the HUD stage counter to become 1 and a denser map.",
-          "Press N five times. Expect stage 6 to have visibly more walls than stage 0.",
-          "Build the release preset and run it: watch the HUD for hitching while 40 d glyphs move. Report anything not smooth.",
-          "Perf baseline: run ./build/headless-release/tests/peo_core_tests -tc='*thousand*' -d and report the duration doctest prints."
-        ],
-        "out_of_scope": [
-          "gameplay changes of any kind; record ideas with /work",
-          "adding fonts, colours or tiles"
-        ]
-      },
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed; start here"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "commits: bfcca61 (start) 1fe90de (bugs PEO-023..026). tests: verify.py --frontend passed on Arch Linux ARM (Asahi, Apple M1, aarch64) / GCC 16.1.1; ctest dev 21/21 cases, 44899 assertions. first build (dev, system SDL3): 5 s. manual: launch peo 7 -> 80x45 map, @ at bottom-left edge (1,42), > at right (78,8), OK; stand still 3 s -> FAIL: tick 69->101 no d moved, tick 222 (~10 s) none moved; scent front only ~8 cells at tick ~450, only d inside it drift (PEO-026); Shift+S -> gradient @ + : . centred on player OK, but HUD says [s scent] and plain s moves down (PEO-023), strongest band drawn as @ like the player (PEO-024); walk into > -> HUD stage 1, map denser (walls 15.1% -> 16.9%) OK; N x5 -> stage 6, walls 21.2% vs 15.1% at stage 0 OK; release run 30 s -> tick pacing steady (103/102/102 ticks per 10.25 s = ~10/s), no hitching seen in the tick counter, but frontend uses 75-78% of one core at idle (PEO-025). perf: headless-release 'a thousand dead step without touching each other' = 0.000735 s. open: convergence expectation vs scent speed may be a pacing (gameplay) call; README needed no extra packages on this OS; owner was also briefly playing the window during the first attempt, results above are from a clean second run."
-        }
-      ],
-      "references": [
-        "README.md",
-        "docs/roles.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-002",
       "order": 20,
       "type": "feature",
@@ -139,9 +70,7 @@
         "docs/architecture.md",
         "src/app/main.cpp"
       ],
-      "depends_on": [
-        "PEO-001"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-003",
@@ -741,28 +670,35 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "brief": {
-        "goal": "HUD hint names the real scent key (Shift+S).",
+        "goal": "The HUD scent hint names the real toggle key so a new player can find the scent view.",
         "context": [
-          "src/app/main.cpp"
+          "src/app/main.cpp",
+          "PEO-001 report note (in WORK_QUEUE.json)"
         ],
         "units": [
-          "app: fix the HUD hint text"
+          "app: in main.cpp find the HUD hint string that reads \"[s scent]\" and change it to name the actual binding, Shift+S (e.g. \"[Shift+S scent]\"); confirm plain 's' does not toggle scent."
         ],
         "acceptance": [
-          "the named key toggles scent; @ does not move"
+          "in game (peo 7): the HUD hint names Shift+S; pressing Shift+S toggles the scent view; pressing plain s does not toggle scent"
         ],
         "tests": [],
         "manual": [
-          "peo 7: press the HUD's scent key"
+          "peo 7: read the HUD hint, press the key it names -> scent view toggles; press plain s -> scent does not toggle"
         ],
         "out_of_scope": [
-          "other bindings"
+          "changing what plain s does or any other binding — if the down-move on s is unwanted, record a separate item"
         ]
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [],
       "depends_on": []
     },
@@ -774,26 +710,35 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "brief": {
-        "goal": "Only the player cell shows @ with the scent view on.",
+        "goal": "With the scent view on, only the player's cell shows @; the strongest scent band uses a distinct glyph.",
         "context": [
-          "src/app/main.cpp"
+          "src/app/main.cpp",
+          "PEO-001 report note (in WORK_QUEUE.json)"
         ],
         "units": [
-          "app: new glyph for the strongest scent band"
+          "app: in the scent-view draw path, replace the glyph for the strongest scent band (currently @) with one not used elsewhere: player is @, walls #, floor ., exit >, the Dead d, weaker scent bands + : . — use a free glyph such as * for the strongest band. Draw the player @ after the scent layer so the player cell always shows @."
         ],
         "acceptance": [
-          "Shift+S on: no extra @"
+          "in game (peo 7) with Shift+S on: exactly one @ on screen (the player); the strongest scent band renders as the chosen glyph"
         ],
         "tests": [],
         "manual": [
-          "see PEO-001 report"
+          "peo 7: Shift+S on, stand still -> the only @ is the player; the strongest band around you is the new glyph"
         ],
-        "out_of_scope": []
+        "out_of_scope": [
+          "colour; adding more scent bands; the scent model itself"
+        ]
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [],
       "depends_on": []
     },
@@ -805,26 +750,36 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "brief": {
-        "goal": "Idle frontend uses well under 25% of a core.",
+        "goal": "The frontend does not busy-loop: release idle CPU is well under 25% of a core, with sim cadence unchanged.",
         "context": [
-          "src/app/main.cpp"
+          "src/app/main.cpp",
+          "PEO-001 report note (in WORK_QUEUE.json)"
         ],
         "units": [
-          "app: vsync or frame cap; sim tick unchanged"
+          "app: stop the render loop from spinning. Prefer SDL vsync (SDL_SetRenderVSync(renderer, 1)) so present blocks to the display refresh; if unavailable or insufficient, cap the frame rate with a short sleep. Do not change the simulation tick interval (kTickMs)."
         ],
         "acceptance": [
-          "release idle CPU < 25%"
+          "release build idle CPU under 25% of one core (sample with ps/top while the window sits idle)",
+          "sim tick pacing unchanged from the PEO-001 baseline (~10 ticks/s); no visible hitching"
         ],
         "tests": [],
         "manual": [
-          "release peo 7; sample ps %cpu"
+          "build release; run peo 7; leave the window idle 15 s and sample %cpu (ps -o %cpu / top) -> under 25% of a core; watch the tick counter -> still ~10/s, smooth"
         ],
-        "out_of_scope": []
+        "out_of_scope": [
+          "the turn-based/event-driven loop rewrite — that is PEO-002, which will make the loop wait on input and drive idle CPU near zero; PEO-025 is the immediate fix for the current real-time prototype and a simple vsync cap is expected to survive PEO-002"
+        ]
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [],
       "depends_on": []
     },
@@ -833,10 +788,10 @@
       "order": 260,
       "type": "bug",
       "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
-      "status": "Pending",
+      "status": "AwaitingUser",
       "severity": "S2",
       "effort": "M",
-      "owner": "architect",
+      "owner": "user",
       "created": "2026-09-28",
       "brief": {
         "goal": "The Dead visibly converge within seconds, or the expectation is revised.",
@@ -856,7 +811,13 @@
         ],
         "out_of_scope": []
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "Raised D-007 (scent reach / convergence pacing). Blocked on the pacing answer: the front-radius test in this brief can only pin a number once the target reach is chosen. Technical instrumentation is ready to write behind the decision."
+        }
+      ],
       "references": [],
       "depends_on": []
     }
