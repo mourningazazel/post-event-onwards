@@ -1,0 +1,179 @@
+# Retail room types (world-catalog §3), pre-event baseline: fully stocked. Shelving `count` is
+# shelving sections; each section rolls its stock table.
+# The five *_floor rooms after store_floor_generic are EXTRA (not in world-catalog §3): specialty
+# sales floors, so the specialty stock tables (§7) have a room to live in.
+
+[room.grocery_floor]
+desc = "A supermarket sales floor: aisles of canned, dry and household goods, coolers, freezers, produce."
+size_m2 = [400, 4000]
+floor = "ground"
+tags = ["from.grocery", "from.retail"]
+objects = [
+  { item = "metal_shelving", count = [6, 24], contains = ["grocery_shelf_canned"] },
+  { item = "metal_shelving", count = [6, 24], contains = ["grocery_shelf_dry"] },
+  { item = "metal_shelving", count = [4, 12], contains = ["grocery_household"] },
+  { item = "metal_shelving", count = [3, 10], contains = ["grocery_produce"] },
+  { item = "refrigerator", count = [4, 16], contains = ["grocery_drinks"] },
+  { item = "refrigerator", count = [4, 12], contains = ["grocery_cold_case"] },
+  { item = "chest_freezer", count = [3, 10], contains = ["grocery_freezer_case"] },
+  { item = "shopping_cart", count = [5, 30] },
+  { item = "fire_extinguisher", count = [1, 4] },
+]
+
+[room.pharmacy_floor]
+desc = "A drugstore sales floor: OTC medicine and first aid, toiletries, a snack and drinks aisle."
+size_m2 = [150, 1200]
+floor = "ground"
+tags = ["from.medical", "from.retail"]
+objects = [
+  { item = "metal_shelving", count = [8, 30], contains = ["pharmacy_otc"] },
+  { item = "metal_shelving", count = [2, 8], contains = ["grocery_household"] },
+  { item = "metal_shelving", count = [1, 4], contains = ["grocery_shelf_dry"] },
+  { item = "refrigerator", count = [1, 4], contains = ["grocery_drinks"] },
+  { item = "shopping_cart", count = [0, 10] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.pharmacy_counter]
+desc = "The pharmacy behind the counter: prescription stock, the controlled-drug safe, workstations."
+size_m2 = [15, 60]
+floor = "ground"
+tags = ["from.medical"]
+objects = [
+  { item = "metal_shelving", count = [4, 16], contains = ["pharmacy_rx"] },
+  { item = "safe", count = [1, 1], chance_pct = 80, contains = ["pharmacy_rx"] },
+  { item = "desk", count = [1, 2], contains = ["desk_drawer"] },
+  { item = "office_chair", count = [1, 3] },
+  { item = "desktop_pc", count = [1, 3] },
+  { item = "refrigerator", count = [1, 1], chance_pct = 90 },
+  { item = "sink", count = [1, 1] },
+]
+
+[room.hardware_floor]
+desc = "A hardware store floor: tool, fastener and fuel aisles, lumber, ladders, mowers, generators."
+size_m2 = [200, 3000]
+floor = "ground"
+tags = ["from.construction", "from.retail"]
+objects = [
+  { item = "metal_shelving", count = [6, 20], contains = ["hardware_shelf_tools"] },
+  { item = "metal_shelving", count = [6, 20], contains = ["hardware_shelf_fasteners"] },
+  { item = "metal_shelving", count = [2, 8], contains = ["hardware_shelf_fuel"] },
+  { item = "metal_shelving", count = [1, 4], contains = ["grocery_household"] },
+  { item = "extension_ladder", count = [2, 6] },
+  { item = "ladder_step", count = [2, 6] },
+  { item = "wheelbarrow", count = [1, 4] },
+  { item = "lawn_mower", count = [1, 6] },
+  { item = "portable_generator", count = [0, 4] },
+  { item = "hand_truck", count = [1, 3] },
+  { item = "shopping_cart", count = [2, 10] },
+  { item = "fire_extinguisher", count = [1, 4] },
+]
+
+[room.store_floor_generic]
+desc = "A general-merchandise floor (dollar, variety or corner store): household goods, dry and canned food, drinks."
+size_m2 = [80, 800]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "metal_shelving", count = [4, 16], contains = ["grocery_household"] },
+  { item = "metal_shelving", count = [3, 10], contains = ["grocery_shelf_dry"] },
+  { item = "metal_shelving", count = [2, 6], contains = ["grocery_shelf_canned"] },
+  { item = "refrigerator", count = [1, 6], contains = ["grocery_drinks"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.clothing_floor]
+desc = "EXTRA. A clothing-store floor: racks and tables of clothes, shoe wall, bags."
+size_m2 = [80, 1500]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "metal_shelving", count = [6, 30], contains = ["closet_clothes"] },
+  { item = "dining_table", count = [2, 10], contains = ["dresser_clothes"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.sporting_goods_floor]
+desc = "EXTRA. A sporting-goods floor: team sports, fitness, camping and hunting aisles."
+size_m2 = [200, 3000]
+floor = "ground"
+tags = ["from.retail", "from.outdoors"]
+objects = [
+  { item = "metal_shelving", count = [8, 30], contains = ["sporting_goods_stock"] },
+  { item = "metal_shelving", count = [1, 6], contains = ["closet_clothes"] },
+  { item = "bicycle", count = [2, 12] },
+  { item = "fire_extinguisher", count = [1, 3] },
+]
+
+[room.auto_parts_floor]
+desc = "EXTRA. An auto-parts store floor: fluids, batteries, tools and accessories."
+size_m2 = [150, 900]
+floor = "ground"
+tags = ["from.retail", "from.vehicle"]
+objects = [
+  { item = "metal_shelving", count = [6, 24], contains = ["auto_parts_stock"] },
+  { item = "metal_shelving", count = [1, 4], contains = ["hardware_shelf_tools"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.liquor_floor]
+desc = "EXTRA. A liquor-store floor: spirits shelving and beer coolers."
+size_m2 = [60, 600]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "metal_shelving", count = [4, 20], contains = ["liquor_shelf"] },
+  { item = "refrigerator", count = [2, 8], contains = ["grocery_drinks"] },
+  { item = "fire_extinguisher", count = [1, 1] },
+]
+
+[room.bookstore_floor]
+desc = "EXTRA. A bookstore floor: bookshelves, a map and stationery section, reading chairs."
+size_m2 = [80, 1200]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "bookshelf", count = [10, 60], contains = ["bookstore_shelf"] },
+  { item = "armchair", count = [0, 4] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]
+
+[room.gun_counter]
+desc = "A gun store's counter and wall racks: display cases, long-gun racks, the vault."
+size_m2 = [10, 60]
+floor = "ground"
+tags = ["from.retail", "from.police"]
+objects = [
+  { item = "metal_shelving", count = [2, 6], contains = ["gun_store_stock"] },
+  { item = "safe", count = [1, 2], contains = ["gun_store_stock"] },
+  { item = "security_camera_dvr", count = [1, 1], chance_pct = 85 },
+]
+loose = ["convenience_counter"]
+
+[room.checkout]
+desc = "A checkout area: registers and impulse racks, a drinks cooler; the cash is in the tills and back safe."
+size_m2 = [10, 80]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "metal_shelving", count = [1, 6], contains = ["convenience_counter"] },
+  { item = "refrigerator", count = [1, 2], chance_pct = 50, contains = ["grocery_drinks"] },
+  { item = "safe", count = [1, 1], chance_pct = 25, contains = ["cash"] },
+  { item = "security_camera_dvr", count = [1, 1], chance_pct = 60 },
+]
+
+[room.stockroom]
+desc = "A back stockroom: pallets and cases of stock, staff lockers, the manager's desk and safe."
+size_m2 = [20, 400]
+floor = "ground"
+tags = ["from.retail"]
+objects = [
+  { item = "metal_shelving", count = [3, 20], contains = ["warehouse_pallet"] },
+  { item = "pallet", count = [0, 6], contains = ["warehouse_pallet"] },
+  { item = "hand_truck", count = [1, 2] },
+  { item = "ladder_step", count = [1, 2] },
+  { item = "desk", count = [1, 1], chance_pct = 50, contains = ["desk_drawer"] },
+  { item = "metal_locker", count = [0, 8], contains = ["pockets_generic"] },
+  { item = "safe", count = [1, 1], chance_pct = 40, contains = ["cash"] },
+  { item = "fire_extinguisher", count = [1, 2] },
+]

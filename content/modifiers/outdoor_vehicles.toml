@@ -1,0 +1,331 @@
+# Domain E modifiers and detail tables: vehicles, street, garden, farm, outdoors, sports, weapons.
+# Variation that doesn't change behaviour lives here, not in new archetypes (N011).
+
+# ---------------------------------------------------------------- variants / material swaps
+[modifier.diesel_engine]
+kind = "variant"
+applies_to = { items = ["pickup_truck", "delivery_van"] }
+name_part = { slot = "variant", text = "diesel", order = 24 }
+desc = "a diesel-engined version"
+ops = [ { path = "features.fuel_tank.fuel", op = "set", value = ["diesel"] } ]
+weight = 2
+
+[modifier.farm_tank_gasoline]
+kind = "contents"
+applies_to = { items = ["farm_fuel_tank"] }
+name_part = { slot = "variant", text = "gasoline", order = 24 }
+desc = "stencilled GASOLINE; kept for the pickup and small engines"
+ops = [
+  { path = "features.fuel_tank.fuel", op = "set", value = ["gasoline"] },
+  { path = "contents.substance", op = "set", value = "gasoline" },
+]
+weight = 1
+
+[modifier.round_bale]
+kind = "variant"
+applies_to = { items = ["hay_bale"] }
+name_part = { slot = "variant", text = "round", order = 20 }
+desc = "a half-tonne round bale, only movable by machine"
+ops = [
+  { path = "dims_mm", op = "set", value = [1500, 1500, 1200] },
+  { path = "mass_g", op = "set", value = 500000 },
+  { path = "fixed", op = "set", value = true },
+  { path = "blocks", op = "set", value = "full" },
+  { path = "blocks_sight", op = "set", value = true },
+]
+
+[modifier.container_40ft]
+kind = "variant"
+applies_to = { items = ["shipping_container"] }
+name_part = { slot = "variant", text = "40-foot", order = 20 }
+desc = "the long forty-foot size"
+ops = [
+  { path = "dims_mm", op = "set", value = [12192, 2591, 2438] },
+  { path = "mass_g", op = "set", value = 3750000 },
+  { path = "features.container.capacity_ml", op = "set", value = 67700000 },
+]
+
+# The generic aluminum_body (x0.4 mass) suits steel tools, not bats: aluminium bats weigh about
+# the same as wood ones (the barrel is a thin hollow tube). This swaps material, keeps the mass.
+[modifier.bat_aluminum]
+kind = "material"
+applies_to = { items = ["baseball_bat"] }
+name_part = { slot = "variant", text = "aluminum", order = 25 }
+desc = "a hollow aluminium bat that pings on impact"
+ops = [
+  { path = "composition.body.material", op = "set", value = "aluminum" },
+  { path = "hollow", op = "set", value = true },
+  { path = "mass_g", op = "mul", value = 0.95 },
+]
+
+[modifier.barbed_top]
+kind = "variant"
+applies_to = { items = ["chain_link_fence"] }
+name_part = { slot = "variant", text = "barbed-topped", order = 24 }
+desc = "topped with three strands of barbed wire on angled arms"
+ops = [ { path = "features.climbable.difficulty", op = "add", value = 3 } ]
+weight = 1
+
+# ---------------------------------------------------------------- clock-driven states (N007)
+[modifier.water_gone_foul]
+kind = "contents"
+applies_to = { items = ["backyard_pool", "rain_barrel", "water_trough"] }
+desc = "green with algae, mosquito larvae wriggling at the surface"
+ops = [ { path = "contents.substance", op = "set", value = "water_foul" } ]
+clock_min_days = 21
+
+[modifier.overgrown_hedge]
+kind = "state"
+applies_to = { items = ["hedge"] }
+desc = "grown out into a wild, tangled wall"
+ops = [
+  { path = "dims_mm", op = "mul", value = 1.4 },
+  { path = "blocks", op = "set", value = "full" },
+]
+clock_min_days = 90
+
+[modifier.vine_covered]
+kind = "state"
+applies_to = { items = ["chain_link_fence", "wooden_fence"] }
+desc = "smothered in climbing vines"
+ops = [ { path = "blocks_sight", op = "set", value = true } ]
+clock_min_days = 120
+
+# ---------------------------------------------------------------- vehicle detail tables
+[detail_table.vehicle_paint]
+applies_to = { tags_any = ["cat.vehicle"] }
+pick = 1
+entries = [
+  { w = 8, text = "white" }, { w = 7, text = "black" }, { w = 6, text = "grey" },
+  { w = 6, text = "silver" }, { w = 4, text = "dark blue" }, { w = 4, text = "red" },
+  { w = 2, text = "forest green" }, { w = 1, text = "sun-faded beige" },
+  { w = 1, text = "primer grey on one door, the rest maroon" },
+]
+
+[detail_table.bumper_stickers]
+applies_to = { tags_any = ["cat.vehicle"] }
+chance_pct = 35
+pick = 1
+entries = [
+  { w = 4, text = "a bumper sticker bragging about an honor student" },
+  { w = 3, text = "a stick-figure family decal on the rear window", add_tags = ["flavor.sentimental"] },
+  { w = 3, text = "an oval 26.2 marathon sticker" },
+  { w = 3, text = "a peeling national-park sticker" },
+  { w = 2, text = "a sun-bleached campaign sticker from an old election" },
+  { w = 2, text = "a local radio station's call letters" },
+  { w = 1, text = "a sticker reading 'I BRAKE FOR NOTHING'" },
+]
+
+[detail_table.vehicle_interior]
+applies_to = { tags_any = ["cat.vehicle"] }
+chance_pct = 70
+pick = 1
+entries = [
+  { w = 5, text = "fast-food bags crumpled in the footwell, long since gone off", add_tags = ["emits.rot.1"] },
+  { w = 4, text = "a child seat strapped in the back", add_tags = ["flavor.sentimental"] },
+  { w = 3, text = "a dog crate and a scatter of fur in the back" },
+  { w = 3, text = "a gym bag on the passenger seat" },
+  { w = 2, text = "a folded paper road map in the door pocket", add_tags = ["flavor.readable"] },
+  { w = 2, text = "a handwritten note on the dash: 'went to find Mom'", add_tags = ["flavor.readable", "flavor.sentimental"] },
+  { w = 1, text = "the keys still dangling from the ignition", ops = [ { path = "features.lock", op = "remove" }, { path = "features.alarm", op = "remove" } ] },
+]
+
+[detail_table.vehicle_condition]
+applies_to = { tags_any = ["cat.vehicle"] }
+chance_pct = 60
+pick = 1
+entries = [
+  { w = 5, text = "sitting on two flat tyres" },
+  { w = 4, text = "its windshield spiderwebbed from a heavy impact" },
+  { w = 3, text = "the driver's door hanging open", ops = [ { path = "features.lock", op = "remove" } ] },
+  { w = 3, text = "a side window smashed in, glass cubes on the seat", ops = [ { path = "features.lock", op = "remove" } ] },
+  { w = 2, text = "nosed into a pole, the front end crumpled" },
+  { w = 2, text = "bloody handprints smeared down one side", add_tags = ["state.bloody"] },
+  { w = 1, text = "a trail of dried fuel under it where the tank was punctured", ops = [ { path = "features.fuel_tank.capacity_ml", op = "mul", value = 0.0 } ] },
+]
+
+[detail_table.fleet_livery]
+applies_to = { items = ["delivery_van", "semi_truck", "semi_trailer"] }
+pick = 1
+entries = [
+  { w = 6, text = "plain white with a fleet number stencilled on the door" },
+  { w = 3, text = "a regional bakery's name in faded script" },
+  { w = 3, text = "a moving company's cartoon mascot" },
+  { w = 2, text = "a furniture store's slogan in peeling vinyl" },
+  { w = 1, text = "an appliance-repair phone number that no one will answer" },
+]
+
+[detail_table.police_livery]
+applies_to = { items = ["police_cruiser"] }
+pick = 1
+entries = [
+  { w = 5, text = "in black-and-white city police livery" },
+  { w = 4, text = "in the tan and brown of the county sheriff" },
+  { w = 3, text = "in state trooper blue with a gold stripe" },
+  { w = 1, text = "unmarked grey, lights hidden in the grille" },
+]
+
+[detail_table.ambulance_livery]
+applies_to = { items = ["ambulance"] }
+pick = 1
+entries = [
+  { w = 5, text = "white with a red stripe and a county EMS emblem" },
+  { w = 3, text = "white and orange, marked for a private ambulance service" },
+  { w = 2, text = "hospital-branded, the back doors hanging wide" },
+]
+
+[detail_table.fire_engine_livery]
+applies_to = { items = ["fire_engine"] }
+pick = 1
+entries = [
+  { w = 6, text = "fire-engine red with a white cab roof" },
+  { w = 2, text = "lime-yellow, as some departments paint them" },
+  { w = 1, text = "red, with a volunteer company's name hand-lettered in gold", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.bicycle_condition]
+applies_to = { items = ["bicycle"] }
+chance_pct = 50
+pick = 1
+entries = [
+  { w = 4, text = "with a flat rear tyre", ops = [ { path = "features.wheels.terrain", op = "set", value = "smooth" } ] },
+  { w = 3, text = "with a wire basket on the handlebars" },
+  { w = 3, text = "with streamers on the grips and a bell", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "with a rusted chain that squeaks", ops = [ { path = "features.wheels.rattle", op = "set", value = "normal" } ] },
+]
+
+[detail_table.cart_quirk]
+applies_to = { items = ["shopping_cart"] }
+chance_pct = 50
+pick = 1
+entries = [
+  { w = 5, text = "with one wheel that wobbles and squeals" },
+  { w = 2, text = "with a coin-lock chain dangling from the handle" },
+  { w = 1, text = "filled with someone's abandoned belongings", add_tags = ["flavor.sentimental"] },
+]
+
+# ---------------------------------------------------------------- street / yard detail tables
+[detail_table.street_graffiti]
+applies_to = { tags_any = ["cat.street", "cat.vehicle.trailer"] }
+chance_pct = 30
+pick = 1
+entries = [
+  { w = 5, text = "tagged with spray-painted initials" },
+  { w = 3, text = "plastered with layers of torn flyers" },
+  { w = 2, text = "spray-painted with a search mark: an X, a date and a zero", add_tags = ["flavor.readable"] },
+  { w = 2, text = "sprayed with a crude arrow and 'NOT SAFE'", add_tags = ["flavor.readable"] },
+  { w = 1, text = "sprayed with a phone number and 'WE ARE AT THE SCHOOL'", add_tags = ["flavor.readable", "flavor.sentimental"] },
+]
+
+[detail_table.mailbox_contents]
+applies_to = { items = ["mailbox"] }
+pick = 1
+entries = [
+  { w = 5, text = "stuffed with weeks of unread bills and flyers" },
+  { w = 3, text = "holding a birthday card addressed in a child's handwriting", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "with a package notice for a delivery that never came" },
+  { w = 1, text = "empty, its flag still raised" },
+]
+
+[detail_table.road_sign_text]
+applies_to = { items = ["road_sign"] }
+pick = 1
+entries = [
+  { w = 6, text = "a street-name blade at the corner" },
+  { w = 4, text = "a red octagonal STOP sign" },
+  { w = 2, text = "a speed-limit sign riddled with old birdshot" },
+  { w = 2, text = "a green highway guide sign with distances to the next towns" },
+  { w = 1, text = "a YIELD sign someone has altered to read 'RUN'" },
+]
+
+[detail_table.bike_rack_bikes]
+applies_to = { items = ["bike_rack"] }
+chance_pct = 40
+pick = 1
+entries = [
+  { w = 4, text = "with a bicycle still locked to it by a cable lock" },
+  { w = 2, text = "with a lone front wheel chained to it, the rest of the bike gone" },
+  { w = 1, text = "with three children's bikes locked together", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.weathering]
+applies_to = { tags_any = ["cat.garden", "cat.furniture.outdoor"] }
+chance_pct = 50
+pick = 1
+entries = [
+  { w = 5, text = "grey and weathered" },
+  { w = 3, text = "streaked with bird droppings" },
+  { w = 2, text = "freshly painted, just before it all happened" },
+]
+
+[detail_table.tree_species]
+applies_to = { items = ["tree"] }
+pick = 1
+entries = [
+  { w = 5, text = "a spreading red maple" }, { w = 4, text = "an old white oak" },
+  { w = 3, text = "a tall loblolly pine, bark sticky with resin" },
+  { w = 2, text = "a sycamore with peeling pale bark" },
+  { w = 1, text = "an apple tree, windfalls rotting in the grass", add_tags = ["emits.rot.1"] },
+]
+
+[detail_table.gnome_pose]
+applies_to = { items = ["garden_gnome"] }
+pick = 1
+entries = [
+  { w = 5, text = "holding a tiny fishing rod" },
+  { w = 3, text = "pushing a wheelbarrow of painted flowers" },
+  { w = 2, text = "painted as a zombie for last Halloween" },
+  { w = 2, text = "holding a sign reading 'GO AWAY'", add_tags = ["flavor.readable"] },
+  { w = 1, text = "wearing a knitted scarf someone made for it", add_tags = ["flavor.sentimental"] },
+]
+
+# ---------------------------------------------------------------- gear and weapon detail tables
+[detail_table.gear_colour]
+applies_to = { tags_any = ["cat.camping"] }
+pick = 1
+entries = [
+  { w = 5, text = "forest green" }, { w = 4, text = "orange and grey" },
+  { w = 3, text = "royal blue" }, { w = 2, text = "camouflage patterned" },
+  { w = 1, text = "child-sized cartoon print", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.fireworks_kind]
+applies_to = { items = ["fireworks"] }
+pick = 1
+entries = [
+  { w = 5, text = "a 200-gram aerial repeater cake with a patriotic wrapper" },
+  { w = 3, text = "a brick of firecracker strings" },
+  { w = 2, text = "a family assortment pack with fountains and bottle rockets" },
+]
+
+[detail_table.golf_club_kind]
+applies_to = { items = ["golf_club"] }
+pick = 1
+entries = [
+  { w = 5, text = "a 7-iron" }, { w = 3, text = "a pitching wedge" },
+  { w = 2, text = "a putter with a worn grip" },
+]
+
+[detail_table.firearm_finish]
+applies_to = { tags_any = ["cat.weapon.firearm"] }
+pick = 1
+entries = [
+  { w = 6, text = "matte black" }, { w = 3, text = "blued steel, worn silver at the edges" },
+  { w = 2, text = "stainless" }, { w = 1, text = "with initials engraved on the side", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.firearm_furniture]
+applies_to = { items = ["shotgun", "hunting_rifle"] }
+pick = 1
+entries = [
+  { w = 5, text = "with a walnut stock" }, { w = 4, text = "with a black synthetic stock" },
+  { w = 2, text = "with a camouflage stock" },
+]
+
+[detail_table.shotshell_load]
+applies_to = { items = ["ammo_12ga"] }
+pick = 1
+entries = [
+  { w = 4, text = "loaded with 00 buckshot" }, { w = 4, text = "loaded with birdshot" },
+  { w = 1, text = "loaded with rifled slugs" },
+]

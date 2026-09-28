@@ -1,0 +1,228 @@
+# Domain B modifiers and detail tables: tools, construction stock, fasteners, fuel, salvage.
+# Lean rule (N011): tiers, sizes, platforms and fuel colour-codes are modifiers on one
+# archetype; flavour is detail tables. Generic size/heavy_duty/cheap live in variants.toml.
+
+# ---------------------------------------------------------------- power
+[modifier.cordless_platform]
+kind = "variant"
+applies_to = { items = ["angle_grinder", "circular_saw"] }
+name_part = { slot = "variant", text = "cordless", order = 23 }
+desc = "a battery version that takes the same slide-on packs as the cordless drill"
+ops = [
+  { path = "power_use", op = "remove" },
+  { path = "features.slot", op = "set", value = { accepts = "cat.battery.drill", count = 1 } },
+]
+
+[modifier.drill_battery_high_capacity]
+kind = "variant"
+applies_to = { items = ["drill_battery"] }
+name_part = { slot = "variant", text = "5 Ah", order = 24 }
+desc = "a fat high-capacity pack"
+ops = [
+  { path = "power_source.capacity_wh", op = "set", value = 90 },
+  { path = "mass_g", op = "mul", value = 1.6 },
+]
+
+[modifier.battery_rechargeable]
+kind = "variant"
+applies_to = { items = ["battery_aa", "battery_d"] }
+name_part = { slot = "variant", text = "rechargeable", order = 24 }
+desc = "a rechargeable NiMH cell: a little less charge, but it can be refilled"
+ops = [
+  { path = "power_source.rechargeable", op = "set", value = true },
+  { path = "power_source.capacity_wh", op = "mul", value = 0.8 },
+]
+
+[modifier.generator_inverter]
+kind = "variant"
+applies_to = { items = ["portable_generator"] }
+name_part = { slot = "variant", text = "inverter", order = 23 }
+desc = "an enclosed suitcase-style inverter generator: half the power, far quieter, carried by hand"
+ops = [
+  { path = "use_noise", op = "set", value = "loud" },
+  { path = "power_source.output_w", op = "set", value = 2200 },
+  { path = "features.fuel_tank.capacity_ml", op = "set", value = 4500 },
+  { path = "mass_g", op = "set", value = 22000 },
+  { path = "dims_mm", op = "set", value = [520, 430, 300] },
+  { path = "features.wheels", op = "remove" },
+]
+
+# ---------------------------------------------------------------- security tiers
+[modifier.security_chain]
+kind = "material"
+applies_to = { items = ["steel_chain"] }
+name_part = { slot = "variant", text = "hardened", order = 23 }
+desc = "square-link hardened security chain: bolt cutters and hacksaws skate off it"
+ops = [ { path = "composition.links.material", op = "set", value = "tool_steel" } ]
+
+[modifier.padlock_hardened]
+kind = "material"
+applies_to = { items = ["padlock"] }
+name_part = { slot = "variant", text = "high-security", order = 23 }
+desc = "a hardened boron-steel body and shrouded shackle with a pick-resistant cylinder"
+ops = [
+  { path = "composition.body.material", op = "set", value = "tool_steel" },
+  { path = "features.lock.tier", op = "set", value = 5 },
+]
+
+# ---------------------------------------------------------------- stock sizes
+[modifier.rope_100ft]
+kind = "variant"
+applies_to = { items = ["nylon_rope"] }
+name_part = { slot = "suffix", text = "(100 ft)", order = 80 }
+desc = "a longer 100-foot coil"
+ops = [
+  { path = "dims_mm", op = "set", value = [30480, 10, 10] },
+  { path = "mass_g", op = "mul", value = 2 },
+  { path = "units", op = "mul", value = 2 },
+]
+
+[modifier.plywood_thick]
+kind = "variant"
+applies_to = { items = ["plywood_sheet"] }
+name_part = { slot = "variant", text = "3/4-inch", order = 23 }
+desc = "a thick sheet of subfloor-grade plywood"
+ops = [
+  { path = "dims_mm", op = "set", value = [2440, 1220, 18] },
+  { path = "mass_g", op = "mul", value = 1.5 },
+]
+
+[modifier.steel_toolbox]
+kind = "material"
+applies_to = { items = ["toolbox"] }
+name_part = { slot = "variant", text = "steel", order = 25 }
+desc = "a painted steel toolbox, dented and heavy"
+ops = [
+  { path = "composition.body.material", op = "set", value = "mild_steel" },
+  { path = "mass_g", op = "mul", value = 2.5 },
+]
+
+# ---------------------------------------------------------------- contents presets
+[modifier.sandbag_filled]
+kind = "contents"
+applies_to = { items = ["sandbag"] }
+name_part = { slot = "suffix", text = "(filled)", order = 85 }
+desc = "filled with sand and tied off"
+ops = [ { path = "contents", op = "set", value = { substance = "sand", fill_pct = [65, 80] } } ]
+
+[modifier.fuel_can_diesel]
+kind = "contents"
+applies_to = { items = ["gas_can"] }
+desc = "painted yellow, the colour code for diesel"
+ops = [
+  { path = "name", op = "set", value = "diesel can" },
+  { path = "contents.substance", op = "set", value = "diesel" },
+]
+
+[modifier.fuel_can_kerosene]
+kind = "contents"
+applies_to = { items = ["gas_can"] }
+desc = "painted blue, the colour code for kerosene"
+ops = [
+  { path = "name", op = "set", value = "kerosene can" },
+  { path = "contents.substance", op = "set", value = "kerosene" },
+]
+
+[modifier.steel_jerrycan]
+kind = "material"
+applies_to = { items = ["gas_can"] }
+desc = "a pressed-steel military-pattern jerrycan with a locking cam lid"
+ops = [
+  { path = "name", op = "set", value = "jerrycan" },
+  { path = "composition.body.material", op = "set", value = "mild_steel" },
+  { path = "mass_g", op = "mul", value = 2.5 },
+  { path = "features.container.capacity_ml", op = "set", value = 20000 },
+]
+
+[modifier.drum_diesel]
+kind = "contents"
+applies_to = { items = ["drum_55gal"] }
+desc = "stencilled DIESEL, heavy and sloshing"
+ops = [ { path = "contents", op = "set", value = { substance = "diesel", fill_pct = [10, 100] } } ]
+
+[modifier.drum_water]
+kind = "contents"
+applies_to = { items = ["drum_55gal"] }
+desc = "a rain or emergency water drum, of doubtful cleanliness"
+ops = [ { path = "contents", op = "set", value = { substance = "water_untreated", fill_pct = [20, 100] } } ]
+
+[modifier.drum_waste_oil]
+kind = "contents"
+applies_to = { items = ["drum_55gal"] }
+desc = "half full of black used motor oil"
+ops = [ { path = "contents", op = "set", value = { substance = "motor_oil", fill_pct = [20, 80] } } ]
+
+[modifier.open_top_drum]
+kind = "variant"
+applies_to = { items = ["drum_55gal"] }
+name_part = { slot = "prefix", text = "open-top", order = 40 }
+desc = "its lid cut away; a ready burn barrel or rain butt"
+ops = [
+  { path = "features.container.opening_mm", op = "set", value = 570 },
+  { path = "features.container.sealable", op = "set", value = false },
+  { path = "features.container.closable", op = "set", value = false },
+  { path = "features.container.compat", op = "set", value = ["liquid", "granular", "solid"] },
+]
+
+# ---------------------------------------------------------------- detail tables
+[detail_table.tool_wear_marks]
+applies_to = { tags_any = ["cat.tool"] }
+chance_pct = 50
+pick = 1
+entries = [
+  { w = 5, text = "with initials scratched into the handle", add_tags = ["flavor.sentimental"] },
+  { w = 4, text = "its grip wrapped in black friction tape" },
+  { w = 4, text = "spattered with old house paint" },
+  { w = 3, text = "dipped in orange paint so nobody on the job site walks off with it" },
+  { w = 2, text = "stamped with a school-district inventory number" },
+  { w = 2, text = "worn shiny where a hand has held it for decades", ops = [ { path = "durability", op = "add", value = -1 } ] },
+  { w = 1, text = "still wearing a hardware-store price sticker" },
+]
+
+[detail_table.fastener_amount]
+applies_to = { tags_any = ["cat.fastener"] }
+pick = 1
+entries = [
+  { w = 5, text = "unopened" },
+  { w = 4, text = "partly used", ops = [ { path = "units", op = "mul", value = 0.6 } ] },
+  { w = 2, text = "nearly used up", ops = [ { path = "units", op = "mul", value = 0.2 } ] },
+]
+
+[detail_table.lumber_marks]
+applies_to = { items = ["lumber_2x4", "plywood_sheet", "wood_plank"] }
+chance_pct = 60
+pick = 1
+entries = [
+  { w = 5, text = "stamped with a grade mark and a mill number" },
+  { w = 3, text = "scrawled with pencil measurements" },
+  { w = 2, text = "greenish pressure-treated wood — its smoke is toxic if burned", add_tags = ["hazard.toxic"] },
+  { w = 2, text = "warped and weathered grey from sitting outside", ops = [ { path = "durability", op = "add", value = -2 } ] },
+]
+
+[detail_table.tarp_colour]
+applies_to = { items = ["tarp"] }
+pick = 1
+entries = [
+  { w = 6, text = "bright blue" }, { w = 3, text = "brown and green" }, { w = 2, text = "silver, reflective on one side" },
+  { w = 2, text = "woodland camouflage" }, { w = 1, text = "patched with duct tape", ops = [ { path = "durability", op = "add", value = -2 } ] },
+]
+
+[detail_table.drum_markings]
+applies_to = { items = ["drum_55gal"] }
+pick = 1
+entries = [
+  { w = 4, text = "painted blue with a faded chemical label" },
+  { w = 3, text = "stencilled NON-POTABLE in white" },
+  { w = 2, text = "black, dented, with a hazmat diamond half scraped off" },
+  { w = 1, text = "spray-painted with a crude arrow and a street name", add_tags = ["flavor.readable"] },
+]
+
+[detail_table.scrap_metal_origin]
+applies_to = { items = ["scrap_metal"] }
+pick = 1
+entries = [
+  { w = 4, text = "cut from a car door skin, paint still on one side" },
+  { w = 3, text = "a length of bent angle iron and plate welded together" },
+  { w = 3, text = "a stamped bracket off some machine" },
+  { w = 1, text = "part of a road sign, reflective letters still legible", add_tags = ["flavor.readable"] },
+]

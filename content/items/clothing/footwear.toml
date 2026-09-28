@@ -1,0 +1,180 @@
+# Clothing: footwear (world-catalog §6.C). Domain C.
+# dims_mm and mass_g are for the PAIR standing side by side. use_noise is the footstep noise
+# class the footwear adds when walking on hard floors (survival-actions §2.1, M13).
+
+[item.sneakers]
+name = "sneakers"
+tags = ["cat.clothing.footwear", "from.bedroom", "from.school", "from.retail", "slot.feet"]
+shape = "complex"
+dims_mm = [300, 220, 120]
+mass_g = 800
+use_noise = "quiet"
+absorbs_water = true
+absorbs_scent = true
+durability = 5
+encumbrance = 0
+armor = { blunt = 1, cut = 1, pierce = 1, bite = 2 }
+desc = "A pair of cushioned mesh running shoes with rubber soles."
+glyph = "item.shoes"
+why = "Quiet, light footwear for sneaking and running (M13); mesh soaks through in rain."
+brand_cats = ["footwear"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.sneakers.composition.sole]
+material = "rubber"
+share = 60
+[item.sneakers.composition.upper]
+material = "polyester"
+share = 35
+[item.sneakers.composition.laces]
+material = "cotton"
+share = 5
+
+[item.sneakers.features.wearable]
+slot = "feet"
+layer = "outer"
+coverage = ["feet"]
+insulation_clo10 = 1
+waterproof = 1
+
+[item.work_boots]
+name = "work boots"
+tags = ["cat.clothing.footwear", "from.construction", "from.industrial", "from.farm", "from.garage", "slot.feet"]
+shape = "complex"
+dims_mm = [310, 240, 200]
+mass_g = 2200
+use_noise = "normal"
+absorbs_water = true
+absorbs_scent = true
+durability = 9
+encumbrance = 2
+armor = { blunt = 6, cut = 5, pierce = 3, bite = 6 }
+desc = "A pair of eight-inch laced leather work boots with steel toe caps and lugged rubber soles."
+glyph = "item.boots"
+why = "Ankle-high bite armour against crawlers (M16), steel toes for kicking and crush, good footing on rubble."
+brand_cats = ["footwear"]
+details = ["leather_look"]
+value_class = "valuable"
+
+[item.work_boots.composition.upper]
+material = "leather"
+share = 60
+[item.work_boots.composition.sole]
+material = "rubber"
+share = 25
+[item.work_boots.composition.toe_caps]
+material = "mild_steel"
+share = 10
+[item.work_boots.composition.laces]
+material = "nylon_fabric"
+share = 5
+
+[item.work_boots.features.wearable]
+slot = "feet"
+layer = "outer"
+coverage = ["feet", "shins"]
+insulation_clo10 = 2
+waterproof = 5
+windproof = 8
+
+[item.dress_shoes]
+name = "dress shoes"
+tags = ["cat.clothing.footwear", "from.office", "from.bedroom", "from.church", "slot.feet"]
+shape = "complex"
+dims_mm = [300, 220, 110]
+mass_g = 1000
+use_noise = "normal"
+absorbs_water = true
+absorbs_scent = true
+durability = 6
+encumbrance = 1
+armor = { blunt = 2, cut = 2, pierce = 1, bite = 3 }
+desc = "A pair of polished leather oxfords with hard heels that click on tile."
+glyph = "item.shoes"
+why = "Office outfit footwear (P-IT-03): protective leather but loud heels and poor grip."
+brand_cats = ["footwear", "clothing_formal"]
+details = ["leather_look"]
+value_class = "common"
+
+[item.dress_shoes.composition.upper]
+material = "leather"
+share = 75
+[item.dress_shoes.composition.heel]
+material = "rubber"
+share = 25
+
+[item.dress_shoes.features.wearable]
+slot = "feet"
+layer = "outer"
+coverage = ["feet"]
+insulation_clo10 = 1
+waterproof = 2
+windproof = 6
+
+[item.slippers]
+name = "slippers"
+tags = ["cat.clothing.footwear", "from.bedroom", "from.living", "slot.feet"]
+shape = "complex"
+dims_mm = [280, 220, 80]
+mass_g = 300
+fill_pct = 10
+use_noise = "silent"
+absorbs_water = true
+absorbs_scent = true
+durability = 2
+encumbrance = 1
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A pair of plush fleece house slippers with thin rubber soles."
+glyph = "item.shoes"
+why = "What a night-time sleeper fled in: silent but useless on glass and rubble."
+brand_cats = ["clothing_basics"]
+details = ["clothing_colour"]
+value_class = "junk"
+
+[item.slippers.composition.plush]
+material = "polyester"
+share = 70
+[item.slippers.composition.sole]
+material = "rubber"
+share = 30
+
+[item.slippers.features.wearable]
+slot = "feet"
+layer = "outer"
+coverage = ["feet"]
+insulation_clo10 = 1
+
+[item.rubber_boots]
+name = "rubber boots"
+tags = ["cat.clothing.footwear", "from.farm", "from.garden", "from.garage", "from.outdoors", "slot.feet"]
+shape = "complex"
+dims_mm = [420, 250, 220]
+mass_g = 1800
+use_noise = "normal"
+absorbs_water = false
+absorbs_scent = false
+durability = 7
+encumbrance = 3
+armor = { blunt = 1, cut = 2, pierce = 1, bite = 3 }
+desc = "A pair of knee-high natural rubber boots with a cotton lining."
+glyph = "item.boots"
+why = "Fully waterproof to the knee (wading, flood water, M12); thick rubber shins resist crawler bites somewhat; clumsy to run in."
+brand_cats = ["footwear", "outdoors"]
+value_class = "useful"
+
+[item.rubber_boots.composition.body]
+material = "rubber"
+share = 90
+[item.rubber_boots.composition.lining]
+material = "cotton"
+share = 10
+
+[item.rubber_boots.features.wearable]
+slot = "feet"
+layer = "outer"
+coverage = ["feet", "shins"]
+insulation_clo10 = 1
+waterproof = 10
+windproof = 10

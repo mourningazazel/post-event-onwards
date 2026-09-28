@@ -1,0 +1,110 @@
+# Construction materials, fasteners and hardware. Exemplar file.
+
+[item.wood_plank]
+name = "wooden plank"
+tags = ["cat.construction.lumber", "from.construction", "from.garage", "use.barricade", "use.fuel"]
+shape = "sheet"
+dims_mm = [2400, 140, 20]
+mass_g = 3000
+desc = "A length of pine board."
+glyph = "item.plank"
+why = "Boards windows and doors, fuels fires, becomes clubs and splints when sawn."
+attach_surface = { kind = "porous", contact_area_mm2 = 30000 }
+divisible = { mode = "length", min_piece_mm = 100, needs = "saw>=5" }
+value_class = "useful"
+
+[item.wood_plank.composition.board]
+material = "softwood"
+share = 100
+
+[item.nails_box]
+name = "box of nails"
+tags = ["cat.fastener.nail", "from.construction", "from.garage", "use.fastener"]
+shape = "small"
+dims_mm = [120, 80, 50]
+mass_g = 1000
+units = 200
+desc = "A cardboard box of 3-inch common nails."
+glyph = "item.box_small"
+why = "Consumable fastener for boarding up and building (Load vs Hold: nails)."
+value_class = "useful"
+
+[item.nails_box.composition.nails]
+material = "mild_steel"
+share = 90
+[item.nails_box.composition.box]
+material = "cardboard"
+share = 10
+
+[item.duct_tape]
+name = "duct tape"
+tags = ["cat.fastener.tape", "from.garage", "from.construction", "from.retail", "use.fastener"]
+shape = "block"
+dims_mm = [100, 100, 50]
+mass_g = 300
+units = 40
+desc = "A roll of silver cloth-backed tape."
+glyph = "item.tape"
+why = "The universal quick fastener: repairs, weapons, armour, sealing (N010 joints)."
+brand_cats = ["adhesives"]
+divisible = { mode = "length", needs = "none" }
+value_class = "valuable"
+
+[item.duct_tape.composition.backing]
+material = "ldpe"
+share = 60
+[item.duct_tape.composition.scrim]
+material = "cotton"
+share = 20
+[item.duct_tape.composition.adhesive]
+material = "rubber"
+share = 20
+
+[item.duct_tape.capabilities]
+adhere = 5
+
+[item.steel_pipe]
+name = "steel pipe"
+tags = ["cat.construction.pipe", "from.construction", "from.industrial", "from.garage", "use.weapon"]
+shape = "rod"
+dims_mm = [1000, 27, 27]
+mass_g = 2400
+hollow = true
+durability = 9
+desc = "A metre of galvanised steel pipe."
+glyph = "item.pipe"
+why = "Heavy reach weapon, lever, and a socket haft for improvised spears and hammers."
+attach_surface = { kind = "round", contact_area_mm2 = 8000, wrap_girth_mm = 85 }
+divisible = { mode = "length", min_piece_mm = 150, needs = "saw>=7" }
+value_class = "useful"
+
+[item.steel_pipe.composition.pipe]
+material = "mild_steel"
+share = 100
+
+[item.steel_pipe.features.grip]
+hands = 2
+girth_mm = 27
+[item.steel_pipe.features.socket]
+end = "far"
+max_attach_mass_g = 1500
+max_attach_size_mm = 60
+accepts = ["blade", "block", "sphere", "small"]
+joints = ["duct_tape", "cord", "wire", "epoxy", "weld"]
+
+[item.brick]
+name = "brick"
+tags = ["cat.construction.masonry", "from.construction", "from.street", "from.garden", "use.weapon"]
+shape = "block"
+dims_mm = [215, 102, 65]
+mass_g = 2300
+aerodynamics = "fair"
+desc = "A red clay brick."
+glyph = "item.brick"
+why = "Throwable weapon, window breaker, doorstop, crude hammer head."
+attach_surface = { kind = "rough", contact_area_mm2 = 22000, wrap_girth_mm = 330 }
+value_class = "junk"
+
+[item.brick.composition.brick]
+material = "brick"
+share = 100

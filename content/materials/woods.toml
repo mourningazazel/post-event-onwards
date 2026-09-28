@@ -1,0 +1,74 @@
+[material.softwood]
+family = "wood"
+density_mg_cm3 = 500
+hardness = 3
+toughness = "moderate"
+rigidity = 6
+edge_holding = 1
+flammability = "moderate"
+fuel_value_kj_g = 17
+water = "swells"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "porous"
+desc = "Pine/fir lumber: studs, planks, fence boards, pallets, broom handles, furniture frames."
+
+[material.hardwood]
+family = "wood"
+density_mg_cm3 = 750
+hardness = 4
+toughness = "tough"
+rigidity = 7
+edge_holding = 2
+flammability = "moderate"
+fuel_value_kj_g = 17
+water = "swells"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "porous"
+desc = "Oak/maple/ash: bats, tool handles, flooring, quality furniture."
+
+[material.plywood]
+family = "wood"
+density_mg_cm3 = 600
+hardness = 3
+toughness = "moderate"
+rigidity = 6
+edge_holding = 1
+flammability = "moderate"
+fuel_value_kj_g = 17
+water = "swells"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "porous"
+desc = "Sheets for boarding windows, subfloors, cabinets."
+
+[material.particleboard]
+family = "wood"
+density_mg_cm3 = 700
+hardness = 2
+toughness = "fragile"
+rigidity = 5
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 16
+water = "ruined"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "porous"
+desc = "Cheap flat-pack furniture and hollow-core door skins. Crumbles when wet or struck."
+
+[material.green_wood]
+family = "wood"
+density_mg_cm3 = 900
+hardness = 3
+toughness = "tough"
+rigidity = 5
+edge_holding = 0
+flammability = "low"
+fuel_value_kj_g = 9
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "rough"
+desc = "Living/fresh wood: branches, saplings, hedges. Smoky and hard to burn."

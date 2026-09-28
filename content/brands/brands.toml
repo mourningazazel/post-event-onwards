@@ -1,0 +1,332 @@
+# Fictional brand universe (N010; docs/design/brands.md). ALL names invented.
+# conflict_check: "pending" until a web + trademark search clears the name before any release.
+# Items reference categories via brand_cats; generation picks a brand in that category
+# (weighted by region and store chain) and adds a brand.<id> tag, which composes the name.
+
+# ---------------------------------------------------------------- parent companies
+[company.marrowgate]
+name = "Marrowgate Consolidated"
+desc = "Food and household staples conglomerate."
+[company.ostrander_vale]
+name = "Ostrander & Vale"
+desc = "Health and personal care."
+[company.hollin]
+name = "Hollin Tool & Supply"
+desc = "Tools, hardware, fasteners."
+[company.northvane_group]
+name = "Northvane Apparel Group"
+desc = "Clothing and footwear."
+[company.lumaven_group]
+name = "Lumaven Electronics"
+desc = "Consumer electronics and batteries."
+[company.delacourt]
+name = "Delacourt Beverage Group"
+desc = "Soft drinks, beer, spirits."
+[company.anselm]
+name = "Anselm Home Group"
+desc = "Kitchenware and appliances."
+[company.rovell]
+name = "Rovell Automotive"
+desc = "Auto parts, fluids, batteries; also the Aldane and Kestrand vehicle marques."
+[company.cairnmoor]
+name = "Cairnmoor Outdoors"
+desc = "Camping, hunting, sporting goods."
+[company.harwick]
+name = "Harwick Arms & Cartridge"
+desc = "Firearms and ammunition (fictional)."
+[company.quillmark]
+name = "Quillmark"
+desc = "Paper, office and school supplies, maps."
+[company.tumbleberry]
+name = "Tumbleberry Brands"
+desc = "Toys, baby products, pet food."
+[company.emberline]
+name = "Emberline"
+desc = "Lighters, matches, fire starters."
+
+# ---------------------------------------------------------------- brands
+[brand.fennick_hollow]
+name = "Fennick Hollow"
+company = "marrowgate"
+tier = "standard"
+categories = ["cereal", "bread", "dry_food", "snacks"]
+conflict_check = "pending"
+[brand.crestmoor]
+name = "Crestmoor"
+company = "marrowgate"
+tier = "standard"
+categories = ["canned_food"]
+conflict_check = "pending"
+[brand.pellbrook]
+name = "Pellbrook"
+company = "marrowgate"
+tier = "standard"
+categories = ["dairy"]
+conflict_check = "pending"
+[brand.tidewell]
+name = "Tidewell"
+company = "marrowgate"
+tier = "budget"
+categories = ["water", "sports_drink"]
+conflict_check = "pending"
+[brand.marrowgate_home]
+name = "Marrowgate Home"
+company = "marrowgate"
+tier = "budget"
+categories = ["household", "paper_goods"]
+conflict_check = "pending"
+
+[brand.quellin]
+name = "Quellin"
+company = "ostrander_vale"
+tier = "standard"
+categories = ["medicine"]
+conflict_check = "pending"
+[brand.carrowmend]
+name = "Carrowmend"
+company = "ostrander_vale"
+tier = "standard"
+categories = ["first_aid"]
+conflict_check = "pending"
+[brand.veloria]
+name = "Veloria"
+company = "ostrander_vale"
+tier = "premium"
+categories = ["personal_care"]
+conflict_check = "pending"
+
+[brand.brakewright]
+name = "Brakewright"
+company = "hollin"
+tier = "standard"
+categories = ["tools"]
+conflict_check = "pending"
+[brand.brakewright_pro]
+name = "Brakewright Pro"
+company = "hollin"
+tier = "premium"
+categories = ["tools"]
+conflict_check = "pending"
+[brand.tenacor]
+name = "Tenacor"
+company = "hollin"
+tier = "standard"
+categories = ["adhesives"]
+conflict_check = "pending"
+[brand.tenacor_pro]
+name = "Tenacor Pro"
+company = "hollin"
+tier = "premium"
+categories = ["adhesives"]
+conflict_check = "pending"
+[brand.lashline]
+name = "Lashline"
+company = "hollin"
+tier = "standard"
+categories = ["rope"]
+conflict_check = "pending"
+[brand.ironhale]
+name = "Ironhale"
+company = "hollin"
+tier = "premium"
+categories = ["power_tools"]
+conflict_check = "pending"
+
+[brand.northvane]
+name = "Northvane"
+company = "northvane_group"
+tier = "premium"
+categories = ["clothing_outdoor"]
+conflict_check = "pending"
+[brand.calder_pryce]
+name = "Calder & Pryce"
+company = "northvane_group"
+tier = "premium"
+categories = ["clothing_formal"]
+conflict_check = "pending"
+[brand.loomwell]
+name = "Loomwell"
+company = "northvane_group"
+tier = "budget"
+categories = ["clothing_basics"]
+conflict_check = "pending"
+[brand.tread_tally]
+name = "Tread & Tally"
+company = "northvane_group"
+tier = "standard"
+categories = ["footwear"]
+conflict_check = "pending"
+
+[brand.lumaven]
+name = "Lumaven"
+company = "lumaven_group"
+tier = "standard"
+categories = ["lighting", "batteries"]
+conflict_check = "pending"
+[brand.corvell]
+name = "Corvell"
+company = "lumaven_group"
+tier = "premium"
+categories = ["phones", "computers"]
+conflict_check = "pending"
+[brand.tellwyn]
+name = "Tellwyn"
+company = "lumaven_group"
+tier = "standard"
+categories = ["radios"]
+conflict_check = "pending"
+
+[brand.zephro]
+name = "Zephro"
+company = "delacourt"
+tier = "standard"
+categories = ["soda"]
+conflict_check = "pending"
+[brand.tallmast]
+name = "Tallmast Brewing"
+company = "delacourt"
+tier = "standard"
+categories = ["beer"]
+conflict_check = "pending"
+[brand.varrick_sons]
+name = "Varrick & Sons"
+company = "delacourt"
+tier = "premium"
+categories = ["liquor"]
+conflict_check = "pending"
+
+[brand.keenhart]
+name = "Keenhart"
+company = "anselm"
+tier = "standard"
+categories = ["cutlery", "cookware"]
+conflict_check = "pending"
+[brand.frostmere]
+name = "Frostmere"
+company = "anselm"
+tier = "standard"
+categories = ["appliances"]
+conflict_check = "pending"
+
+[brand.rovell_parts]
+name = "Rovell"
+company = "rovell"
+tier = "standard"
+categories = ["automotive"]
+conflict_check = "pending"
+[brand.aldane]
+name = "Aldane Motors"
+company = "rovell"
+tier = "standard"
+categories = ["vehicles"]
+conflict_check = "pending"
+[brand.kestrand]
+name = "Kestrand"
+company = "rovell"
+tier = "standard"
+categories = ["vehicles", "trucks"]
+conflict_check = "pending"
+
+[brand.cairnmoor]
+name = "Cairnmoor"
+company = "cairnmoor"
+tier = "premium"
+categories = ["outdoors"]
+conflict_check = "pending"
+[brand.stillhunt]
+name = "Stillhunt"
+company = "cairnmoor"
+tier = "standard"
+categories = ["sporting_goods", "hunting"]
+conflict_check = "pending"
+
+[brand.harwick]
+name = "Harwick"
+company = "harwick"
+tier = "standard"
+categories = ["firearms"]
+conflict_check = "pending"
+[brand.bramlett]
+name = "Bramlett Cartridge"
+company = "harwick"
+tier = "standard"
+categories = ["ammunition"]
+conflict_check = "pending"
+
+[brand.quillmark]
+name = "Quillmark"
+company = "quillmark"
+tier = "standard"
+categories = ["office", "paper_goods", "maps"]
+conflict_check = "pending"
+
+[brand.tumbleberry]
+name = "Tumbleberry"
+company = "tumbleberry"
+tier = "standard"
+categories = ["toys", "baby"]
+conflict_check = "pending"
+[brand.pawsworth]
+name = "Pawsworth"
+company = "tumbleberry"
+tier = "standard"
+categories = ["pet_food"]
+conflict_check = "pending"
+
+[brand.emberline]
+name = "Emberline"
+company = "emberline"
+tier = "standard"
+categories = ["tobacco_accessories", "fire_starters"]
+conflict_check = "pending"
+
+# ---------------------------------------------------------------- store chains + own labels
+[brand.grovely_essentials]
+name = "Grovely Essentials"
+company = "marrowgate"
+tier = "budget"
+categories = ["canned_food", "dry_food", "bread", "water", "household", "paper_goods", "snacks"]
+own_label_of = "grovely_market"
+conflict_check = "pending"
+[brand.pennant_care]
+name = "Pennant Care"
+company = "ostrander_vale"
+tier = "budget"
+categories = ["medicine", "first_aid", "personal_care"]
+own_label_of = "pennant_pharmacy"
+conflict_check = "pending"
+[brand.burlows]
+name = "Burlow's"
+company = "hollin"
+tier = "budget"
+categories = ["tools", "adhesives", "rope"]
+own_label_of = "burlows_hardware"
+conflict_check = "pending"
+
+[store_chain.grovely_market]
+name = "Grovely Market"
+type = "supermarket"
+own_label = "grovely_essentials"
+conflict_check = "pending"
+[store_chain.pennant_pharmacy]
+name = "Pennant Pharmacy"
+type = "pharmacy"
+own_label = "pennant_care"
+conflict_check = "pending"
+[store_chain.burlows_hardware]
+name = "Burlow's Hardware"
+type = "hardware_store"
+own_label = "burlows"
+conflict_check = "pending"
+[store_chain.orrins]
+name = "Orrin's Gas & Go"
+type = "gas_station"
+conflict_check = "pending"
+[store_chain.maxfield]
+name = "Maxfield Supercenter"
+type = "big_box_store"
+conflict_check = "pending"
+[store_chain.lanternway]
+name = "Lanternway Mart"
+type = "convenience_store"
+conflict_check = "pending"

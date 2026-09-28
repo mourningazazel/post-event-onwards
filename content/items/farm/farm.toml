@@ -1,0 +1,227 @@
+# Farm objects (world-catalog §4 farmyard). Rural wells work regardless of the clock (N007).
+
+[item.hay_bale]
+name = "hay bale"
+tags = ["cat.farm.hay", "from.farm", "use.barricade", "use.tinder", "use.fuel", "hazard.flammable"]
+shape = "block"
+dims_mm = [910, 460, 360]
+mass_g = 25000
+fill_pct = 30
+blocks = "partial"
+desc = "A small square bale of dry hay bound with two strands of twine."
+glyph = "obj.hay_bale"
+why = "Stackable 25 kg barricade blocks that soak up blows; burn fast and hot if things go wrong (or right)."
+modifiers = ["round_bale"]
+value_class = "common"
+
+[item.hay_bale.composition.hay]
+material = "food_dry"
+share = 99
+[item.hay_bale.composition.twine]
+material = "polypropylene"
+share = 1
+
+[item.hay_bale.reactions.heat]
+low = "char"
+medium = "ignite"
+high = "ignite"
+
+[item.feed_sack]
+name = "feed sack"
+tags = ["cat.farm.feed", "from.farm", "from.retail", "use.food"]
+shape = "bag"
+dims_mm = [860, 460, 150]
+mass_g = 22700
+fill_pct = 70
+desc = "A 50 lb woven sack of cracked corn and oats for livestock."
+glyph = "item.sack"
+why = "Tens of thousands of calories that looters ignore; must be cooked, and mice and damp get into it over time."
+value_class = "useful"
+food = { kcal = 75000, servings = 60, perishable = "long", cookable = true }
+
+[item.feed_sack.composition.feed]
+material = "food_dry"
+share = 98
+[item.feed_sack.composition.sack]
+material = "polypropylene"
+share = 2
+
+[item.farm_fuel_tank]
+name = "farm fuel tank"
+tags = ["cat.farm.fuel_tank", "from.farm", "hazard.flammable"]
+shape = "container"
+dims_mm = [2700, 2100, 1200]
+mass_g = 250000
+hollow = true
+fixed = true
+blocks = "partial"
+desc = "A 300-gallon steel tank on a tall stand, with a gravity hose and nozzle."
+glyph = "obj.fuel_tank"
+why = "A farm's fuel reserve: gravity-feeds through its own nozzle, no siphon needed. Usually diesel; some farms keep gasoline."
+modifiers = ["farm_tank_gasoline"]
+value_class = "valuable"
+
+[item.farm_fuel_tank.composition.tank]
+material = "mild_steel"
+share = 95
+[item.farm_fuel_tank.composition.hose]
+material = "rubber"
+share = 3
+salvage = { item = "rubber_hose", count = 1, tool = "none", time_s = 120 }
+[item.farm_fuel_tank.composition.nozzle]
+material = "aluminum"
+share = 2
+
+[item.farm_fuel_tank.features.fuel_tank]
+capacity_ml = 1135000
+fuel = ["diesel"]
+drain = "valve"
+[item.farm_fuel_tank.features.valve]
+needs = "none"
+[item.farm_fuel_tank.features.climbable]
+difficulty = 3
+height_mm = 2700
+
+[item.farm_fuel_tank.contents]
+substance = "diesel"
+fill_pct = [0, 90]
+
+[item.water_trough]
+name = "water trough"
+tags = ["cat.farm.trough", "from.farm"]
+shape = "container"
+dims_mm = [2440, 910, 610]
+mass_g = 45000
+fill_pct = 1
+blocks = "partial"
+desc = "A galvanised oval stock tank for livestock, open to the sky."
+glyph = "obj.trough"
+why = "Rain-filled untreated water in quantity; goes green over weeks."
+modifiers = ["water_gone_foul"]
+value_class = "useful"
+
+[item.water_trough.composition.tank]
+material = "mild_steel"
+share = 100
+
+[item.water_trough.features.container]
+capacity_ml = 1100000
+closable = false
+watertight = true
+opening_mm = 900
+compat = ["liquid"]
+[item.water_trough.features.valve]
+needs = "none"
+
+[item.water_trough.contents]
+substance = "water_untreated"
+fill_pct = [20, 100]
+
+[item.hand_well_pump]
+name = "hand well pump"
+tags = ["cat.farm.well_pump", "from.farm", "from.outdoors"]
+shape = "complex"
+dims_mm = [1400, 600, 300]
+mass_g = 45000
+fill_pct = 3
+fixed = true
+blocks = "partial"
+use_noise = "normal"
+desc = "A cast-iron pitcher pump with a long lever handle over a drilled well."
+glyph = "obj.well_pump"
+why = "Clean groundwater on demand, no power, any day after the event (N007); the squealing handle is the price."
+value_class = "valuable"
+
+[item.hand_well_pump.composition.body]
+material = "cast_iron"
+share = 80
+[item.hand_well_pump.composition.handle]
+material = "cast_iron"
+share = 10
+[item.hand_well_pump.composition.riser]
+material = "mild_steel"
+share = 10
+
+[item.hand_well_pump.features.container]
+capacity_ml = 500000
+closable = true
+watertight = true
+compat = ["liquid"]
+[item.hand_well_pump.features.valve]
+needs = "none"
+
+[item.hand_well_pump.contents]
+substance = "water"
+fill_pct = [100, 100]
+
+[item.barbed_wire]
+name = "barbed wire"
+tags = ["cat.farm.fencing", "from.farm", "from.construction", "use.barricade", "use.fastener"]
+shape = "cord"
+dims_mm = [480, 460, 460]
+mass_g = 36000
+fill_pct = 5
+desc = "A quarter-mile roll of two-strand, four-point galvanised barbed wire."
+glyph = "item.wire_roll"
+why = "Strung across gaps it snags and slows crowds and trips alarms; strong binding wire; hurts to handle without gloves."
+divisible = { mode = "length", min_piece_mm = 300, needs = "grip_tool>=4" }
+value_class = "useful"
+
+[item.barbed_wire.composition.wire]
+material = "mild_steel"
+share = 100
+
+[item.t_post]
+name = "steel T-post"
+tags = ["cat.farm.fencing", "from.farm", "from.construction", "use.barricade", "use.weapon"]
+shape = "rod"
+dims_mm = [1830, 40, 40]
+mass_g = 3600
+fill_pct = 15
+durability = 9
+desc = "A six-foot studded steel fence post with an anchor plate near the foot."
+glyph = "item.t_post"
+why = "Heavy steel bar: club, lever, stake for barbed-wire lines and tarp shelters."
+value_class = "common"
+
+[item.t_post.composition.post]
+material = "mild_steel"
+share = 100
+
+[item.t_post.features.grip]
+hands = 2
+girth_mm = 40
+
+[item.grain_silo]
+name = "grain bin"
+tags = ["cat.farm.silo", "from.farm"]
+shape = "container"
+dims_mm = [9000, 8200, 8200]
+mass_g = 10000000
+fill_pct = 1
+hollow = true
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A corrugated steel grain bin with a caged ladder to the roof hatch."
+glyph = "obj.silo"
+why = "The tallest lookout for miles; tonnes of grain (engulfment danger inside); a steel refuge."
+value_class = "useful"
+
+[item.grain_silo.composition.bin]
+material = "mild_steel"
+share = 92
+[item.grain_silo.composition.ladder]
+material = "aluminum"
+share = 3
+[item.grain_silo.composition.auger]
+material = "carbon_steel"
+share = 5
+
+[item.grain_silo.features.container]
+capacity_ml = 530000000
+closable = true
+compat = ["granular"]
+[item.grain_silo.features.climbable]
+difficulty = 3
+height_mm = 9000

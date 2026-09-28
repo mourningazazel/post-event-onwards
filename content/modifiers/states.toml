@@ -1,0 +1,88 @@
+# Condition/state modifiers applied by generation (aftermath, fire, weather) and by play.
+# They ADD tags (whose name_parts compose names) and MODIFY properties (N011: details add or modify).
+
+[modifier.charred]
+kind = "state"
+applies_to = { tags_any = ["mat.textile", "mat.wood", "mat.paper", "mat.polymer", "mat.rubber", "mat.organic"] }
+desc = "blackened and blistered by fire"
+add_tags = ["state.charred", "emits.smoke"]
+ops = [ { path = "durability", op = "mul", value = 0.5 } ]
+
+[modifier.scorched_metal]
+kind = "state"
+applies_to = { tags_any = ["mat.metal", "mat.glass", "mat.ceramic", "mat.stone"] }
+desc = "soot-streaked and heat-discoloured"
+add_tags = ["state.charred"]
+
+[modifier.wet]
+kind = "state"
+applies_to = { tags_any = ["mat.textile", "mat.paper", "mat.wood", "mat.organic"] }
+desc = "soaked through"
+add_tags = ["state.wet"]
+
+[modifier.rusted]
+kind = "state"
+applies_to = { tags_any = ["mat.metal"] }
+desc = "flaked with orange rust"
+add_tags = ["state.rusted"]
+ops = [ { path = "durability", op = "mul", value = 0.7 } ]
+clock_min_days = 30
+
+[modifier.bloody]
+kind = "state"
+applies_to = { tags_any = ["cat.clothing", "cat.tool", "cat.textile", "cat.furniture"] }
+desc = "stained with blood"
+add_tags = ["state.bloody", "emits.blood"]
+
+[modifier.gore_caked]
+kind = "state"
+applies_to = { tags_any = ["cat.clothing", "cat.tool"] }
+desc = "caked in rotten gore"
+add_tags = ["state.dirty", "emits.rot"]
+
+[modifier.broken]
+kind = "state"
+applies_to = { tags_any = ["cat.electronics", "cat.appliance", "cat.tool", "cat.furniture", "cat.vehicle"] }
+desc = "broken beyond simple use"
+add_tags = ["state.broken"]
+
+[modifier.damaged]
+kind = "state"
+desc = "damaged but still usable"
+add_tags = ["state.damaged"]
+ops = [ { path = "durability", op = "mul", value = 0.6 } ]
+
+[modifier.spoiled]
+kind = "state"
+applies_to = { tags_any = ["cat.food", "use.food"] }
+desc = "gone off"
+add_tags = ["state.spoiled", "emits.rot"]
+
+[modifier.empty]
+kind = "state"
+applies_to = { tags_any = ["cat.container"] }
+add_tags = ["state.empty"]
+
+[modifier.opened]
+kind = "state"
+applies_to = { tags_any = ["cat.food", "cat.container", "cat.household"] }
+desc = "already opened"
+add_tags = ["state.opened"]
+
+[modifier.dirty]
+kind = "state"
+applies_to = { tags_any = ["cat.clothing", "cat.textile"] }
+desc = "grimy with sweat and dirt"
+add_tags = ["state.dirty", "emits.human"]
+
+[modifier.worn_out]
+kind = "state"
+applies_to = { tags_any = ["cat.clothing", "cat.tool", "cat.furniture"] }
+desc = "worn from heavy use"
+add_tags = ["state.worn"]
+ops = [ { path = "durability", op = "mul", value = 0.8 } ]
+
+[modifier.makeshift]
+kind = "state"
+desc = "put together by hand"
+add_tags = ["state.makeshift"]

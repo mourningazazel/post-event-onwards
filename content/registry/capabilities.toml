@@ -1,0 +1,194 @@
+# Capabilities: what an object can DO, 0..10 unless noted. Derived by the resolver
+# (tools/content/derive.py — the executable spec) unless `derived = false`, in which case
+# items author them under [item.X.capabilities]. `resisted_by` names what an action compares
+# the capability against.
+
+[capability.cut]
+desc = "Slice through soft/medium materials (cloth, rubber, rope, flesh, cardboard)."
+derive = "edge.sharpness x edge-part material.edge_holding / 10"
+resisted_by = "target material hardness"
+readers = ["M8", "M6", "combat"]
+
+[capability.chop]
+desc = "Hack with weight behind an edge (axes, machetes, cleavers)."
+derive = "cut x min(1, mass_g / 1200), x1.3 if balance = head"
+resisted_by = "target material hardness"
+readers = ["M8", "combat"]
+
+[capability.saw]
+desc = "Saw through wood/plastic/metal (by coarseness)."
+derive = "saw_edge present: 6 (+2 if not coarse on metal tools); hardness of saw_edge part caps what it can cut"
+resisted_by = "target material hardness"
+readers = ["M8", "M6"]
+
+[capability.pierce]
+desc = "Puncture (stab, puncture a fuel tank, pierce a can)."
+derive = "point.sharpness x rigidity/10 of point part"
+resisted_by = "target material hardness"
+readers = ["M8", "combat"]
+
+[capability.hammer]
+desc = "Deliver blunt force (strike, drive nails, break glass)."
+derive = "rigid only: log2(mass_g/50) + hardness/3, x1.2 with striking_face, x0.5 if rigidity < 5; clamp 0..10"
+resisted_by = "target toughness"
+readers = ["M8", "combat", "M17"]
+
+[capability.pry]
+desc = "Lever things apart (doors, planks, lids, nails)."
+derive = "rod/blade shape: rigidity x min(1, length_mm / 600)"
+resisted_by = "joint/closure strength"
+readers = ["M8", "M10", "M5"]
+
+[capability.dig]
+desc = "Break and move soil."
+derived = false
+resisted_by = "soil hardness"
+readers = ["M8 digging"]
+
+[capability.scoop]
+desc = "Move loose material (sand, grain, water in quantity)."
+derived = false
+readers = ["M1", "digging"]
+
+[capability.drill]
+desc = "Bore holes (powered or hand)."
+derived = false
+resisted_by = "target material hardness"
+readers = ["M8", "M7 screws"]
+
+[capability.fasten]
+desc = "Drive or undo screws/bolts/nuts (screwdrivers, wrenches, drills)."
+derived = false
+readers = ["M5 salvage", "M7 screws", "valves"]
+
+[capability.grip_tool]
+desc = "Clamp, twist, bend wire, pull nails (pliers, vise grips)."
+derived = false
+readers = ["M7 wire", "M5"]
+
+[capability.scrape]
+desc = "Scrape surfaces (paint, ice, gunk)."
+derive = "edge present: 3 + sharpness/3"
+readers = ["M8"]
+
+[capability.sharpen]
+desc = "Restore edges (whetstones, files; concrete kerbs as terrain)."
+derived = false
+readers = ["M22"]
+
+[capability.reach]
+desc = "Reach in mm (derived from longest dimension when wielded)."
+derive = "dims_mm[0]"
+unit = "mm"
+readers = ["combat", "M8"]
+
+[capability.bind]
+desc = "Tie/lash things together (rope, cord, wire, cloth strips)."
+derive = "shape cord or divisible sheet cloth: material toughness class"
+readers = ["M7", "M19", "M18", "medical splints"]
+
+[capability.adhere]
+desc = "Stick things together (tape, glue)."
+derived = false
+readers = ["M7"]
+
+[capability.weld]
+desc = "Join metal with heat."
+derived = false
+readers = ["M7"]
+
+[capability.sew]
+desc = "Stitch cloth/leather (needle and thread, sewing machines without power: no)."
+derived = false
+readers = ["M7", "M15 sutures"]
+
+[capability.ignite]
+desc = "Start a fire (from the ignition feature)."
+derive = "ignition feature present: 6 (flame) / 4 (spark, flint) / 2 (friction-free electric)"
+readers = ["M3"]
+
+[capability.heat]
+desc = "Provide controlled heat (stoves, grills, heaters)."
+derive = "heat_source.output"
+readers = ["M22", "M12"]
+
+[capability.light]
+desc = "Illuminate (radius in m from the light feature)."
+derive = "light.radius_m"
+unit = "m"
+readers = ["M11"]
+
+[capability.contain_liquid]
+desc = "Hold liquid."
+derive = "container.compat has liquid"
+readers = ["M1"]
+
+[capability.contain_granular]
+desc = "Hold granular matter."
+derive = "container.compat has granular"
+readers = ["M1"]
+
+[capability.seal]
+desc = "Close airtight/watertight (scent containment, spill-proof)."
+derive = "container.sealable"
+readers = ["M1", "M14"]
+
+[capability.siphon]
+desc = "Transfer liquid by siphon."
+derive = "tube.inner_diameter_mm >= 4 and tube.length_mm >= 500"
+readers = ["M1"]
+
+[capability.insulate]
+desc = "Keep heat in (worn/used as cover)."
+derive = "wearable.insulation_clo10 / 3"
+readers = ["M12"]
+
+[capability.waterproof]
+desc = "Keep water out."
+derive = "wearable.waterproof"
+readers = ["M12"]
+
+[capability.cushion]
+desc = "Soften impacts/muffle noise (foam, blankets, pillows)."
+derived = false
+readers = ["M13 muffling", "falls"]
+
+[capability.filter]
+desc = "Filter water/air (filters, cloth + charcoal, masks)."
+derived = false
+readers = ["M22 water"]
+
+[capability.purify]
+desc = "Chemically disinfect water (tablets, bleach) — dose-based."
+derived = false
+readers = ["M22 water"]
+
+[capability.extinguish]
+desc = "Put out fire (extinguishers, blankets, sand)."
+derived = false
+readers = ["M3"]
+
+[capability.can_open]
+desc = "Open sealed cans cleanly (can openers, multi-tools)."
+derived = false
+readers = ["M15 food"]
+
+[capability.lockpick]
+desc = "Pick locks (picks, bump keys, bobby pins + tension wrench)."
+derived = false
+readers = ["M10"]
+
+[capability.navigate]
+desc = "Find direction (compass)."
+derived = false
+readers = ["M21"]
+
+[capability.timekeep]
+desc = "Tell the time (watches, clocks)."
+derived = false
+readers = ["M21", "UI"]
+
+[capability.noise]
+desc = "Make a deliberate loud noise on demand (whistles, air horns, pots)."
+derived = false
+readers = ["M13 lures"]

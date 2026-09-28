@@ -1,0 +1,95 @@
+# Granular/bulk matter with gameplay value.
+
+[substance.sand]
+phase = "granular"
+density_mg_ml = 1600
+viscosity = "flowing"
+flammability = "none"
+extinguishes_fire = true
+surface = "piles"
+desc = "Sandbags, playgrounds, construction: smothers fires, fills bags for barricades, filter layers."
+
+[substance.cat_litter]
+phase = "granular"
+density_mg_ml = 700
+viscosity = "flowing"
+flammability = "none"
+surface = "piles"
+desc = "Clay litter: soaks up spills (fuel/oil/blood), smothers small fires, odour control."
+
+[substance.salt]
+phase = "granular"
+density_mg_ml = 1200
+viscosity = "flowing"
+flammability = "none"
+perishable = "shelf_stable"
+surface = "piles"
+desc = "Table/road salt: food preservation (cooking skill), de-icing."
+
+[substance.sugar]
+phase = "granular"
+density_mg_ml = 850
+viscosity = "flowing"
+flammability = "low"
+kcal_per_100 = 387
+perishable = "shelf_stable"
+surface = "piles"
+desc = "Calories that never spoil."
+
+[substance.flour]
+phase = "granular"
+density_mg_ml = 590
+viscosity = "flowing"
+flammability = "moderate"
+kcal_per_100 = 364
+perishable = "long"
+surface = "piles"
+desc = "Baking; needs cooking; bugs get into it after months."
+
+[substance.rice]
+phase = "granular"
+density_mg_ml = 850
+viscosity = "flowing"
+flammability = "low"
+kcal_per_100 = 360
+perishable = "shelf_stable"
+surface = "piles"
+desc = "Dry rice: calorie-dense, needs water and cooking."
+
+[substance.pet_kibble]
+phase = "granular"
+density_mg_ml = 450
+viscosity = "flowing"
+flammability = "low"
+kcal_per_100 = 350
+perishable = "long"
+surface = "piles"
+scent = { channel = "food", strength = 3 }
+desc = "Dog/cat food: edible in desperation."
+
+[substance.ash]
+phase = "granular"
+density_mg_ml = 500
+viscosity = "flowing"
+flammability = "none"
+surface = "piles"
+scent = { channel = "smoke", strength = 3 }
+desc = "Fire residue: smoke-scented; burned areas are covered in it (N007)."
+
+[substance.sawdust]
+phase = "granular"
+density_mg_ml = 210
+viscosity = "flowing"
+flammability = "high"
+fuel_value_kj_g = 17
+surface = "piles"
+desc = "Workshop by-product: tinder, spill absorbent."
+
+[substance.cement_powder]
+phase = "granular"
+density_mg_ml = 1440
+viscosity = "flowing"
+flammability = "none"
+corrosive = true
+surface = "piles"
+desc = "Bagged cement: mixed with water and sand to fortify (construction skill)."

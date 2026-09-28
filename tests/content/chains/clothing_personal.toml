@@ -1,0 +1,168 @@
+# Domain C feasibility chains (survival-actions §2.2, §2.8, §4.6; N011). Negative controls use
+# expect_fail = true: the chain must NOT be feasible, because realism says no.
+
+[chain.bandage_gauze]
+title = "Dress a bite with sterile gauze after cleaning it with antiseptic"
+source = "survival-actions.md §2.8"
+
+[[chain.bandage_gauze.steps]]
+action = "bandage"
+bind = { dressing = "gauze_pads" }
+
+[chain.bandage_torn_shirt]
+title = "Tear a T-shirt into strips and bandage a cut with them"
+source = "survival-actions.md §2.8, §4.6"
+
+[[chain.bandage_torn_shirt.steps]]
+action = "tear_strips"
+bind = { target = "t_shirt" }
+
+[[chain.bandage_torn_shirt.steps]]
+action = "bandage"
+bind = { dressing = "t_shirt" }
+
+[chain.bandage_sanitary_pad]
+title = "Pack a heavy bleed with a sanitary pad, hold it with an elastic bandage"
+source = "survival-actions.md §2.8 (improvised dressings)"
+
+[[chain.bandage_sanitary_pad.steps]]
+action = "bandage"
+bind = { dressing = "sanitary_pads" }
+
+[[chain.bandage_sanitary_pad.steps]]
+action = "bind"
+bind = { binding = "elastic_bandage" }
+
+[chain.splint_crutch_tape]
+title = "Splint a broken leg against a crutch with duct tape"
+source = "survival-actions.md §4.6"
+
+[[chain.splint_crutch_tape.steps]]
+action = "splint"
+bind = { rigid = "crutches", binding = "duct_tape" }
+
+[chain.splint_sam_elastic]
+title = "Moldable splint held on with an elastic bandage"
+source = "survival-actions.md §2.8"
+
+[[chain.splint_sam_elastic.steps]]
+action = "splint"
+bind = { rigid = "splint_sam", binding = "elastic_bandage" }
+
+[chain.splint_ruler_scarf]
+title = "Ruler splint tied on with a wool scarf"
+source = "survival-actions.md §4.6"
+
+[[chain.splint_ruler_scarf.steps]]
+action = "splint"
+bind = { rigid = "ruler", binding = "scarf" }
+
+[chain.suture_wound]
+title = "Close a deep cut with a suture kit"
+source = "survival-actions.md §2.8"
+
+[[chain.suture_wound.steps]]
+action = "sew"
+bind = { needle = "suture_kit" }
+
+[chain.wash_off_scent]
+title = "Wash absorbed scent out with soap, or with shampoo"
+source = "survival-actions.md §2.2; scent-mobs.md"
+
+[[chain.wash_off_scent.steps]]
+action = "wash"
+bind = { soap = "soap_bar" }
+
+[[chain.wash_off_scent.steps]]
+action = "wash"
+bind = { soap = "shampoo_bottle" }
+
+[chain.perfume_mask]
+title = "Douse clothes in perfume to blur human scent at close range"
+source = "survival-actions.md §2.2; scent.toml dominance perfume > human"
+
+[[chain.perfume_mask.steps]]
+action = "apply_scent"
+bind = { agent = "perfume" }
+
+[chain.tear_bandage_strips]
+title = "Tear a bandana and a bedsheet into strips"
+source = "survival-actions.md §2.9 (M6)"
+
+[[chain.tear_bandage_strips.steps]]
+action = "tear_strips"
+bind = { target = "bandana" }
+
+[[chain.tear_bandage_strips.steps]]
+action = "tear_strips"
+bind = { target = "scrubs_top" }
+
+[chain.toilet_paper_fire]
+title = "Toilet paper as tinder under firewood, lit with a lighter"
+source = "survival-actions.md §2.5"
+
+[[chain.toilet_paper_fire.steps]]
+action = "make_fire"
+bind = { igniter = "lighter", tinder = "toilet_paper", fuel = "firewood" }
+
+[chain.phone_alarm_lure]
+title = "Set a phone alarm and leave it in a building across the street"
+source = "survival-actions.md §2.3"
+
+[[chain.phone_alarm_lure.steps]]
+action = "set_alarm_lure"
+bind = { alarm = "smartphone" }
+
+[chain.key_from_body]
+title = "Take a house key off a body and open its front door"
+source = "content-model §3.1 (keys are real relationships)"
+
+[[chain.key_from_body.steps]]
+action = "unlock_with_key"
+bind = { key = "house_key" }
+
+[chain.purify_tablets]
+title = "Purify a pot of rain water with tablets"
+source = "survival-actions.md §2.6"
+
+[[chain.purify_tablets.steps]]
+action = "purify_water_chemical"
+bind = { agent = "purification_tablets", water = "cooking_pot" }
+
+# ---- negative controls ------------------------------------------------------------------------
+
+[chain.neg_toilet_paper_bandage]
+title = "NEGATIVE: toilet paper as a wound dressing (dissolves in blood)"
+source = "realism; hygiene.toml toilet_paper"
+expect_fail = true
+
+[[chain.neg_toilet_paper_bandage.steps]]
+action = "bandage"
+bind = { dressing = "toilet_paper" }
+
+[chain.neg_tear_leather]
+title = "NEGATIVE: tear a leather jacket into strips with bare hands"
+source = "realism; leather is not hand-tearable"
+expect_fail = true
+
+[[chain.neg_tear_leather.steps]]
+action = "tear_strips"
+bind = { target = "leather_jacket" }
+
+[chain.neg_shirt_splint]
+title = "NEGATIVE: a T-shirt as the rigid part of a splint"
+source = "realism; fabric is not rigid"
+expect_fail = true
+
+[[chain.neg_shirt_splint.steps]]
+action = "splint"
+bind = { rigid = "t_shirt", binding = "duct_tape" }
+
+[chain.neg_perfume_wash]
+title = "NEGATIVE: wash off scent with perfume (it adds scent, it isn't soap)"
+source = "realism; scent-mobs.md"
+expect_fail = true
+
+[[chain.neg_perfume_wash.steps]]
+action = "wash"
+bind = { soap = "perfume_bottle" }

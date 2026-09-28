@@ -1,0 +1,240 @@
+# Containers and haulers for tools and heavy loads (domain B): buckets, toolboxes, belts,
+# wheeled haulers (M20) and ladders (M19).
+
+[item.bucket]
+name = "bucket"
+tags = ["cat.container.bucket", "from.garage", "from.construction", "from.garden", "from.farm", "from.restaurant", "use.container"]
+shape = "container"
+dims_mm = [370, 300, 300]
+mass_g = 850
+desc = "A white five-gallon plastic bucket with a wire bail handle."
+glyph = "item.bucket"
+why = "Hauls water, sand and rubble; collects rain; fire-line water; sanitation. Open top: spills if it tips."
+modifiers = ["container_half", "empty"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 30000, wrap_girth_mm = 940 }
+value_class = "common"
+
+[item.bucket.composition.body]
+material = "hdpe"
+share = 95
+[item.bucket.composition.bail]
+material = "mild_steel"
+share = 5
+
+[item.bucket.features.container]
+capacity_ml = 18900
+opening_mm = 285
+closable = false
+sealable = false
+compat = ["liquid", "granular", "solid"]
+[item.bucket.features.grip]
+hands = 1
+girth_mm = 20
+
+[item.bucket.capabilities]
+scoop = 4
+
+[item.toolbox]
+name = "toolbox"
+tags = ["cat.container.toolbox", "from.garage", "from.construction", "from.vehicle", "use.container"]
+shape = "container"
+dims_mm = [480, 250, 240]
+mass_g = 1800
+desc = "A 19-inch plastic toolbox with a lift-out tray and metal latches."
+glyph = "item.toolbox"
+why = "Where the hand tools are: a single grab that often yields a screwdriver, hammer, pliers and wrench."
+brand_cats = ["tools"]
+modifiers = ["steel_toolbox", "empty"]
+value_class = "useful"
+
+[item.toolbox.composition.body]
+material = "polypropylene"
+share = 85
+[item.toolbox.composition.latches]
+material = "mild_steel"
+share = 15
+
+[item.toolbox.features.container]
+capacity_ml = 22000
+max_mass_g = 20000
+opening_mm = 450
+closable = true
+sealable = false
+compat = ["solid"]
+[item.toolbox.features.strap]
+kind = "handle"
+load_g = 25000
+
+# Generation preset: fill_pct = share of the list present (loot tables may override).
+[item.toolbox.contents]
+items = ["screwdriver", "claw_hammer", "pliers", "adjustable_wrench", "tape_measure", "utility_knife"]
+fill_pct = [30, 100]
+
+[item.tool_belt]
+name = "tool belt"
+tags = ["cat.container.tool_belt", "from.construction", "from.garage", "slot.waist", "use.container"]
+shape = "bag"
+dims_mm = [1200, 250, 100]
+mass_g = 1300
+durability = 8
+desc = "A leather carpenter's belt with two nail pouches and a hammer loop."
+glyph = "item.tool_belt"
+why = "Carries tools and fasteners at the hip: hands and pack stay free, the hammer is always one move away."
+value_class = "useful"
+
+[item.tool_belt.composition.leather]
+material = "leather"
+share = 70
+[item.tool_belt.composition.webbing]
+material = "nylon_fabric"
+share = 20
+[item.tool_belt.composition.buckle]
+material = "mild_steel"
+share = 10
+
+[item.tool_belt.features.wearable]
+slot = "waist"
+layer = "accessory"
+coverage = ["hips"]
+[item.tool_belt.features.pocket]
+name = "pouches"
+capacity_ml = 4000
+max_mass_g = 6000
+closable = false
+[item.tool_belt.features.strap]
+kind = "belt"
+load_g = 8000
+
+[item.wheelbarrow]
+name = "wheelbarrow"
+tags = ["cat.hauler.wheelbarrow", "from.construction", "from.garden", "from.farm", "use.container"]
+shape = "container"
+dims_mm = [1500, 680, 600]
+mass_g = 26000
+durability = 8
+desc = "A six-cubic-foot contractor wheelbarrow with a steel tray and a pneumatic tire."
+glyph = "obj.wheelbarrow"
+why = "Moves 100+ kg of sand, rubble, water, supplies or a body over rough ground; rattles loudly on pavement."
+value_class = "useful"
+
+[item.wheelbarrow.composition.tray]
+material = "mild_steel"
+share = 65
+[item.wheelbarrow.composition.handles]
+material = "hardwood"
+share = 20
+[item.wheelbarrow.composition.tire]
+material = "rubber"
+share = 15
+
+[item.wheelbarrow.features.container]
+capacity_ml = 170000
+max_mass_g = 136000
+opening_mm = 900
+closable = false
+sealable = false
+compat = ["solid", "granular", "liquid"]
+[item.wheelbarrow.features.wheels]
+load_g = 136000
+terrain = "rough"
+rattle = "loud"
+[item.wheelbarrow.features.grip]
+hands = 2
+girth_mm = 38
+
+[item.hand_truck]
+name = "hand truck"
+tags = ["cat.hauler.hand_truck", "from.retail", "from.industrial", "from.construction", "from.garage"]
+shape = "complex"
+dims_mm = [1220, 460, 450]
+mass_g = 12000
+fill_pct = 1                       # open tube frame
+durability = 9
+desc = "A steel two-wheeled dolly with a nose plate and solid rubber tires."
+glyph = "obj.hand_truck"
+why = "Moves fridges, drums, generators and vending machines alone: fast heavy barricades on smooth floors."
+value_class = "useful"
+
+[item.hand_truck.composition.frame]
+material = "mild_steel"
+share = 80
+[item.hand_truck.composition.tires]
+material = "rubber"
+share = 20
+
+[item.hand_truck.features.wheels]
+load_g = 270000
+terrain = "smooth"
+rattle = "normal"
+[item.hand_truck.features.grip]
+hands = 2
+girth_mm = 30
+
+[item.ladder_step]
+name = "stepladder"
+tags = ["cat.tool.ladder", "from.garage", "from.construction", "from.retail", "use.tool"]
+shape = "complex"
+dims_mm = [1830, 530, 150]
+mass_g = 5500
+fill_pct = 2
+durability = 7
+desc = "A six-foot aluminum stepladder with a paint shelf."
+glyph = "obj.ladder_step"
+why = "Freestanding climb to attic hatches, high windows and shelf tops; blocks a hallway when opened."
+modifiers = ["heavy_duty"]
+value_class = "useful"
+
+[item.ladder_step.composition.rails]
+material = "aluminum"
+share = 85
+[item.ladder_step.composition.braces]
+material = "mild_steel"
+share = 10
+[item.ladder_step.composition.feet]
+material = "rubber"
+share = 5
+
+[item.ladder_step.features.climbable]
+difficulty = 1
+height_mm = 1830
+[item.ladder_step.features.grip]
+hands = 2
+girth_mm = 60
+
+# hammer: derived ~8 from mass; a hollow aluminum frame.
+[item.ladder_step.capabilities]
+hammer = 2
+
+[item.extension_ladder]
+name = "extension ladder"
+tags = ["cat.tool.ladder", "from.garage", "from.construction", "from.fire_service", "use.tool"]
+shape = "complex"
+dims_mm = [3710, 470, 140]
+mass_g = 20000
+fill_pct = 2
+durability = 8
+desc = "A 24-foot two-section aluminum extension ladder with a rope and pulley."
+glyph = "obj.ladder_extension"
+why = "Reaches second-floor windows and roofs — climb up, pull it after you, and the roof is a refuge; bridges short gaps."
+value_class = "valuable"
+
+[item.extension_ladder.composition.rails]
+material = "aluminum"
+share = 90
+[item.extension_ladder.composition.hardware]
+material = "mild_steel"
+share = 7
+[item.extension_ladder.composition.rope]
+material = "polyester"
+share = 3
+
+[item.extension_ladder.features.climbable]
+difficulty = 1
+height_mm = 7000
+[item.extension_ladder.features.grip]
+hands = 2
+girth_mm = 60
+
+# hammer: derived ~10 from mass; a long hollow frame you can't swing.
+[item.extension_ladder.capabilities]
+hammer = 1

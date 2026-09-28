@@ -1,0 +1,225 @@
+# Item-level properties (top-level keys of an [item.X] record).
+# type grammar: int | bool | str | int[3] | range | list<str> | enum:a|b|c | table | ref:<record>
+# readers: mechanics (survival-actions.md §1) or systems that consume the property.
+# Every property must have at least one reader or be marked flavor = true (detail budget).
+
+[property.name]
+type = "str"
+desc = "Base display name; tags/brands compose the full name (content-model §9)."
+readers = ["UI", "descriptions"]
+
+[property.parent]
+type = "ref:item"
+desc = "Inheritance parent (deep merge; tables merge, arrays replace)."
+readers = ["content loader"]
+
+[property.abstract]
+type = "bool"
+desc = "Template only; never spawned."
+readers = ["content loader", "generation"]
+
+[property.tags]
+type = "list<str>"
+desc = "Registered tags (registry/tags.toml)."
+readers = ["all systems"]
+
+[property.shape]
+type = "ref:shape"
+desc = "Coarse geometry class."
+readers = ["M4 throwing", "M6 divide", "M7 assembly", "mass estimate"]
+
+[property.dims_mm]
+type = "int[3]"
+desc = "Bounding box, longest dimension first."
+readers = ["G03 capacity", "M4 throwing", "reach", "M19 climbing", "size checks"]
+
+[property.mass_g]
+type = "int"
+desc = "Mass of the empty/base object (contents add their own)."
+readers = ["M4 throwing", "M20 carrying", "derived hammer/chop", "M17 barricades", "attach_strength"]
+
+[property.desc]
+type = "str"
+desc = "Base description fragment; description rules add to it (content-model §8)."
+readers = ["descriptions"]
+flavor = true
+
+[property.glyph]
+type = "str"
+desc = "Logical tile name for the renderer (GAMEPLAN §3.1)."
+readers = ["renderer"]
+
+[property.why]
+type = "str"
+desc = "Detail-budget justification: why this archetype exists (N008/N011). Required on non-abstract items."
+readers = ["content review"]
+
+[property.brand_cats]
+type = "list<str>"
+desc = "Brand categories that may apply (brands/)."
+readers = ["generation", "names"]
+
+[property.modifiers]
+type = "list<str>"
+desc = "Modifiers (variant/state/material/contents) this archetype accepts at generation."
+readers = ["generation"]
+
+[property.details]
+type = "list<str>"
+desc = "Detail tables rolled at generation for flavour."
+readers = ["generation", "descriptions"]
+
+[property.composition]
+type = "table"
+desc = "Parts keyed by name: { material, share (% of mass), salvage? }. Salvage = { item, count, set?, tool, time_s }."
+readers = ["derivations", "M5 salvage", "M3 fire", "reactions"]
+
+[property.features]
+type = "table"
+desc = "Features keyed by registry feature id (registry/features.toml)."
+readers = ["all mechanics"]
+
+[property.capabilities]
+type = "table"
+desc = "Authored capability values (override or supplement derived ones), keyed by capability id, 0..10 unless unit noted."
+readers = ["M8 tool actions", "crafting"]
+
+[property.reactions]
+type = "table"
+desc = "Authored reaction overrides keyed by stimulus id: { low?, medium?, high? } outcome per energy class."
+readers = ["reactions"]
+
+[property.contents]
+type = "table"
+desc = "Generation preset for container contents: { substance | items, fill_pct = [min,max] }."
+readers = ["generation"]
+
+[property.balance]
+type = "enum:head|even|handle"
+desc = "Where the mass sits along the long axis (swing damage, handling)."
+readers = ["derived hammer/chop", "M4 throwing"]
+
+[property.hollow]
+type = "bool"
+desc = "Hollow body (pipes, cans): affects mass estimate and crush behaviour."
+readers = ["mass estimate", "reactions"]
+
+[property.divisible]
+type = "table"
+desc = "Can be cut/torn into pieces: { mode = length|sheet|count, min_piece_mm?, needs = capability requirement string }."
+readers = ["M6 divide"]
+
+[property.attach_surface]
+type = "table"
+desc = "What this item offers a joint: { kind = smooth|rough|porous|fibrous|oily|round|irregular, contact_area_mm2?, wrap_girth_mm? } (N010)."
+readers = ["M7 assembly"]
+
+[property.attach_strength]
+type = "int"
+desc = "Override of derived hold required (N010); normally derived from mass, lever and use."
+readers = ["M7 assembly"]
+
+[property.aerodynamics]
+type = "enum:poor|fair|good"
+desc = "Throwing flight quality; defaults from shape."
+readers = ["M4 throwing"]
+
+[property.use_noise]
+type = "enum:silent|quiet|normal|loud|very_loud|extreme"
+desc = "Noise made when used/operated (gunshots extreme, generators very_loud)."
+readers = ["M13 noise"]
+
+[property.durability]
+type = "int"
+desc = "Wear resistance 0..10 (how fast condition drops with use)."
+readers = ["wear", "M7 joints"]
+
+[property.encumbrance]
+type = "int"
+desc = "How much it hinders movement when worn/carried awkwardly, 0..10."
+readers = ["M20 carrying", "M16 armor"]
+
+[property.armor]
+type = "table"
+desc = "Protection when worn: { blunt, cut, pierce, bite } each 0..10."
+readers = ["M16 body coverage", "G05 bodies"]
+
+[property.absorbs_water]
+type = "bool"
+desc = "Soaks up water (weight gain, insulation loss when wet)."
+readers = ["M12 wetness"]
+
+[property.absorbs_scent]
+type = "bool"
+desc = "Holds scent (clothing carries the wearer's and applied scents)."
+readers = ["M14 scent"]
+
+[property.applicable_to_body]
+type = "bool"
+desc = "Substance/item can be smeared/applied to body or clothing (scent masking, medicine)."
+readers = ["M14 scent", "M15 medical"]
+
+[property.pressurized]
+type = "bool"
+desc = "Sealed under pressure: may burst when heated or punctured."
+readers = ["M3 fire", "reactions"]
+
+[property.heat_resistant]
+type = "bool"
+desc = "Can sit in/on a fire without damage (cookware, fire pits)."
+readers = ["M3 fire", "M22 cooking"]
+
+[property.food]
+type = "table"
+desc = "{ kcal, hydration_ml?, servings?, perishable = shelf_stable|long|medium|short|very_short, needs_opening?, cookable?, raw_risk? }"
+readers = ["M15 consumption", "aftermath spoilage"]
+
+[property.medical]
+type = "table"
+desc = "{ bleed_stop?, disinfect?, pain?, splint?, antibiotic?, burn_care?, sterile?, doses? } values 0..10 or counts."
+readers = ["M15 medical"]
+
+[property.power_source]
+type = "table"
+desc = "{ voltage = dc_small|dc_12v|ac_mains, capacity_wh, rechargeable, output_w? }"
+readers = ["M9 power"]
+
+[property.power_use]
+type = "table"
+desc = "{ voltage = dc_small|dc_12v|ac_mains, watts }"
+readers = ["M9 power"]
+
+[property.value_class]
+type = "enum:junk|common|useful|valuable|rare"
+desc = "Looting priority for aftermath scavengers (ADR-0009) and generation weights."
+readers = ["aftermath looting", "generation"]
+
+[property.fixed]
+type = "bool"
+desc = "World object that is not portable without disassembly (fixtures, large appliances installed)."
+readers = ["M20 carrying", "generation"]
+
+[property.blocks]
+type = "enum:none|partial|full"
+desc = "Blocks movement through its tile when placed/standing (furniture, vehicles)."
+readers = ["movement", "M17 barricades", "MobMovement"]
+
+[property.units]
+type = "int"
+desc = "Count of consumable units in this item (nails in a box, wraps on a tape roll, doses, sheets, rounds)."
+readers = ["M7 fasteners", "M15 consumption", "UI"]
+
+[property.fill_pct]
+type = "int"
+desc = "Override of the shape's fill % for the mass-plausibility estimate (irregular items like brooms, chairs)."
+readers = ["content lint"]
+
+[property.teaches]
+type = "table"
+desc = "Books/manuals that train a skill by reading (N012): { skill, max_level (0..20), rate (1..10) }."
+readers = ["skills", "M21 knowledge"]
+
+[property.blocks_sight]
+type = "bool"
+desc = "Blocks line of sight (tall furniture, vehicles, walls)."
+readers = ["FOV"]

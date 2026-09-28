@@ -1,0 +1,532 @@
+# Clothing: head, face, eyes, neck, hands and wrist (world-catalog §6.C). Domain C.
+# Conventions: see tops.toml header. Helmets are rigid shells, so they use shape "complex".
+# There is no body.eyes coverage tag; eyewear covers "face".
+
+# ---- head ------------------------------------------------------------------------------------
+
+[item.beanie]
+name = "beanie"
+tags = ["cat.clothing.headwear", "from.bedroom", "from.outdoors", "from.retail", "slot.head"]
+shape = "fabric"
+dims_mm = [250, 220, 10]
+mass_g = 80
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 1 }
+desc = "A ribbed knit wool watch cap."
+glyph = "item.hat"
+why = "Cheap head warmth (M12); fits under a hood or helmet."
+brand_cats = ["clothing_outdoor", "clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.beanie.composition.knit]
+material = "wool"
+share = 100
+
+[item.beanie.features.wearable]
+slot = "head"
+layer = "base"
+coverage = ["head"]
+insulation_clo10 = 2
+windproof = 2
+
+[item.baseball_cap]
+name = "baseball cap"
+tags = ["cat.clothing.headwear", "from.bedroom", "from.street", "from.retail", "slot.head"]
+shape = "fabric"
+dims_mm = [280, 190, 30]
+mass_g = 90
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A cotton twill cap with a curved plastic-stiffened brim."
+glyph = "item.hat"
+why = "Ubiquitous headwear; the brim keeps rain and glare out of the eyes. Mostly outfit flavour."
+brand_cats = ["clothing_basics", "clothing_outdoor"]
+details = ["clothing_colour", "clothing_print"]
+value_class = "junk"
+
+[item.baseball_cap.composition.crown]
+material = "cotton"
+share = 85
+[item.baseball_cap.composition.brim]
+material = "hdpe"
+share = 15
+
+[item.baseball_cap.features.wearable]
+slot = "head"
+layer = "outer"
+coverage = ["head"]
+
+[item.hard_hat]
+name = "hard hat"
+tags = ["cat.clothing.helmet", "from.construction", "from.industrial", "from.utility", "slot.head"]
+shape = "complex"
+dims_mm = [300, 230, 160]
+mass_g = 400
+fill_pct = 10
+absorbs_water = false
+absorbs_scent = false
+durability = 7
+encumbrance = 1
+armor = { blunt = 6, cut = 3, pierce = 3, bite = 3 }
+desc = "A polyethylene safety helmet with a ratchet suspension harness."
+glyph = "item.helmet"
+why = "Cheap, common head protection against falling debris and clubbing blows; teeth skid off the shell."
+value_class = "useful"
+
+[item.hard_hat.composition.shell]
+material = "hdpe"
+share = 85
+[item.hard_hat.composition.suspension]
+material = "nylon"
+share = 15
+
+[item.hard_hat.features.wearable]
+slot = "head"
+layer = "outer"
+coverage = ["head"]
+waterproof = 8
+
+[item.motorcycle_helmet]
+name = "motorcycle helmet"
+tags = ["cat.clothing.helmet", "from.garage", "from.vehicle", "from.retail", "slot.head"]
+shape = "complex"
+dims_mm = [330, 260, 260]
+mass_g = 1500
+absorbs_water = false
+absorbs_scent = true
+durability = 8
+encumbrance = 3
+armor = { blunt = 8, cut = 8, pierce = 6, bite = 9 }
+desc = "A full-face motorcycle helmet: hard shell, foam liner, chin bar and a clear flip-up visor."
+glyph = "item.helmet"
+why = "Near-total head and face bite protection (M16); cuts hearing and peripheral vision (engine penalty proposed)."
+brand_cats = ["clothing_outdoor"]
+value_class = "valuable"
+
+[item.motorcycle_helmet.composition.shell]
+material = "abs"
+share = 55
+[item.motorcycle_helmet.composition.liner]
+material = "eps_foam"
+share = 15
+[item.motorcycle_helmet.composition.visor]
+material = "polycarbonate"
+share = 10
+[item.motorcycle_helmet.composition.padding]
+material = "polyester"
+share = 10
+[item.motorcycle_helmet.composition.strap]
+material = "nylon_fabric"
+share = 10
+
+[item.motorcycle_helmet.features.wearable]
+slot = "head"
+layer = "outer"
+coverage = ["head", "face"]
+insulation_clo10 = 2
+waterproof = 8
+windproof = 10
+
+[item.bike_helmet]
+name = "bicycle helmet"
+tags = ["cat.clothing.helmet", "from.garage", "from.school", "from.outdoors", "slot.head"]
+shape = "complex"
+dims_mm = [280, 210, 170]
+mass_g = 280
+fill_pct = 40
+absorbs_water = false
+absorbs_scent = true
+durability = 4
+encumbrance = 1
+armor = { blunt = 5, cut = 1, pierce = 1, bite = 2 }
+desc = "A vented foam bicycle helmet with a thin plastic shell."
+glyph = "item.helmet"
+why = "Light blunt protection for the skull; vents and thin shell do little against teeth."
+brand_cats = ["sporting_goods"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.bike_helmet.composition.liner]
+material = "eps_foam"
+share = 70
+[item.bike_helmet.composition.shell]
+material = "polycarbonate"
+share = 20
+[item.bike_helmet.composition.strap]
+material = "nylon_fabric"
+share = 10
+
+[item.bike_helmet.features.wearable]
+slot = "head"
+layer = "outer"
+coverage = ["head"]
+
+[item.football_helmet]
+name = "football helmet"
+tags = ["cat.clothing.helmet", "from.school", "from.outdoors", "slot.head"]
+shape = "complex"
+dims_mm = [330, 250, 250]
+mass_g = 1800
+fill_pct = 15
+absorbs_water = false
+absorbs_scent = true
+durability = 8
+encumbrance = 3
+armor = { blunt = 7, cut = 5, pierce = 4, bite = 6 }
+desc = "A padded polycarbonate American-football helmet with a steel face mask."
+glyph = "item.helmet"
+why = "School-gym find: strong blunt protection and a face cage teeth can't close on (M16)."
+brand_cats = ["sporting_goods"]
+details = ["clothing_colour"]
+value_class = "useful"
+
+[item.football_helmet.composition.shell]
+material = "polycarbonate"
+share = 55
+[item.football_helmet.composition.face_mask]
+material = "mild_steel"
+share = 20
+[item.football_helmet.composition.padding]
+material = "pu_foam"
+share = 15
+[item.football_helmet.composition.chin_strap]
+material = "nylon_fabric"
+share = 10
+
+[item.football_helmet.features.wearable]
+slot = "head"
+layer = "outer"
+coverage = ["head", "face"]
+
+[item.sports_pads]
+name = "shin guards"
+tags = ["cat.clothing.protective", "from.school", "from.bedroom", "from.outdoors", "slot.legs"]
+shape = "complex"
+dims_mm = [300, 150, 80]
+mass_g = 250
+fill_pct = 15
+absorbs_water = false
+absorbs_scent = true
+durability = 6
+encumbrance = 0
+armor = { blunt = 4, cut = 3, pierce = 2, bite = 4 }
+desc = "A pair of youth-soccer shin guards: moulded plastic shells on foam, with sleeves."
+glyph = "item.pads"
+why = "Hard shells over the shins, exactly where crawlers bite (M16); worn under trousers or socks."
+brand_cats = ["sporting_goods"]
+details = ["clothing_colour"]
+value_class = "useful"
+
+[item.sports_pads.composition.shells]
+material = "polypropylene"
+share = 60
+[item.sports_pads.composition.sleeves]
+material = "polyester"
+share = 30
+[item.sports_pads.composition.foam]
+material = "pu_foam"
+share = 10
+
+[item.sports_pads.features.wearable]
+slot = "legs"
+layer = "under"
+coverage = ["shins"]
+
+# ---- hands -----------------------------------------------------------------------------------
+
+[item.work_gloves]
+name = "work gloves"
+tags = ["cat.clothing.gloves", "from.garage", "from.construction", "from.farm", "from.garden", "slot.hands"]
+shape = "fabric"
+dims_mm = [270, 130, 30]
+mass_g = 200
+absorbs_water = true
+absorbs_scent = true
+durability = 7
+encumbrance = 1
+armor = { blunt = 1, cut = 4, pierce = 1, bite = 4 }
+desc = "A pair of heavy split-cowhide work gloves with cotton-lined backs."
+glyph = "item.gloves"
+why = "Protect hands handling glass, barbed wire and rubble; stiff leather resists teeth on the hands that fend off attacks."
+brand_cats = ["tools", "clothing_outdoor"]
+value_class = "useful"
+
+[item.work_gloves.composition.leather]
+material = "leather"
+share = 85
+[item.work_gloves.composition.lining]
+material = "cotton"
+share = 15
+
+[item.work_gloves.features.wearable]
+slot = "hands"
+layer = "outer"
+coverage = ["hands"]
+insulation_clo10 = 1
+windproof = 6
+
+[item.leather_gloves]
+name = "leather gloves"
+tags = ["cat.clothing.gloves", "from.bedroom", "from.living", "from.retail", "slot.hands"]
+shape = "fabric"
+dims_mm = [250, 110, 30]
+mass_g = 150
+absorbs_water = true
+absorbs_scent = true
+durability = 6
+encumbrance = 0
+armor = { blunt = 0, cut = 2, pierce = 0, bite = 2 }
+desc = "A pair of supple lined leather winter gloves."
+glyph = "item.gloves"
+why = "Warm, dexterous winter gloves (M12) with some cut and bite resistance."
+brand_cats = ["clothing_formal", "clothing_outdoor"]
+details = ["leather_look"]
+value_class = "common"
+
+[item.leather_gloves.composition.leather]
+material = "leather"
+share = 70
+[item.leather_gloves.composition.lining]
+material = "polyester"
+share = 30
+
+[item.leather_gloves.features.wearable]
+slot = "hands"
+layer = "outer"
+coverage = ["hands"]
+insulation_clo10 = 3
+windproof = 8
+
+[item.latex_gloves]
+name = "latex gloves"
+tags = ["cat.medical.ppe", "from.medical", "from.bathroom", "from.restaurant", "use.first_aid", "slot.hands"]
+shape = "fabric"
+dims_mm = [240, 100, 2]
+mass_g = 12
+absorbs_water = false
+absorbs_scent = false
+durability = 1
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A pair of disposable latex examination gloves."
+glyph = "item.gloves"
+why = "Keep blood and gore off the hands when treating wounds or handling corpses; no protection from teeth."
+brand_cats = ["first_aid"]
+value_class = "common"
+
+[item.latex_gloves.composition.latex]
+material = "rubber"
+share = 100
+
+[item.latex_gloves.features.wearable]
+slot = "hands"
+layer = "under"
+coverage = ["hands"]
+waterproof = 10
+
+# ---- neck and face ---------------------------------------------------------------------------
+
+[item.scarf]
+name = "scarf"
+tags = ["cat.clothing.neckwear", "from.bedroom", "from.living", "from.retail", "slot.neck"]
+shape = "fabric"
+dims_mm = [1600, 250, 5]
+mass_g = 200
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 0
+armor = { blunt = 0, cut = 1, pierce = 0, bite = 2 }
+desc = "A long knitted wool scarf."
+glyph = "item.scarf"
+why = "Several wraps of wool over the neck (the deadliest bite site) and face; warmth; ties a sling or splint."
+brand_cats = ["clothing_outdoor", "clothing_basics"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.scarf.composition.knit]
+material = "wool"
+share = 100
+
+[item.scarf.features.wearable]
+slot = "neck"
+layer = "outer"
+coverage = ["neck", "face"]
+insulation_clo10 = 2
+windproof = 3
+
+[item.scarf.capabilities]
+bind = 3
+
+[item.bandana]
+name = "bandana"
+tags = ["cat.clothing.neckwear", "from.bedroom", "from.outdoors", "from.garage", "slot.face"]
+shape = "fabric"
+dims_mm = [550, 550, 1]
+mass_g = 40
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A square cotton bandana."
+glyph = "item.bandana"
+why = "Face cover against dust and smoke, triangular bandage or sling, coarse water pre-filter, tears into strips."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_basics"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.bandana.composition.cloth]
+material = "cotton"
+share = 100
+
+[item.bandana.features.wearable]
+slot = "face"
+layer = "outer"
+coverage = ["face", "neck"]
+
+[item.bandana.capabilities]
+filter = 1
+
+[item.dust_mask]
+name = "dust mask"
+tags = ["cat.medical.ppe", "from.construction", "from.medical", "from.garage", "slot.face"]
+shape = "complex"
+dims_mm = [160, 110, 60]
+mass_g = 15
+fill_pct = 3
+absorbs_water = true
+absorbs_scent = true
+durability = 1
+encumbrance = 0
+desc = "A disposable fold-flat particulate respirator with head straps and a nose clip."
+glyph = "item.mask"
+why = "Filters smoke particles, ash, dust and blood spray (P-WO fire aftermath); useless against fumes."
+brand_cats = ["first_aid", "tools"]
+value_class = "common"
+
+[item.dust_mask.composition.filter]
+material = "polypropylene"
+share = 85
+[item.dust_mask.composition.straps]
+material = "rubber"
+share = 10
+[item.dust_mask.composition.nose_clip]
+material = "aluminum"
+share = 5
+
+[item.dust_mask.features.wearable]
+slot = "face"
+layer = "under"
+coverage = ["face"]
+
+[item.dust_mask.capabilities]
+filter = 5
+
+[item.goggles]
+name = "safety goggles"
+tags = ["cat.clothing.eyewear", "from.construction", "from.school", "from.garage", "from.industrial", "slot.eyes"]
+shape = "complex"
+dims_mm = [180, 80, 70]
+mass_g = 90
+absorbs_water = false
+absorbs_scent = false
+durability = 5
+encumbrance = 1
+armor = { blunt = 1, cut = 1, pierce = 2, bite = 0 }
+desc = "Indirect-vent polycarbonate splash goggles with an elastic strap."
+glyph = "item.goggles"
+why = "Keep blood, gore, shards and smoke out of the eyes in melee and fires; fog up when worn long."
+value_class = "useful"
+
+[item.goggles.composition.lens]
+material = "polycarbonate"
+share = 60
+[item.goggles.composition.frame]
+material = "flexible_pvc"
+share = 30
+[item.goggles.composition.strap]
+material = "polyester"
+share = 10
+
+[item.goggles.features.wearable]
+slot = "eyes"
+layer = "outer"
+coverage = ["face"]
+
+[item.eyeglasses]
+name = "eyeglasses"
+tags = ["cat.clothing.eyewear", "from.bedroom", "from.office", "from.living", "slot.eyes"]
+shape = "complex"
+dims_mm = [140, 140, 40]
+mass_g = 30
+fill_pct = 3
+absorbs_water = false
+absorbs_scent = false
+durability = 3
+encumbrance = 0
+desc = "A pair of metal-framed prescription glasses."
+glyph = "item.glasses"
+why = "Iconic personal effect of the dead; reading glasses are convex and can focus sunlight on tinder (vocabulary proposal)."
+details = ["eyeglasses_kind"]
+value_class = "junk"
+
+[item.eyeglasses.composition.lenses]
+material = "polycarbonate"
+share = 60
+[item.eyeglasses.composition.frame]
+material = "stainless_steel"
+share = 40
+
+[item.eyeglasses.features.wearable]
+slot = "eyes"
+layer = "accessory"
+coverage = []
+
+# ---- wrist -----------------------------------------------------------------------------------
+
+[item.wristwatch]
+name = "wristwatch"
+tags = ["cat.clothing.accessory", "from.bedroom", "from.office", "slot.wrist"]
+shape = "small"
+dims_mm = [240, 42, 12]
+mass_g = 60
+fill_pct = 15
+absorbs_water = false
+absorbs_scent = false
+durability = 7
+encumbrance = 0
+desc = "A quartz analogue wristwatch with a steel case and leather strap; still ticking."
+glyph = "item.watch"
+why = "Tells the time for timed lures and night planning (M21 timekeep); battery lasts years."
+brand_cats = ["clothing_formal"]
+details = ["leather_look"]
+value_class = "useful"
+
+[item.wristwatch.composition.case]
+material = "stainless_steel"
+share = 60
+[item.wristwatch.composition.strap]
+material = "leather"
+share = 30
+[item.wristwatch.composition.crystal]
+material = "glass"
+share = 10
+
+[item.wristwatch.features.wearable]
+slot = "wrist"
+layer = "accessory"
+coverage = []
+
+[item.wristwatch.capabilities]
+timekeep = 6

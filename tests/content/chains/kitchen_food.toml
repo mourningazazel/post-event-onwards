@@ -1,0 +1,190 @@
+# Domain A (kitchen, food, drink) feasibility chains (N002/N011). Heat comes from the domain's
+# own stove_range or a lighter/match fire so these chains don't depend on other domains' items.
+
+[chain.open_can_with_opener]
+title = "Open a can of food with a can opener"
+source = "survival-actions.md §2.7"
+
+[[chain.open_can_with_opener.steps]]
+action = "open_can"
+bind = { tool = "can_opener" }
+
+[chain.open_can_with_knife]
+title = "No opener: stab the lid open with a kitchen knife point (slow, messy)"
+source = "survival-actions.md §2.7"
+
+[[chain.open_can_with_knife.steps]]
+action = "open_can"
+bind = { tool = "kitchen_knife" }
+
+[chain.open_can_with_spoon]
+title = "No opener or knife: rub a spoon along the lid seam until it gives"
+source = "survival-actions.md §2.7 (realism: the spoon method)"
+
+[[chain.open_can_with_spoon.steps]]
+action = "open_can"
+bind = { tool = "cutlery" }
+
+[chain.rolling_pin_cannot_open_can]
+title = "Negative control: a round rolling pin has no point or edge; it cannot open a can"
+source = "realism"
+expect_fail = true
+
+[[chain.rolling_pin_cannot_open_can.steps]]
+action = "open_can"
+bind = { tool = "rolling_pin" }
+
+[chain.boil_water_in_kettle]
+title = "Fill a kettle with rainwater and boil it on a gas range during an outage"
+source = "survival-actions.md §2.6, §4.4"
+
+[[chain.boil_water_in_kettle.steps]]
+action = "fill_container"
+bind = { dest = "kettle", liquid = "water_untreated" }
+
+[[chain.boil_water_in_kettle.steps]]
+action = "purify_water_boil"
+bind = { pot = "kettle", heat = "stove_range" }
+
+[chain.hobo_can_boil]
+title = "Empty a food can, fill it with creek water, build a fire with paper towels and boil it"
+source = "survival-actions.md §2.5, §2.6"
+
+[[chain.hobo_can_boil.steps]]
+action = "pour_out"
+bind = { container = "canned_food" }
+
+[[chain.hobo_can_boil.steps]]
+action = "fill_container"
+bind = { dest = "canned_food", liquid = "water_untreated" }
+
+[[chain.hobo_can_boil.steps]]
+action = "make_fire"
+bind = { igniter = "matchbook", tinder = "paper_towels", fuel = "firewood" }
+
+[[chain.hobo_can_boil.steps]]
+action = "purify_water_boil"
+bind = { pot = "canned_food", heat = "matchbook" }
+
+[chain.plastic_tub_on_fire]
+title = "Negative control: a polypropylene food tub can't be used to boil water"
+source = "realism"
+expect_fail = true
+
+[[chain.plastic_tub_on_fire.steps]]
+action = "purify_water_boil"
+bind = { pot = "plastic_tub", heat = "stove_range" }
+
+[chain.pitcher_is_not_purification]
+title = "Negative control: a carbon filter pitcher does not chemically purify water"
+source = "realism (carbon filters pass bacteria and viruses)"
+expect_fail = true
+
+[[chain.pitcher_is_not_purification.steps]]
+action = "purify_water_chemical"
+bind = { agent = "water_filter_pitcher", water = "cooking_pot" }
+
+[chain.cook_meat_before_it_turns]
+title = "Cook the thawing meat on the stove before it spoils"
+source = "survival-actions.md §2.7"
+
+[[chain.cook_meat_before_it_turns.steps]]
+action = "cook"
+bind = { food = "meat_package", heat = "stove_range" }
+
+[chain.cook_rice]
+title = "Pour rice and water into a pot and cook it over a fire"
+source = "survival-actions.md §2.7"
+
+[[chain.cook_rice.steps]]
+action = "fill_container"
+bind = { dest = "cooking_pot", liquid = "rice" }
+
+[[chain.cook_rice.steps]]
+action = "fill_container"
+bind = { dest = "cooking_pot", liquid = "water" }
+
+[[chain.cook_rice.steps]]
+action = "cook"
+bind = { food = "bag_of_rice", heat = "lighter" }
+
+[chain.extinguish_grease_fire]
+title = "Put out a kitchen grease fire with the extinguisher under the sink"
+source = "survival-actions.md §2.5"
+
+[[chain.extinguish_grease_fire.steps]]
+action = "extinguish"
+bind = { agent = "fire_extinguisher" }
+
+[chain.skillet_weapon]
+title = "Smash with a cast-iron frying pan"
+source = "survival-actions.md §2.4"
+
+[[chain.skillet_weapon.steps]]
+action = "smash"
+bind = { tool = "frying_pan" }
+
+[chain.plate_noise_lure]
+title = "Throw a dinner plate across the street; it shatters loudly"
+source = "survival-actions.md §2.3"
+
+[[chain.plate_noise_lure.steps]]
+action = "throw_noise_lure"
+bind = { item = "dinner_plate" }
+expect_impact = "shatter"
+expect_range_min = 6
+
+[chain.can_tripwire]
+title = "String empty food cans on a cord of torn T-shirt strips as a tripwire alarm"
+source = "survival-actions.md §2.4"
+
+[[chain.can_tripwire.steps]]
+action = "tear_strips"
+bind = { target = "t_shirt" }
+
+[[chain.can_tripwire.steps]]
+action = "tripwire_alarm"
+bind = { wire = "t_shirt", noisemaker = "canned_food" }
+
+[chain.freezer_copper]
+title = "Strip the copper coolant line out of a dead chest freezer"
+source = "survival-actions.md §2.9"
+
+[[chain.freezer_copper.steps]]
+action = "disassemble"
+bind = { target = "chest_freezer", tool = "screwdriver" }
+yields = "copper_tubing"
+
+[chain.table_knife_cannot_salvage]
+title = "Negative control: a table knife is too poor a screwdriver to strip the freezer"
+source = "realism"
+expect_fail = true
+
+[[chain.table_knife_cannot_salvage.steps]]
+action = "disassemble"
+bind = { target = "chest_freezer", tool = "cutlery" }
+yields = "copper_tubing"
+
+[chain.freezer_barricade]
+title = "Push the chest freezer against the back door"
+source = "survival-actions.md §4.3"
+
+[[chain.freezer_barricade.steps]]
+action = "block_with_furniture"
+bind = { furniture = "chest_freezer" }
+
+[chain.wash_with_dish_soap]
+title = "Wash the rot and sweat off with dish soap before a stealth run"
+source = "survival-actions.md §2.2"
+
+[[chain.wash_with_dish_soap.steps]]
+action = "wash"
+bind = { soap = "dish_soap" }
+
+[chain.baking_sheet_splint]
+title = "Splint a forearm with a baking sheet and T-shirt strips"
+source = "survival-actions.md §4.6"
+
+[[chain.baking_sheet_splint.steps]]
+action = "splint"
+bind = { rigid = "baking_sheet", binding = "t_shirt" }

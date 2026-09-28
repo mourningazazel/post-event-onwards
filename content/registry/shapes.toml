@@ -1,0 +1,62 @@
+# Shape classes: coarse geometry used by derivations (fill factor for mass estimates,
+# throwing aerodynamics defaults, what a socket accepts, divisibility defaults).
+
+[shape.rod]
+desc = "Long and narrow: pipes, sticks, bars, handles, bats."
+fill = 70          # % of bounding box occupied (solid cylinder ~ 78)
+aero = "fair"
+
+[shape.blade]
+desc = "Flat with an edge: knives, machetes, saw blades, shovel blades."
+fill = 40
+aero = "fair"
+
+[shape.sheet]
+desc = "Thin and wide: planks, boards, panels, tarps, sheet metal, cardboard."
+fill = 90
+aero = "poor"
+
+[shape.block]
+desc = "Compact solid: bricks, cinder blocks, books, cans, tools heads."
+fill = 85
+aero = "fair"
+
+[shape.sphere]
+desc = "Round: balls, rocks, melons."
+fill = 52
+aero = "good"
+
+[shape.container]
+desc = "Hollow vessel: bottles, jugs, jars, buckets, pots, tanks."
+fill = 3           # walls only; contents add their own mass
+aero = "poor"
+
+[shape.bag]
+desc = "Flexible carrier: backpacks, sacks, bags, purses."
+fill = 10
+aero = "poor"
+
+[shape.fabric]
+desc = "Flexible textile: clothing, sheets, towels, blankets."
+fill = 8
+aero = "poor"
+
+[shape.cord]
+desc = "Long flexible line: rope, cable, hose, wire, chain."
+fill = 60
+aero = "poor"
+
+[shape.granular]
+desc = "Loose particulate matter (only as substances in containers)."
+fill = 60
+aero = "poor"
+
+[shape.complex]
+desc = "Irregular assemblies: appliances, furniture, vehicles, tools with mechanisms."
+fill = 25
+aero = "poor"
+
+[shape.small]
+desc = "Tiny objects under ~5 cm: keys, coins, batteries, matches, pills."
+fill = 50
+aero = "fair"

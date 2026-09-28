@@ -1,0 +1,112 @@
+# Signals, light and noise on demand: flares, horns, fireworks (M3, M11, M13 lures).
+
+[item.road_flare]
+name = "road flare"
+tags = ["cat.signal.flare", "from.vehicle", "from.street", "from.police", "from.fire_service", "use.fire_starter", "use.light_source", "use.signal", "hazard.flammable"]
+shape = "rod"
+dims_mm = [300, 30, 30]
+mass_g = 200
+use_noise = "quiet"
+desc = "A 30-minute red highway fusee with a striker cap."
+glyph = "item.flare"
+why = "Strike-lit and self-oxidising: lights fires and fuel spills even in pouring rain; bright red light and a smoke plume for half an hour."
+brand_cats = ["automotive"]
+value_class = "useful"
+
+[item.road_flare.composition.filling]
+material = "wax"
+share = 75
+[item.road_flare.composition.case]
+material = "paper"
+share = 20
+[item.road_flare.composition.cap]
+material = "polypropylene"
+share = 5
+
+[item.road_flare.features.ignition]
+method = "strike"
+charges = 1
+fails_when_wet = false
+needs_striker = false
+[item.road_flare.features.light]
+radius_m = 15
+beam = "omni"
+duration_min = 30
+fuel = "chemical"
+
+[item.road_flare.reactions.heat]
+low = "none"
+medium = "ignite"
+high = "ignite"
+
+[item.air_horn]
+name = "air horn"
+tags = ["cat.signal.air_horn", "from.outdoors", "from.retail", "from.school", "use.signal", "use.lure", "hazard.pressurized"]
+shape = "complex"
+dims_mm = [230, 70, 70]
+mass_g = 300
+pressurized = true
+units = 60
+use_noise = "extreme"
+desc = "A hand-held canned air horn with a flared plastic trumpet."
+glyph = "item.air_horn"
+why = "About sixty deafening blasts on demand: a lure that carries blocks; can be rigged to a tripwire (alarm)."
+brand_cats = ["sporting_goods"]
+value_class = "useful"
+
+[item.air_horn.composition.can]
+material = "mild_steel"
+share = 70
+[item.air_horn.composition.horn]
+material = "polypropylene"
+share = 30
+
+[item.air_horn.features.alarm]
+loudness = "extreme"
+timer = false
+trigger = "touch"
+
+[item.air_horn.capabilities]
+noise = 10
+
+[item.air_horn.reactions.heat]
+medium = "burst"
+high = "burst"
+
+[item.fireworks]
+name = "fireworks"
+tags = ["cat.signal.fireworks", "from.retail", "from.garage", "from.gas_station", "use.lure", "use.signal", "hazard.flammable"]
+shape = "block"
+dims_mm = [230, 230, 160]
+mass_g = 1500
+use_noise = "extreme"
+desc = "A consumer aerial repeater cake: dozens of tubes on one fuse."
+glyph = "item.fireworks"
+why = "Light the fuse and walk (or throw): a minute of bangs and flashes that pulls hearing zombies from blocks away; starts fires where it lands."
+details = ["fireworks_kind"]
+value_class = "useful"
+
+[item.fireworks.composition.tubes]
+material = "cardboard"
+share = 60
+[item.fireworks.composition.wrap]
+material = "paper"
+share = 15
+[item.fireworks.composition.powder]
+material = "charcoal"
+share = 25
+
+[item.fireworks.features.alarm]
+loudness = "extreme"
+timer = true
+trigger = "timer"
+[item.fireworks.features.light]
+radius_m = 30
+beam = "omni"
+duration_min = 1
+fuel = "chemical"
+
+[item.fireworks.reactions.heat]
+low = "none"
+medium = "ignite"
+high = "burst"

@@ -1,0 +1,274 @@
+# Hygiene and toiletries (world-catalog §6.C). Domain C.
+# Scent (M14, scent-mobs.md): soaps wash absorbed scent out of skin and clothes (action.wash);
+# perfume and deodorant add a perfume-channel signature that masks human scent at close range.
+# `emits.*` on an item means the closed item itself leaks that scent (perfume bottles do).
+
+[item.soap_bar]
+name = "bar of soap"
+tags = ["cat.hygiene.soap", "from.bathroom", "from.grocery", "from.retail", "use.soap", "use.hygiene"]
+shape = "block"
+dims_mm = [90, 60, 30]
+mass_g = 110
+desc = "A paper-wrapped bar of scented soap."
+glyph = "item.soap"
+why = "Washes absorbed scent off skin and clothes (M14 wash); compact and never spoils."
+brand_cats = ["personal_care"]
+value_class = "useful"
+
+[item.soap_bar.composition.soap]
+material = "wax"   # stand-in for saponified fat (no soap material yet; see proposals)
+share = 95
+[item.soap_bar.composition.wrapper]
+material = "paper"
+share = 5
+
+[item.shampoo_bottle]
+name = "shampoo bottle"
+tags = ["cat.hygiene.soap", "from.bathroom", "from.grocery", "from.retail", "use.soap", "use.hygiene", "use.container"]
+shape = "container"
+dims_mm = [200, 70, 45]
+mass_g = 40
+desc = "A squeeze bottle of shampoo with a flip cap."
+glyph = "item.bottle_small"
+why = "Liquid soap: washes scent out (M14); the empty bottle is a small sealable liquid container."
+brand_cats = ["personal_care"]
+value_class = "common"
+
+[item.shampoo_bottle.composition.bottle]
+material = "hdpe"
+share = 85
+[item.shampoo_bottle.composition.cap]
+material = "polypropylene"
+share = 15
+
+[item.shampoo_bottle.features.container]
+capacity_ml = 400
+opening_mm = 8
+closable = true
+sealable = true
+compat = ["liquid"]
+[item.shampoo_bottle.features.lid]
+kind = "snap"
+reclosable = true
+
+[item.shampoo_bottle.contents]
+substance = "soap_liquid"
+fill_pct = [0, 100]
+
+[item.deodorant_spray]
+name = "aerosol deodorant"
+tags = ["cat.hygiene.aerosol", "from.bathroom", "from.bedroom", "from.school", "use.mask_scent", "use.hygiene", "hazard.flammable", "hazard.pressurized"]
+shape = "container"
+dims_mm = [150, 52, 52]
+mass_g = 60
+pressurized = true
+desc = "A pressurised aluminium can of body spray."
+glyph = "item.spray_can"
+why = "Perfume-channel scent over body and clothes (M14 masking); flammable propellant; bursts in a fire (M3)."
+brand_cats = ["personal_care"]
+details = ["perfume_note"]
+value_class = "common"
+reactions = { heat = { medium = "burst", high = "burst" } }
+
+[item.deodorant_spray.composition.can]
+material = "aluminum"
+share = 85
+[item.deodorant_spray.composition.actuator]
+material = "polypropylene"
+share = 15
+
+[item.deodorant_spray.features.container]
+capacity_ml = 150
+opening_mm = 0
+closable = true
+sealable = true
+compat = ["liquid", "gas"]
+
+[item.deodorant_spray.contents]
+substance = "perfume"   # scented alcohol; the butane propellant is implied by `pressurized`
+fill_pct = [5, 100]
+
+[item.perfume_bottle]
+name = "perfume bottle"
+tags = ["cat.hygiene.perfume", "from.bedroom", "from.bathroom", "from.retail", "use.mask_scent", "emits.perfume.2", "hazard.flammable", "hazard.sharp_debris"]
+shape = "container"
+dims_mm = [110, 70, 40]
+mass_g = 150
+fill_pct = 15
+desc = "A heavy faceted glass bottle of perfume with a spray atomiser."
+glyph = "item.bottle_small"
+why = "Strongest body-applicable perfume scent (M14 masking / decoy); faintly scents its surroundings; shatters when thrown."
+brand_cats = ["personal_care"]
+details = ["perfume_note"]
+value_class = "useful"
+
+[item.perfume_bottle.composition.bottle]
+material = "glass"
+share = 85
+[item.perfume_bottle.composition.cap]
+material = "brass"
+share = 10
+[item.perfume_bottle.composition.atomiser]
+material = "polypropylene"
+share = 5
+
+[item.perfume_bottle.features.container]
+capacity_ml = 50
+opening_mm = 0
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.perfume_bottle.contents]
+substance = "perfume"
+fill_pct = [5, 100]
+
+[item.hand_sanitizer_bottle]
+name = "hand sanitizer"
+tags = ["cat.hygiene.sanitizer", "from.bathroom", "from.office", "from.school", "from.medical", "from.vehicle", "use.hygiene", "use.first_aid", "use.tinder", "hazard.flammable"]
+shape = "container"
+dims_mm = [170, 65, 40]
+mass_g = 30
+desc = "A flip-top bottle of alcohol hand-sanitizing gel."
+glyph = "item.bottle_small"
+why = "Cleans hands and wound edges (M15 disinfect); the alcohol gel lights easily and burns as fire-starter paste (M3)."
+brand_cats = ["personal_care", "first_aid"]
+value_class = "useful"
+medical = { disinfect = 5 }
+
+[item.hand_sanitizer_bottle.composition.bottle]
+material = "pet"
+share = 85
+[item.hand_sanitizer_bottle.composition.cap]
+material = "polypropylene"
+share = 15
+
+[item.hand_sanitizer_bottle.features.container]
+capacity_ml = 236
+opening_mm = 5
+closable = true
+sealable = true
+compat = ["liquid"]
+
+[item.hand_sanitizer_bottle.contents]
+substance = "hand_sanitizer"
+fill_pct = [0, 100]
+
+[item.toilet_paper]
+name = "toilet paper"
+tags = ["cat.hygiene.paper", "from.bathroom", "from.grocery", "from.office", "use.tinder", "use.hygiene"]
+shape = "block"
+dims_mm = [115, 110, 105]
+mass_g = 120
+fill_pct = 15
+units = 200
+desc = "A roll of two-ply toilet tissue."
+glyph = "item.toilet_paper"
+why = "Hygiene; excellent dry tinder (M3). Dissolves when wet, so it is useless as a wound dressing."
+divisible = { mode = "count", needs = "none" }
+brand_cats = ["paper_goods"]
+value_class = "common"
+
+[item.toilet_paper.composition.tissue]
+material = "paper"
+share = 95
+[item.toilet_paper.composition.core]
+material = "cardboard"
+share = 5
+
+[item.towel]
+name = "bath towel"
+tags = ["cat.textile.towel", "from.bathroom", "from.bedroom", "from.outdoors", "use.hygiene"]
+shape = "fabric"
+dims_mm = [1400, 700, 5]
+mass_g = 500
+absorbs_water = true
+absorbs_scent = true
+durability = 5
+desc = "A thick cotton terry bath towel."
+glyph = "item.towel"
+why = "Dries you off (M12); pressure pad on a bleeding wound; wet, it smothers a small fire; wraps noisy gear; cuts into strips."
+divisible = { mode = "sheet", needs = "cut>=1" }
+medical = { bleed_stop = 2 }
+brand_cats = ["household"]
+details = ["clothing_colour", "fabric_pattern"]
+value_class = "common"
+
+[item.towel.composition.terry]
+material = "cotton"
+share = 100
+
+[item.towel.capabilities]
+extinguish = 1
+cushion = 3
+
+[item.razor]
+name = "disposable razor"
+tags = ["cat.hygiene.razor", "from.bathroom", "from.grocery", "use.hygiene"]
+shape = "complex"
+dims_mm = [140, 40, 15]
+mass_g = 12
+desc = "A plastic three-blade disposable razor."
+glyph = "item.razor"
+why = "Shaving (morale); the guarded blades barely cut anything else, a realistic limit on improvised blades."
+brand_cats = ["personal_care"]
+value_class = "junk"
+
+[item.razor.composition.handle]
+material = "polypropylene"
+share = 85
+[item.razor.composition.blade]
+material = "stainless_steel"
+share = 15
+
+[item.razor.features.edge]
+length_mm = 38
+sharpness = 2
+[item.razor.features.grip]
+hands = 1
+girth_mm = 12
+
+[item.sanitary_pads]
+name = "sanitary pads"
+tags = ["cat.hygiene.sanitary", "from.bathroom", "from.grocery", "from.school", "use.hygiene", "use.first_aid"]
+shape = "block"
+dims_mm = [230, 130, 100]
+mass_g = 200
+fill_pct = 20
+units = 20
+desc = "A pack of individually wrapped absorbent pads with adhesive backing."
+glyph = "item.pads"
+why = "Hygiene; a clean, highly absorbent dressing medics really do improvise with for heavy bleeding (M15)."
+medical = { bleed_stop = 4, sterile = 3 }
+brand_cats = ["personal_care"]
+value_class = "useful"
+
+[item.sanitary_pads.composition.absorbent]
+material = "paper"   # cellulose fluff pulp
+share = 70
+[item.sanitary_pads.composition.backing]
+material = "ldpe"
+share = 20
+[item.sanitary_pads.composition.topsheet]
+material = "polypropylene"
+share = 10
+
+[item.toothbrush_kit]
+name = "toothbrush and toothpaste"
+tags = ["cat.hygiene.dental", "from.bathroom", "from.grocery", "use.hygiene"]
+shape = "complex"
+dims_mm = [190, 40, 30]
+mass_g = 60
+fill_pct = 30
+desc = "A toothbrush and a half-used tube of toothpaste."
+glyph = "item.toothbrush"
+why = "Hygiene and morale (world-building); a bathroom staple that fills out medicine-cabinet loot."
+brand_cats = ["personal_care"]
+value_class = "junk"
+
+[item.toothbrush_kit.composition.brush]
+material = "polypropylene"
+share = 40
+[item.toothbrush_kit.composition.tube_and_paste]
+material = "ldpe"   # laminate tube; paste mass approximated (no paste material)
+share = 60

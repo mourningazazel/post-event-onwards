@@ -1,0 +1,75 @@
+# Office loot tables (world-catalog §7): workplace desks and shared spaces, pre-event baseline.
+# Personal items people carry (phones, wallets) are on the occupants (profiles), not in desks.
+
+[loot.office_desk]
+desc = "An office workstation's drawers and desktop: stationery, snacks, a spare sweater, odd valuables."
+rolls = [2, 5]
+empty_chance_pct = 5
+entries = [
+  { item = "desk_clutter", w = 22, count = [1, 1] },
+  { item = "pen", w = 12, count = [2, 8] },
+  { item = "notebook", w = 8, count = [1, 3] },
+  { item = "paper_ream", w = 4, count = [1, 1] },
+  { item = "mug", w = 8, count = [1, 2] },
+  { item = "snack_bar", w = 8, count = [1, 6] },
+  { item = "soda_can", w = 3, count = [1, 3] },
+  { item = "painkillers", w = 5, count = [1, 1], mods = ["opened"] },
+  { item = "photo", w = 5, count = [1, 2] },
+  { item = "laptop", w = 5, count = [1, 1] },
+  { item = "power_bank", w = 3, count = [1, 1] },
+  { item = "hand_sanitizer_bottle", w = 3, count = [1, 1], substance = "hand_sanitizer", fill_pct = [10, 100] },
+  { item = "sweater", w = 3, count = [1, 1] },
+  { item = "book", w = 3, count = [1, 2] },
+  { item = "eyeglasses", w = 1, count = [1, 1] },
+  { item = "battery_aa", w = 2, count = [2, 4] },
+  { item = "cash", w = 1, count = [1, 1] },
+  { item = "car_key", w = 1, count = [1, 1] },
+  { item = "lanyard_badge", w = 2, count = [1, 1] },
+]
+
+[loot.break_room_stock]
+desc = "Break-room fridge and cupboards: coffee, drinks, lunches, snacks, dish supplies."
+rolls = [3, 8]
+empty_chance_pct = 3
+entries = [
+  { item = "coffee_can", w = 10, count = [1, 3] },
+  { item = "mug", w = 10, count = [3, 12] },
+  { item = "soda_can", w = 10, count = [2, 12] },
+  { item = "bottled_water", w = 8, count = [2, 12] },
+  { item = "plastic_tub", w = 10, count = [1, 6] },
+  { item = "milk_jug", w = 5, count = [1, 1], substance = "milk", fill_pct = [10, 100] },
+  { item = "jar_food", w = 4, count = [1, 3], mods = ["opened"] },
+  { item = "snack_bar", w = 8, count = [2, 10] },
+  { item = "bag_of_sugar", w = 3, count = [1, 1], mods = ["opened"] },
+  { item = "fresh_produce", w = 4, count = [1, 4] },
+  { item = "frozen_food", w = 4, count = [1, 4] },
+  { item = "cutlery", w = 4, count = [1, 1] },
+  { item = "dinner_plate", w = 3, count = [2, 10] },
+  { item = "paper_towels", w = 5, count = [1, 4] },
+  { item = "dish_soap", w = 4, count = [1, 1], substance = "soap_liquid", fill_pct = [10, 100] },
+  { item = "trash_bags", w = 2, count = [1, 1] },
+  { item = "kettle", w = 2, count = [1, 1] },
+]
+
+[loot.reception_desk]
+desc = "A reception or front desk: stationery, visitor badges, the key cabinet, a first-aid kit, petty cash."
+rolls = [2, 5]
+empty_chance_pct = 3
+entries = [
+  { item = "desk_clutter", w = 18, count = [1, 1] },
+  { item = "pen", w = 12, count = [3, 12] },
+  { item = "notebook", w = 6, count = [1, 3] },
+  { item = "lanyard_badge", w = 10, count = [2, 10] },
+  { item = "house_key", w = 8, count = [2, 12] },
+  { item = "car_key", w = 3, count = [1, 3] },
+  { item = "first_aid_kit", w = 7, count = [1, 1] },
+  { item = "flashlight", w = 5, count = [1, 1] },
+  { item = "city_map", w = 5, count = [1, 4] },
+  { item = "snack_bar", w = 6, count = [2, 10] },
+  { item = "paper_ream", w = 4, count = [1, 2] },
+  { item = "hand_sanitizer_bottle", w = 4, count = [1, 1], substance = "hand_sanitizer", fill_pct = [20, 100] },
+  { item = "walkie_talkie", w = 3, count = [1, 2] },
+  { item = "cash", w = 3, count = [1, 2] },
+  { item = "pepper_spray", w = 1, count = [1, 1] },
+  { item = "newspaper", w = 3, count = [1, 3] },
+]

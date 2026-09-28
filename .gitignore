@@ -5,11 +5,13 @@ cmake-build-*/
 _deps/
 CMakeUserPresets.json
 compile_commands.json
+.cache/
 
 # Editors / OS
+.vs/
 .vscode/
 .idea/
-.cache/
+*.user
 *.swp
 .DS_Store
 Thumbs.db
@@ -18,5 +20,16 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# Local agent state (never committed)
+# Spike binaries
+docs/research/spikes/**/*.spv
+docs/research/spikes/scent-movement/scentbench
+docs/research/spikes/gpu-compute-probe/gpuprobe
+docs/research/spikes/gpu-compute-probe/computeprobe
+
+# Third-party reference caches must never enter the repo (see ADR-0004)
+roguelike-refs/
+roguebasin-raw/
+
+# Local agent state (never committed). .claude/skills and settings.json ARE committed.
 .claude/settings.local.json
+.claude/worktrees/

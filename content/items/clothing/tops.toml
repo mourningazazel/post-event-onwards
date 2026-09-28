@@ -1,0 +1,496 @@
+# Clothing: tops and jackets (world-catalog §6.C). Domain C.
+#
+# Conventions for every garment in items/clothing/:
+# - dims_mm is the garment laid flat (length x width x doubled-fabric thickness); shape "fabric".
+# - insulation_clo10: clo x 10 (a T-shirt ~0.1 clo -> 1; a heavy parka ~2.5 clo -> 25).
+# - waterproof / windproof: 0..10 (10 = sealed membrane / rubber).
+# - armor { blunt, cut, pierce, bite } 0..10. Bite is the one that matters (M16): thin knits and
+#   wovens ~0; thick denim/canvas 2; thick knits and padding 1-2; leather 5; aramid panels 8.
+#   Human jaws crush rather than slice, so padding helps a little and dense tough fibre a lot.
+# - absorbs_scent: every textile holds sweat scent; synthetics notoriously so (M14).
+# - Colour, prints, fit and occupational markings come from detail tables (N011), never new items.
+
+[item.t_shirt]
+name = "T-shirt"
+tags = ["cat.clothing.top", "from.bedroom", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [700, 500, 5]
+mass_g = 180
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A cotton crew-neck T-shirt."
+glyph = "item.shirt"
+why = "Base layer; tears into bandages and bindings; carries scent (wash or swap)."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_print", "clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.t_shirt.composition.cloth]
+material = "cotton"
+share = 100
+
+[item.t_shirt.features.wearable]
+slot = "torso"
+layer = "base"
+coverage = ["torso", "upper_arms"]
+insulation_clo10 = 1
+
+[item.dress_shirt]
+name = "dress shirt"
+tags = ["cat.clothing.top", "from.bedroom", "from.office", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [800, 600, 4]
+mass_g = 250
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A long-sleeved button-up shirt in cotton-polyester poplin, with a chest pocket."
+glyph = "item.shirt"
+why = "Office-worker base layer (P-IT-03); long sleeves cover the forearms; tears into strips."
+divisible = { mode = "sheet", needs = "none" }
+brand_cats = ["clothing_formal", "clothing_basics"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.dress_shirt.composition.cloth]
+material = "cotton"
+share = 60
+[item.dress_shirt.composition.blend]
+material = "polyester"
+share = 40
+
+[item.dress_shirt.features.wearable]
+slot = "torso"
+layer = "base"
+coverage = ["torso", "upper_arms", "forearms"]
+insulation_clo10 = 2
+windproof = 1
+[item.dress_shirt.features.pocket]
+name = "chest pocket"
+capacity_ml = 80
+max_mass_g = 200
+max_dim_mm = 110
+closable = false
+
+[item.sweater]
+name = "sweater"
+tags = ["cat.clothing.top", "from.bedroom", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [700, 600, 10]
+mass_g = 500
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 1
+armor = { blunt = 1, cut = 0, pierce = 0, bite = 1 }
+desc = "A thick cable-knit wool sweater."
+glyph = "item.sweater"
+why = "Warm mid layer that stays warm when damp (wool); slow to catch fire; slight padding."
+brand_cats = ["clothing_basics", "clothing_outdoor"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.sweater.composition.knit]
+material = "wool"
+share = 100
+
+[item.sweater.features.wearable]
+slot = "torso"
+layer = "mid"
+coverage = ["torso", "upper_arms", "forearms"]
+insulation_clo10 = 4
+windproof = 1
+
+[item.hoodie]
+name = "hoodie"
+tags = ["cat.clothing.top", "from.bedroom", "from.school", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [750, 600, 12]
+mass_g = 650
+absorbs_water = true
+absorbs_scent = true
+durability = 5
+encumbrance = 1
+armor = { blunt = 1, cut = 1, pierce = 0, bite = 1 }
+desc = "A heavyweight cotton-fleece pullover hoodie with a kangaroo pocket."
+glyph = "item.hoodie"
+why = "The most common teen/casual top; hood covers the head; thick fleece gives token bite padding; cuts into strips."
+divisible = { mode = "sheet", needs = "cut>=1" }
+brand_cats = ["clothing_basics"]
+modifiers = ["child_size"]
+details = ["clothing_print", "clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.hoodie.composition.fleece]
+material = "cotton"
+share = 80
+[item.hoodie.composition.blend]
+material = "polyester"
+share = 20
+
+[item.hoodie.features.wearable]
+slot = "torso"
+layer = "mid"
+coverage = ["torso", "upper_arms", "forearms", "head"]
+insulation_clo10 = 4
+windproof = 2
+[item.hoodie.features.pocket]
+name = "kangaroo pocket"
+capacity_ml = 1000
+max_mass_g = 1500
+max_dim_mm = 250
+closable = false
+
+[item.fleece_jacket]
+name = "fleece jacket"
+tags = ["cat.clothing.top", "from.bedroom", "from.outdoors", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [750, 600, 15]
+mass_g = 400
+absorbs_water = false
+absorbs_scent = true
+durability = 5
+encumbrance = 1
+armor = { blunt = 1, cut = 0, pierce = 0, bite = 1 }
+desc = "A full-zip polyester fleece jacket with two zipped hand pockets."
+glyph = "item.jacket"
+why = "Light warm mid layer that dries fast; melts rather than burns (polyester)."
+brand_cats = ["clothing_outdoor"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.fleece_jacket.composition.fleece]
+material = "polyester"
+share = 95
+[item.fleece_jacket.composition.zips]
+material = "nylon"
+share = 5
+
+[item.fleece_jacket.features.wearable]
+slot = "torso"
+layer = "mid"
+coverage = ["torso", "upper_arms", "forearms"]
+insulation_clo10 = 5
+windproof = 2
+[item.fleece_jacket.features.pocket]
+name = "zipped hand pockets"
+capacity_ml = 800
+max_mass_g = 1500
+max_dim_mm = 200
+closable = true
+
+[item.winter_coat]
+name = "winter coat"
+tags = ["cat.clothing.outerwear", "from.bedroom", "from.living", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [900, 700, 60]
+mass_g = 1600
+absorbs_water = false
+absorbs_scent = true
+durability = 6
+encumbrance = 3
+armor = { blunt = 2, cut = 1, pierce = 1, bite = 2 }
+desc = "A hip-length insulated parka: nylon shell, thick synthetic fill, hood and zipped pockets."
+glyph = "item.coat"
+why = "The warmth that makes winter survivable (M12); bulky padding blunts bites a little; big pockets."
+brand_cats = ["clothing_outdoor"]
+modifiers = ["child_size"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "useful"
+
+[item.winter_coat.composition.shell]
+material = "nylon_fabric"
+share = 35
+[item.winter_coat.composition.fill]
+material = "polyester"
+share = 60
+[item.winter_coat.composition.zips]
+material = "nylon"
+share = 5
+
+[item.winter_coat.features.wearable]
+slot = "torso"
+layer = "outer"
+coverage = ["torso", "upper_arms", "forearms", "hips", "head"]
+insulation_clo10 = 25
+waterproof = 5
+windproof = 8
+[item.winter_coat.features.pocket]
+name = "zipped hand and chest pockets"
+capacity_ml = 2500
+max_mass_g = 3000
+max_dim_mm = 250
+closable = true
+
+[item.rain_jacket]
+name = "rain jacket"
+tags = ["cat.clothing.outerwear", "from.bedroom", "from.outdoors", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [800, 650, 6]
+mass_g = 350
+absorbs_water = false
+absorbs_scent = true
+durability = 5
+encumbrance = 1
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A packable hooded shell of coated ripstop nylon with taped seams."
+glyph = "item.jacket"
+why = "Keeps the rain out (M12 wetness) over any other layer; nylon too tough to tear into strips by hand."
+brand_cats = ["clothing_outdoor"]
+modifiers = ["child_size"]
+details = ["clothing_colour"]
+value_class = "useful"
+
+[item.rain_jacket.composition.shell]
+material = "nylon_fabric"
+share = 90
+[item.rain_jacket.composition.zips]
+material = "nylon"
+share = 10
+
+[item.rain_jacket.features.wearable]
+slot = "torso"
+layer = "shell"
+coverage = ["torso", "upper_arms", "forearms", "hips", "head"]
+insulation_clo10 = 2
+waterproof = 9
+windproof = 9
+[item.rain_jacket.features.pocket]
+name = "hand pockets"
+capacity_ml = 1000
+max_mass_g = 1500
+max_dim_mm = 200
+closable = true
+
+[item.leather_jacket]
+name = "leather jacket"
+tags = ["cat.clothing.outerwear", "from.bedroom", "from.retail", "slot.torso"]
+shape = "fabric"
+dims_mm = [800, 650, 20]
+mass_g = 1800
+absorbs_water = true
+absorbs_scent = true
+durability = 9
+encumbrance = 2
+armor = { blunt = 2, cut = 4, pierce = 2, bite = 5 }
+desc = "A heavy cowhide motorcycle-style jacket with an asymmetric zip."
+glyph = "item.jacket"
+why = "The best everyday bite armour for torso and arms (M16); windproof; too tough to tear."
+brand_cats = ["clothing_outdoor", "clothing_formal"]
+modifiers = ["faux_leather"]
+details = ["leather_look", "clothing_fit"]
+value_class = "valuable"
+
+[item.leather_jacket.composition.shell]
+material = "leather"
+share = 85
+[item.leather_jacket.composition.lining]
+material = "polyester"
+share = 10
+[item.leather_jacket.composition.zips]
+material = "brass"
+share = 5
+
+[item.leather_jacket.features.wearable]
+slot = "torso"
+layer = "outer"
+coverage = ["torso", "upper_arms", "forearms"]
+insulation_clo10 = 5
+waterproof = 4
+windproof = 9
+[item.leather_jacket.features.pocket]
+name = "zipped pockets"
+capacity_ml = 1200
+max_mass_g = 2000
+max_dim_mm = 200
+closable = true
+
+[item.suit_jacket]
+name = "suit jacket"
+tags = ["cat.clothing.outerwear", "from.office", "from.bedroom", "from.church", "slot.torso"]
+shape = "fabric"
+dims_mm = [800, 600, 10]
+mass_g = 700
+absorbs_water = true
+absorbs_scent = true
+durability = 4
+encumbrance = 1
+armor = { blunt = 1, cut = 1, pierce = 0, bite = 1 }
+desc = "A lined wool suit jacket with inside breast pockets."
+glyph = "item.jacket"
+why = "Office and churchgoer outerwear (P-IT-03); wool keeps some warmth; inside pockets."
+brand_cats = ["clothing_formal"]
+details = ["clothing_colour", "clothing_fit"]
+value_class = "common"
+
+[item.suit_jacket.composition.cloth]
+material = "wool"
+share = 85
+[item.suit_jacket.composition.lining]
+material = "polyester"
+share = 15
+
+[item.suit_jacket.features.wearable]
+slot = "torso"
+layer = "outer"
+coverage = ["torso", "upper_arms", "forearms"]
+insulation_clo10 = 4
+windproof = 3
+[item.suit_jacket.features.pocket]
+name = "outer and inside pockets"
+capacity_ml = 600
+max_mass_g = 1000
+max_dim_mm = 200
+closable = false
+
+[item.hi_vis_vest]
+name = "hi-vis vest"
+tags = ["cat.clothing.outerwear", "from.construction", "from.street", "from.utility", "from.vehicle", "slot.torso"]
+shape = "fabric"
+dims_mm = [650, 550, 3]
+mass_g = 120
+absorbs_water = false
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A fluorescent orange mesh safety vest with reflective stripes."
+glyph = "item.vest"
+why = "Construction/utility worker outfit (P-IT-03); reflective stripes glint in torchlight; no protection."
+details = ["uniform_marking"]
+value_class = "junk"
+
+[item.hi_vis_vest.composition.mesh]
+material = "polyester"
+share = 100
+
+[item.hi_vis_vest.features.wearable]
+slot = "torso"
+layer = "outer"
+coverage = ["torso"]
+[item.hi_vis_vest.features.pocket]
+name = "patch pockets"
+capacity_ml = 300
+max_mass_g = 500
+max_dim_mm = 160
+closable = false
+
+[item.police_vest]
+name = "ballistic vest"
+tags = ["cat.clothing.armor", "from.police", "slot.torso"]
+shape = "fabric"
+dims_mm = [550, 450, 12]
+mass_g = 2500
+fill_pct = 50
+absorbs_water = false
+absorbs_scent = true
+durability = 8
+encumbrance = 3
+armor = { blunt = 3, cut = 5, pierce = 3, bite = 8 }
+desc = "A concealable soft body-armour vest: layered aramid panels in a nylon carrier with hook-and-loop straps."
+glyph = "item.vest"
+why = "Near-bite-proof torso armour (M16) from police stations and officers; not stab-rated, so spikes and ice picks still get through."
+details = ["uniform_marking"]
+value_class = "rare"
+
+[item.police_vest.composition.panels]
+material = "aramid"
+share = 70
+[item.police_vest.composition.carrier]
+material = "nylon_fabric"
+share = 25
+[item.police_vest.composition.straps]
+material = "nylon"
+share = 5
+
+[item.police_vest.features.wearable]
+slot = "torso"
+layer = "mid"
+coverage = ["torso"]
+insulation_clo10 = 2
+windproof = 6
+
+[item.scrubs_top]
+name = "scrubs top"
+tags = ["cat.clothing.top", "from.medical", "slot.torso"]
+shape = "fabric"
+dims_mm = [750, 550, 4]
+mass_g = 200
+absorbs_water = true
+absorbs_scent = true
+durability = 3
+encumbrance = 0
+armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
+desc = "A short-sleeved V-neck medical scrubs top with a chest pocket."
+glyph = "item.shirt"
+why = "Nurse/doctor outfit (P-IT-03) marks hospital zombies; tears into clean strips."
+divisible = { mode = "sheet", needs = "none" }
+details = ["scrubs_colour", "clothing_fit"]
+value_class = "junk"
+
+[item.scrubs_top.composition.cloth]
+material = "cotton"
+share = 55
+[item.scrubs_top.composition.blend]
+material = "polyester"
+share = 45
+
+[item.scrubs_top.features.wearable]
+slot = "torso"
+layer = "base"
+coverage = ["torso", "upper_arms"]
+insulation_clo10 = 1
+[item.scrubs_top.features.pocket]
+name = "chest and hip pockets"
+capacity_ml = 300
+max_mass_g = 500
+max_dim_mm = 150
+closable = false
+
+[item.firefighter_coat]
+name = "turnout coat"
+tags = ["cat.clothing.armor", "from.fire_service", "slot.torso"]
+shape = "fabric"
+dims_mm = [950, 750, 30]
+mass_g = 3000
+absorbs_water = true
+absorbs_scent = true
+durability = 9
+encumbrance = 4
+armor = { blunt = 2, cut = 5, pierce = 2, bite = 5 }
+desc = "A firefighter's bunker coat: aramid outer shell, moisture barrier, quilted thermal liner, reflective trim."
+glyph = "item.coat"
+why = "Fire-resistant torso-and-arms protection (M3 heat) with real bite resistance; very warm; heavy and hot."
+details = ["uniform_marking"]
+value_class = "valuable"
+
+[item.firefighter_coat.composition.shell]
+material = "aramid"
+share = 80
+[item.firefighter_coat.composition.barrier]
+material = "polyester"
+share = 15
+[item.firefighter_coat.composition.hardware]
+material = "stainless_steel"
+share = 5
+
+[item.firefighter_coat.features.wearable]
+slot = "torso"
+layer = "outer"
+coverage = ["torso", "upper_arms", "forearms", "hips", "neck"]
+insulation_clo10 = 15
+waterproof = 8
+windproof = 9
+[item.firefighter_coat.features.pocket]
+name = "bellows pockets"
+capacity_ml = 3000
+max_mass_g = 3000
+max_dim_mm = 250
+closable = true

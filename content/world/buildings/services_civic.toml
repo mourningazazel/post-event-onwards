@@ -1,0 +1,523 @@
+# Building types: services, civic, institutional and lodging (world-catalog §2).
+# Conventions (footprint, materials, room counts, occupant time buckets, chance_pct, utilities):
+# see the header of buildings/residential.toml.
+#
+# Institutional sites (hospital, medical_clinic, police_station, fire_station, school, library,
+# church) are placed by the generator with spacing rules (world-catalog §1), not by setting
+# weights. City hall and courthouse use office_lowrise with a detail table (world-catalog §2).
+# Hospital in-patients use the "sleeper" profile (bed-bound, in night clothes) until a patient
+# profile exists.
+
+[building.office_lowrise]
+desc = "A one-to-four-storey office building: cubicle floors, private offices, meeting rooms and a kitchenette per floor; also stands in for city halls, courthouses and small professional offices."
+footprint_m = [[20, 60], [15, 40]]
+floors = [1, 4]
+basement_pct = 25
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "open_office", count = [1, 6], floor = "any" },
+  { room = "private_office", count = [2, 20], floor = "any" },
+  { room = "conference_room", count = [1, 4], floor = "any" },
+  { room = "break_room", count = [1, 4], floor = "any" },
+  { room = "server_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [2, 8], floor = "any" },
+  { room = "closet", count = [1, 4], floor = "any" },
+  { room = "boiler_room", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "office_worker", count = [10, 160], when = ["weekday_day"] },
+  { profile = "office_worker", count = [0, 12], when = ["evening"] },
+  { profile = "office_worker", count = [0, 8], chance_pct = 50, when = ["weekend_day"] },
+  { profile = "janitor", count = [1, 3], when = ["evening"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 30, when = ["night", "weekend_day"] },
+  { profile = "at_home_adult", count = [0, 10], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [0, 1], when = ["weekday_day"] },
+]
+outdoor = ["parking_lot", "downtown_street"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.office"]
+
+[building.office_tower]
+desc = "A steel-and-glass office tower of 12-60 storeys: an atrium lobby with security desk, elevator banks, open-plan floors, basement plant and a loading dock."
+footprint_m = [[30, 60], [30, 60]]
+floors = [12, 60]
+basement_pct = 95
+walls = "gypsum_board"
+exterior = "glass"
+roof = "concrete"
+rooms = [
+  { room = "reception", count = [1, 2], floor = "ground" },
+  { room = "dining_area", count = [0, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 1], floor = "ground" },
+  { room = "open_office", count = [12, 120], floor = "upper" },
+  { room = "private_office", count = [30, 500], floor = "upper" },
+  { room = "conference_room", count = [12, 150], floor = "upper" },
+  { room = "break_room", count = [12, 60], floor = "upper" },
+  { room = "server_room", count = [1, 12], floor = "any" },
+  { room = "restroom_public", count = [24, 120], floor = "any" },
+  { room = "closet", count = [12, 60], floor = "any" },
+  { room = "loading_dock", count = [1, 1], floor = "ground" },
+  { room = "boiler_room", count = [1, 2], floor = "basement" },
+  { room = "control_room", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "office_worker", count = [400, 3500], when = ["weekday_day"] },
+  { profile = "office_worker", count = [20, 250], when = ["evening"] },
+  { profile = "office_worker", count = [10, 120], when = ["weekend_day"] },
+  { profile = "office_worker", count = [0, 20], when = ["night"] },
+  { profile = "security_guard", count = [2, 8], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [4, 30], when = ["evening"] },
+  { profile = "janitor", count = [2, 10], when = ["night", "weekday_day"] },
+  { profile = "retail_worker", count = [0, 6], when = ["weekday_day"] },
+  { profile = "cook", count = [0, 4], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [5, 60], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [1, 8], when = ["weekday_day"] },
+]
+outdoor = ["downtown_street", "alley"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.office", "cat.building.highrise"]
+
+[building.bank]
+desc = "A bank branch: a teller line behind glass, private offices, a vault room with safe-deposit boxes, a drive-through lane and an ATM vestibule."
+footprint_m = [[15, 30], [15, 30]]
+floors = [1, 2]
+basement_pct = 30
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [2, 6], floor = "any" },
+  { room = "open_office", count = [0, 2], floor = "any" },
+  { room = "conference_room", count = [0, 1], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "server_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "office_worker", count = [4, 15], when = ["weekday_day"] },
+  { profile = "office_worker", count = [2, 6], chance_pct = 45, when = ["weekend_day"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 40, when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [1, 10], when = ["weekday_day"] },
+  { profile = "retiree", count = [0, 5], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [0, 5], chance_pct = 45, when = ["weekend_day"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 50, when = ["evening"] },
+]
+outdoor = ["parking_lot", "downtown_street"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.office", "cat.building.bank"]
+
+[building.post_office]
+desc = "A post office: a public lobby with PO boxes and a service counter, a sorting floor of mail bins and parcel cages, and a dock for the delivery trucks."
+footprint_m = [[20, 50], [20, 40]]
+floors = [1, 1]
+basement_pct = 20
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "warehouse_floor", count = [1, 1], floor = "ground" },
+  { room = "loading_dock", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 2], floor = "ground" },
+  { room = "break_room", count = [1, 1], floor = "ground" },
+  { room = "restroom_public", count = [1, 2], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "retail_worker", count = [2, 6], when = ["weekday_day"] },
+  { profile = "retail_worker", count = [1, 3], chance_pct = 70, when = ["weekend_day"] },
+  { profile = "office_worker", count = [1, 4], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [2, 25], when = ["weekday_day"] },
+  { profile = "delivery_driver", count = [0, 6], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 10], when = ["weekday_day"] },
+  { profile = "retiree", count = [0, 5], when = ["weekday_day", "weekend_day"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.civic"]
+
+[building.police_station]
+desc = "A police station: a front desk behind glass, a squad room, interview rooms, holding cells, a locker room, a secured armory and a sally-port garage."
+footprint_m = [[25, 60], [20, 40]]
+floors = [1, 3]
+basement_pct = 35
+walls = "concrete"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "police_bullpen", count = [1, 3], floor = "any" },
+  { room = "police_armory", count = [1, 1], floor = "any" },
+  { room = "holding_cell", count = [2, 8], floor = "ground" },
+  { room = "private_office", count = [3, 15], floor = "any" },
+  { room = "conference_room", count = [1, 3], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "server_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [2, 4], floor = "any" },
+  { room = "garage", count = [0, 1], floor = "ground" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "police_officer", count = [6, 40], when = ["weekday_day"] },
+  { profile = "police_officer", count = [4, 25], when = ["weekend_day", "evening"] },
+  { profile = "police_officer", count = [2, 12], when = ["night"] },
+  { profile = "office_worker", count = [2, 20], when = ["weekday_day"] },
+  { profile = "office_worker", count = [1, 4], when = ["weekend_day", "evening", "night"] },
+  { profile = "at_home_adult", count = [0, 6], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 60, when = ["evening"] },
+]
+outdoor = ["parking_lot", "emergency_scene"]
+loot_priority = "very_high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.civic", "cat.building.institutional", "cat.building.emergency"]
+
+[building.fire_station]
+desc = "A fire station: a tall apparatus bay of engines and an ambulance, a turnout-gear rack, a kitchen and day room, bunk rooms, a workshop and hose tower."
+footprint_m = [[20, 40], [20, 35]]
+floors = [1, 2]
+basement_pct = 15
+walls = "concrete"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "apparatus_bay", count = [1, 1], floor = "ground" },
+  { room = "kitchen", count = [1, 1], floor = "any" },
+  { room = "living_room", count = [1, 1], floor = "any" },
+  { room = "bedroom_master", count = [1, 3], floor = "any" },
+  { room = "bathroom", count = [1, 3], floor = "any" },
+  { room = "private_office", count = [1, 2], floor = "any" },
+  { room = "workshop", count = [0, 1], floor = "ground" },
+  { room = "laundry_room", count = [0, 1], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "firefighter", count = [3, 12], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "office_worker", count = [0, 2], when = ["weekday_day"] },
+]
+outdoor = ["parking_lot", "emergency_scene"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.civic", "cat.building.institutional", "cat.building.emergency"]
+
+[building.hospital]
+desc = "A community hospital of 2-10 storeys: an emergency department with ambulance bay, wards of patient rooms, a hospital pharmacy, kitchens, laundry and basement plant with backup generators."
+footprint_m = [[50, 150], [40, 100]]
+floors = [2, 10]
+basement_pct = 85
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "concrete"
+rooms = [
+  { room = "reception", count = [1, 3], floor = "ground" },
+  { room = "emergency_bay", count = [1, 1], floor = "ground" },
+  { room = "hospital_ward", count = [4, 30], floor = "upper" },
+  { room = "hospital_pharmacy", count = [1, 1], floor = "any" },
+  { room = "private_office", count = [6, 40], floor = "any" },
+  { room = "conference_room", count = [1, 6], floor = "any" },
+  { room = "break_room", count = [2, 10], floor = "any" },
+  { room = "restroom_public", count = [4, 20], floor = "any" },
+  { room = "cafeteria", count = [1, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [1, 1], floor = "any" },
+  { room = "walk_in_cooler", count = [1, 2], floor = "any" },
+  { room = "stockroom", count = [2, 8], floor = "any" },
+  { room = "laundry_room", count = [0, 1], floor = "basement" },
+  { room = "server_room", count = [1, 2], floor = "any" },
+  { room = "loading_dock", count = [1, 1], floor = "ground" },
+  { room = "boiler_room", count = [1, 2], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [30, 280], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "nurse", count = [30, 160], when = ["weekday_day"] },
+  { profile = "nurse", count = [20, 110], when = ["weekend_day", "evening", "night"] },
+  { profile = "doctor", count = [8, 60], when = ["weekday_day"] },
+  { profile = "doctor", count = [3, 20], when = ["weekend_day", "evening", "night"] },
+  { profile = "pharmacist", count = [1, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "pharmacist", count = [1, 2], when = ["night"] },
+  { profile = "office_worker", count = [15, 120], when = ["weekday_day"] },
+  { profile = "office_worker", count = [3, 20], when = ["weekend_day", "evening", "night"] },
+  { profile = "janitor", count = [4, 25], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [2, 10], when = ["night"] },
+  { profile = "cook", count = [3, 15], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "security_guard", count = [2, 8], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [15, 120], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retiree", count = [10, 70], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "child_student", count = [1, 15], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [4, 30], when = ["night"] },
+  { profile = "police_officer", count = [0, 3], when = ["night", "weekday_day", "weekend_day", "evening"] },
+]
+outdoor = ["parking_lot", "emergency_scene"]
+loot_priority = "very_high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.institutional", "cat.building.medical"]
+
+[building.medical_clinic]
+desc = "An outpatient medical clinic or urgent care: a waiting room and reception, a corridor of exam rooms, a supply room and staff offices."
+footprint_m = [[20, 40], [15, 30]]
+floors = [1, 2]
+basement_pct = 10
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "nurse_office", count = [3, 12], floor = "any" },
+  { room = "private_office", count = [1, 4], floor = "any" },
+  { room = "stockroom", count = [1, 1], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 3], floor = "any" },
+]
+occupants = [
+  { profile = "doctor", count = [1, 6], when = ["weekday_day"] },
+  { profile = "nurse", count = [2, 12], when = ["weekday_day"] },
+  { profile = "office_worker", count = [1, 5], when = ["weekday_day"] },
+  { profile = "at_home_adult", count = [2, 20], when = ["weekday_day"] },
+  { profile = "retiree", count = [2, 15], when = ["weekday_day"] },
+  { profile = "child_student", count = [0, 6], when = ["weekday_day"] },
+  { profile = "doctor", count = [1, 2], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "nurse", count = [1, 4], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [1, 10], chance_pct = 40, when = ["weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 50, when = ["evening"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "high"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.institutional", "cat.building.medical"]
+
+[building.school]
+desc = "A public school, elementary to high school: corridors of classrooms, a gymnasium, a cafeteria with kitchen, a library, the nurse's office, admin offices and a boiler room."
+footprint_m = [[60, 150], [40, 100]]
+floors = [1, 3]
+basement_pct = 30
+walls = "concrete"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "classroom", count = [12, 80], floor = "any" },
+  { room = "gymnasium", count = [1, 2], floor = "ground" },
+  { room = "cafeteria", count = [1, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [1, 1], floor = "ground" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "ground" },
+  { room = "library_stacks", count = [1, 1], floor = "any" },
+  { room = "nurse_office", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [2, 8], floor = "any" },
+  { room = "conference_room", count = [0, 2], floor = "any" },
+  { room = "break_room", count = [1, 2], floor = "any" },
+  { room = "workshop", count = [0, 2], floor = "ground" },
+  { room = "server_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [4, 16], floor = "any" },
+  { room = "closet", count = [2, 8], floor = "any" },
+  { room = "boiler_room", count = [1, 1], floor = "any" },
+]
+occupants = [
+  { profile = "child_student", count = [120, 700], when = ["weekday_day"] },
+  { profile = "teen_student", count = [150, 1500], chance_pct = 35, when = ["weekday_day"] },
+  { profile = "teacher", count = [15, 100], when = ["weekday_day"] },
+  { profile = "office_worker", count = [3, 12], when = ["weekday_day"] },
+  { profile = "nurse", count = [1, 1], chance_pct = 70, when = ["weekday_day"] },
+  { profile = "cook", count = [2, 12], when = ["weekday_day"] },
+  { profile = "janitor", count = [2, 8], when = ["weekday_day"] },
+  { profile = "security_guard", count = [0, 3], when = ["weekday_day"] },
+  { profile = "teacher", count = [0, 10], when = ["evening"] },
+  { profile = "teen_student", count = [0, 60], chance_pct = 50, when = ["evening", "weekend_day"] },
+  { profile = "child_student", count = [0, 30], chance_pct = 30, when = ["evening"] },
+  { profile = "at_home_adult", count = [0, 80], chance_pct = 25, when = ["evening", "weekend_day"] },
+  { profile = "janitor", count = [1, 4], when = ["evening"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 20, when = ["night", "weekend_day"] },
+]
+outdoor = ["school_grounds", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.institutional", "cat.building.school"]
+
+[building.library]
+desc = "A public library: tall stacks, reading tables and public computers, a children's corner, a circulation desk and meeting rooms; local maps, atlases and manuals."
+footprint_m = [[20, 60], [20, 40]]
+floors = [1, 2]
+basement_pct = 30
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "library_stacks", count = [1, 3], floor = "any" },
+  { room = "private_office", count = [1, 4], floor = "any" },
+  { room = "conference_room", count = [0, 2], floor = "any" },
+  { room = "break_room", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "office_worker", count = [2, 10], when = ["weekday_day", "weekend_day"] },
+  { profile = "office_worker", count = [1, 4], chance_pct = 70, when = ["evening"] },
+  { profile = "retiree", count = [2, 15], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [2, 20], when = ["weekday_day", "weekend_day"] },
+  { profile = "child_student", count = [0, 12], when = ["weekday_day", "weekend_day"] },
+  { profile = "teen_student", count = [0, 12], chance_pct = 70, when = ["evening", "weekend_day"] },
+  { profile = "at_home_adult", count = [1, 8], chance_pct = 70, when = ["evening"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 50, when = ["evening"] },
+]
+outdoor = ["parking_lot", "park_grounds"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.civic", "cat.building.institutional"]
+
+[building.church]
+desc = "A church: a nave of pews under a high roof, a pastor's office, Sunday-school rooms, and a fellowship hall with a kitchen and food-pantry shelves in the basement."
+footprint_m = [[15, 40], [25, 50]]
+floors = [1, 2]
+basement_pct = 45
+walls = "gypsum_board"
+exterior = "brick"
+roof = "asphalt"
+rooms = [
+  { room = "church_nave", count = [1, 1], floor = "ground" },
+  { room = "private_office", count = [1, 3], floor = "any" },
+  { room = "classroom", count = [0, 6], floor = "any" },
+  { room = "kitchen", count = [0, 1], floor = "any" },
+  { room = "dining_area", count = [0, 1], floor = "any" },
+  { room = "restroom_public", count = [1, 2], floor = "any" },
+  { room = "closet", count = [1, 3], floor = "any" },
+  { room = "basement", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "churchgoer", count = [20, 300], chance_pct = 45, when = ["weekend_day"] },
+  { profile = "churchgoer", count = [1, 4], when = ["weekday_day"] },
+  { profile = "churchgoer", count = [5, 40], chance_pct = 20, when = ["evening"] },
+  { profile = "at_home_adult", count = [0, 10], chance_pct = 25, when = ["weekday_day", "evening"] },
+  { profile = "retiree", count = [0, 8], chance_pct = 30, when = ["weekday_day"] },
+  { profile = "janitor", count = [1, 1], chance_pct = 25, when = ["weekday_day"] },
+]
+outdoor = ["parking_lot", "front_yard"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.institutional", "cat.building.church"]
+
+[building.motel]
+desc = "A roadside motel: one or two storeys of rooms opening straight onto the parking lot along an exterior walkway, an office with the room keys, an ice machine and a laundry."
+footprint_m = [[30, 80], [10, 15]]
+floors = [1, 2]
+basement_pct = 0
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "asphalt"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "motel_room", count = [12, 60], floor = "any" },
+  { room = "laundry_room", count = [1, 1], floor = "ground" },
+  { room = "closet", count = [1, 4], floor = "any" },
+  { room = "private_office", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "sleeper", count = [5, 70], when = ["night"] },
+  { profile = "trucker", count = [0, 8], when = ["night"] },
+  { profile = "retail_worker", count = [1, 1], when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "janitor", count = [1, 4], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [2, 25], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [5, 50], when = ["evening"] },
+  { profile = "construction_worker", count = [0, 8], when = ["evening"] },
+  { profile = "child_student", count = [0, 6], when = ["weekend_day", "evening"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.lodging"]
+
+[building.hotel]
+desc = "A full-service hotel of 4-25 storeys: a lobby and front desk, restaurant and bar, meeting rooms, a fitness room, corridors of guest rooms, back-of-house laundry and kitchens."
+footprint_m = [[30, 70], [20, 40]]
+floors = [4, 25]
+basement_pct = 70
+walls = "gypsum_board"
+exterior = "concrete"
+roof = "concrete"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "hotel_room", count = [60, 600], floor = "upper" },
+  { room = "dining_area", count = [0, 2], floor = "ground" },
+  { room = "bar_room", count = [0, 1], floor = "ground" },
+  { room = "commercial_kitchen", count = [0, 1], floor = "any" },
+  { room = "walk_in_cooler", count = [0, 1], floor = "any" },
+  { room = "conference_room", count = [0, 8], floor = "any" },
+  { room = "gymnasium", count = [0, 1], floor = "any" },
+  { room = "laundry_room", count = [1, 2], floor = "any" },
+  { room = "closet", count = [4, 25], floor = "upper" },
+  { room = "private_office", count = [1, 4], floor = "any" },
+  { room = "break_room", count = [1, 1], floor = "any" },
+  { room = "restroom_public", count = [2, 6], floor = "any" },
+  { room = "loading_dock", count = [0, 1], floor = "ground" },
+  { room = "boiler_room", count = [1, 1], floor = "basement" },
+]
+occupants = [
+  { profile = "sleeper", count = [50, 750], when = ["night"] },
+  { profile = "office_worker", count = [5, 120], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [10, 200], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "child_student", count = [0, 40], when = ["weekend_day", "evening"] },
+  { profile = "retail_worker", count = [2, 6], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "retail_worker", count = [1, 2], when = ["night"] },
+  { profile = "janitor", count = [4, 40], when = ["weekday_day", "weekend_day"] },
+  { profile = "janitor", count = [1, 6], when = ["evening", "night"] },
+  { profile = "cook", count = [2, 15], when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "bartender", count = [1, 3], chance_pct = 70, when = ["evening"] },
+  { profile = "security_guard", count = [1, 3], when = ["night", "weekday_day", "weekend_day", "evening"] },
+]
+outdoor = ["downtown_street", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.lodging", "cat.building.highrise"]
+
+[building.parking_garage]
+desc = "A multi-storey concrete parking structure: open decks of parked cars linked by ramps and stair towers, a pay booth at the entrance. Each deck is filled with the parking_lot outdoor set."
+footprint_m = [[40, 80], [30, 60]]
+floors = [2, 8]
+basement_pct = 40
+walls = "concrete"
+exterior = "concrete"
+roof = "concrete"
+rooms = [
+  { room = "reception", count = [0, 1], floor = "ground" },
+  { room = "closet", count = [1, 2], floor = "any" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 1], chance_pct = 40, when = ["weekday_day", "weekend_day", "evening"] },
+  { profile = "security_guard", count = [1, 1], chance_pct = 30, when = ["night", "weekday_day", "weekend_day", "evening"] },
+  { profile = "office_worker", count = [0, 20], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 10], when = ["weekend_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 2], when = ["night"] },
+]
+outdoor = ["parking_lot"]
+loot_priority = "low"
+utilities = { power = "grid", water = "mains" }
+tags = ["cat.building.transport"]
+
+[building.self_storage]
+desc = "A self-storage facility: rows of roll-up-door units behind a keypad gate, an office selling boxes and locks; each unit a padlocked time capsule of someone's belongings."
+footprint_m = [[40, 120], [20, 60]]
+floors = [1, 3]
+basement_pct = 0
+walls = "mild_steel"
+exterior = "mild_steel"
+roof = "mild_steel"
+rooms = [
+  { room = "reception", count = [1, 1], floor = "ground" },
+  { room = "storage_unit", count = [40, 400], floor = "any" },
+  { room = "restroom_public", count = [0, 1], floor = "ground" },
+]
+occupants = [
+  { profile = "retail_worker", count = [1, 2], when = ["weekday_day", "weekend_day"] },
+  { profile = "at_home_adult", count = [0, 5], when = ["weekday_day", "evening"] },
+  { profile = "at_home_adult", count = [0, 8], when = ["weekend_day"] },
+]
+outdoor = ["industrial_yard", "parking_lot"]
+loot_priority = "medium"
+utilities = { power = "grid", water = "none" }
+tags = ["cat.building.storage"]

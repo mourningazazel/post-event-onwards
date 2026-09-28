@@ -1,0 +1,18 @@
+# Negative controls for reconciliation rules.
+
+[chain.denim_resists_tearing]
+title = "Jeans can't be torn into strips by hand (denim needs a blade)"
+source = "domain C report; tear_strips divisible_by_hand"
+expect_fail = true
+
+[[chain.denim_resists_tearing.steps]]
+action = "tear_strips"
+bind = { target = "jeans" }
+
+[chain.denim_cut_with_knife]
+title = "...but jeans can be cut into strips with a knife"
+source = "domain C report"
+
+[[chain.denim_cut_with_knife.steps]]
+action = "cut_strips"
+bind = { target = "jeans", tool = "kitchen_knife" }

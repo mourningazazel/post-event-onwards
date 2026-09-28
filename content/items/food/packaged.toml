@@ -1,0 +1,214 @@
+# Packaged shelf food (domain A). Few archetypes; the kind (chili vs peaches, cereal vs pasta)
+# comes from a *_kind detail table whose entries apply variant modifiers in
+# modifiers/kitchen_food.toml. Those modifiers set the name, the food values and, where the
+# package differs, dims/mass/material. Base values here are a sensible generic package.
+#
+# mass_g of packaged food is the whole package including the food (the food is not a substance).
+# food.kcal is the whole package; servings split it.
+
+# ---------------------------------------------------------------- cans
+[item.canned_food]
+name = "canned food"
+tags = ["cat.food.canned", "cat.container.can", "from.kitchen", "from.grocery", "from.gas_station", "use.food"]
+shape = "block"
+dims_mm = [115, 76, 76]
+mass_g = 470
+heat_resistant = true              # the empty tinplate can boils water over a fire
+desc = "A tinplate food can with a paper label."
+glyph = "item.can"
+why = "The backbone of scavenged calories: never spoils, but needs opening. The empty can boils water and rattles on a tripwire."
+brand_cats = ["canned_food"]
+details = ["canned_food_kind", "canned_lid", "canned_label"]
+value_class = "useful"
+food = { kcal = 400, servings = 2, hydration_ml = 150, perishable = "shelf_stable", needs_opening = true, cookable = false }
+
+[item.canned_food.composition.can]
+material = "mild_steel"
+share = 11
+[item.canned_food.composition.contents]
+material = "food_wet"
+share = 89
+
+[item.canned_food.features.container]
+capacity_ml = 430
+opening_mm = 73
+closable = false
+compat = ["liquid", "granular", "solid"]
+
+# The contents are the heaviest "material", but a steel can dents rather than splitting.
+[item.canned_food.reactions.impact]
+low = "none"
+medium = "dent"
+high = "dent"
+# Sealed cans heated in a fire burst (steam pressure); warmed beside it they just heat through.
+[item.canned_food.reactions.heat]
+medium = "cook"
+high = "burst"
+
+# ---------------------------------------------------------------- boxes
+[item.boxed_dry_food]
+name = "boxed food"
+tags = ["cat.food.dry", "from.kitchen", "from.grocery", "use.food", "use.tinder"]
+shape = "block"
+dims_mm = [265, 75, 40]
+mass_g = 480
+desc = "A paperboard box of dry food with a plastic inner bag."
+glyph = "item.box"
+why = "Light, calorie-dense dry staples; most need water and a heat source to be worth eating. The box is tinder."
+brand_cats = ["dry_food"]
+details = ["boxed_dry_food_kind"]
+value_class = "useful"
+food = { kcal = 1600, servings = 8, perishable = "shelf_stable", needs_opening = false, cookable = true }
+
+[item.boxed_dry_food.composition.contents]
+material = "food_dry"
+share = 92
+[item.boxed_dry_food.composition.box]
+material = "paper"
+share = 8
+
+# ---------------------------------------------------------------- jars
+[item.jar_food]
+name = "jarred food"
+tags = ["cat.food.jar", "cat.container.jar", "from.kitchen", "from.grocery", "use.food", "hazard.sharp_debris"]
+shape = "block"
+dims_mm = [180, 90, 90]
+mass_g = 980
+desc = "A glass jar of food with a vacuum-sealed metal screw lid."
+glyph = "item.jar"
+why = "Shelf-stable food in a reusable, resealable glass jar (water, dry goods, scent-tight storage); shatters when thrown."
+brand_cats = ["canned_food"]
+details = ["jar_food_kind"]
+value_class = "useful"
+food = { kcal = 420, servings = 6, hydration_ml = 300, perishable = "shelf_stable", needs_opening = false, cookable = false }
+
+[item.jar_food.composition.jar]
+material = "glass"
+share = 30
+[item.jar_food.composition.lid]
+material = "mild_steel"
+share = 2
+[item.jar_food.composition.contents]
+material = "food_wet"
+share = 68
+
+[item.jar_food.features.container]
+capacity_ml = 710
+opening_mm = 63
+closable = true
+sealable = true
+watertight = true
+compat = ["liquid", "granular", "solid"]
+[item.jar_food.features.lid]
+kind = "screw"
+reclosable = true
+
+# Contents outweigh the glass, but it is the glass that breaks — even dropped on a hard floor.
+[item.jar_food.reactions.impact]
+low = "shatter"
+medium = "shatter"
+high = "shatter"
+
+[item.honey_jar]
+name = "honey"
+tags = ["cat.food.sweetener", "from.kitchen", "from.grocery", "use.food", "use.first_aid"]
+shape = "block"
+dims_mm = [150, 75, 60]
+mass_g = 360
+desc = "A squeezable plastic bear of clover honey."
+glyph = "item.honey"
+why = "Never spoils; dense calories; a genuine antibacterial dressing for burns and small wounds."
+value_class = "useful"
+food = { kcal = 1030, servings = 16, perishable = "shelf_stable", needs_opening = false, cookable = false }
+medical = { burn_care = 3, disinfect = 1, doses = 16 }
+
+[item.honey_jar.composition.bottle]
+material = "pet"
+share = 6
+[item.honey_jar.composition.contents]
+material = "food_wet"
+share = 94
+
+[item.honey_jar.features.lid]
+kind = "snap"
+reclosable = true
+
+# ---------------------------------------------------------------- bars and snacks
+[item.snack_bar]
+name = "snack bar"
+tags = ["cat.food.snack", "from.kitchen", "from.grocery", "from.gas_station", "from.office", "from.school", "from.vehicle", "use.food"]
+shape = "block"
+dims_mm = [115, 35, 18]
+mass_g = 42
+desc = "A foil-wrapped snack bar."
+glyph = "item.bar"
+why = "Pocket calories eaten on the move, no prep; the most common food on bodies and in cars."
+brand_cats = ["snacks"]
+details = ["snack_bar_kind"]
+value_class = "common"
+food = { kcal = 190, servings = 1, perishable = "long", needs_opening = false, cookable = false }
+
+[item.snack_bar.composition.contents]
+material = "food_dry"
+share = 95
+[item.snack_bar.composition.wrapper]
+material = "ldpe"
+share = 5
+
+# ---------------------------------------------------------------- coffee, formula
+[item.coffee_can]
+name = "can of ground coffee"
+tags = ["cat.food.coffee", "cat.container.can", "from.kitchen", "from.grocery", "from.office", "use.food", "use.container"]
+shape = "block"
+dims_mm = [135, 105, 105]
+mass_g = 410
+heat_resistant = true
+desc = "A steel can of medium-roast ground coffee with a snap-on plastic lid."
+glyph = "item.coffee"
+why = "Morale (brewed with boiled water); the empty lidded steel can is a classic nail tin, hobo stove or boiling can."
+value_class = "useful"
+food = { kcal = 180, servings = 90, perishable = "long", needs_opening = false, cookable = true }
+
+[item.coffee_can.composition.can]
+material = "mild_steel"
+share = 20
+[item.coffee_can.composition.lid]
+material = "ldpe"
+share = 2
+[item.coffee_can.composition.contents]
+material = "food_dry"
+share = 78
+
+[item.coffee_can.features.container]
+capacity_ml = 1100
+opening_mm = 100
+closable = true
+sealable = false
+compat = ["liquid", "granular", "solid"]
+[item.coffee_can.features.lid]
+kind = "snap"
+reclosable = true
+
+[item.baby_formula]
+name = "baby formula"
+tags = ["cat.food.baby", "from.kitchen", "from.grocery", "from.retail", "use.food"]
+shape = "block"
+dims_mm = [180, 125, 115]
+mass_g = 440
+desc = "A plastic tub of powdered infant formula with a scoop inside."
+glyph = "item.formula"
+why = "The most calorie- and nutrient-dense powder on the shelf; needs clean water; scarce and first to be looted."
+brand_cats = ["baby"]
+value_class = "valuable"
+food = { kcal = 1800, servings = 18, perishable = "long", needs_opening = false, cookable = false }
+
+[item.baby_formula.composition.tub]
+material = "hdpe"
+share = 20
+[item.baby_formula.composition.contents]
+material = "food_dry"
+share = 80
+
+[item.baby_formula.features.lid]
+kind = "hinged"
+reclosable = true

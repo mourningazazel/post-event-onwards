@@ -1,0 +1,420 @@
+# Domain D pinned expectations: furniture, fixtures, electronics, lighting, paper, fire.
+# Values hand-computed from tools/content/derive.py and the authored data.
+
+# ---- openings: door vs window impact outcomes (M8/M10/M13) ----
+[[expect]]
+item = "window_house"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+why = "a thrown brick goes through ordinary glass"
+
+[[expect]]
+item = "window_house"
+path = "impact.low"
+op = "=="
+value = "crack"
+why = "a pebble cracks annealed glass without opening it"
+
+[[expect]]
+item = "window_house"
+path = "tags"
+op = "has"
+value = "hazard.sharp_debris"
+why = "annealed glass leaves cutting shards"
+
+[[expect]]
+item = "window_storefront"
+path = "impact.low"
+op = "=="
+value = "none"
+why = "tempered glass shrugs off light hits"
+
+[[expect]]
+item = "window_storefront"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "door_interior"
+path = "impact.medium"
+op = "=="
+value = "split"
+why = "hollow-core skin splits under a kick"
+
+[[expect]]
+item = "door_exterior"
+path = "impact.medium"
+op = "=="
+value = "none"
+why = "solid wood door ignores a normal hit"
+
+[[expect]]
+item = "door_exterior"
+path = "impact.high"
+op = "=="
+value = "crack"
+
+[[expect]]
+item = "door_steel"
+path = "impact.high"
+op = "=="
+value = "dent"
+why = "steel doors dent, never break open"
+
+[[expect]]
+item = "door_interior"
+path = "throw_range"
+op = "=="
+value = 0
+why = "fixtures can't be thrown"
+
+# ---- lock tiers (M10): tier ~ security skill needed ----
+[[expect]]
+item = "door_interior"
+path = "features.lock.tier"
+op = "=="
+value = 1
+
+[[expect]]
+item = "filing_cabinet"
+path = "features.lock.tier"
+op = "=="
+value = 2
+
+[[expect]]
+item = "metal_locker"
+path = "features.lock.tier"
+op = "=="
+value = 3
+
+[[expect]]
+item = "door_exterior"
+path = "features.lock.tier"
+op = "=="
+value = 4
+
+[[expect]]
+item = "door_steel"
+path = "features.lock.tier"
+op = "=="
+value = 7
+
+[[expect]]
+item = "safe"
+path = "features.lock.tier"
+op = "=="
+value = 15
+why = "matches crack_safe_by_feel min_skill 15"
+
+[[expect]]
+item = "safe"
+path = "features.lock.pickable"
+op = "=="
+value = false
+
+[[expect]]
+item = "safe"
+path = "features.lock.combination"
+op = "=="
+value = true
+
+[[expect]]
+item = "safe"
+path = "impact.high"
+op = "=="
+value = "dent"
+
+[[expect]]
+item = "safe"
+mods = ["safe_gun"]
+path = "name"
+op = "=="
+value = "gun safe"
+
+[[expect]]
+item = "safe"
+mods = ["safe_gun"]
+path = "mass_g"
+op = ">="
+value = 200000
+
+# ---- light radii (M11) ----
+[[expect]]
+item = "flashlight"
+path = "cap.light"
+op = "=="
+value = 10
+
+[[expect]]
+item = "headlamp"
+path = "cap.light"
+op = "=="
+value = 8
+
+[[expect]]
+item = "battery_lantern"
+path = "cap.light"
+op = "=="
+value = 6
+
+[[expect]]
+item = "kerosene_lantern"
+path = "cap.light"
+op = "=="
+value = 5
+
+[[expect]]
+item = "candle"
+path = "cap.light"
+op = "=="
+value = 2
+
+[[expect]]
+item = "glow_stick"
+path = "cap.light"
+op = "=="
+value = 2
+
+[[expect]]
+item = "flashlight"
+path = "cap.hammer"
+op = "=="
+value = 3
+why = "log2(120/50) + aluminium 4/3 = 2.6"
+
+[[expect]]
+item = "flashlight"
+mods = ["flashlight_d_cell"]
+path = "name"
+op = "=="
+value = "D-cell flashlight"
+
+[[expect]]
+item = "flashlight"
+mods = ["flashlight_d_cell"]
+path = "features.slot.accepts"
+op = "=="
+value = "cat.battery.d"
+
+[[expect]]
+item = "flashlight"
+mods = ["flashlight_d_cell"]
+path = "cap.light"
+op = "=="
+value = 12
+
+[[expect]]
+item = "flashlight"
+mods = ["flashlight_d_cell"]
+path = "cap.hammer"
+op = "=="
+value = 5
+why = "log2(700/50) + 4/3 = 5.14: the guard's club flashlight"
+
+[[expect]]
+item = "candle"
+mods = ["candle_scented"]
+path = "name"
+op = "=="
+value = "scented candle"
+
+[[expect]]
+item = "candle"
+mods = ["candle_scented"]
+path = "tags"
+op = "has"
+value = "emits.perfume.2"
+why = "scented candles mask a little human scent (M14)"
+
+# ---- skill manuals (N012): subject modifier sets teaches + composes the name ----
+[[expect]]
+item = "skill_manual"
+mods = ["manual_first_aid"]
+path = "name"
+op = "=="
+value = "first aid manual"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_first_aid"]
+path = "teaches.skill"
+op = "=="
+value = "medicine"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_first_aid"]
+path = "teaches.max_level"
+op = "=="
+value = 5
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_field_surgery"]
+path = "name"
+op = "=="
+value = "emergency surgery textbook"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_field_surgery"]
+path = "teaches.max_level"
+op = ">="
+value = 10
+why = "advanced texts train to expert level (N012)"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_field_surgery"]
+path = "value_class"
+op = "=="
+value = "valuable"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_cookbook"]
+path = "name"
+op = "=="
+value = "family cookbook"
+
+[[expect]]
+item = "skill_manual"
+mods = ["manual_locksmithing"]
+path = "teaches.skill"
+op = "=="
+value = "security"
+
+[[expect]]
+item = "skill_manual"
+path = "features.readable.kind"
+op = "=="
+value = "manual"
+
+# ---- water sources ----
+[[expect]]
+item = "water_heater"
+path = "features.container.capacity_ml"
+op = ">="
+value = 150000
+
+[[expect]]
+item = "water_heater"
+path = "contents.substance"
+op = "=="
+value = "water"
+
+[[expect]]
+item = "water_heater"
+path = "features.valve.needs"
+op = "=="
+value = "fasten>=2"
+
+[[expect]]
+item = "toilet"
+path = "contents.substance"
+op = "=="
+value = "water_untreated"
+why = "cistern water is a real source, but boil it"
+
+# ---- fire ----
+[[expect]]
+item = "ferro_rod"
+path = "cap.ignite"
+op = "=="
+value = 4
+
+[[expect]]
+item = "ferro_rod"
+path = "features.ignition.fails_when_wet"
+op = "=="
+value = false
+why = "works soaked, unlike matches"
+
+[[expect]]
+item = "wood_stove"
+path = "cap.heat"
+op = "=="
+value = 8
+
+[[expect]]
+item = "fireplace"
+path = "cap.heat"
+op = "=="
+value = 5
+
+[[expect]]
+item = "spray_paint"
+path = "reactions.heat.high"
+op = "=="
+value = "burst"
+
+# ---- barricades, salvage, lures, access ----
+[[expect]]
+item = "bookshelf"
+path = "blocks_sight"
+op = "=="
+value = true
+
+[[expect]]
+item = "bookshelf"
+path = "composition.shelves.salvage.item"
+op = "=="
+value = "wood_plank"
+
+[[expect]]
+item = "mattress"
+path = "composition.springs.salvage.item"
+op = "=="
+value = "steel_spring"
+
+[[expect]]
+item = "mattress"
+path = "cap.cushion"
+op = "=="
+value = 8
+
+[[expect]]
+item = "dining_chair"
+path = "throw_range"
+op = "=="
+value = 2
+why = "poor aero 6 x sqrt(800/6000) = 2.2"
+
+[[expect]]
+item = "smoke_detector"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.battery.9v"
+
+[[expect]]
+item = "smoke_detector"
+path = "composition.battery.salvage.item"
+op = "=="
+value = "battery_9v"
+
+[[expect]]
+item = "walkie_talkie"
+path = "features.alarm.trigger"
+op = "=="
+value = "remote"
+
+[[expect]]
+item = "emergency_radio"
+path = "power_source.rechargeable"
+op = "=="
+value = true
+
+[[expect]]
+item = "desk_clutter"
+path = "cap.lockpick"
+op = "=="
+value = 0
+why = "N013: only a lockpick set picks locks"
+
+[[expect]]
+item = "television"
+path = "impact.medium"
+op = "=="
+value = "shatter"

@@ -1,0 +1,298 @@
+# Paper, books, maps, office and writing supplies, survivor notes. Domain D (world-catalog §6.D).
+# Knowledge objects (M21) carry feature.readable. Skill manuals teach (N012): the SUBJECT is a
+# variant modifier (modifiers/furniture_electronics.toml, manual_*) rolled from the
+# `skill_manual_subject` detail table; it sets `teaches` and composes the name
+# ("first aid manual", "emergency surgery textbook"). Titles, texts and markings are detail tables.
+# `newspaper` lives in items/fire/fire.toml (exemplar).
+
+# ---------------------------------------------------------------- books and manuals
+[item.book]
+name = "book"
+tags = ["cat.paper.book", "from.living", "from.bedroom", "from.school", "from.retail", "from.office", "use.tinder", "use.fuel", "flavor.readable"]
+shape = "block"
+dims_mm = [178, 108, 25]
+mass_g = 250
+desc = "A paperback book."
+glyph = "item.book"
+why = "Reading for its own sake (world-building, titles by detail table); tinder and slow paper fuel."
+details = ["book_title", "book_inscription"]
+modifiers = ["book_hardcover"]
+value_class = "junk"
+
+[item.book.composition.pages]
+material = "paper"
+share = 90
+[item.book.composition.cover]
+material = "cardboard"
+share = 10
+
+[item.book.features.readable]
+kind = "book"
+
+[item.skill_manual]
+name = "manual"
+tags = ["cat.paper.manual", "from.living", "from.garage", "from.school", "from.office", "from.retail", "flavor.readable"]
+shape = "block"
+dims_mm = [280, 215, 25]
+mass_g = 800
+desc = "A how-to book with diagrams, dog-eared at the useful chapters."
+glyph = "item.manual"
+why = "Reading trains a skill (N012): the subject modifier sets which skill, how far and how fast."
+details = ["skill_manual_subject"]
+value_class = "useful"
+
+[item.skill_manual.composition.pages]
+material = "paper"
+share = 92
+[item.skill_manual.composition.cover]
+material = "cardboard"
+share = 8
+
+[item.skill_manual.features.readable]
+kind = "manual"
+
+# ---------------------------------------------------------------- maps
+[item.city_map]
+name = "city map"
+tags = ["cat.paper.map", "from.vehicle", "from.gas_station", "from.retail", "from.living", "use.map", "use.tinder"]
+shape = "sheet"
+dims_mm = [250, 110, 5]
+mass_g = 60
+desc = "A folding street map of the city, creased soft along the folds."
+glyph = "item.map"
+why = "Reveals the street layout of the surrounding city (M21 coverage); somebody's markings are clues."
+brand_cats = ["maps"]
+details = ["map_markings"]
+value_class = "valuable"
+
+[item.city_map.composition.paper]
+material = "paper"
+share = 100
+
+[item.city_map.features.readable]
+kind = "map"
+coverage = "city"
+
+[item.road_atlas]
+name = "road atlas"
+tags = ["cat.paper.map", "from.vehicle", "from.gas_station", "from.retail", "use.map", "use.tinder"]
+shape = "sheet"
+dims_mm = [380, 275, 8]
+mass_g = 700
+desc = "A spiral-bound state road atlas with town insets."
+glyph = "item.atlas"
+why = "Regional coverage: highways, towns and parks beyond the city; plans the long walk (P-WO-03)."
+brand_cats = ["maps"]
+details = ["map_markings"]
+value_class = "useful"
+
+[item.road_atlas.composition.pages]
+material = "paper"
+share = 95
+[item.road_atlas.composition.binding]
+material = "mild_steel"
+share = 5
+
+[item.road_atlas.features.readable]
+kind = "map"
+coverage = "region"
+
+# ---------------------------------------------------------------- writing and office
+[item.notebook]
+name = "notebook"
+tags = ["cat.office.paper", "from.office", "from.school", "from.bedroom", "use.writing", "use.tinder"]
+shape = "sheet"
+dims_mm = [280, 215, 12]
+mass_g = 300
+desc = "A spiral-bound ruled notebook."
+glyph = "item.notebook"
+why = "Somewhere to keep your own notes and map marks (M21); earlier owners' entries are lore."
+brand_cats = ["office", "paper_goods"]
+details = ["notebook_contents"]
+divisible = { mode = "count", needs = "none" }
+units = 100
+value_class = "common"
+
+[item.notebook.composition.pages]
+material = "paper"
+share = 90
+[item.notebook.composition.spiral]
+material = "mild_steel"
+share = 5
+[item.notebook.composition.cover]
+material = "cardboard"
+share = 5
+
+[item.notebook.features.readable]
+kind = "note"
+
+[item.pen]
+name = "ballpoint pen"
+tags = ["cat.office.writing", "from.office", "from.school", "from.bedroom", "from.medical", "from.retail", "use.writing"]
+shape = "rod"
+dims_mm = [145, 12, 12]
+mass_g = 10
+desc = "A clear plastic ballpoint pen."
+glyph = "item.pen"
+why = "Writes notes and marks maps (M21); a stiff tube (improvised straw or blowpipe)."
+brand_cats = ["office"]
+value_class = "common"
+
+[item.pen.composition.barrel]
+material = "polystyrene"
+share = 85
+[item.pen.composition.refill]
+material = "brass"
+share = 15
+
+[item.pen.features.tube]
+inner_diameter_mm = 6
+length_mm = 145
+flexible = false
+
+[item.marker]
+name = "permanent marker"
+tags = ["cat.office.writing", "from.office", "from.school", "from.garage", "from.retail", "use.writing", "use.signal"]
+shape = "rod"
+dims_mm = [140, 18, 18]
+mass_g = 15
+desc = "A fat black permanent marker that writes on anything."
+glyph = "item.marker"
+why = "Marks doors, walls and maps ('CLEARED', arrows, warnings) so you know where you've been."
+brand_cats = ["office"]
+value_class = "common"
+
+[item.marker.composition.barrel]
+material = "polypropylene"
+share = 85
+[item.marker.composition.felt]
+material = "polyester"
+share = 15
+
+[item.spray_paint]
+name = "can of spray paint"
+tags = ["cat.household.paint", "from.garage", "from.construction", "from.retail", "use.writing", "use.signal", "hazard.flammable", "hazard.pressurized"]
+shape = "container"
+dims_mm = [200, 66, 66]
+mass_g = 400
+fill_pct = 25
+pressurized = true
+desc = "An aerosol can of bright enamel spray paint, rattle ball inside."
+glyph = "item.spray_can"
+why = "Big, weatherproof marks on walls, roads and roofs; the ball rattles (noise); bursts in fire."
+brand_cats = ["tools", "household"]
+details = ["paint_colour"]
+value_class = "useful"
+use_noise = "quiet"
+
+[item.spray_paint.composition.can]
+material = "mild_steel"
+share = 40
+[item.spray_paint.composition.paint]
+material = "acrylic"
+share = 60
+
+[item.spray_paint.reactions.heat]
+low = "warm"
+medium = "burst"
+high = "burst"
+
+[item.paper_ream]
+name = "ream of paper"
+tags = ["cat.office.paper", "from.office", "from.school", "from.retail", "use.writing", "use.tinder", "use.fuel"]
+shape = "block"
+dims_mm = [280, 216, 53]
+mass_g = 2270
+desc = "A wrapped ream of 500 sheets of white letter paper."
+glyph = "item.paper_ream"
+why = "Tinder by the sheet, notes and signs; tightly stacked it's also a surprisingly heavy fuel block."
+brand_cats = ["office", "paper_goods"]
+divisible = { mode = "count", needs = "none" }
+units = 500
+value_class = "common"
+
+[item.paper_ream.composition.paper]
+material = "paper"
+share = 100
+
+[item.cardboard_box]
+name = "cardboard box"
+tags = ["cat.container.box", "from.garage", "from.retail", "from.industrial", "from.living", "use.container", "use.tinder", "use.fuel"]
+shape = "container"
+dims_mm = [460, 460, 410]
+mass_g = 700
+desc = "A medium moving box with folding flaps."
+glyph = "item.box"
+why = "Haul loose loot; flattened it insulates a sleeper from cold floors; burns readily."
+value_class = "junk"
+
+[item.cardboard_box.composition.board]
+material = "cardboard"
+share = 100
+
+[item.cardboard_box.features.container]
+capacity_ml = 85000
+max_mass_g = 25000
+opening_mm = 450
+closable = true
+compat = ["solid"]
+
+[item.desk_clutter]
+name = "desk clutter"
+tags = ["cat.office.clutter", "from.office", "from.school", "from.bedroom", "use.tinder"]
+shape = "complex"
+dims_mm = [300, 200, 100]
+mass_g = 800
+desc = "Assorted desk clutter: a stapler, sticky notes, loose paper, a jar of paper clips."
+glyph = "item.clutter"
+why = "Aggregated flavour (one object, not thirty); pens; tinder. (No improvised picks: N013 — only a lockpick set picks locks.)"
+details = ["desk_clutter_items"]
+value_class = "junk"
+
+[item.desk_clutter.composition.papers]
+material = "paper"
+share = 50
+[item.desk_clutter.composition.stapler_and_clips]
+material = "mild_steel"
+share = 30
+[item.desk_clutter.composition.pens]
+material = "polystyrene"
+share = 20
+salvage = { item = "pen", count = 3, tool = "none", time_s = 10 }
+
+# Moved from items/misc/exemplars.toml (id kept).
+[item.ruler]
+name = "wooden ruler"
+tags = ["cat.office.supply", "from.office", "from.school"]
+shape = "sheet"
+dims_mm = [300, 30, 3]
+mass_g = 30
+desc = "A 12-inch hardwood ruler."
+glyph = "item.ruler"
+why = "Rigid straight splint; measuring (flavour)."
+value_class = "junk"
+
+[item.ruler.composition.wood]
+material = "hardwood"
+share = 100
+
+# ---------------------------------------------------------------- survivor traces
+[item.survivor_note]
+name = "note"
+tags = ["cat.paper.note", "flavor.readable", "use.tinder"]
+shape = "sheet"
+dims_mm = [210, 140, 1]
+mass_g = 5
+fill_pct = 20
+desc = "A handwritten note left by someone who didn't make it this far."
+glyph = "item.note"
+why = "Survivor traces (N005/N007, P-WO-14): lore, warnings and hints to stashes; no one is left to meet."
+details = ["survivor_note_text", "survivor_note_medium"]
+value_class = "useful"
+
+[item.survivor_note.composition.paper]
+material = "paper"
+share = 100
+
+[item.survivor_note.features.readable]
+kind = "note"

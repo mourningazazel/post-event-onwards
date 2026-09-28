@@ -1,0 +1,441 @@
+# Domain E pinned derivations and data relationships: vehicles, street, garden, farm,
+# outdoors, sports, weapons. Values hand-computed from tools/content/derive.py.
+
+# ---- melee: bat vs golf club ----
+[[expect]]
+item = "baseball_bat"
+path = "cap.hammer"
+op = "=="
+value = 6
+why = "body hardwood: log2(900/50) + 4/3 = 5.50"
+
+[[expect]]
+item = "golf_club"
+path = "cap.hammer"
+op = "=="
+value = 5
+why = "head stainless: log2(430/50) + 6/3 = 5.10; lighter than a bat"
+
+[[expect]]
+item = "golf_club"
+path = "cap.hammer"
+op = "<"
+value = 6
+why = "a golf club is a worse bludgeon than a baseball bat"
+
+[[expect]]
+item = "golf_club"
+path = "impact.high"
+op = "=="
+value = "bend"
+why = "thin steel shaft bends on a hard swing"
+
+[[expect]]
+item = "baseball_bat"
+mods = ["bat_aluminum"]
+path = "name"
+op = "=="
+value = "aluminum baseball bat"
+
+[[expect]]
+item = "baseball_bat"
+mods = ["bat_aluminum"]
+path = "cap.hammer"
+op = "=="
+value = 5
+why = "aluminium bats weigh nearly the same as wood (855 g, not the generic x0.4): log2(855/50) + 4/3 = 5.43"
+
+[[expect]]
+item = "baseball_bat"
+path = "cap.pry"
+op = "=="
+value = 1
+why = "authored: a round bat has no thin end to lever with"
+
+# ---- blades and points ----
+[[expect]]
+item = "machete"
+path = "cap.cut"
+op = "=="
+value = 4
+why = "sharpness 6 x carbon steel edge_holding 7 / 10 = 4.2"
+
+[[expect]]
+item = "machete"
+path = "cap.chop"
+op = "=="
+value = 2
+why = "cut 4 x 550/1200 x 1.3 (head balance) = 2.38; out-chops a kitchen knife (<=1)"
+
+[[expect]]
+item = "pitchfork"
+path = "cap.pierce"
+op = "=="
+value = 5
+why = "point 5 x carbon steel head rigidity 9 / 10 = 4.5"
+
+[[expect]]
+item = "hunting_knife"
+path = "cap.cut"
+op = "=="
+value = 5
+why = "8 x 7 / 10 = 5.6, capped at the slicing limit 5 (no knife parts steel)"
+
+[[expect]]
+item = "hunting_knife"
+path = "cap.pierce"
+op = "=="
+value = 6
+
+[[expect]]
+item = "arrows"
+path = "cap.pierce"
+op = "=="
+value = 7
+why = "broadhead 8 x carbon steel 9 / 10 = 7.2"
+
+[[expect]]
+item = "police_baton"
+path = "cap.hammer"
+op = "=="
+value = 6
+
+# ---- fire, light, noise ----
+[[expect]]
+item = "road_flare"
+path = "cap.ignite"
+op = "=="
+value = 6
+
+[[expect]]
+item = "road_flare"
+path = "features.ignition.fails_when_wet"
+op = "=="
+value = false
+why = "a fusee carries its own oxidiser: it lights and burns in rain"
+
+[[expect]]
+item = "road_flare"
+path = "cap.light"
+op = "=="
+value = 15
+
+[[expect]]
+item = "air_horn"
+path = "cap.noise"
+op = "=="
+value = 10
+
+[[expect]]
+item = "lawn_mower"
+path = "use_noise"
+op = "=="
+value = "very_loud"
+
+[[expect]]
+item = "pistol"
+path = "use_noise"
+op = "=="
+value = "extreme"
+
+[[expect]]
+item = "semi_auto_rifle"
+path = "use_noise"
+op = "=="
+value = "extreme"
+
+[[expect]]
+item = "compound_bow"
+path = "use_noise"
+op = "=="
+value = "quiet"
+
+[[expect]]
+item = "police_cruiser"
+path = "cap.noise"
+op = "=="
+value = 10
+why = "battery-powered siren"
+
+# ---- water sources ----
+[[expect]]
+item = "fire_hydrant"
+path = "features.valve.needs"
+op = "=="
+value = "fasten>=3"
+why = "pentagon operating nut needs a wrench"
+
+[[expect]]
+item = "hand_well_pump"
+path = "features.valve.needs"
+op = "=="
+value = "none"
+
+[[expect]]
+item = "hand_well_pump"
+path = "contents.substance"
+op = "=="
+value = "water"
+why = "well water is safe regardless of the clock (N007)"
+
+[[expect]]
+item = "backyard_pool"
+path = "contents.substance"
+op = "=="
+value = "water_untreated"
+
+[[expect]]
+item = "backyard_pool"
+mods = ["water_gone_foul"]
+path = "contents.substance"
+op = "=="
+value = "water_foul"
+
+[[expect]]
+item = "water_pump_filter"
+path = "cap.filter"
+op = "=="
+value = 8
+
+[[expect]]
+item = "fire_engine"
+path = "contents.substance"
+op = "=="
+value = "water"
+
+# ---- vehicle fuel types ----
+[[expect]]
+item = "suv"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "gasoline"
+why = "inherits the sedan's gasoline tank"
+
+[[expect]]
+item = "suv"
+path = "features.fuel_tank.capacity_ml"
+op = "=="
+value = 70000
+
+[[expect]]
+item = "pickup_truck"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "gasoline"
+
+[[expect]]
+item = "pickup_truck"
+mods = ["diesel_engine"]
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "semi_truck"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "school_bus"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "fire_engine"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "tractor"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "forklift"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "propane"
+
+[[expect]]
+item = "motorcycle"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "gasoline"
+
+[[expect]]
+item = "farm_fuel_tank"
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "diesel"
+
+[[expect]]
+item = "farm_fuel_tank"
+mods = ["farm_tank_gasoline"]
+path = "features.fuel_tank.fuel"
+op = "has"
+value = "gasoline"
+
+# ---- feeding: slots and tags line up ----
+[[expect]]
+item = "pistol"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.magazine.pistol_9mm"
+
+[[expect]]
+item = "magazine_pistol"
+path = "tags"
+op = "has"
+value = "cat.magazine.pistol_9mm"
+
+[[expect]]
+item = "magazine_pistol"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.ammo.9mm"
+
+[[expect]]
+item = "ammo_9mm"
+path = "tags"
+op = "has"
+value = "cat.ammo.9mm"
+
+[[expect]]
+item = "semi_auto_rifle"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.magazine.rifle_556"
+
+[[expect]]
+item = "magazine_rifle"
+path = "tags"
+op = "has"
+value = "cat.magazine.rifle_556"
+
+[[expect]]
+item = "ammo_556"
+path = "tags"
+op = "has"
+value = "cat.ammo.556"
+
+[[expect]]
+item = "shotgun"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.ammo.12ga"
+
+[[expect]]
+item = "compound_bow"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.ammo.arrow"
+
+[[expect]]
+item = "gas_grill"
+path = "features.slot.accepts"
+op = "=="
+value = "cat.fuel.propane"
+
+[[expect]]
+item = "propane_tank"
+path = "tags"
+op = "has"
+value = "cat.fuel.propane"
+why = "the grill's slot accepts domain B's propane tank"
+
+# ---- hauling, throwing, blocking ----
+[[expect]]
+item = "shopping_cart"
+path = "features.wheels.rattle"
+op = "=="
+value = "loud"
+
+[[expect]]
+item = "shopping_cart"
+path = "throw_range"
+op = "=="
+value = 0
+why = "16 kg is too heavy to throw"
+
+[[expect]]
+item = "bicycle"
+path = "features.wheels.load_g"
+op = ">="
+value = 20000
+
+[[expect]]
+item = "garden_gnome"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "garden_gnome"
+path = "throw_range"
+op = "=="
+value = 7
+why = "fair aero 9 x sqrt(800/1500) = 6.6"
+
+[[expect]]
+item = "hay_bale"
+path = "mass_g"
+op = ">="
+value = 20000
+why = "heavy enough to block an opening"
+
+[[expect]]
+item = "hay_bale"
+mods = ["round_bale"]
+path = "mass_g"
+op = "=="
+value = 500000
+
+[[expect]]
+item = "shipping_container"
+mods = ["container_40ft"]
+path = "features.container.capacity_ml"
+op = "=="
+value = 67700000
+
+[[expect]]
+item = "chain_link_fence"
+mods = ["barbed_top"]
+path = "features.climbable.difficulty"
+op = "=="
+value = 6
+
+# ---- protection, warmth, odds and ends ----
+[[expect]]
+item = "sleeping_bag"
+path = "cap.insulate"
+op = "=="
+value = 10
+
+[[expect]]
+item = "riot_shield"
+path = "armor.bite"
+op = "=="
+value = 10
+
+[[expect]]
+item = "trekking_pole"
+path = "cap.pry"
+op = "=="
+value = 1
+why = "authored: thin-wall aluminium tube buckles"
+
+[[expect]]
+item = "compass"
+path = "cap.navigate"
+op = "=="
+value = 8
+
+[[expect]]
+item = "wooden_fence"
+path = "composition.pickets.salvage.item"
+op = "=="
+value = "wood_plank"

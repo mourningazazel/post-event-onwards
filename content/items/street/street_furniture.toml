@@ -1,0 +1,487 @@
+# Street furniture: sidewalk and roadside fixtures (world-catalog §4 residential_street,
+# downtown_street, alley, parking_lot). Graffiti, stickers and survivor marks come from
+# detail tables in modifiers/outdoor_vehicles.toml.
+
+[item.mailbox]
+name = "mailbox"
+tags = ["cat.street.mailbox", "from.street", "flavor.readable"]
+shape = "complex"
+dims_mm = [1200, 480, 200]
+mass_g = 9000
+fixed = true
+blocks = "partial"
+fill_pct = 10
+desc = "A curbside steel mailbox on a wooden post, flag down."
+glyph = "obj.mailbox"
+why = "Mail names the household and hints at who lived there (and whose keys you may be holding)."
+details = ["mailbox_contents"]
+value_class = "junk"
+
+[item.mailbox.composition.box]
+material = "mild_steel"
+share = 30
+[item.mailbox.composition.post]
+material = "softwood"
+share = 70
+
+[item.mailbox.features.container]
+capacity_ml = 20000
+closable = true
+compat = ["solid"]
+
+[item.trash_can_street]
+name = "street trash can"
+tags = ["cat.street.trash_can", "from.street", "emits.rot.2"]
+shape = "container"
+dims_mm = [1000, 600, 600]
+mass_g = 45000
+fixed = true
+blocks = "partial"
+desc = "A bolted-down slatted steel litter bin with a plastic liner."
+glyph = "obj.trash_can"
+why = "Bottles and cans to throw as noise lures; faint rot scent to hide beside."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.trash_can_street.composition.bin]
+material = "mild_steel"
+share = 85
+[item.trash_can_street.composition.liner]
+material = "hdpe"
+share = 15
+
+[item.trash_can_street.features.container]
+capacity_ml = 130000
+closable = false
+compat = ["solid"]
+
+[item.trash_bin]
+name = "trash_bin"
+tags = ["cat.street.trash_bin", "from.street", "from.industrial", "from.restaurant", "use.barricade", "use.container", "emits.rot.4"]
+shape = "container"
+dims_mm = [2000, 1800, 1700]
+mass_g = 520000
+blocks = "full"
+blocks_sight = true
+desc = "A six-yard steel trash bin on casters with two plastic lids."
+glyph = "obj.trash bin"
+why = "Climbable step up to fire escapes and low roofs; rolls into an alley mouth as a barricade; rot masks your scent."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.trash_bin.composition.body]
+material = "mild_steel"
+share = 90
+[item.trash_bin.composition.lids]
+material = "hdpe"
+share = 7
+[item.trash_bin.composition.casters]
+material = "rubber"
+share = 3
+
+[item.trash_bin.features.container]
+capacity_ml = 4600000
+closable = true
+compat = ["solid"]
+[item.trash_bin.features.wheels]
+load_g = 2000000
+terrain = "smooth"
+rattle = "loud"
+[item.trash_bin.features.climbable]
+difficulty = 2
+height_mm = 1700
+
+[item.fire_hydrant]
+name = "fire hydrant"
+tags = ["cat.street.hydrant", "from.street", "from.utility"]
+shape = "complex"
+dims_mm = [900, 480, 480]
+mass_g = 115000
+fixed = true
+blocks = "partial"
+desc = "A squat cast-iron dry-barrel hydrant with a pentagon operating nut."
+glyph = "obj.hydrant"
+why = "Water source while the neighbourhood's mains hold pressure (N007); needs a wrench on the pentagon nut. Solid rope anchor."
+value_class = "useful"
+
+[item.fire_hydrant.composition.body]
+material = "cast_iron"
+share = 95
+[item.fire_hydrant.composition.stem]
+material = "brass"
+share = 5
+
+[item.fire_hydrant.features.valve]
+needs = "fasten>=3"
+[item.fire_hydrant.features.anchor]
+max_load_g = 2000000
+
+[item.fire_hydrant.contents]
+substance = "water"
+fill_pct = [0, 100]
+
+[item.bench]
+name = "park bench"
+tags = ["cat.street.bench", "from.street", "use.barricade"]
+shape = "complex"
+dims_mm = [1800, 800, 650]
+mass_g = 55000
+fill_pct = 4
+fixed = true
+blocks = "partial"
+desc = "A cast-iron bench with hardwood slats, bolted to the pavement."
+glyph = "obj.bench"
+why = "Somewhere to rest outdoors (hard, but sleepable); unbolted, a heavy blocking object."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.bench.composition.frame]
+material = "cast_iron"
+share = 60
+[item.bench.composition.slats]
+material = "hardwood"
+share = 40
+
+[item.bench.features.seat]
+comfort = 3
+sleepable = true
+
+[item.bus_shelter]
+name = "bus shelter"
+tags = ["cat.street.shelter", "from.street", "use.shelter", "hazard.sharp_debris", "use.map"]
+shape = "complex"
+dims_mm = [3700, 2500, 1600]
+mass_g = 450000
+fixed = true
+blocks = "partial"
+fill_pct = 5
+desc = "A glass-walled bus shelter with an aluminium frame, a slanted bench and a route map."
+glyph = "obj.bus_shelter"
+why = "Rain cover; the route map shows the local street grid (M21); its tempered panels burst loudly into cubes."
+details = ["street_graffiti"]
+value_class = "useful"
+
+[item.bus_shelter.composition.frame]
+material = "aluminum"
+share = 35
+[item.bus_shelter.composition.panels]
+material = "tempered_glass"
+share = 50
+[item.bus_shelter.composition.roof]
+material = "polycarbonate"
+share = 10
+[item.bus_shelter.composition.bench]
+material = "mild_steel"
+share = 5
+
+[item.bus_shelter.features.readable]
+kind = "map"
+coverage = "local bus routes and street grid"
+[item.bus_shelter.features.seat]
+comfort = 2
+sleepable = false
+[item.bus_shelter.features.climbable]
+difficulty = 4
+height_mm = 2500
+
+[item.bus_shelter.capabilities]
+waterproof = 6
+
+[item.street_light]
+name = "street light"
+tags = ["cat.street.light", "from.street", "from.utility", "hazard.electrical"]
+shape = "complex"
+dims_mm = [9000, 2000, 300]
+mass_g = 180000
+fixed = true
+blocks = "partial"
+fill_pct = 2
+hollow = true
+desc = "A tall steel pole with a cobra-head lamp over the road."
+glyph = "obj.street_light"
+why = "Lights the street only while the neighbourhood grid is up (N007); smooth pole is a hard climb but a strong anchor."
+value_class = "junk"
+power_use = { voltage = "ac_mains", watts = 150 }
+
+[item.street_light.composition.pole]
+material = "mild_steel"
+share = 85
+[item.street_light.composition.luminaire]
+material = "aluminum"
+share = 10
+[item.street_light.composition.lens]
+material = "polycarbonate"
+share = 3
+[item.street_light.composition.wiring]
+material = "copper"
+share = 2
+
+[item.street_light.features.light]
+radius_m = 15
+beam = "cone"
+fuel = "none"
+[item.street_light.features.climbable]
+difficulty = 8
+height_mm = 9000
+[item.street_light.features.anchor]
+max_load_g = 1000000
+
+[item.newspaper_box]
+name = "newspaper box"
+tags = ["cat.street.newspaper_box", "from.street", "flavor.readable"]
+shape = "container"
+dims_mm = [1000, 520, 420]
+mass_g = 30000
+blocks = "partial"
+desc = "A coin-operated steel newspaper box chained to a pole, the last edition behind the window."
+glyph = "obj.newspaper_box"
+why = "Last-edition newspapers: tinder, fuel, and the story of the event's first hours."
+details = ["street_graffiti"]
+value_class = "junk"
+
+[item.newspaper_box.composition.box]
+material = "mild_steel"
+share = 85
+[item.newspaper_box.composition.window]
+material = "polycarbonate"
+share = 10
+[item.newspaper_box.composition.coin_mech]
+material = "brass"
+share = 5
+
+[item.newspaper_box.features.container]
+capacity_ml = 60000
+closable = true
+compat = ["solid"]
+[item.newspaper_box.features.lock]
+tier = 1
+keyed = true
+pickable = true
+
+[item.newspaper_box.contents]
+items = ["newspaper"]
+fill_pct = [20, 100]
+
+[item.vending_machine]
+name = "vending machine"
+tags = ["cat.street.vending", "from.street", "from.office", "from.school", "from.gas_station", "use.barricade", "hazard.sharp_debris"]
+shape = "complex"
+dims_mm = [1830, 990, 890]
+mass_g = 280000
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A glass-fronted snack machine with spiral racks and a locked service door."
+glyph = "obj.vending"
+why = "Sealed snacks inside (stock from world loot); smash the glass (very loud, shards) or pick the T-handle lock; tip it into a doorway."
+details = ["street_graffiti"]
+value_class = "useful"
+power_use = { voltage = "ac_mains", watts = 300 }
+
+[item.vending_machine.composition.cabinet]
+material = "mild_steel"
+share = 72
+[item.vending_machine.composition.front]
+material = "tempered_glass"
+share = 10
+[item.vending_machine.composition.trays]
+material = "abs"
+share = 10
+[item.vending_machine.composition.wiring]
+material = "copper"
+share = 3
+[item.vending_machine.composition.lights]
+material = "polycarbonate"
+share = 3
+[item.vending_machine.composition.insulation]
+material = "eps_foam"
+share = 2
+
+[item.vending_machine.features.container]
+capacity_ml = 400000
+closable = true
+compat = ["solid"]
+[item.vending_machine.features.lock]
+tier = 3
+keyed = true
+pickable = true
+
+[item.parking_meter]
+name = "parking meter"
+tags = ["cat.street.meter", "from.street"]
+shape = "complex"
+dims_mm = [1400, 300, 200]
+mass_g = 25000
+fill_pct = 5
+fixed = true
+blocks = "partial"
+desc = "A single-space coin meter on a steel post."
+glyph = "obj.parking_meter"
+why = "Streetscape world-building; a coin vault worth nothing now (keeps the looting temptation honest)."
+value_class = "junk"
+
+[item.parking_meter.composition.head]
+material = "mild_steel"
+share = 40
+[item.parking_meter.composition.post]
+material = "mild_steel"
+share = 55
+[item.parking_meter.composition.dome]
+material = "polycarbonate"
+share = 5
+
+[item.parking_meter.features.container]
+capacity_ml = 3000
+closable = true
+compat = ["solid"]
+[item.parking_meter.features.lock]
+tier = 3
+keyed = true
+pickable = false
+
+[item.manhole_cover]
+name = "manhole cover"
+tags = ["cat.street.manhole", "from.street", "from.utility"]
+shape = "sheet"
+dims_mm = [610, 610, 30]
+mass_g = 60000
+desc = "A 24-inch cast-iron manhole cover with a waffle pattern and two pry slots."
+glyph = "obj.manhole"
+why = "Heavy (60 kg) lid over storm drains and sewers: needs a lever (pry>=4) to lift; a crushing weight for deadfalls (M18)."
+value_class = "junk"
+
+[item.manhole_cover.composition.cover]
+material = "cast_iron"
+share = 100
+
+[item.traffic_cone]
+name = "traffic cone"
+tags = ["cat.street.cone", "from.street", "from.construction", "use.signal"]
+shape = "complex"
+dims_mm = [710, 360, 360]
+mass_g = 3200
+hollow = true
+fill_pct = 10
+desc = "A 28-inch orange cone with reflective collars and a weighted black base."
+glyph = "item.cone"
+why = "Light, visible trail and trap marker; pops over with a hollow clunk (flavour)."
+value_class = "junk"
+
+[item.traffic_cone.composition.cone]
+material = "flexible_pvc"
+share = 60
+[item.traffic_cone.composition.base]
+material = "rubber"
+share = 40
+
+[item.road_sign]
+name = "road sign"
+tags = ["cat.street.sign", "from.street", "use.map", "use.salvage"]
+shape = "complex"
+dims_mm = [3000, 760, 80]
+mass_g = 13000
+fixed = true
+blocks = "partial"
+fill_pct = 1
+desc = "A reflective aluminium sign bolted to a steel U-channel post."
+glyph = "obj.sign"
+why = "Street names and directions (M21); the aluminium blade unbolts into a flat sheet for improvised armour or a shield."
+details = ["road_sign_text"]
+value_class = "junk"
+
+[item.road_sign.composition.post]
+material = "mild_steel"
+share = 75
+[item.road_sign.composition.sign]
+material = "aluminum"
+share = 25
+salvage = { item = "sheet_metal", count = 1, tool = "fasten>=3", time_s = 300 }
+
+[item.road_sign.features.readable]
+kind = "sign"
+coverage = "local street names and directions"
+
+[item.planter]
+name = "concrete planter"
+tags = ["cat.street.planter", "from.street", "use.barricade"]
+shape = "block"
+dims_mm = [1200, 1200, 800]
+mass_g = 2000000
+fixed = true
+blocks = "full"
+desc = "A soil-filled concrete planter, the kind set out as a vehicle barrier in front of buildings."
+glyph = "obj.planter"
+why = "Immovable chokepoint and cover; dirt to dig for filling sandbags."
+value_class = "junk"
+
+[item.planter.composition.shell]
+material = "concrete"
+share = 55
+[item.planter.composition.soil]
+material = "soil"
+share = 45
+
+[item.bike_rack]
+name = "bike rack"
+tags = ["cat.street.bike_rack", "from.street", "from.school"]
+shape = "complex"
+dims_mm = [1800, 850, 600]
+mass_g = 35000
+fixed = true
+blocks = "partial"
+hollow = true
+fill_pct = 3
+desc = "A galvanised pipe grid rack bolted into the concrete."
+glyph = "obj.bike_rack"
+why = "Bolted-down anchor for ropes and restraints; where locked bicycles are found."
+details = ["bike_rack_bikes"]
+value_class = "junk"
+
+[item.bike_rack.composition.rack]
+material = "mild_steel"
+share = 100
+
+[item.bike_rack.features.anchor]
+max_load_g = 1000000
+
+[item.fuel_pump]
+name = "fuel pump"
+tags = ["cat.street.fuel_pump", "from.gas_station", "hazard.flammable"]
+shape = "complex"
+dims_mm = [1900, 1200, 550]
+mass_g = 350000
+fill_pct = 10
+fixed = true
+blocks = "full"
+blocks_sight = true
+desc = "A forecourt dispenser on a concrete island, hoses coiled, above a buried fuel tank."
+glyph = "obj.fuel_pump"
+why = "Access to thousands of litres in the underground tank: dead without grid power, but the fill port takes a long siphon hose."
+value_class = "valuable"
+power_use = { voltage = "ac_mains", watts = 750 }
+
+[item.fuel_pump.composition.cabinet]
+material = "stainless_steel"
+share = 40
+[item.fuel_pump.composition.island]
+material = "concrete"
+share = 45
+[item.fuel_pump.composition.hoses]
+material = "rubber"
+share = 5
+salvage = { item = "rubber_hose", count = 2, tool = "fasten>=2", time_s = 300 }
+[item.fuel_pump.composition.display]
+material = "polycarbonate"
+share = 5
+[item.fuel_pump.composition.nozzles]
+material = "aluminum"
+share = 5
+
+[item.fuel_pump.features.fuel_tank]
+capacity_ml = 38000000
+fuel = ["gasoline", "diesel"]
+drain = "siphon"
+
+[item.fuel_pump.contents]
+substance = "gasoline"
+fill_pct = [0, 80]

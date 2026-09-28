@@ -1,0 +1,142 @@
+# Bows and crossbows: the quiet ranged option, with recoverable projectiles.
+# Limbs use polycarbonate as the stand-in for fibreglass composite (no composite material yet).
+
+[item.compound_bow]
+name = "compound bow"
+tags = ["cat.weapon.bow", "from.outdoors", "from.garage", "from.retail", "use.weapon"]
+shape = "complex"
+dims_mm = [800, 320, 150]
+mass_g = 1900
+fill_pct = 3
+use_noise = "quiet"
+durability = 7
+desc = "A hunting compound bow with cams, a pin sight and an arrow rest."
+glyph = "item.bow"
+why = "Kills without the noise of a gunshot; arrows can be recovered and re-used; takes strength and practice (archery)."
+brand_cats = ["hunting", "sporting_goods"]
+value_class = "valuable"
+
+[item.compound_bow.composition.riser]
+material = "aluminum"
+share = 55
+[item.compound_bow.composition.limbs]
+material = "polycarbonate"
+share = 20
+[item.compound_bow.composition.cams]
+material = "aluminum"
+share = 10
+[item.compound_bow.composition.string]
+material = "nylon"
+share = 5
+[item.compound_bow.composition.grip]
+material = "rubber"
+share = 3
+[item.compound_bow.composition.sight]
+material = "abs"
+share = 7
+
+[item.compound_bow.features.grip]
+hands = 2
+girth_mm = 30
+[item.compound_bow.features.slot]
+accepts = "cat.ammo.arrow"
+count = 1
+
+[item.crossbow]
+name = "crossbow"
+tags = ["cat.weapon.crossbow", "from.outdoors", "from.garage", "from.retail", "use.weapon"]
+shape = "complex"
+dims_mm = [900, 450, 200]
+mass_g = 3400
+fill_pct = 3
+use_noise = "normal"
+durability = 8
+desc = "A scoped hunting crossbow with a foot stirrup and a rope cocking aid."
+glyph = "item.crossbow"
+why = "Aimed like a rifle, little training needed, far quieter than a gun (a sharp thwack, louder than a bow); slow to cock."
+brand_cats = ["hunting"]
+value_class = "valuable"
+
+[item.crossbow.composition.rail]
+material = "aluminum"
+share = 47
+[item.crossbow.composition.stock]
+material = "nylon"
+share = 25
+[item.crossbow.composition.limbs]
+material = "polycarbonate"
+share = 15
+[item.crossbow.composition.string]
+material = "nylon"
+share = 3
+[item.crossbow.composition.trigger]
+material = "carbon_steel"
+share = 10
+
+[item.crossbow.features.grip]
+hands = 2
+girth_mm = 32
+[item.crossbow.features.slot]
+accepts = "cat.ammo.bolt"
+count = 1
+[item.crossbow.features.strap]
+kind = "shoulder"
+load_g = 5000
+
+[item.arrows]
+name = "arrows"
+tags = ["cat.ammo.arrow", "from.outdoors", "from.retail", "use.ammo"]
+shape = "rod"
+dims_mm = [760, 40, 40]
+mass_g = 180
+hollow = true
+fill_pct = 30
+units = 6
+desc = "Six aluminium hunting arrows with plastic vanes and steel broadheads."
+glyph = "item.arrows"
+why = "Bow ammunition that survives use and can be pulled out and shot again; a broadhead stabs in hand."
+brand_cats = ["hunting"]
+value_class = "useful"
+
+[item.arrows.composition.shafts]
+material = "aluminum"
+share = 75
+[item.arrows.composition.head]
+material = "carbon_steel"
+share = 15
+[item.arrows.composition.fletching]
+material = "polypropylene"
+share = 10
+
+[item.arrows.features.point]
+sharpness = 8
+width_mm = 30
+
+[item.crossbow_bolts]
+name = "crossbow bolts"
+tags = ["cat.ammo.bolt", "from.outdoors", "from.retail", "use.ammo"]
+shape = "rod"
+dims_mm = [510, 40, 40]
+mass_g = 165
+hollow = true
+fill_pct = 30
+units = 6
+desc = "Six 20-inch aluminium crossbow bolts with steel broadheads."
+glyph = "item.arrows"
+why = "Crossbow ammunition; recoverable like arrows."
+brand_cats = ["hunting"]
+value_class = "useful"
+
+[item.crossbow_bolts.composition.shafts]
+material = "aluminum"
+share = 75
+[item.crossbow_bolts.composition.head]
+material = "carbon_steel"
+share = 15
+[item.crossbow_bolts.composition.fletching]
+material = "polypropylene"
+share = 10
+
+[item.crossbow_bolts.features.point]
+sharpness = 8
+width_mm = 30

@@ -1,0 +1,54 @@
+# Food-service room types (world-catalog §3), pre-event baseline.
+
+[room.commercial_kitchen]
+desc = "A restaurant kitchen: ranges, reach-in coolers and freezer, dry-storage shelving, sinks."
+size_m2 = [20, 120]
+floor = "ground"
+tags = ["from.restaurant", "from.kitchen"]
+objects = [
+  { item = "stove_range", count = [1, 4] },
+  { item = "refrigerator", count = [1, 3], contains = ["walk_in_cooler_stock"] },
+  { item = "chest_freezer", count = [0, 2], contains = ["freezer_contents"] },
+  { item = "metal_shelving", count = [2, 8], contains = ["restaurant_kitchen"] },
+  { item = "microwave", count = [0, 2] },
+  { item = "sink", count = [2, 4] },
+  { item = "fire_extinguisher", count = [1, 2] },
+  { item = "metal_locker", count = [0, 6], contains = ["pockets_generic"] },
+]
+
+[room.walk_in_cooler]
+desc = "A walk-in cooler: shelving of meat, produce, dairy and prepped tubs."
+size_m2 = [6, 30]
+floor = "any"
+tags = ["from.restaurant"]
+objects = [
+  { item = "metal_shelving", count = [2, 6], contains = ["walk_in_cooler_stock"] },
+]
+
+[room.dining_area]
+desc = "A restaurant, diner or fast-food dining room: tables and chairs, a drinks station."
+size_m2 = [30, 300]
+floor = "ground"
+tags = ["from.restaurant"]
+objects = [
+  { item = "dining_table", count = [4, 30] },
+  { item = "dining_chair", count = [16, 120] },
+  { item = "refrigerator", count = [1, 1], chance_pct = 30, contains = ["grocery_drinks"] },
+  { item = "trash_can_street", count = [1, 3], chance_pct = 60 },
+]
+
+[room.bar_room]
+desc = "A bar room: the back bar of spirits, beer coolers, tables, TVs, the till safe."
+size_m2 = [30, 200]
+floor = "ground"
+tags = ["from.restaurant"]
+objects = [
+  { item = "kitchen_cabinet", count = [2, 6], contains = ["liquor_shelf"] },
+  { item = "refrigerator", count = [1, 3], contains = ["grocery_drinks"] },
+  { item = "dining_table", count = [3, 12] },
+  { item = "dining_chair", count = [8, 40] },
+  { item = "television", count = [1, 4] },
+  { item = "sink", count = [1, 2] },
+  { item = "safe", count = [1, 1], chance_pct = 30, contains = ["cash"] },
+]
+loose = ["convenience_counter"]

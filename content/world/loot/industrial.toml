@@ -1,0 +1,100 @@
+# Industrial loot tables (world-catalog §7), pre-event baseline.
+
+[loot.warehouse_pallet]
+desc = "One pallet or rack bay of a single product line (a real pallet is one SKU, so one pick)."
+rolls = [1, 1]
+empty_chance_pct = 8
+entries = [
+  { item = "cardboard_box", w = 14, count = [10, 60] },
+  { item = "bottled_water", w = 9, count = [48, 240] },
+  { item = "canned_food", w = 8, count = [48, 240] },
+  { item = "soda_can", w = 6, count = [48, 240] },
+  { item = "boxed_dry_food", w = 6, count = [24, 120] },
+  { item = "paper_towels", w = 5, count = [24, 96] },
+  { item = "toilet_paper", w = 5, count = [48, 192] },
+  { item = "trash_bags", w = 4, count = [24, 96] },
+  { item = "pet_food_bag", w = 4, count = [20, 60] },
+  { item = "bag_of_rice", w = 3, count = [20, 60] },
+  { item = "concrete_mix_bag", w = 4, count = [20, 60] },
+  { item = "lumber_2x4", w = 3, count = [50, 200] },
+  { item = "plywood_sheet", w = 2, count = [20, 60] },
+  { item = "cinder_block", w = 2, count = [40, 120] },
+  { item = "plastic_sheeting", w = 2, count = [10, 40] },
+  { item = "tarp", w = 2, count = [10, 40] },
+  { item = "motor_oil_bottle", w = 3, count = [24, 96], substance = "motor_oil", fill_pct = [100, 100] },
+  { item = "antifreeze_jug", w = 2, count = [12, 48], substance = "antifreeze", fill_pct = [100, 100] },
+  { item = "drum_55gal", w = 3, count = [2, 4], substance = "diesel", fill_pct = [100, 100] },
+  { item = "drum_55gal", w = 2, count = [2, 4], substance = "motor_oil", fill_pct = [100, 100] },
+  { item = "t_shirt", w = 2, count = [50, 200] },
+  { item = "sneakers", w = 1, count = [20, 60] },
+  { item = "television", w = 1, count = [8, 24] },
+  { item = "microwave", w = 1, count = [8, 24] },
+  { item = "battery_aa", w = 2, count = [100, 400] },
+  { item = "charcoal_bag", w = 1, count = [20, 60] },
+  { item = "propane_tank", w = 1, count = [8, 24], substance = "propane", fill_pct = [100, 100] },
+  { item = "sandbag", w = 1, count = [20, 80] },
+  { item = "pallet", w = 1, count = [5, 20] },
+]
+
+[loot.factory_parts]
+desc = "Factory workbench and parts racks: stock metal, motors and springs, wire, fasteners, lubricants."
+rolls = [3, 8]
+empty_chance_pct = 3
+entries = [
+  { item = "sheet_metal", w = 8, count = [2, 12] },
+  { item = "scrap_metal", w = 10, count = [2, 20] },
+  { item = "steel_pipe", w = 7, count = [2, 12] },
+  { item = "rebar", w = 4, count = [4, 20] },
+  { item = "electric_motor", w = 6, count = [1, 4] },
+  { item = "steel_spring", w = 6, count = [2, 12] },
+  { item = "leaf_spring", w = 2, count = [1, 4] },
+  { item = "copper_wire", w = 6, count = [1, 6] },
+  { item = "copper_tubing", w = 3, count = [1, 6] },
+  { item = "steel_chain", w = 3, count = [1, 3] },
+  { item = "baling_wire", w = 3, count = [1, 3] },
+  { item = "screws_box", w = 6, count = [2, 8] },
+  { item = "nails_box", w = 3, count = [1, 4] },
+  { item = "zip_ties", w = 3, count = [1, 4] },
+  { item = "penetrating_oil_can", w = 4, count = [1, 4] },
+  { item = "motor_oil_bottle", w = 3, count = [1, 4], substance = "motor_oil", fill_pct = [20, 100] },
+  { item = "metal_file", w = 3, count = [1, 4] },
+  { item = "adjustable_wrench", w = 3, count = [1, 3] },
+  { item = "angle_grinder", w = 2, count = [1, 2] },
+  { item = "cordless_drill", w = 2, count = [1, 2] },
+  { item = "drill_battery", w = 2, count = [1, 4] },
+  { item = "work_gloves", w = 4, count = [2, 10] },
+  { item = "goggles", w = 3, count = [2, 8] },
+  { item = "dust_mask", w = 2, count = [4, 20] },
+  { item = "hard_hat", w = 2, count = [1, 6] },
+  { item = "hi_vis_vest", w = 2, count = [1, 6] },
+  { item = "cardboard_box", w = 3, count = [2, 10] },
+  { item = "rubber_hose", w = 2, count = [1, 4] },
+]
+
+# Extra (not in world-catalog §7): a self-storage unit's odd hoard, used as `loose` in storage_unit.
+[loot.storage_unit_extras]
+desc = "The things people stash in a rented unit besides boxes: tools, sports and camping gear, an old gun."
+rolls = [1, 4]
+empty_chance_pct = 20
+entries = [
+  { item = "toolbox", w = 10, count = [1, 1] },
+  { item = "golf_club", w = 8, count = [4, 12] },
+  { item = "bicycle", w = 6, count = [1, 2] },
+  { item = "tent", w = 6, count = [1, 1] },
+  { item = "sleeping_bag", w = 6, count = [1, 3] },
+  { item = "cooler", w = 6, count = [1, 2] },
+  { item = "camp_stove", w = 3, count = [1, 1] },
+  { item = "dumbbell", w = 5, count = [2, 8] },
+  { item = "gas_can", w = 4, count = [1, 1], substance = "gasoline", fill_pct = [5, 60] },
+  { item = "extension_ladder", w = 3, count = [1, 1] },
+  { item = "lawn_mower", w = 3, count = [1, 1] },
+  { item = "winter_coat", w = 6, count = [1, 4] },
+  { item = "television", w = 5, count = [1, 2] },
+  { item = "desktop_pc", w = 3, count = [1, 1], mods = ["broken"] },
+  { item = "shotgun", w = 1, count = [1, 1] },
+  { item = "hunting_rifle", w = 1, count = [1, 1] },
+  { item = "ammo_12ga", w = 1, count = [10, 50] },
+  { item = "fireworks", w = 2, count = [2, 10] },
+  { item = "baseball_bat", w = 3, count = [1, 2] },
+  { item = "kerosene_lantern", w = 2, count = [1, 1] },
+]

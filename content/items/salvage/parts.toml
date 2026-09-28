@@ -1,0 +1,254 @@
+# Salvage parts: things that mostly come out of other things (M5). Exemplar file.
+
+[item.rubber_hose]
+name = "rubber hose"
+tags = ["cat.part.hose", "from.garage", "from.vehicle", "from.kitchen", "use.salvage"]
+shape = "cord"
+dims_mm = [1500, 12, 12]
+mass_g = 110
+hollow = true
+desc = "A length of black rubber hose."
+glyph = "item.hose"
+why = "Siphons fuel/water; cut to length; tourniquet; binding in a pinch."
+attach_surface = { kind = "round", contact_area_mm2 = 1500, wrap_girth_mm = 38 }
+divisible = { mode = "length", min_piece_mm = 50, needs = "cut>=1" }
+value_class = "useful"
+
+[item.rubber_hose.composition.hose]
+material = "rubber"
+share = 100
+
+[item.rubber_hose.features.tube]
+inner_diameter_mm = 8
+length_mm = 1500
+flexible = true
+
+[item.copper_tubing]
+name = "copper tubing"
+tags = ["cat.part.tubing", "from.kitchen", "from.utility", "from.industrial", "use.salvage"]
+shape = "rod"
+dims_mm = [1500, 6, 6]
+mass_g = 150
+hollow = true
+desc = "Thin refrigeration-grade copper tube."
+glyph = "item.tube"
+why = "Rigid siphon/transfer tube; bendable binding wire; valuable metal."
+divisible = { mode = "length", min_piece_mm = 50, needs = "saw>=5" }
+value_class = "useful"
+
+[item.copper_tubing.composition.tube]
+material = "copper"
+share = 100
+
+[item.copper_tubing.features.tube]
+inner_diameter_mm = 4
+length_mm = 1500
+flexible = false
+
+[item.battery_aa]
+name = "AA battery"
+tags = ["cat.battery.aa", "from.living", "from.bedroom", "from.retail", "use.power"]
+shape = "small"
+dims_mm = [50, 14, 14]
+mass_g = 23
+desc = "A standard AA alkaline cell."
+glyph = "item.battery"
+why = "Powers clocks, flashlights, radios, remotes — the currency of small devices."
+brand_cats = ["batteries"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 3, rechargeable = false }
+
+[item.battery_aa.composition.cell]
+material = "mild_steel"
+share = 100
+
+[item.car_battery]
+name = "car battery"
+tags = ["cat.battery.car", "from.vehicle", "from.garage", "use.power", "hazard.corrosive"]
+shape = "block"
+dims_mm = [300, 190, 175]
+mass_g = 18000
+desc = "A heavy 12-volt lead-acid battery with corroded terminals."
+glyph = "item.battery_large"
+why = "Powers 12 V lights, radios and alarms for weeks; car-alarm lure power."
+brand_cats = ["automotive"]
+value_class = "valuable"
+power_source = { voltage = "dc_12v", capacity_wh = 600, rechargeable = true }
+
+[item.car_battery.composition.plates]
+material = "lead"
+share = 70
+[item.car_battery.composition.case]
+material = "polypropylene"
+share = 30
+
+[item.car_battery.features.strap]
+kind = "handle"
+load_g = 25000
+
+# ---------------------------------------------------------------- domain B additions
+
+[item.battery_d]
+name = "D battery"
+tags = ["cat.battery.d", "from.garage", "from.living", "from.retail", "use.power"]
+shape = "small"
+dims_mm = [61, 34, 34]
+mass_g = 140
+desc = "A heavy D-size alkaline cell."
+glyph = "item.battery"
+why = "Big lanterns, radios and old flashlights run for days on a set; scarcer than AA."
+brand_cats = ["batteries"]
+modifiers = ["battery_rechargeable"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 15, rechargeable = false }
+
+[item.battery_d.composition.cell]
+material = "mild_steel"
+share = 100
+
+[item.battery_9v]
+name = "9-volt battery"
+tags = ["cat.battery.9v", "from.living", "from.bedroom", "from.retail", "from.school", "use.power", "use.fire_starter"]
+shape = "small"
+dims_mm = [48, 26, 17]
+mass_g = 45
+desc = "A rectangular 9-volt battery with snap terminals."
+glyph = "item.battery"
+why = "Smoke detectors and meters; drawn across steel wool it lights tinder in the wet."
+brand_cats = ["batteries"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 5, rechargeable = false }
+
+[item.battery_9v.composition.cell]
+material = "mild_steel"
+share = 100
+
+[item.copper_wire]
+name = "copper wire"
+tags = ["cat.part.wire", "cat.fastener.wire", "from.utility", "from.construction", "from.garage", "use.salvage", "use.fastener"]
+shape = "cord"
+dims_mm = [10000, 4, 4]            # uncoiled length first (cord convention)
+mass_g = 360
+units = 40
+desc = "Ten metres of salvaged 12-gauge insulated copper wire, loosely coiled."
+glyph = "item.wire_coil"
+why = "Wires 12 V lights to batteries, twists into joints and snares, strings tripwires; soft enough to cut with pliers-grade edges."
+attach_surface = { kind = "round", contact_area_mm2 = 300, wrap_girth_mm = 13 }
+divisible = { mode = "length", min_piece_mm = 50, needs = "cut>=4" }
+value_class = "useful"
+
+[item.copper_wire.composition.wire]
+material = "copper"
+share = 80
+[item.copper_wire.composition.insulation]
+material = "flexible_pvc"
+share = 20
+
+[item.electric_motor]
+name = "electric motor"
+tags = ["cat.part.motor", "from.industrial", "from.garage", "from.utility", "use.salvage"]
+shape = "complex"
+dims_mm = [250, 160, 160]
+mass_g = 6000
+desc = "A third-horsepower appliance motor with a keyed shaft and a mounting cradle."
+glyph = "item.motor"
+why = "Copper windings for wire; with electronics skill, the heart of a hand-crank or wind generator; a heavy weight."
+value_class = "common"
+
+[item.electric_motor.composition.windings]
+material = "copper"
+share = 20
+salvage = { item = "copper_wire", count = 3, tool = "fasten>=2", time_s = 1800 }
+[item.electric_motor.composition.frame]
+material = "mild_steel"
+share = 70
+[item.electric_motor.composition.shaft]
+material = "carbon_steel"
+share = 5
+[item.electric_motor.composition.end_caps]
+material = "aluminum"
+share = 5
+
+[item.steel_spring]
+name = "coil spring"
+tags = ["cat.part.spring", "from.garden", "from.garage", "from.bedroom", "use.salvage"]
+shape = "complex"
+dims_mm = [200, 30, 30]
+mass_g = 150
+desc = "A stout galvanized extension spring with hooked ends, like those on a trampoline."
+glyph = "item.spring"
+why = "Stored force for traps (snare and deadfall triggers, M18) and self-closing doors; straightened, hard spring wire."
+value_class = "junk"
+
+[item.steel_spring.composition.coil]
+material = "carbon_steel"
+share = 100
+
+# hammer: derived 4; a hollow springy coil is not a striking mass.
+[item.steel_spring.capabilities]
+hammer = 1
+
+[item.leaf_spring]
+name = "leaf spring"
+tags = ["cat.part.spring.leaf", "cat.stock.blade", "from.vehicle", "from.farm", "from.industrial", "use.salvage", "use.weapon"]
+shape = "rod"
+dims_mm = [1200, 64, 8]
+mass_g = 4800
+durability = 10
+desc = "A single main leaf from a pickup's rear suspension: a slightly curved bar of spring steel with an eye at each end."
+glyph = "item.leaf_spring"
+why = "Blade stock: an expert smith (metalworking 10, N012) forges a machete or knife from it over a charcoal fire; meanwhile a heavy flat lever and club."
+divisible = { mode = "length", min_piece_mm = 100, needs = "saw>=7" }
+value_class = "useful"
+
+[item.leaf_spring.composition.leaf]
+material = "carbon_steel"
+share = 100
+
+[item.leaf_spring.features.grip]
+hands = 2
+girth_mm = 40
+
+[item.scrap_metal]
+name = "scrap metal"
+tags = ["cat.part.scrap", "from.industrial", "from.street", "from.construction", "from.vehicle", "use.salvage"]
+shape = "sheet"
+dims_mm = [600, 300, 3]
+mass_g = 3000
+desc = "A bent offcut of 3 mm steel plate with rusty, jagged edges."
+glyph = "item.scrap"
+why = "Weld stock for bars and armour, heavy patch plates for doors and car windows; too thick for snips."
+attach_surface = { kind = "rough", contact_area_mm2 = 30000 }
+divisible = { mode = "length", min_piece_mm = 50, needs = "saw>=7" }
+details = ["scrap_metal_origin"]
+value_class = "junk"
+
+[item.scrap_metal.composition.plate]
+material = "mild_steel"
+share = 100
+
+[item.glass_shards]
+name = "glass shards"
+tags = ["cat.debris.glass", "from.street", "use.weapon", "hazard.sharp_debris"]
+shape = "sheet"
+dims_mm = [120, 60, 6]
+mass_g = 100
+desc = "A few long, wicked shards of broken window glass."
+glyph = "item.shards"
+why = "A desperate blade that cuts the hand holding it; scattered on a floor they crunch underfoot — a free intruder alarm (M2, M13)."
+value_class = "junk"
+
+[item.glass_shards.composition.glass]
+material = "glass"
+share = 100
+
+[item.glass_shards.features.edge]
+length_mm = 100
+sharpness = 9
+[item.glass_shards.features.point]
+sharpness = 8
+width_mm = 2
+
+# hammer: derived 4 from rigid glass; shards shatter rather than deliver a blow.
+[item.glass_shards.capabilities]
+hammer = 0

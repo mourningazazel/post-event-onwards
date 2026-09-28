@@ -1,0 +1,331 @@
+# Bags (world-catalog §6.C). Domain C.
+# G03 D3.1 capacity: container.capacity_ml (volume), max_mass_g (what the fabric/straps bear) and
+# max_dim_mm (longest item that fits closed). The main compartment is the `container` feature;
+# outer pockets are summed into one `pocket` feature; `strap` is how it is carried (load_g).
+# Soft bags are mostly air inside a thin shell, so fill_pct is set from real shell mass.
+
+[item.school_backpack]
+name = "backpack"
+tags = ["cat.bag.backpack", "from.school", "from.bedroom", "from.retail", "use.container", "slot.back"]
+shape = "bag"
+dims_mm = [450, 320, 180]
+mass_g = 600
+fill_pct = 2
+absorbs_water = true
+absorbs_scent = true
+durability = 5
+encumbrance = 1
+desc = "A two-compartment polyester school backpack with padded straps."
+glyph = "item.backpack"
+why = "The first real carrying upgrade (M20, G03): hands free, ~22 L; everywhere in schools and homes."
+brand_cats = ["clothing_basics", "outdoors"]
+details = ["clothing_colour", "bag_decoration"]
+value_class = "useful"
+
+[item.school_backpack.composition.body]
+material = "polyester"
+share = 90
+[item.school_backpack.composition.zips]
+material = "nylon"
+share = 5
+[item.school_backpack.composition.buckles]
+material = "polypropylene"
+share = 5
+
+[item.school_backpack.features.container]
+capacity_ml = 22000
+max_mass_g = 12000
+max_dim_mm = 420
+opening_mm = 300
+closable = true
+compat = ["solid"]
+[item.school_backpack.features.pocket]
+name = "front and side pockets"
+capacity_ml = 2500
+max_mass_g = 2000
+max_dim_mm = 220
+closable = true
+[item.school_backpack.features.strap]
+kind = "backpack"
+load_g = 12000
+[item.school_backpack.features.wearable]
+slot = "back"
+layer = "accessory"
+coverage = []
+
+[item.hiking_pack]
+name = "hiking pack"
+tags = ["cat.bag.backpack", "from.outdoors", "from.garage", "from.retail", "use.container", "slot.back"]
+shape = "bag"
+dims_mm = [700, 350, 300]
+mass_g = 1800
+fill_pct = 3
+absorbs_water = false
+absorbs_scent = true
+durability = 8
+encumbrance = 2
+desc = "A 60-litre internal-frame trekking pack with a padded hip belt, lid pocket and side stretch pockets."
+glyph = "item.backpack"
+why = "Best carry capacity a survivor can wear (M20): hip belt puts heavy loads on the hips."
+brand_cats = ["outdoors", "clothing_outdoor"]
+details = ["clothing_colour"]
+value_class = "valuable"
+
+[item.hiking_pack.composition.body]
+material = "nylon_fabric"
+share = 70
+[item.hiking_pack.composition.frame]
+material = "aluminum"
+share = 15
+[item.hiking_pack.composition.padding]
+material = "pu_foam"
+share = 5
+[item.hiking_pack.composition.buckles]
+material = "polypropylene"
+share = 10
+
+[item.hiking_pack.features.container]
+capacity_ml = 60000
+max_mass_g = 25000
+max_dim_mm = 650
+opening_mm = 350
+closable = true
+compat = ["solid"]
+[item.hiking_pack.features.pocket]
+name = "lid, hip-belt and side pockets"
+capacity_ml = 6000
+max_mass_g = 4000
+max_dim_mm = 300
+closable = true
+[item.hiking_pack.features.strap]
+kind = "backpack"
+load_g = 25000
+[item.hiking_pack.features.wearable]
+slot = "back"
+layer = "accessory"
+coverage = []
+
+[item.duffel_bag]
+name = "duffel bag"
+tags = ["cat.bag.luggage", "from.bedroom", "from.vehicle", "from.outdoors", "use.container"]
+shape = "bag"
+dims_mm = [700, 350, 350]
+mass_g = 1000
+fill_pct = 2
+absorbs_water = false
+absorbs_scent = true
+durability = 7
+encumbrance = 4
+desc = "A large zip-top polyester duffel with carry handles and a shoulder strap."
+glyph = "item.bag"
+why = "Hauls a lot (70 L) from a car or gym, but swings and blocks you while running or fighting."
+brand_cats = ["sporting_goods", "outdoors"]
+details = ["clothing_colour"]
+value_class = "useful"
+
+[item.duffel_bag.composition.body]
+material = "polyester"
+share = 85
+[item.duffel_bag.composition.webbing]
+material = "nylon_fabric"
+share = 10
+[item.duffel_bag.composition.zip]
+material = "nylon"
+share = 5
+
+[item.duffel_bag.features.container]
+capacity_ml = 70000
+max_mass_g = 25000
+max_dim_mm = 680
+opening_mm = 600
+closable = true
+compat = ["solid"]
+[item.duffel_bag.features.pocket]
+name = "end pockets"
+capacity_ml = 3000
+max_mass_g = 3000
+max_dim_mm = 300
+closable = true
+[item.duffel_bag.features.strap]
+kind = "shoulder"
+load_g = 25000
+
+[item.handbag]
+name = "handbag"
+tags = ["cat.bag.hand", "from.bedroom", "from.office", "from.living", "use.container"]
+shape = "bag"
+dims_mm = [320, 250, 150]
+mass_g = 700
+fill_pct = 8
+absorbs_water = true
+absorbs_scent = true
+durability = 6
+encumbrance = 2
+desc = "A leather shoulder handbag with a zip top and an inner zip pocket."
+glyph = "item.bag"
+why = "Common carried item (P-IT-03) holding personal effects (purse_contents loot, authored later)."
+brand_cats = ["clothing_formal"]
+details = ["leather_look"]
+value_class = "common"
+
+[item.handbag.composition.body]
+material = "leather"
+share = 70
+[item.handbag.composition.lining]
+material = "polyester"
+share = 20
+[item.handbag.composition.hardware]
+material = "brass"
+share = 10
+
+[item.handbag.features.container]
+capacity_ml = 8000
+max_mass_g = 5000
+max_dim_mm = 300
+opening_mm = 260
+closable = true
+compat = ["solid"]
+[item.handbag.features.pocket]
+name = "inner zip pocket"
+capacity_ml = 300
+max_mass_g = 500
+max_dim_mm = 180
+closable = true
+[item.handbag.features.strap]
+kind = "shoulder"
+load_g = 5000
+
+[item.laptop_bag]
+name = "laptop bag"
+tags = ["cat.bag.hand", "from.office", "from.bedroom", "from.vehicle", "use.container"]
+shape = "bag"
+dims_mm = [420, 320, 100]
+mass_g = 900
+fill_pct = 7
+absorbs_water = false
+absorbs_scent = true
+durability = 6
+encumbrance = 2
+desc = "A padded messenger-style laptop bag with an organiser panel."
+glyph = "item.bag"
+why = "Office-worker carried bag (P-IT-03); padded sleeve protects fragile loot (electronics)."
+brand_cats = ["clothing_formal", "computers"]
+value_class = "common"
+
+[item.laptop_bag.composition.body]
+material = "polyester"
+share = 80
+[item.laptop_bag.composition.padding]
+material = "pu_foam"
+share = 10
+[item.laptop_bag.composition.zips]
+material = "nylon"
+share = 10
+
+[item.laptop_bag.features.container]
+capacity_ml = 12000
+max_mass_g = 8000
+max_dim_mm = 400
+opening_mm = 380
+closable = true
+compat = ["solid"]
+[item.laptop_bag.features.pocket]
+name = "organiser pockets"
+capacity_ml = 1500
+max_mass_g = 1500
+max_dim_mm = 250
+closable = true
+[item.laptop_bag.features.strap]
+kind = "shoulder"
+load_g = 10000
+
+[item.briefcase]
+name = "briefcase"
+tags = ["cat.bag.case", "from.office", "from.vehicle", "use.container"]
+shape = "container"
+dims_mm = [460, 340, 110]
+mass_g = 2000
+absorbs_water = false
+absorbs_scent = false
+durability = 8
+encumbrance = 3
+desc = "A hard-shell attaché case with an aluminium frame and twin combination latches."
+glyph = "item.briefcase"
+why = "Rigid lockable case (M10 lock): paperwork or valuables inside; can be forced with a pry tool."
+brand_cats = ["clothing_formal"]
+value_class = "common"
+
+[item.briefcase.composition.shell]
+material = "abs"
+share = 60
+[item.briefcase.composition.frame]
+material = "aluminum"
+share = 20
+[item.briefcase.composition.lining]
+material = "polyester"
+share = 10
+[item.briefcase.composition.latches]
+material = "brass"
+share = 10
+
+[item.briefcase.features.container]
+capacity_ml = 12000
+max_mass_g = 8000
+max_dim_mm = 440
+opening_mm = 440
+closable = true
+compat = ["solid"]
+[item.briefcase.features.strap]
+kind = "handle"
+load_g = 10000
+[item.briefcase.features.lock]
+tier = 1
+keyed = false
+pickable = true
+combination = true
+[item.briefcase.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.fanny_pack]
+name = "fanny pack"
+tags = ["cat.bag.waist", "from.bedroom", "from.outdoors", "from.retail", "use.container", "slot.waist"]
+shape = "bag"
+dims_mm = [350, 150, 80]
+mass_g = 150
+fill_pct = 5
+absorbs_water = false
+absorbs_scent = true
+durability = 5
+encumbrance = 0
+desc = "A zipped nylon waist pack on an adjustable buckled belt."
+glyph = "item.bag"
+why = "Small quick-access storage worn on the waist; doesn't interfere with a backpack."
+brand_cats = ["outdoors", "clothing_basics"]
+details = ["clothing_colour"]
+value_class = "common"
+
+[item.fanny_pack.composition.body]
+material = "polyester"
+share = 80
+[item.fanny_pack.composition.buckle]
+material = "polypropylene"
+share = 10
+[item.fanny_pack.composition.zip]
+material = "nylon"
+share = 10
+
+[item.fanny_pack.features.container]
+capacity_ml = 1500
+max_mass_g = 3000
+max_dim_mm = 220
+opening_mm = 200
+closable = true
+compat = ["solid"]
+[item.fanny_pack.features.strap]
+kind = "belt"
+load_g = 3000
+[item.fanny_pack.features.wearable]
+slot = "waist"
+layer = "accessory"
+coverage = []

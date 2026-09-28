@@ -1,0 +1,362 @@
+# Outdoor object sets (world-catalog §4). Schema: registry/schemas.toml [schema.outdoor_set].
+#
+# A set is rolled once per INSTANCE:
+#   street sets (residential_street, downtown_street, highway_corridor): per ~100 m street segment
+#   yard sets (front_yard, backyard): per residential lot
+#   lot/site sets (parking_lot, gas_station_forecourt, industrial_yard, construction_site,
+#     school_grounds, farmyard, trailer_park, campground, park_grounds): per site
+#   alley, emergency_scene: per occurrence
+# Each object spawns count=[min,max] with probability chance_pct (default 100).
+# Vehicles are baseline (as parked at the event); wrecks, flat tyres, broken glass and looted
+# interiors come from aftermath state modifiers (N005/N007), not from separate sets.
+# An `item` may name a loot table (struggle_debris): its rolls are scattered on the ground.
+
+[outdoor_set.residential_street]
+desc = "A residential street segment: kerbside parked cars, wheelie bins out on collection day, a hydrant, street trees, overhead wires and a street light."
+objects = [
+  { item = "car_sedan", count = [1, 4], chance_pct = 85 },
+  { item = "suv", count = [1, 3], chance_pct = 70 },
+  { item = "pickup_truck", count = [1, 2], chance_pct = 50 },
+  { item = "minivan", count = [1, 1], chance_pct = 30 },
+  { item = "delivery_van", count = [1, 1], chance_pct = 8 },
+  { item = "trash_can_street", count = [1, 6], chance_pct = 45 },
+  { item = "fire_hydrant", count = [1, 1], chance_pct = 65 },
+  { item = "tree", count = [2, 8], chance_pct = 85 },
+  { item = "street_light", count = [1, 2], chance_pct = 90 },
+  { item = "utility_pole", count = [1, 3], chance_pct = 75 },
+  { item = "manhole_cover", count = [1, 1], chance_pct = 55 },
+  { item = "road_sign", count = [1, 2], chance_pct = 50 },
+  { item = "bicycle", count = [1, 1], chance_pct = 8 },
+  { item = "struggle_debris", count = [1, 1], chance_pct = 10 },
+]
+
+[outdoor_set.front_yard]
+desc = "A house's front yard and driveway: the family car, a mailbox at the kerb, hedges and a tree, a fence, a hose on its reel, a kid's bike on the lawn."
+objects = [
+  { item = "mailbox", count = [1, 1], chance_pct = 80 },
+  { item = "car_sedan", count = [1, 2], chance_pct = 50 },
+  { item = "suv", count = [1, 1], chance_pct = 40 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 30 },
+  { item = "minivan", count = [1, 1], chance_pct = 12 },
+  { item = "motorcycle", count = [1, 1], chance_pct = 4 },
+  { item = "hedge", count = [1, 4], chance_pct = 50 },
+  { item = "tree", count = [1, 3], chance_pct = 70 },
+  { item = "wooden_fence", count = [2, 8], chance_pct = 25 },
+  { item = "chain_link_fence", count = [2, 8], chance_pct = 12 },
+  { item = "planter", count = [1, 3], chance_pct = 25 },
+  { item = "garden_hose", count = [1, 1], chance_pct = 40 },
+  { item = "garden_gnome", count = [1, 2], chance_pct = 8 },
+  { item = "bicycle", count = [1, 2], chance_pct = 15 },
+  { item = "bike_helmet", count = [1, 1], chance_pct = 5 },
+  { item = "newspaper", count = [1, 1], chance_pct = 10 },
+]
+
+[outdoor_set.backyard]
+desc = "A house's back yard: a grill and patio set, a privacy fence, a lawn mower, a woodpile or fire pit, sometimes a play set or a pool."
+objects = [
+  { item = "wooden_fence", count = [4, 16], chance_pct = 65 },
+  { item = "chain_link_fence", count = [4, 16], chance_pct = 15 },
+  { item = "gas_grill", count = [1, 1], chance_pct = 50 },
+  { item = "propane_tank", count = [1, 2], chance_pct = 45 },
+  { item = "charcoal_grill", count = [1, 1], chance_pct = 20 },
+  { item = "charcoal_bag", count = [1, 1], chance_pct = 12 },
+  { item = "patio_table", count = [1, 1], chance_pct = 55 },
+  { item = "patio_chair", count = [2, 6], chance_pct = 60 },
+  { item = "lawn_mower", count = [1, 1], chance_pct = 25 },
+  { item = "riding_mower", count = [1, 1], chance_pct = 3 },
+  { item = "garden_hose", count = [1, 1], chance_pct = 65 },
+  { item = "rake", count = [1, 1], chance_pct = 25 },
+  { item = "shovel", count = [1, 1], chance_pct = 15 },
+  { item = "pruning_shears", count = [1, 1], chance_pct = 8 },
+  { item = "trash_can_street", count = [1, 2], chance_pct = 55 },
+  { item = "tree", count = [1, 4], chance_pct = 80 },
+  { item = "hedge", count = [1, 3], chance_pct = 25 },
+  { item = "fire_pit", count = [1, 1], chance_pct = 20 },
+  { item = "woodpile", count = [1, 1], chance_pct = 18 },
+  { item = "play_set", count = [1, 1], chance_pct = 18 },
+  { item = "backyard_pool", count = [1, 1], chance_pct = 9 },
+  { item = "rain_barrel", count = [1, 2], chance_pct = 6 },
+  { item = "bicycle", count = [1, 2], chance_pct = 12 },
+  { item = "cooler", count = [1, 1], chance_pct = 8 },
+]
+
+[outdoor_set.downtown_street]
+desc = "A downtown street segment: metered parking, a bus shelter, benches, newspaper boxes, planters, bike racks, trash cans, a hydrant and tall street lights."
+objects = [
+  { item = "car_sedan", count = [1, 6], chance_pct = 85 },
+  { item = "suv", count = [1, 3], chance_pct = 60 },
+  { item = "delivery_van", count = [1, 2], chance_pct = 35 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 25 },
+  { item = "police_cruiser", count = [1, 1], chance_pct = 5 },
+  { item = "parking_meter", count = [2, 10], chance_pct = 60 },
+  { item = "bench", count = [1, 3], chance_pct = 55 },
+  { item = "bus_shelter", count = [1, 1], chance_pct = 30 },
+  { item = "newspaper_box", count = [1, 3], chance_pct = 40 },
+  { item = "planter", count = [1, 4], chance_pct = 45 },
+  { item = "bike_rack", count = [1, 2], chance_pct = 40 },
+  { item = "bicycle", count = [1, 4], chance_pct = 30 },
+  { item = "trash_can_street", count = [1, 3], chance_pct = 85 },
+  { item = "fire_hydrant", count = [1, 1], chance_pct = 70 },
+  { item = "street_light", count = [2, 4], chance_pct = 95 },
+  { item = "tree", count = [1, 6], chance_pct = 55 },
+  { item = "road_sign", count = [1, 4], chance_pct = 80 },
+  { item = "manhole_cover", count = [1, 2], chance_pct = 70 },
+  { item = "vending_machine", count = [1, 1], chance_pct = 8 },
+  { item = "traffic_cone", count = [2, 6], chance_pct = 10 },
+  { item = "struggle_debris", count = [1, 2], chance_pct = 15 },
+]
+
+[outdoor_set.alley]
+desc = "A service alley behind buildings: trash bins, stacked pallets, flattened boxes, overflowing bins, a utility pole, broken glass."
+objects = [
+  { item = "trash_bin", count = [1, 3], chance_pct = 85 },
+  { item = "pallet", count = [1, 5], chance_pct = 45 },
+  { item = "cardboard_box", count = [2, 10], chance_pct = 60 },
+  { item = "trash_can_street", count = [1, 6], chance_pct = 55 },
+  { item = "trash_bags", count = [1, 1], chance_pct = 5 },
+  { item = "utility_pole", count = [1, 2], chance_pct = 50 },
+  { item = "chain_link_fence", count = [2, 8], chance_pct = 25 },
+  { item = "glass_bottle", count = [1, 4], chance_pct = 30 },
+  { item = "glass_shards", count = [1, 3], chance_pct = 20 },
+  { item = "car_sedan", count = [1, 1], chance_pct = 15 },
+  { item = "delivery_van", count = [1, 1], chance_pct = 10 },
+  { item = "drum_55gal", count = [1, 1], chance_pct = 6 },
+  { item = "encampment_stash", count = [1, 1], chance_pct = 2 },
+]
+
+[outdoor_set.parking_lot]
+desc = "A store or office parking lot: rows of parked cars, stray shopping carts, light poles, a cart corral, trash bins at the back and kerb stops."
+objects = [
+  { item = "car_sedan", count = [3, 30], chance_pct = 95 },
+  { item = "suv", count = [2, 20], chance_pct = 85 },
+  { item = "pickup_truck", count = [1, 10], chance_pct = 75 },
+  { item = "minivan", count = [1, 5], chance_pct = 50 },
+  { item = "delivery_van", count = [1, 2], chance_pct = 20 },
+  { item = "motorcycle", count = [1, 2], chance_pct = 10 },
+  { item = "shopping_cart", count = [1, 12], chance_pct = 55 },
+  { item = "street_light", count = [2, 8], chance_pct = 90 },
+  { item = "trash_bin", count = [1, 2], chance_pct = 50 },
+  { item = "trash_can_street", count = [1, 3], chance_pct = 55 },
+  { item = "road_sign", count = [1, 3], chance_pct = 50 },
+  { item = "tree", count = [1, 6], chance_pct = 40 },
+  { item = "traffic_cone", count = [1, 4], chance_pct = 10 },
+  { item = "struggle_debris", count = [1, 1], chance_pct = 12 },
+]
+
+[outdoor_set.gas_station_forecourt]
+desc = "A fuel forecourt: a lit canopy over pump islands drawing on underground fuel tanks, a caged rack of propane exchange cylinders, an ice freezer, vending machines and an air pump."
+objects = [
+  { item = "fuel_pump", count = [2, 12], chance_pct = 100 },
+  { item = "propane_tank", count = [4, 24], chance_pct = 70 },
+  { item = "chest_freezer", count = [1, 1], chance_pct = 60 },
+  { item = "vending_machine", count = [1, 2], chance_pct = 45 },
+  { item = "trash_can_street", count = [2, 6], chance_pct = 95 },
+  { item = "street_light", count = [2, 6], chance_pct = 90 },
+  { item = "fire_extinguisher", count = [1, 2], chance_pct = 60 },
+  { item = "car_sedan", count = [1, 4], chance_pct = 60 },
+  { item = "suv", count = [1, 3], chance_pct = 45 },
+  { item = "pickup_truck", count = [1, 2], chance_pct = 35 },
+  { item = "semi_truck", count = [1, 1], chance_pct = 5 },
+  { item = "gas_can", count = [1, 2], chance_pct = 10 },
+  { item = "motor_oil_bottle", count = [1, 3], chance_pct = 15 },
+  { item = "newspaper_box", count = [1, 1], chance_pct = 20 },
+]
+
+[outdoor_set.construction_site]
+desc = "A construction site behind temporary fencing: stacked lumber and sheet goods, rebar and block, a job-box of tools, a generator and fuel cans, a site container and a trash bin."
+objects = [
+  { item = "chain_link_fence", count = [6, 30], chance_pct = 85 },
+  { item = "lumber_2x4", count = [10, 120], chance_pct = 70 },
+  { item = "plywood_sheet", count = [5, 40], chance_pct = 60 },
+  { item = "rebar", count = [5, 60], chance_pct = 50 },
+  { item = "cinder_block", count = [20, 300], chance_pct = 45 },
+  { item = "concrete_mix_bag", count = [4, 40], chance_pct = 40 },
+  { item = "pallet", count = [2, 10], chance_pct = 70 },
+  { item = "tarp", count = [1, 4], chance_pct = 55 },
+  { item = "plastic_sheeting", count = [1, 3], chance_pct = 35 },
+  { item = "sandbag", count = [4, 30], chance_pct = 15 },
+  { item = "portable_generator", count = [1, 1], chance_pct = 45 },
+  { item = "gas_can", count = [1, 3], chance_pct = 60 },
+  { item = "extension_cord", count = [1, 4], chance_pct = 55 },
+  { item = "extension_ladder", count = [1, 2], chance_pct = 40 },
+  { item = "wheelbarrow", count = [1, 2], chance_pct = 50 },
+  { item = "shovel", count = [1, 3], chance_pct = 55 },
+  { item = "sledgehammer", count = [1, 1], chance_pct = 20 },
+  { item = "toolbox", count = [1, 2], chance_pct = 30 },
+  { item = "shipping_container", count = [1, 1], chance_pct = 35 },
+  { item = "trash_bin", count = [1, 2], chance_pct = 70 },
+  { item = "traffic_cone", count = [2, 12], chance_pct = 60 },
+  { item = "pickup_truck", count = [1, 3], chance_pct = 60 },
+  { item = "work_light_12v", count = [1, 2], chance_pct = 20 },
+  { item = "hard_hat", count = [1, 2], chance_pct = 15 },
+]
+
+[outdoor_set.highway_corridor]
+desc = "A stretch of divided highway: abandoned and crashed cars and trucks stopped where their drivers turned, guardrails, jersey barriers, signs, burnt-out flares."
+objects = [
+  { item = "car_sedan", count = [1, 12], chance_pct = 85 },
+  { item = "suv", count = [1, 8], chance_pct = 75 },
+  { item = "pickup_truck", count = [1, 6], chance_pct = 65 },
+  { item = "minivan", count = [1, 3], chance_pct = 40 },
+  { item = "semi_truck", count = [1, 3], chance_pct = 45 },
+  { item = "delivery_van", count = [1, 2], chance_pct = 25 },
+  { item = "motorcycle", count = [1, 2], chance_pct = 12 },
+  { item = "school_bus", count = [1, 1], chance_pct = 2 },
+  { item = "police_cruiser", count = [1, 1], chance_pct = 6 },
+  { item = "ambulance", count = [1, 1], chance_pct = 3 },
+  { item = "guardrail", count = [4, 25], chance_pct = 85 },
+  { item = "jersey_barrier", count = [2, 12], chance_pct = 35 },
+  { item = "road_sign", count = [1, 4], chance_pct = 85 },
+  { item = "utility_pole", count = [1, 4], chance_pct = 35 },
+  { item = "tree", count = [2, 12], chance_pct = 55 },
+  { item = "road_flare", count = [1, 6], chance_pct = 15 },
+  { item = "traffic_cone", count = [2, 10], chance_pct = 15 },
+  { item = "struggle_debris", count = [1, 2], chance_pct = 10 },
+]
+
+[outdoor_set.park_grounds]
+desc = "A city park: a playground, benches and picnic tables under trees, trash cans, lamp posts and a bike rack along the paths."
+objects = [
+  { item = "play_set", count = [1, 3], chance_pct = 60 },
+  { item = "bench", count = [2, 10], chance_pct = 95 },
+  { item = "patio_table", count = [1, 8], chance_pct = 60 },
+  { item = "charcoal_grill", count = [1, 4], chance_pct = 30 },
+  { item = "trash_can_street", count = [2, 8], chance_pct = 95 },
+  { item = "tree", count = [8, 40], chance_pct = 100 },
+  { item = "hedge", count = [1, 6], chance_pct = 30 },
+  { item = "street_light", count = [2, 10], chance_pct = 80 },
+  { item = "bike_rack", count = [1, 2], chance_pct = 40 },
+  { item = "bicycle", count = [1, 3], chance_pct = 25 },
+  { item = "vending_machine", count = [1, 1], chance_pct = 8 },
+  { item = "car_sedan", count = [1, 6], chance_pct = 50 },
+  { item = "struggle_debris", count = [1, 1], chance_pct = 8 },
+]
+
+[outdoor_set.farmyard]
+desc = "A working farmyard: a tractor and pickup, an elevated farm fuel tank, hay bales, a stock trough and hand pump on the well, barbed-wire fencing on steel posts, a grain bin."
+objects = [
+  { item = "tractor", count = [1, 2], chance_pct = 80 },
+  { item = "pickup_truck", count = [1, 2], chance_pct = 85 },
+  { item = "farm_fuel_tank", count = [1, 2], chance_pct = 70 },
+  { item = "hay_bale", count = [5, 80], chance_pct = 70 },
+  { item = "water_trough", count = [1, 3], chance_pct = 60 },
+  { item = "hand_well_pump", count = [1, 1], chance_pct = 35 },
+  { item = "barbed_wire", count = [2, 12], chance_pct = 75 },
+  { item = "t_post", count = [10, 60], chance_pct = 70 },
+  { item = "wooden_fence", count = [4, 20], chance_pct = 40 },
+  { item = "grain_silo", count = [1, 3], chance_pct = 35 },
+  { item = "drum_55gal", count = [1, 4], chance_pct = 45 },
+  { item = "propane_tank", count = [1, 1], chance_pct = 50 },
+  { item = "woodpile", count = [1, 2], chance_pct = 40 },
+  { item = "riding_mower", count = [1, 1], chance_pct = 30 },
+  { item = "gas_can", count = [1, 3], chance_pct = 50 },
+  { item = "utility_pole", count = [1, 3], chance_pct = 80 },
+  { item = "tree", count = [2, 12], chance_pct = 85 },
+  { item = "mailbox", count = [1, 1], chance_pct = 90 },
+  { item = "rain_barrel", count = [1, 2], chance_pct = 10 },
+  { item = "pitchfork", count = [1, 1], chance_pct = 20 },
+]
+
+[outdoor_set.industrial_yard]
+desc = "A fenced industrial yard: forklifts with propane cylinders, pallet stacks, 55-gallon drums, shipping containers, trailers at the dock, trash bins and scrap."
+objects = [
+  { item = "chain_link_fence", count = [8, 40], chance_pct = 85 },
+  { item = "forklift", count = [1, 3], chance_pct = 70 },
+  { item = "propane_tank", count = [2, 12], chance_pct = 55 },
+  { item = "pallet", count = [5, 60], chance_pct = 90 },
+  { item = "drum_55gal", count = [1, 20], chance_pct = 60 },
+  { item = "shipping_container", count = [1, 8], chance_pct = 45 },
+  { item = "semi_truck", count = [1, 4], chance_pct = 50 },
+  { item = "delivery_van", count = [1, 3], chance_pct = 30 },
+  { item = "pickup_truck", count = [1, 4], chance_pct = 55 },
+  { item = "car_sedan", count = [2, 20], chance_pct = 70 },
+  { item = "trash_bin", count = [1, 4], chance_pct = 85 },
+  { item = "scrap_metal", count = [1, 10], chance_pct = 40 },
+  { item = "street_light", count = [1, 6], chance_pct = 80 },
+  { item = "cardboard_box", count = [2, 12], chance_pct = 35 },
+  { item = "tarp", count = [1, 3], chance_pct = 25 },
+]
+
+[outdoor_set.school_grounds]
+desc = "School grounds: the bus loop with parked yellow buses, the drop-off lane, a fenced playground, bike racks and flagpole, and the staff lot."
+objects = [
+  { item = "school_bus", count = [1, 8], chance_pct = 60 },
+  { item = "play_set", count = [1, 3], chance_pct = 65 },
+  { item = "chain_link_fence", count = [10, 40], chance_pct = 85 },
+  { item = "bike_rack", count = [1, 3], chance_pct = 70 },
+  { item = "bicycle", count = [1, 15], chance_pct = 50 },
+  { item = "bench", count = [2, 6], chance_pct = 60 },
+  { item = "trash_can_street", count = [2, 8], chance_pct = 90 },
+  { item = "car_sedan", count = [5, 40], chance_pct = 90 },
+  { item = "suv", count = [3, 25], chance_pct = 85 },
+  { item = "minivan", count = [1, 10], chance_pct = 65 },
+  { item = "pickup_truck", count = [1, 8], chance_pct = 60 },
+  { item = "tree", count = [3, 15], chance_pct = 80 },
+  { item = "road_sign", count = [1, 4], chance_pct = 80 },
+  { item = "street_light", count = [2, 8], chance_pct = 80 },
+]
+
+[outdoor_set.trailer_park]
+desc = "A mobile-home park: gravel lanes between skirted trailers, propane cylinders on every hitch, junk cars, grills and plastic chairs, a burn barrel, cluster mailboxes."
+objects = [
+  { item = "propane_tank", count = [1, 3], chance_pct = 80 },
+  { item = "car_sedan", count = [1, 3], chance_pct = 70 },
+  { item = "pickup_truck", count = [1, 2], chance_pct = 60 },
+  { item = "suv", count = [1, 1], chance_pct = 35 },
+  { item = "charcoal_grill", count = [1, 1], chance_pct = 40 },
+  { item = "gas_grill", count = [1, 1], chance_pct = 20 },
+  { item = "patio_chair", count = [1, 4], chance_pct = 55 },
+  { item = "trash_can_street", count = [1, 2], chance_pct = 75 },
+  { item = "drum_55gal", count = [1, 1], chance_pct = 15 },
+  { item = "wooden_fence", count = [2, 8], chance_pct = 20 },
+  { item = "chain_link_fence", count = [2, 10], chance_pct = 30 },
+  { item = "tree", count = [1, 6], chance_pct = 70 },
+  { item = "utility_pole", count = [1, 3], chance_pct = 85 },
+  { item = "mailbox", count = [1, 1], chance_pct = 50 },
+  { item = "play_set", count = [1, 1], chance_pct = 10 },
+  { item = "bicycle", count = [1, 3], chance_pct = 30 },
+  { item = "woodpile", count = [1, 1], chance_pct = 12 },
+  { item = "lawn_mower", count = [1, 1], chance_pct = 20 },
+  { item = "scrap_metal", count = [1, 4], chance_pct = 15 },
+]
+
+[outdoor_set.campground]
+desc = "A campground loop: sites with a fire ring and picnic table, a tent or two, coolers and camp chairs, a car or pickup, a stack of firewood."
+objects = [
+  { item = "fire_pit", count = [1, 1], chance_pct = 95 },
+  { item = "patio_table", count = [1, 1], chance_pct = 95 },
+  { item = "tent", count = [1, 2], chance_pct = 50 },
+  { item = "sleeping_bag", count = [1, 4], chance_pct = 40 },
+  { item = "cooler", count = [1, 2], chance_pct = 45 },
+  { item = "patio_chair", count = [1, 4], chance_pct = 40 },
+  { item = "camp_stove", count = [1, 1], chance_pct = 25 },
+  { item = "firewood", count = [4, 30], chance_pct = 60 },
+  { item = "hatchet", count = [1, 1], chance_pct = 12 },
+  { item = "battery_lantern", count = [1, 1], chance_pct = 20 },
+  { item = "car_sedan", count = [1, 1], chance_pct = 40 },
+  { item = "suv", count = [1, 1], chance_pct = 40 },
+  { item = "pickup_truck", count = [1, 1], chance_pct = 35 },
+  { item = "trash_can_street", count = [1, 1], chance_pct = 70 },
+  { item = "tree", count = [3, 15], chance_pct = 100 },
+  { item = "bicycle", count = [1, 2], chance_pct = 10 },
+]
+
+[outdoor_set.emergency_scene]
+desc = "Where responders were caught mid-call at the event: cruisers and an ambulance with doors open, a fire engine, cones and barriers, flares and struggle debris (N007 hotspot)."
+objects = [
+  { item = "police_cruiser", count = [1, 4], chance_pct = 90 },
+  { item = "ambulance", count = [1, 2], chance_pct = 55 },
+  { item = "fire_engine", count = [1, 2], chance_pct = 35 },
+  { item = "traffic_cone", count = [2, 12], chance_pct = 65 },
+  { item = "jersey_barrier", count = [1, 4], chance_pct = 20 },
+  { item = "road_flare", count = [1, 8], chance_pct = 50 },
+  { item = "car_sedan", count = [1, 3], chance_pct = 60 },
+  { item = "suv", count = [1, 2], chance_pct = 40 },
+  { item = "first_aid_kit", count = [1, 1], chance_pct = 20 },
+  { item = "gauze_pads", count = [1, 3], chance_pct = 20 },
+  { item = "police_baton", count = [1, 1], chance_pct = 12 },
+  { item = "riot_shield", count = [1, 2], chance_pct = 6 },
+  { item = "pistol", count = [1, 1], chance_pct = 5 },
+  { item = "fire_extinguisher", count = [1, 1], chance_pct = 15 },
+  { item = "struggle_debris", count = [2, 5], chance_pct = 90 },
+]

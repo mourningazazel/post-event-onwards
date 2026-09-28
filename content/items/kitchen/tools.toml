@@ -1,0 +1,191 @@
+# Kitchen tools and utensils. Exemplar file.
+
+[item.kitchen_knife]
+name = "kitchen knife"
+tags = ["cat.tool.knife", "from.kitchen", "from.restaurant", "use.tool", "use.weapon"]
+shape = "blade"
+dims_mm = [300, 35, 20]
+mass_g = 150
+durability = 6
+desc = "A chef's knife with a stainless blade and a plastic handle."
+glyph = "item.knife"
+why = "Baseline cutting tool and blade weapon; attaches to poles as a spear head."
+brand_cats = ["cutlery"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 3000, wrap_girth_mm = 70 }
+value_class = "useful"
+
+[item.kitchen_knife.composition.blade]
+material = "stainless_steel"
+share = 70
+[item.kitchen_knife.composition.handle]
+material = "polypropylene"
+share = 30
+
+[item.kitchen_knife.features.edge]
+length_mm = 180
+sharpness = 7
+[item.kitchen_knife.features.point]
+sharpness = 7
+width_mm = 3
+[item.kitchen_knife.features.grip]
+hands = 1
+girth_mm = 25
+
+# ---------------------------------------------------------------- domain A additions
+
+[item.cleaver]
+name = "meat cleaver"
+tags = ["cat.tool.knife", "from.kitchen", "from.restaurant", "use.tool", "use.weapon"]
+shape = "blade"
+dims_mm = [310, 90, 25]
+mass_g = 800
+durability = 8
+balance = "head"
+desc = "A heavy rectangular cleaver with a thick spine and a riveted wooden handle."
+glyph = "item.cleaver"
+why = "The kitchen's only chopping tool: hacks through bone, cord and thin wood; a heavy one-handed weapon with no point."
+brand_cats = ["cutlery"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 16000, wrap_girth_mm = 190 }
+value_class = "useful"
+
+[item.cleaver.composition.blade]
+material = "stainless_steel"
+share = 80
+[item.cleaver.composition.handle]
+material = "hardwood"
+share = 20
+
+[item.cleaver.features.edge]
+length_mm = 180
+sharpness = 6
+[item.cleaver.features.grip]
+hands = 1
+girth_mm = 28
+
+[item.can_opener]
+name = "can opener"
+tags = ["cat.kitchen.utensil", "from.kitchen", "from.restaurant", "from.outdoors", "use.tool"]
+shape = "complex"
+dims_mm = [200, 60, 40]
+mass_g = 170
+durability = 6
+desc = "A hand-crank can opener with a serrated wheel and padded handles."
+glyph = "item.can_opener"
+why = "Opens sealed cans cleanly and fast; without one, cans need a knife point, a pry edge or a slow spoon."
+brand_cats = ["cutlery"]
+value_class = "useful"
+
+[item.can_opener.composition.cutter]
+material = "stainless_steel"
+share = 60
+[item.can_opener.composition.handles]
+material = "polypropylene"
+share = 40
+
+[item.can_opener.features.grip]
+hands = 2
+girth_mm = 25
+
+[item.can_opener.capabilities]
+can_open = 8                       # derived = false
+
+[item.rolling_pin]
+name = "rolling pin"
+tags = ["cat.kitchen.utensil", "from.kitchen", "from.restaurant", "use.cooking", "use.weapon"]
+shape = "rod"
+dims_mm = [460, 65, 65]
+mass_g = 800
+durability = 8
+balance = "even"
+desc = "A solid maple rolling pin with turned handles."
+glyph = "item.rolling_pin"
+why = "A dense hardwood club that is in almost every kitchen; a straight rigid rod for splints."
+brand_cats = ["cookware"]
+value_class = "common"
+
+[item.rolling_pin.composition.body]
+material = "hardwood"
+share = 100
+
+[item.rolling_pin.features.grip]
+hands = 1
+girth_mm = 30
+
+# Override: the rod-shape pry rule would give 5, but a round pin has no edge or lip to get
+# under anything. Also keeps it from "opening" cans (negative control in chains/kitchen_food.toml).
+[item.rolling_pin.capabilities]
+pry = 1
+
+[item.cutlery]
+name = "handful of cutlery"
+tags = ["cat.kitchen.cutlery", "from.kitchen", "from.restaurant", "from.office", "use.tool"]
+shape = "complex"
+dims_mm = [210, 70, 30]
+mass_g = 400
+desc = "A loose bundle of stainless forks, spoons and blunt table knives."
+glyph = "item.cutlery"
+why = "Aggregated clutter with real improvised uses: a table knife turns screws, a spoon opens a can slowly, forks pierce."
+brand_cats = ["cutlery"]
+value_class = "junk"
+
+[item.cutlery.composition.utensils]
+material = "stainless_steel"
+share = 100
+
+[item.cutlery.features.edge]
+length_mm = 90
+sharpness = 2
+[item.cutlery.features.point]
+sharpness = 3
+width_mm = 2
+[item.cutlery.features.grip]
+hands = 1
+girth_mm = 12
+
+# Authored (derived = false unless noted), with reasons:
+#   fasten 1   - a table-knife tip works as a poor flat-head screwdriver
+#   can_open 1 - rubbing a spoon edge along the lid seam opens a can in a few minutes
+#   scoop 1    - spoons
+#   hammer 2   - override of derived 5: a loose fistful of thin utensils is not a rigid mass
+[item.cutlery.capabilities]
+fasten = 1
+can_open = 1
+scoop = 1
+hammer = 2
+
+[item.fire_extinguisher]
+name = "fire extinguisher"
+tags = ["cat.safety.extinguisher", "from.kitchen", "from.office", "from.restaurant", "from.school", "from.garage", "from.vehicle", "use.fire_suppression", "hazard.pressurized"]
+shape = "complex"
+dims_mm = [420, 160, 130]
+mass_g = 3900
+pressurized = true
+use_noise = "loud"
+durability = 9
+desc = "A red five-pound ABC dry-chemical extinguisher with a pressure gauge and a short hose."
+glyph = "item.extinguisher"
+why = "Puts out grease, fuel and electrical fires water can't; a heavy steel bludgeon; bursts if left in a fire."
+value_class = "useful"
+
+[item.fire_extinguisher.composition.body]
+material = "mild_steel"
+share = 50
+[item.fire_extinguisher.composition.agent]
+material = "sand"                  # closest registered inert mineral powder (proposed: dry_chemical)
+share = 40
+[item.fire_extinguisher.composition.valve]
+material = "brass"
+share = 8
+[item.fire_extinguisher.composition.hose]
+material = "rubber"
+share = 2
+
+[item.fire_extinguisher.features.grip]
+hands = 2
+girth_mm = 35
+
+[item.fire_extinguisher.capabilities]
+extinguish = 8                     # derived = false
+
+[item.fire_extinguisher.reactions.heat]
+high = "burst"
