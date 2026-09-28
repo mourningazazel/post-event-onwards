@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 23,
+  "next_id": 27,
   "items": [
     {
       "id": "PEO-001",
@@ -727,6 +727,142 @@
       "depends_on": [
         "PEO-009"
       ]
+    },
+    {
+      "id": "PEO-023",
+      "order": 230,
+      "type": "bug",
+      "title": "HUD says [s scent] but the scent toggle is Shift+S; plain s moves down",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The HUD hint matches the actual scent-view binding.",
+        "context": [
+          "src/app/main.cpp"
+        ],
+        "units": [
+          "app: change the HUD hint text to the real binding (Shift+S), or rebind; keep WASD s = move down"
+        ],
+        "acceptance": [
+          "in game, the HUD hint names the key that toggles the scent view"
+        ],
+        "tests": [],
+        "manual": [
+          "peo 7: read the HUD; press the key it names; the scent gradient toggles and @ does not move"
+        ],
+        "out_of_scope": [
+          "other key bindings"
+        ]
+      },
+      "notes": [],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-024",
+      "order": 240,
+      "type": "bug",
+      "title": "Scent view draws the strongest scent level as @, identical to the player glyph",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The player @ is unambiguous with the scent view on.",
+        "context": [
+          "src/app/main.cpp"
+        ],
+        "units": [
+          "app: use a different glyph (or colour-only shading) for the strongest scent band"
+        ],
+        "acceptance": [
+          "in game with Shift+S on, only the player cell shows @"
+        ],
+        "tests": [],
+        "manual": [
+          "peo 7, stand still ~20 s, Shift+S: the cells around the player show a gradient without extra @ glyphs (seen: a block of @@@@ around the player at tick ~450)"
+        ],
+        "out_of_scope": [
+          "scent maths"
+        ]
+      },
+      "notes": [],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-025",
+      "order": 250,
+      "type": "bug",
+      "title": "Frontend busy-loops: release build uses ~78% of a CPU core at idle",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The frame loop caps or vsyncs so an idle game uses a small fraction of a core.",
+        "context": [
+          "src/app/main.cpp"
+        ],
+        "units": [
+          "app: enable vsync on the renderer or cap the frame rate; keep the 100 ms sim tick unchanged"
+        ],
+        "acceptance": [
+          "release build idling on stage 0 uses well under 25% of one core on the developer machine"
+        ],
+        "tests": [],
+        "manual": [
+          "./build/release/bin/peo 7; ps -o %cpu= -C peo sampled over 30 s (seen: 75-78% on Apple M1 / Asahi, tick rate steady 10/s)"
+        ],
+        "out_of_scope": [
+          "sim tick rate"
+        ]
+      },
+      "notes": [],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-026",
+      "order": 260,
+      "type": "bug",
+      "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Scent reaches the Dead fast enough that convergence is visible within seconds, or PEO-001's manual expectation is revised.",
+        "context": [
+          "src/core/include/peo/core/scent.hpp",
+          "src/core/src/scent.cpp",
+          "src/core/src/dead.cpp",
+          "docs/design/scent-mobs.md"
+        ],
+        "units": [
+          "core: measure scent front radius vs ticks from a corner start on stage 0 seed 7; decide diffusion/decay tuning or revise the expectation (pacing may be a gameplay call: raise a D-entry if so)"
+        ],
+        "acceptance": [
+          "a headless test pins the scent front radius after N ticks",
+          "in game, the Dead near the scent front start moving within ~3 s"
+        ],
+        "tests": [],
+        "manual": [
+          "peo 7, stand still: seen at tick 69->101 (3 s) no d moved; at tick 222 (~10 s) none moved; at tick ~450 (~20 s) the Shift+S gradient reached only ~8 cells; only d inside it drifted"
+        ],
+        "out_of_scope": [
+          "movement algorithm rewrite (PEO-009)"
+        ]
+      },
+      "notes": [],
+      "references": [],
+      "depends_on": []
     }
   ]
 }
