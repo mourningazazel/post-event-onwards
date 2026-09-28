@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Git hook body. Installed by tools/bootstrap.py (core.hooksPath=.githooks).
 
-pre-commit: block secrets, huge blobs, build output and hand-edited queue JSON
-            that fails the schema.
+pre-commit: block secrets, huge blobs, build output, and any staged doc or
+            queue change that fails tools/validate_docs.py (word caps, schema).
 pre-push:   block force-pushes and deletions of main.
 
 Never bypass with --no-verify; fix the cause or raise it with the user.
@@ -51,10 +51,11 @@ def pre_commit() -> int:
         for pattern, label in SECRET_PATTERNS:
             if pattern.search(text):
                 problems.append(f"{rel}: looks like it contains a {label}")
-    if any(rel in ("WORK_QUEUE.json", "DEFERRED_WORK.json") for rel in staged):
-        r = subprocess.run([sys.executable, "tools/work_queue.py", "check"], cwd=ROOT, capture_output=True, text=True)
+    doc_like = (".md", ".json")
+    if any(rel.endswith(doc_like) for rel in staged):
+        r = subprocess.run([sys.executable, "tools/validate_docs.py"], cwd=ROOT, capture_output=True, text=True)
         if r.returncode != 0:
-            problems.append("queue files fail schema check:\n" + r.stdout)
+            problems.append("docs/queue validation failed:\n" + r.stdout)
     for p in problems:
         print("pre-commit:", p, file=sys.stderr)
     return 1 if problems else 0
