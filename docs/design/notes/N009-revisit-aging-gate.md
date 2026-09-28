@@ -13,7 +13,7 @@
   is no time-based catch-up.
 - **Revisiting after about 1 month of game time away:** the area is brought forward to the current
   clock (aftermath re-applied from the stored clock to now, per ADR-0011).
-- **Claude's assumption, to confirm:** things the *player* changed (barricades built, items
+- **Confirmed in [N011](N011-survival-actions-and-world-catalog.md):** things the *player* changed (barricades built, items
   moved, walls dug) are preserved through that update, and only untouched content ages.
 
 ## Acted on in

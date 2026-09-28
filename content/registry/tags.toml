@@ -1,0 +1,277 @@
+# Tag namespaces and registered tags (content-model §2.6, §9).
+# open = true  -> any tag under the namespace is allowed (still validated by rule if given).
+# open = false -> only tags registered below as [tag."ns.x"] are allowed.
+# `name_part` on a tag composes it into item names just by being present (N010).
+
+[namespace.cat]
+open = true
+rule = "catalogue category, dotted hierarchy, e.g. cat.food.canned, cat.tool.hand, cat.clothing.top"
+desc = "Loot tables, UI grouping, generation queries."
+
+[namespace.brand]
+open = true
+rule = "must name a brand in content/brands"
+desc = "Brand relationship (N010)."
+
+[namespace.emits]
+open = true
+rule = "must name a scent channel (registry/scent.toml), optionally with strength suffix: emits.rot or emits.rot.8"
+desc = "Scent emission profile (M14)."
+
+[namespace.mat]
+open = true
+rule = "material family, auto-derived from composition (mat.metal, mat.wood, mat.textile, mat.polymer, mat.glass, mat.paper, mat.stone, mat.organic, mat.rubber, mat.ceramic)"
+desc = "Material-family queries (fire, reactions, crafting)."
+
+[namespace.use]
+open = false
+desc = "Functional intent (UI hints, crafting queries)."
+
+[namespace.from]
+open = false
+desc = "Provenance: where it's typically found (generation)."
+
+[namespace.state]
+open = false
+desc = "Current condition (set by generation/reactions)."
+
+[namespace.hazard]
+open = false
+desc = "Dangers."
+
+[namespace.flavor]
+open = false
+desc = "World-building / aesthetic value (detail budget reason c)."
+
+[namespace.slot]
+open = false
+desc = "Wear slots (M16)."
+
+[namespace.body]
+open = false
+desc = "Body parts for coverage lists (G05)."
+
+# ---- use.* -----------------------------------------------------------------
+[tag."use.weapon"]
+desc = "Primarily a weapon."
+[tag."use.tool"]
+desc = "Primarily a tool."
+[tag."use.container"]
+desc = "Primarily for holding things."
+[tag."use.fire_starter"]
+desc = "Starts fires."
+[tag."use.tinder"]
+desc = "Catches a flame easily (paper, lint, cotton)."
+[tag."use.fuel"]
+desc = "Burns for heat/light."
+[tag."use.light_source"]
+desc = "Provides light."
+[tag."use.first_aid"]
+desc = "Medical use."
+[tag."use.food"]
+desc = "Edible."
+[tag."use.drink"]
+desc = "Drinkable."
+[tag."use.water_treatment"]
+desc = "Purifies/filters water."
+[tag."use.cooking"]
+desc = "Cookware and utensils."
+[tag."use.fastener"]
+desc = "Joins things (tape, glue, rope, wire, screws, nails, zip ties)."
+[tag."use.lure"]
+desc = "Attracts zombies (noise/scent)."
+[tag."use.mask_scent"]
+desc = "Masks or changes scent."
+[tag."use.soap"]
+desc = "Washes (removes absorbed scent)."
+[tag."use.lockpick"]
+desc = "Opens locks without keys."
+[tag."use.key"]
+desc = "Opens a specific lock."
+[tag."use.map"]
+desc = "Navigation information."
+[tag."use.power"]
+desc = "Stores or produces electrical power."
+[tag."use.barricade"]
+desc = "Useful for blocking/boarding."
+[tag."use.shelter"]
+desc = "Tarps, tents, sleeping bags."
+[tag."use.hygiene"]
+desc = "Toiletries."
+[tag."use.salvage"]
+desc = "Mainly valuable for its parts."
+[tag."use.writing"]
+desc = "Pens, pencils, markers, paper."
+[tag."use.signal"]
+desc = "Signals/noise on demand (whistles, air horns, flares)."
+[tag."use.ammo"]
+desc = "Ammunition."
+[tag."use.fire_suppression"]
+desc = "Extinguishers, fire blankets, sand."
+
+# ---- from.* (provenance) ----------------------------------------------------
+[tag."from.kitchen"]
+desc = "Kitchens, homes, restaurants."
+[tag."from.bathroom"]
+desc = "Bathrooms."
+[tag."from.bedroom"]
+desc = "Bedrooms."
+[tag."from.living"]
+desc = "Living rooms, lounges."
+[tag."from.garage"]
+desc = "Garages, sheds, workshops."
+[tag."from.garden"]
+desc = "Yards, gardens, sheds."
+[tag."from.office"]
+desc = "Offices."
+[tag."from.school"]
+desc = "Schools."
+[tag."from.medical"]
+desc = "Hospitals, clinics, pharmacies."
+[tag."from.police"]
+desc = "Police, security."
+[tag."from.fire_service"]
+desc = "Fire stations."
+[tag."from.construction"]
+desc = "Construction sites, hardware stores."
+[tag."from.industrial"]
+desc = "Factories, warehouses, utilities."
+[tag."from.retail"]
+desc = "Shops generally."
+[tag."from.grocery"]
+desc = "Supermarkets, convenience stores."
+[tag."from.restaurant"]
+desc = "Restaurants, diners, fast food."
+[tag."from.vehicle"]
+desc = "Cars, trucks (interiors, trunks)."
+[tag."from.street"]
+desc = "Streets, sidewalks, parking lots."
+[tag."from.outdoors"]
+desc = "Camping, hunting, sporting goods."
+[tag."from.farm"]
+desc = "Farms, barns, rural properties."
+[tag."from.utility"]
+desc = "Utility sites (power, water, telecom)."
+[tag."from.church"]
+desc = "Churches."
+[tag."from.gas_station"]
+desc = "Gas stations."
+
+# ---- state.* (name prefixes/suffixes) --------------------------------------
+[tag."state.charred"]
+desc = "Burned; mixed condition (N007)."
+name_part = { slot = "prefix", text = "charred", order = 10 }
+[tag."state.wet"]
+desc = "Soaked."
+name_part = { slot = "prefix", text = "wet", order = 12 }
+[tag."state.rusted"]
+desc = "Rusted (clock aging)."
+name_part = { slot = "prefix", text = "rusty", order = 14 }
+[tag."state.bloody"]
+desc = "Blood-stained (emits blood scent while fresh)."
+name_part = { slot = "prefix", text = "bloody", order = 16 }
+[tag."state.broken"]
+desc = "Non-functional."
+name_part = { slot = "prefix", text = "broken", order = 8 }
+[tag."state.damaged"]
+desc = "Works poorly."
+name_part = { slot = "prefix", text = "damaged", order = 9 }
+[tag."state.spoiled"]
+desc = "Food gone off (emits rot)."
+name_part = { slot = "prefix", text = "spoiled", order = 11 }
+[tag."state.empty"]
+desc = "Container with nothing in it."
+name_part = { slot = "suffix", text = "(empty)", order = 90 }
+[tag."state.opened"]
+desc = "Opened packaging (spoils faster, may spill)."
+name_part = { slot = "suffix", text = "(opened)", order = 91 }
+[tag."state.lit"]
+desc = "Burning / switched on."
+name_part = { slot = "prefix", text = "lit", order = 5 }
+[tag."state.makeshift"]
+desc = "Assembled by the player."
+name_part = { slot = "prefix", text = "makeshift", order = 30 }
+[tag."state.worn"]
+desc = "Heavily used."
+name_part = { slot = "prefix", text = "worn", order = 18 }
+[tag."state.dirty"]
+desc = "Filthy (hygiene, scent)."
+name_part = { slot = "prefix", text = "dirty", order = 19 }
+
+# ---- hazard.* ----------------------------------------------------------------
+[tag."hazard.flammable"]
+desc = "Ignites readily."
+[tag."hazard.toxic"]
+desc = "Poisonous if ingested/inhaled."
+[tag."hazard.corrosive"]
+desc = "Damages skin/materials."
+[tag."hazard.sharp_debris"]
+desc = "Leaves cutting debris (shards) when broken."
+[tag."hazard.pressurized"]
+desc = "May burst."
+[tag."hazard.electrical"]
+desc = "Shock risk when powered."
+[tag."hazard.fumes"]
+desc = "Dangerous fumes when used indoors/heated."
+
+# ---- flavor.* ----------------------------------------------------------------
+[tag."flavor.readable"]
+desc = "Has text worth reading."
+[tag."flavor.photo"]
+desc = "A photo; generation fills the subject."
+[tag."flavor.sentimental"]
+desc = "Personal, emotional object."
+[tag."flavor.decorative"]
+desc = "Decor with no mechanical use."
+[tag."flavor.collectible"]
+desc = "Something a player might hoard for fun."
+
+# ---- slot.* (wear slots) -----------------------------------------------------
+[tag."slot.head"]
+desc = "Hats, helmets."
+[tag."slot.face"]
+desc = "Masks, bandanas."
+[tag."slot.eyes"]
+desc = "Glasses, goggles."
+[tag."slot.neck"]
+desc = "Scarves, ties, lanyards."
+[tag."slot.torso"]
+desc = "Shirts, jackets, vests."
+[tag."slot.hands"]
+desc = "Gloves."
+[tag."slot.waist"]
+desc = "Belts, tool belts, holsters."
+[tag."slot.legs"]
+desc = "Trousers, skirts, shorts."
+[tag."slot.feet"]
+desc = "Socks, shoes, boots."
+[tag."slot.back"]
+desc = "Backpacks."
+[tag."slot.wrist"]
+desc = "Watches, bracelets."
+[tag."slot.full_body"]
+desc = "Coveralls, dresses, sleepwear sets."
+
+# ---- body.* (coverage) -------------------------------------------------------
+[tag."body.head"]
+desc = "Head."
+[tag."body.face"]
+desc = "Face."
+[tag."body.neck"]
+desc = "Neck (bites!)."
+[tag."body.torso"]
+desc = "Chest and back."
+[tag."body.upper_arms"]
+desc = "Upper arms."
+[tag."body.forearms"]
+desc = "Forearms (most bitten when defending)."
+[tag."body.hands"]
+desc = "Hands."
+[tag."body.hips"]
+desc = "Hips and groin."
+[tag."body.thighs"]
+desc = "Thighs."
+[tag."body.shins"]
+desc = "Shins/calves (bitten by crawlers)."
+[tag."body.feet"]
+desc = "Feet."

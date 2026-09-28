@@ -1,0 +1,32 @@
+# Kitchen tools and utensils. Exemplar file.
+
+[item.kitchen_knife]
+name = "kitchen knife"
+tags = ["cat.tool.knife", "from.kitchen", "from.restaurant", "use.tool", "use.weapon"]
+shape = "blade"
+dims_mm = [300, 35, 20]
+mass_g = 150
+durability = 6
+desc = "A chef's knife with a stainless blade and a plastic handle."
+glyph = "item.knife"
+why = "Baseline cutting tool and blade weapon; attaches to poles as a spear head."
+brand_cats = ["cutlery"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 3000, wrap_girth_mm = 70 }
+value_class = "useful"
+
+[item.kitchen_knife.composition.blade]
+material = "stainless_steel"
+share = 70
+[item.kitchen_knife.composition.handle]
+material = "polypropylene"
+share = 30
+
+[item.kitchen_knife.features.edge]
+length_mm = 180
+sharpness = 7
+[item.kitchen_knife.features.point]
+sharpness = 7
+width_mm = 3
+[item.kitchen_knife.features.grip]
+hands = 1
+girth_mm = 25

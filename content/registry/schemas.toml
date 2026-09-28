@@ -1,0 +1,68 @@
+# Field schemas for record types that aren't items (checked by tools/content/lint.py).
+# type grammar as in properties.toml. `required` lists mandatory fields.
+
+[schema.material]
+required = ["family", "density_mg_cm3", "hardness", "toughness", "rigidity", "flammability", "water", "struck_sound", "surface", "desc"]
+fields.family = "enum:metal|wood|polymer|rubber|glass|ceramic|stone|textile|paper|organic|earth"
+fields.density_mg_cm3 = "int"
+fields.hardness = "int"
+fields.toughness = "enum:brittle|fragile|moderate|tough|very_tough"
+fields.rigidity = "int"
+fields.edge_holding = "int"
+fields.flammability = "enum:none|low|moderate|high|extreme"
+fields.fuel_value_kj_g = "int"
+fields.melts_c = "int"
+fields.water = "enum:waterproof|absorbs|rusts|ruined|swells|dissolves"
+fields.conductivity = "enum:conductor|insulator"
+fields.struck_sound = "enum:clang|clink|crash|thud|thunk|clack|crunch|rattle|slap|crack|none"
+fields.surface = "enum:smooth|rough|porous|fibrous|oily|round|irregular"
+fields.desc = "str"
+
+[schema.substance]
+required = ["phase", "density_mg_ml", "flammability", "desc"]
+fields.phase = "enum:liquid|granular|gas|paste"
+fields.density_mg_ml = "int"
+fields.viscosity = "enum:watery|light|oily|syrupy|paste|flowing"
+fields.volatility = "enum:none|low|moderate|high|very_high"
+fields.flash_point_c = "int"
+fields.flammability = "enum:none|low|moderate|high|extreme"
+fields.fuel_value_kj_g = "int"
+fields.drinkable = "bool"
+fields.hydration_pct = "int"
+fields.kcal_per_100 = "int"
+fields.toxic = "enum:none|mild|moderate|severe"
+fields.corrosive = "bool"
+fields.attacks = "list<str>"
+fields.extinguishes_fire = "bool"
+fields.scent = "table"
+fields.applicable_to_body = "bool"
+fields.freezes_c = "int"
+fields.perishable = "enum:shelf_stable|long|medium|short|very_short"
+fields.surface = "enum:spreads|pools|soaks|piles|disperses"
+fields.purify = "int"
+fields.disinfect = "int"
+fields.soap = "bool"
+fields.pressurized = "bool"
+fields.water_quality = "enum:safe|untreated|foul"
+fields.desc = "str"
+
+[schema.modifier]
+required = ["kind"]
+fields.kind = "enum:variant|state|contents|material|detail|brand"
+fields.applies_to = "table"
+fields.name_part = "table"
+fields.desc = "str"
+fields.add_tags = "list<str>"
+fields.remove_tags = "list<str>"
+fields.ops = "list<table>"
+fields.weight = "int"
+fields.clock_min_days = "int"
+fields.clock_max_days = "int"
+
+[schema.detail_table]
+required = ["applies_to", "entries"]
+fields.applies_to = "table"
+fields.pick = "int"
+fields.chance_pct = "int"
+fields.entries = "list<table>"
+fields.desc = "str"

@@ -1,0 +1,380 @@
+# Liquids that add gameplay value (water, fuels, drinks, chemicals, body fluids).
+# flash_point_c: omit for non-flammable. attacks: materials this substance degrades (container compat).
+
+# ---- water ----
+[substance.water]
+phase = "liquid"
+density_mg_ml = 1000
+viscosity = "watery"
+volatility = "low"
+flammability = "none"
+drinkable = true
+hydration_pct = 100
+extinguishes_fire = true
+freezes_c = 0
+surface = "spreads"
+water_quality = "safe"
+perishable = "shelf_stable"
+desc = "Clean water: bottled, treated, tap (while water service works), water-heater tanks early on."
+
+[substance.water_untreated]
+phase = "liquid"
+density_mg_ml = 1000
+viscosity = "watery"
+volatility = "low"
+flammability = "none"
+drinkable = true
+hydration_pct = 100
+extinguishes_fire = true
+freezes_c = 0
+surface = "spreads"
+water_quality = "untreated"
+desc = "Rain barrels, rivers, lakes, toilet cisterns, old tanks. Risky until boiled/treated."
+
+[substance.water_foul]
+phase = "liquid"
+density_mg_ml = 1010
+viscosity = "watery"
+volatility = "low"
+flammability = "none"
+drinkable = true
+hydration_pct = 90
+toxic = "moderate"
+extinguishes_fire = true
+freezes_c = 0
+surface = "spreads"
+water_quality = "foul"
+scent = { channel = "rot", strength = 2 }
+desc = "Stagnant/flood water, pools after months. Needs filtering and boiling."
+
+# ---- fuels ----
+[substance.gasoline]
+phase = "liquid"
+density_mg_ml = 740
+viscosity = "watery"
+volatility = "very_high"
+flash_point_c = -43
+flammability = "extreme"
+fuel_value_kj_g = 46
+toxic = "moderate"
+attacks = ["polystyrene", "eps_foam", "rubber"]
+surface = "spreads"
+scent = { channel = "chemical", strength = 7 }
+perishable = "long"
+desc = "Car tanks, gas cans, lawn equipment. Lights instantly from a flame; evaporates fast; goes stale in months."
+
+[substance.diesel]
+phase = "liquid"
+density_mg_ml = 840
+viscosity = "light"
+volatility = "low"
+flash_point_c = 52
+flammability = "high"
+fuel_value_kj_g = 45
+toxic = "moderate"
+surface = "spreads"
+scent = { channel = "chemical", strength = 5 }
+perishable = "long"
+desc = "Trucks, generators, farm equipment. A pool won't catch from a match; burns hot once going (needs a wick)."
+
+[substance.kerosene]
+phase = "liquid"
+density_mg_ml = 800
+viscosity = "light"
+volatility = "low"
+flash_point_c = 45
+flammability = "high"
+fuel_value_kj_g = 46
+toxic = "moderate"
+surface = "spreads"
+scent = { channel = "chemical", strength = 5 }
+perishable = "shelf_stable"
+desc = "Lamp oil and heater fuel. Wick-burned in lanterns; safer to store than gasoline."
+
+[substance.lighter_fluid]
+phase = "liquid"
+density_mg_ml = 700
+viscosity = "watery"
+volatility = "very_high"
+flash_point_c = -2
+flammability = "extreme"
+fuel_value_kj_g = 45
+toxic = "moderate"
+attacks = ["polystyrene", "eps_foam"]
+surface = "spreads"
+scent = { channel = "chemical", strength = 6 }
+perishable = "shelf_stable"
+desc = "Charcoal starter / naphtha. Lights readily."
+
+[substance.motor_oil]
+phase = "liquid"
+density_mg_ml = 880
+viscosity = "oily"
+volatility = "none"
+flash_point_c = 220
+flammability = "low"
+fuel_value_kj_g = 42
+toxic = "mild"
+surface = "pools"
+scent = { channel = "chemical", strength = 3 }
+perishable = "shelf_stable"
+desc = "Engine oil. Won't light from a match; slick footing when spilled (tripping!)."
+
+[substance.cooking_oil]
+phase = "liquid"
+density_mg_ml = 920
+viscosity = "oily"
+volatility = "none"
+flash_point_c = 300
+flammability = "low"
+fuel_value_kj_g = 37
+drinkable = false
+kcal_per_100 = 884
+surface = "pools"
+scent = { channel = "food", strength = 2 }
+perishable = "long"
+desc = "Vegetable oil. Calories; slick footing; burns hot once heated; water makes a burning pan erupt."
+
+[substance.propane]
+phase = "gas"
+density_mg_ml = 2
+volatility = "very_high"
+flash_point_c = -104
+flammability = "extreme"
+fuel_value_kj_g = 46
+pressurized = true
+surface = "disperses"
+scent = { channel = "chemical", strength = 4 }
+desc = "Grill tanks, camp-stove canisters, forklift tanks. Bursts in fires."
+
+[substance.butane]
+phase = "gas"
+density_mg_ml = 2
+volatility = "very_high"
+flash_point_c = -60
+flammability = "extreme"
+fuel_value_kj_g = 46
+pressurized = true
+surface = "disperses"
+desc = "Lighters, portable stove canisters, torch refills."
+
+# ---- household chemicals ----
+[substance.bleach]
+phase = "liquid"
+density_mg_ml = 1100
+viscosity = "watery"
+volatility = "low"
+flammability = "none"
+toxic = "moderate"
+corrosive = true
+purify = 6
+disinfect = 5
+surface = "spreads"
+scent = { channel = "chemical", strength = 8 }
+perishable = "long"
+desc = "Unscented household bleach: purifies water by drops; strong chemical scent masks and repels."
+
+[substance.ammonia_cleaner]
+phase = "liquid"
+density_mg_ml = 1000
+viscosity = "watery"
+volatility = "moderate"
+flammability = "none"
+toxic = "moderate"
+surface = "spreads"
+scent = { channel = "chemical", strength = 8 }
+desc = "Glass cleaner / ammonia solution. Never mix with bleach (toxic fumes hazard)."
+
+[substance.rubbing_alcohol]
+phase = "liquid"
+density_mg_ml = 870
+viscosity = "watery"
+volatility = "high"
+flash_point_c = 21
+flammability = "high"
+fuel_value_kj_g = 30
+toxic = "moderate"
+disinfect = 6
+applicable_to_body = true
+surface = "spreads"
+scent = { channel = "chemical", strength = 5 }
+desc = "70% isopropyl: disinfectant, fuel for alcohol stoves, tinder booster."
+
+[substance.hand_sanitizer]
+phase = "paste"
+density_mg_ml = 880
+viscosity = "paste"
+volatility = "high"
+flash_point_c = 18
+flammability = "high"
+disinfect = 5
+applicable_to_body = true
+surface = "pools"
+scent = { channel = "chemical", strength = 3 }
+desc = "Alcohol gel: clean hands, fire-starter paste."
+
+[substance.acetone]
+phase = "liquid"
+density_mg_ml = 790
+viscosity = "watery"
+volatility = "very_high"
+flash_point_c = -20
+flammability = "extreme"
+toxic = "mild"
+attacks = ["polystyrene", "eps_foam", "acrylic", "abs"]
+surface = "spreads"
+scent = { channel = "chemical", strength = 7 }
+desc = "Nail polish remover, paint stores. Dissolves some plastics."
+
+[substance.mineral_spirits]
+phase = "liquid"
+density_mg_ml = 780
+viscosity = "watery"
+volatility = "moderate"
+flash_point_c = 40
+flammability = "high"
+toxic = "moderate"
+surface = "spreads"
+scent = { channel = "chemical", strength = 6 }
+desc = "Paint thinner. Cleans tools; doesn't catch from a match in a puddle."
+
+[substance.antifreeze]
+phase = "liquid"
+density_mg_ml = 1110
+viscosity = "light"
+volatility = "none"
+flash_point_c = 111
+flammability = "low"
+toxic = "severe"
+surface = "spreads"
+desc = "Ethylene glycol coolant. Sweet-tasting poison; never drink."
+
+[substance.soap_liquid]
+phase = "liquid"
+density_mg_ml = 1030
+viscosity = "syrupy"
+volatility = "none"
+flammability = "none"
+soap = true
+surface = "pools"
+scent = { channel = "perfume", strength = 3 }
+desc = "Dish soap / hand soap / shampoo: washes off absorbed scent (M14)."
+
+[substance.perfume]
+phase = "liquid"
+density_mg_ml = 850
+viscosity = "watery"
+volatility = "high"
+flash_point_c = 20
+flammability = "high"
+applicable_to_body = true
+surface = "spreads"
+scent = { channel = "perfume", strength = 9 }
+desc = "Perfume/cologne: masks human scent up close; noticeable lure-ish signature."
+
+[substance.antiseptic]
+phase = "liquid"
+density_mg_ml = 1000
+viscosity = "watery"
+volatility = "low"
+flammability = "none"
+disinfect = 8
+applicable_to_body = true
+surface = "spreads"
+desc = "Iodine / chlorhexidine / peroxide wound wash."
+
+# ---- drinks ----
+[substance.milk]
+phase = "liquid"
+density_mg_ml = 1030
+viscosity = "watery"
+volatility = "none"
+flammability = "none"
+drinkable = true
+hydration_pct = 85
+kcal_per_100 = 60
+perishable = "very_short"
+surface = "spreads"
+scent = { channel = "food", strength = 2 }
+desc = "Fresh milk: spoils within days without power."
+
+[substance.juice]
+phase = "liquid"
+density_mg_ml = 1050
+viscosity = "watery"
+volatility = "none"
+flammability = "none"
+drinkable = true
+hydration_pct = 90
+kcal_per_100 = 45
+perishable = "medium"
+surface = "spreads"
+desc = "Boxed/bottled juice: shelf-stable sealed, spoils once opened."
+
+[substance.soda]
+phase = "liquid"
+density_mg_ml = 1040
+viscosity = "watery"
+volatility = "none"
+flammability = "none"
+drinkable = true
+hydration_pct = 90
+kcal_per_100 = 42
+perishable = "long"
+surface = "spreads"
+desc = "Soft drinks: calories and water; cans hiss and pop (noise) if shaken or burst."
+
+[substance.beer]
+phase = "liquid"
+density_mg_ml = 1010
+viscosity = "watery"
+volatility = "none"
+flammability = "none"
+drinkable = true
+hydration_pct = 80
+kcal_per_100 = 43
+perishable = "long"
+surface = "spreads"
+scent = { channel = "food", strength = 2 }
+desc = "Beer: calories, morale, poor hydration."
+
+[substance.liquor]
+phase = "liquid"
+density_mg_ml = 950
+viscosity = "watery"
+volatility = "high"
+flash_point_c = 26
+flammability = "moderate"
+fuel_value_kj_g = 12
+drinkable = true
+hydration_pct = 0
+kcal_per_100 = 230
+disinfect = 4
+surface = "spreads"
+scent = { channel = "chemical", strength = 3 }
+desc = "40% spirits: morale, weak disinfectant, borderline fuel (lights warm, not cold)."
+
+# ---- bodily / gore ----
+[substance.blood]
+phase = "liquid"
+density_mg_ml = 1060
+viscosity = "light"
+volatility = "none"
+flammability = "none"
+applicable_to_body = true
+surface = "spreads"
+scent = { channel = "blood", strength = 8 }
+perishable = "very_short"
+desc = "Fresh blood: strong attractant; becomes rot scent as it ages."
+
+[substance.zombie_gore]
+phase = "paste"
+density_mg_ml = 1050
+viscosity = "paste"
+volatility = "none"
+flammability = "none"
+toxic = "mild"
+applicable_to_body = true
+surface = "pools"
+scent = { channel = "rot", strength = 9 }
+desc = "Rotting zombie innards: the classic masking agent (P-SC-03)."

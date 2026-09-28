@@ -1,0 +1,233 @@
+[material.hdpe]
+family = "polymer"
+density_mg_cm3 = 950
+hardness = 2
+toughness = "moderate"
+rigidity = 3
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 46
+melts_c = 130
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thunk"
+surface = "smooth"
+desc = "Milk jugs, detergent bottles, buckets, fuel-safe short term; splits when a full jug hits hard."
+
+[material.ldpe]
+family = "polymer"
+density_mg_cm3 = 920
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 46
+melts_c = 110
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "smooth"
+desc = "Plastic bags, sheeting, squeeze bottles, tarps (with weave)."
+
+[material.polypropylene]
+family = "polymer"
+density_mg_cm3 = 900
+hardness = 2
+toughness = "moderate"
+rigidity = 4
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 46
+melts_c = 160
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Caps, food tubs, storage bins, rope (poly rope), car interiors."
+
+[material.pet]
+family = "polymer"
+density_mg_cm3 = 1380
+hardness = 2
+toughness = "moderate"
+rigidity = 3
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 23
+melts_c = 250
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Soda/water bottles, clear packaging."
+
+[material.pvc]
+family = "polymer"
+density_mg_cm3 = 1400
+hardness = 3
+toughness = "moderate"
+rigidity = 6
+edge_holding = 0
+flammability = "low"
+fuel_value_kj_g = 18
+melts_c = 160
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Plumbing pipe, siding, vinyl flooring, cable insulation. Toxic smoke when burned."
+
+[material.flexible_pvc]
+family = "polymer"
+density_mg_cm3 = 1300
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "low"
+fuel_value_kj_g = 18
+melts_c = 150
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "smooth"
+desc = "Clear/garden tubing, vinyl hose, raincoats."
+
+[material.polystyrene]
+family = "polymer"
+density_mg_cm3 = 1050
+hardness = 2
+toughness = "fragile"
+rigidity = 6
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 40
+melts_c = 240
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Rigid disposable cutlery, CD cases, cheap housings. Dissolved by gasoline/acetone."
+
+[material.eps_foam]
+family = "polymer"
+density_mg_cm3 = 20
+hardness = 0
+toughness = "fragile"
+rigidity = 2
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 40
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "porous"
+desc = "Styrofoam: coolers, packaging, cups. Dissolved by gasoline."
+
+[material.abs]
+family = "polymer"
+density_mg_cm3 = 1050
+hardness = 3
+toughness = "moderate"
+rigidity = 7
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 35
+melts_c = 220
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Appliance and electronics housings, helmets, luggage, pipe (black)."
+
+[material.polycarbonate]
+family = "polymer"
+density_mg_cm3 = 1200
+hardness = 3
+toughness = "tough"
+rigidity = 7
+edge_holding = 0
+flammability = "low"
+melts_c = 230
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Riot shields, safety glasses, headlight lenses, some water jugs."
+
+[material.acrylic]
+family = "polymer"
+density_mg_cm3 = 1180
+hardness = 3
+toughness = "fragile"
+rigidity = 8
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 26
+melts_c = 160
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Plexiglass sneeze guards, displays, signs."
+
+[material.nylon]
+family = "polymer"
+density_mg_cm3 = 1150
+hardness = 2
+toughness = "tough"
+rigidity = 5
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 30
+melts_c = 220
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "clack"
+surface = "smooth"
+desc = "Solid nylon parts: zip ties, gears, tool grips, cable ties."
+
+[material.pu_foam]
+family = "polymer"
+density_mg_cm3 = 30
+hardness = 0
+toughness = "tough"
+rigidity = 0
+edge_holding = 0
+flammability = "high"
+fuel_value_kj_g = 25
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "porous"
+desc = "Mattresses, cushions, couch padding. Burns fast with toxic smoke."
+
+[material.silicone]
+family = "polymer"
+density_mg_cm3 = 1100
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "none"
+surface = "oily"
+desc = "Sealants, kitchen tools, gaskets. Nothing sticks to it well."
+
+[material.rubber]
+family = "rubber"
+density_mg_cm3 = 1100
+hardness = 1
+toughness = "tough"
+rigidity = 1
+edge_holding = 0
+flammability = "moderate"
+fuel_value_kj_g = 40
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "smooth"
+desc = "Hoses (refrigeration, radiator, garden), tyres, gaskets, boot soles, gloves."

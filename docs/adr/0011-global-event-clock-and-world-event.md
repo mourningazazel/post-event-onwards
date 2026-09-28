@@ -34,7 +34,7 @@
      exactly as it was.
    - Beyond the gate, it is brought forward from its stored clock to `t_now`, using the same
      per-object thresholds. Monotonic sampling makes this identical to generating it at `t_now`.
-   - Player-made changes are preserved (N009 assumption, to confirm).
+   - Player-made changes are preserved (confirmed by the owner in N011).
    - The gate is a data value.
 5. **Zombie fragility is a function of the clock** (gated by months). Damage output stays
    similar, but limbs and appendages become easier to damage and sever. Together with falling

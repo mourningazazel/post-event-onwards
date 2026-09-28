@@ -1,0 +1,125 @@
+# Remaining exemplars used by the survival chains. Domain authors may move these into their
+# domain directories (keep ids stable).
+
+[item.t_shirt]
+name = "T-shirt"
+tags = ["cat.clothing.top", "from.bedroom", "slot.torso"]
+shape = "fabric"
+dims_mm = [700, 500, 5]
+mass_g = 180
+absorbs_water = true
+absorbs_scent = true
+desc = "A cotton crew-neck T-shirt."
+glyph = "item.shirt"
+why = "Base layer; tears into bandages and bindings; carries scent (wash or swap)."
+divisible = { mode = "sheet", needs = "none" }
+details = ["clothing_print", "clothing_colour"]
+value_class = "common"
+
+[item.t_shirt.composition.cloth]
+material = "cotton"
+share = 100
+
+[item.t_shirt.features.wearable]
+slot = "torso"
+layer = "base"
+coverage = ["torso", "upper_arms"]
+insulation_clo10 = 1
+
+[item.ruler]
+name = "wooden ruler"
+tags = ["cat.office.supply", "from.office", "from.school"]
+shape = "sheet"
+dims_mm = [300, 30, 3]
+mass_g = 30
+desc = "A 12-inch hardwood ruler."
+glyph = "item.ruler"
+why = "Rigid straight splint; measuring (flavour)."
+value_class = "junk"
+
+[item.ruler.composition.wood]
+material = "hardwood"
+share = 100
+
+[item.garden_hose]
+name = "garden hose"
+tags = ["cat.garden.hose", "from.garden", "use.tool"]
+shape = "cord"
+dims_mm = [15000, 25, 25]
+mass_g = 2500
+hollow = true
+desc = "Fifteen metres of green vinyl garden hose."
+glyph = "item.hose"
+why = "Long siphon/transfer line; climbing/descent line; binding; cut into shorter hoses."
+divisible = { mode = "length", min_piece_mm = 100, needs = "cut>=1" }
+value_class = "useful"
+
+[item.garden_hose.composition.hose]
+material = "flexible_pvc"
+share = 100
+
+[item.garden_hose.features.tube]
+inner_diameter_mm = 16
+length_mm = 15000
+flexible = true
+
+[item.camp_stove]
+name = "camp stove"
+tags = ["cat.camping.stove", "from.outdoors", "from.garage", "use.cooking"]
+shape = "complex"
+dims_mm = [300, 300, 120]
+mass_g = 2000
+hollow = true
+desc = "A single-burner propane camp stove with a piezo igniter."
+glyph = "item.stove"
+why = "Cooks and boils water without a fire's smoke plume."
+brand_cats = ["outdoors"]
+value_class = "valuable"
+
+[item.camp_stove.composition.body]
+material = "mild_steel"
+share = 80
+[item.camp_stove.composition.valve]
+material = "brass"
+share = 10
+[item.camp_stove.composition.knobs]
+material = "abs"
+share = 10
+
+[item.camp_stove.features.heat_source]
+output = 6
+fuel = ["propane", "butane"]
+[item.camp_stove.features.slot]
+accepts = "cat.fuel.canister"
+count = 1
+[item.camp_stove.features.ignition]
+method = "spark"
+charges = 1000
+fails_when_wet = false
+
+[item.work_light_12v]
+name = "12 V work light"
+tags = ["cat.electronics.light", "from.garage", "from.vehicle", "use.light_source"]
+shape = "complex"
+dims_mm = [200, 150, 100]
+mass_g = 800
+desc = "A clamp-on LED work light with battery clips."
+glyph = "item.lamp"
+why = "Bright long-lasting light off a car battery (car battery lamp chain)."
+value_class = "useful"
+power_use = { voltage = "dc_12v", watts = 36 }
+
+[item.work_light_12v.composition.housing]
+material = "aluminum"
+share = 60
+[item.work_light_12v.composition.lens]
+material = "polycarbonate"
+share = 30
+[item.work_light_12v.composition.wiring]
+material = "copper"
+share = 10
+
+[item.work_light_12v.features.light]
+radius_m = 8
+beam = "cone"
+fuel = "battery"

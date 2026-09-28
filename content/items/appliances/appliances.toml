@@ -1,0 +1,100 @@
+# Appliances and small electronics that matter as salvage, storage or lures. Exemplar file.
+
+[item.refrigerator]
+name = "refrigerator"
+tags = ["cat.appliance.kitchen", "from.kitchen", "use.salvage", "use.barricade"]
+shape = "complex"
+dims_mm = [1700, 760, 700]
+mass_g = 90000
+blocks = "full"
+blocks_sight = true
+desc = "A tall two-door refrigerator."
+glyph = "obj.fridge"
+why = "Food storage that spoils without power (N007); salvage (hose, copper); heavy barricade."
+brand_cats = ["appliances"]
+value_class = "common"
+power_use = { voltage = "ac_mains", watts = 150 }
+
+[item.refrigerator.composition.body]
+material = "mild_steel"
+share = 45
+[item.refrigerator.composition.liner]
+material = "abs"
+share = 25
+[item.refrigerator.composition.insulation]
+material = "pu_foam"
+share = 10
+[item.refrigerator.composition.compressor]
+material = "mild_steel"
+share = 12
+[item.refrigerator.composition.shelves]
+material = "glass"
+share = 4
+[item.refrigerator.composition.coolant_line]
+material = "copper"
+share = 3
+salvage = { item = "copper_tubing", count = 1, tool = "fasten>=2", time_s = 900 }
+[item.refrigerator.composition.water_line]
+material = "rubber"
+share = 1
+salvage = { item = "rubber_hose", count = 1, tool = "fasten>=2", time_s = 300 }
+
+[item.refrigerator.features.container]
+capacity_ml = 500000
+closable = true
+sealable = false
+compat = ["solid", "liquid"]
+
+[item.tv_remote]
+name = "TV remote"
+tags = ["cat.electronics.remote", "from.living", "use.salvage"]
+shape = "complex"
+dims_mm = [180, 50, 25]
+mass_g = 106
+desc = "A plastic remote control."
+glyph = "item.remote"
+why = "Reliable source of AA batteries."
+value_class = "junk"
+
+[item.tv_remote.composition.case]
+material = "abs"
+share = 70
+[item.tv_remote.composition.batteries]
+material = "mild_steel"
+share = 30
+salvage = { item = "battery_aa", count = 2, tool = "none", time_s = 10 }
+
+[item.tv_remote.features.slot]
+accepts = "cat.battery.aa"
+count = 2
+
+[item.alarm_clock]
+name = "alarm clock"
+tags = ["cat.electronics.clock", "from.bedroom", "use.lure"]
+shape = "complex"
+dims_mm = [120, 100, 60]
+mass_g = 250
+use_noise = "very_loud"
+desc = "A twin-bell wind-up style alarm clock (battery movement)."
+glyph = "item.clock"
+why = "Timed noise lure (P-EN-03); tells the time."
+value_class = "useful"
+power_use = { voltage = "dc_small", watts = 1 }
+
+[item.alarm_clock.composition.case]
+material = "abs"
+share = 80
+[item.alarm_clock.composition.bells]
+material = "mild_steel"
+share = 20
+
+[item.alarm_clock.features.alarm]
+loudness = "very_loud"
+timer = true
+trigger = "timer"
+[item.alarm_clock.features.slot]
+accepts = "cat.battery.aa"
+count = 2
+
+[item.alarm_clock.capabilities]
+timekeep = 5

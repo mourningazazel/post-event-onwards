@@ -1,0 +1,115 @@
+# Glass, ceramics, stone, masonry.
+
+[material.glass]
+family = "glass"
+density_mg_cm3 = 2500
+hardness = 6
+toughness = "brittle"
+rigidity = 9
+edge_holding = 5
+flammability = "none"
+melts_c = 1400
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "crash"
+surface = "smooth"
+desc = "Bottles, jars, house windows. Shatters into sharp shards (hazard.sharp_debris)."
+
+[material.tempered_glass]
+family = "glass"
+density_mg_cm3 = 2500
+hardness = 6
+toughness = "brittle"
+rigidity = 9
+edge_holding = 1
+flammability = "none"
+melts_c = 1400
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "crash"
+surface = "smooth"
+desc = "Car side windows, shower doors, storefronts: bursts into blunt cubes, not blades."
+
+[material.ceramic]
+family = "ceramic"
+density_mg_cm3 = 2400
+hardness = 7
+toughness = "brittle"
+rigidity = 10
+edge_holding = 7
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "crash"
+surface = "smooth"
+desc = "Mugs, plates, toilets, sinks, tiles, spark-plug insulators."
+
+[material.granite]
+family = "stone"
+density_mg_cm3 = 2700
+hardness = 7
+toughness = "very_tough"
+rigidity = 10
+edge_holding = 2
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "rough"
+desc = "Rocks, countertops, kerbs, monuments. A sharpening surface in a pinch."
+
+[material.concrete]
+family = "stone"
+density_mg_cm3 = 2400
+hardness = 6
+toughness = "moderate"
+rigidity = 10
+edge_holding = 0
+flammability = "none"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "rough"
+desc = "Walls, slabs, kerbs, barriers, blocks."
+
+[material.brick]
+family = "stone"
+density_mg_cm3 = 1900
+hardness = 5
+toughness = "moderate"
+rigidity = 10
+edge_holding = 0
+flammability = "none"
+water = "absorbs"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "rough"
+desc = "Fired clay brick: walls, chimneys, garden edging. Throwable."
+
+[material.asphalt]
+family = "stone"
+density_mg_cm3 = 2300
+hardness = 4
+toughness = "moderate"
+rigidity = 9
+edge_holding = 0
+flammability = "low"
+water = "waterproof"
+conductivity = "insulator"
+struck_sound = "thud"
+surface = "rough"
+desc = "Road and roofing surface; roof shingles burn."
+
+[material.gypsum_board]
+family = "stone"
+density_mg_cm3 = 700
+hardness = 2
+toughness = "fragile"
+rigidity = 4
+edge_holding = 0
+flammability = "low"
+water = "ruined"
+conductivity = "insulator"
+struck_sound = "crunch"
+surface = "porous"
+desc = "Drywall: interior walls. Cut with a knife, punched through with effort, ruined by water."

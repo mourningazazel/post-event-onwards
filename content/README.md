@@ -1,0 +1,115 @@
+# content/: game data (schema reference)
+
+All game content is **data**, authored mostly by Claude (N008, N011) and checked by
+`tools/content/lint.py`. Design rationale is in `docs/design/content-model.md` and
+`docs/design/survival-actions.md`.
+
+**Golden rules:**
+
+1. **Only use vocabulary registered in `registry/`:** properties, features, capabilities, tags,
+   stimuli, fasteners and scent channels. Need something new? Add it to the registry first, with a
+   description and its readers (the mechanics that use it).
+2. **Lean archetypes (N011).** Create an `item` only if it **behaves differently** or has
+   **distinct gameplay value**. Colour, pattern, print, label, small wear, flavour text and minor
+   variants belong in **modifiers and detail tables**, which generation attaches.
+3. **Physically plausible numbers.** Real-world dimensions and masses. Materials from
+   `materials/`. The linter checks mass against dimensions × density.
+4. **Integers only**, SI units (see `registry/units.toml`). Qualities are 0–10.
+5. **No real brands** (N010). Brand categories point at `brands/`.
+6. **Original content only** (original-code policy). Nothing copied from other games' data.
+
+## Directory layout
+
+| Path | Holds | Record type |
+|---|---|---|
+| `registry/` | Vocabulary | `[property.X]`, `[feature.X]`, `[capability.X]`, `[stimulus.X]`, `[tag."ns.x"]`, `[namespace.X]`, `[fastener.X]`, `[scent.X]`, `[action.X]`, `[shape.X]` |
+| `materials/` | Physical materials | `[material.X]` |
+| `substances/` | Liquids, granular matter, gases | `[substance.X]` |
+| `items/<domain>/` | Archetypes: portable items **and** world objects (furniture, fixtures, vehicles, street furniture) | `[item.X]` |
+| `modifiers/` | Variants, states, contents presets, material swaps, and **detail tables** | `[modifier.X]`, `[detail_table.X]` |
+| `brands/` | Fictional brand universe | `[company.X]`, `[brand.X]`, `[store_chain.X]` |
+| `world/` | Settings, building types, room types, loot tables, outdoor object sets | `[setting.X]`, `[building.X]`, `[room.X]`, `[loot.X]`, `[outdoor_set.X]` |
+| `profiles/` | Occupant profiles: outfits and pockets by occupation and time of event | `[profile.X]` |
+
+IDs are `snake_case`, and unique across the whole content tree within their record type.
+
+## Item record
+
+```toml
+[item.milk_jug]
+name = "milk jug"                 # base name; tags and brands compose the display name
+parent = "bottle_base"            # optional; deep-merge inheritance (tables merge, arrays replace)
+abstract = false                  # true = template only, never spawned
+tags = ["cat.container.bottle", "from.kitchen"]
+shape = "container"               # registry/shapes
+dims_mm = [250, 150, 150]         # longest first
+mass_g = 60                       # empty/base mass; omit to have it estimated (lint warns)
+desc = "A translucent plastic jug with a screw cap."
+glyph = "item.jug"                # logical tile name (renderer)
+why = "Liquid container; throwable; fuel-safe short term."   # detail budget justification (required)
+brand_cats = ["dairy"]            # optional: brand categories that may apply
+modifiers = ["size_half_gallon"]  # optional: variant/state modifiers this archetype accepts
+details = ["plastic_label_print"] # optional: detail tables rolled at generation
+
+[item.milk_jug.composition.body]  # parts keyed by name
+material = "hdpe"
+share = 90                        # % of mass (optional; used for derived hardness/edge etc.)
+[item.milk_jug.composition.cap]
+material = "polypropylene"
+share = 10
+
+[item.milk_jug.features.container]    # features keyed by registry feature id
+capacity_ml = 3785
+opening_mm = 38
+closable = true
+sealable = true
+compat = ["liquid", "granular"]
+
+[item.milk_jug.contents]          # optional generation preset
+substance = "milk"
+fill_pct = [0, 100]
+```
+
+Salvage parts (disassembly, M5):
+
+```toml
+[item.refrigerator.composition.coolant_line]
+material = "copper"
+share = 3
+salvage = { item = "copper_tubing", count = 1, set = { dims_mm = [1500, 6, 6] }, tool = "fasten>=2", time_s = 600 }
+```
+
+`tool` is a requirement string: `"<capability>>=<n>"`, several joined by `&`, or `"none"`.
+
+## Modifier record (additive or modifying details, applied by generation)
+
+```toml
+[modifier.charred]
+kind = "state"                    # variant | state | contents | material | detail
+applies_to = { tags_any = ["mat.textile", "mat.wood", "mat.paper", "mat.polymer"] }
+name_part = { slot = "prefix", text = "charred", order = 10 }
+desc = "blackened and blistered by fire"
+add_tags = ["state.charred"]
+ops = [ { path = "durability", op = "mul", value = 0.5 } ]
+```
+
+Ops: `set`, `add`, `mul`, `append`, `remove`. Paths are dotted, e.g. `features.container.capacity_ml`
+or `composition.body.material`.
+
+## Detail table (flavour without files)
+
+```toml
+[detail_table.mug_print]
+applies_to = { items = ["mug"] }
+pick = 1                          # how many entries to roll
+entries = [
+  { w = 5, text = "printed with a faded company logo" },
+  { w = 2, text = "chipped at the rim", ops = [ { path = "durability", op = "mul", value = 0.8 } ] },
+  { w = 1, text = "bearing a hand-painted name", add_tags = ["flavor.sentimental"] },
+]
+```
+
+## Checks
+
+`python3 tools/content/lint.py` checks schema and vocabulary; `python3 tools/content/test.py` runs
+the expectations and chain feasibility tests in `tests/content/`.

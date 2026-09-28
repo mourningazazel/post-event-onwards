@@ -1,0 +1,103 @@
+# Household objects: furniture, fixtures, textiles, cleaning. Exemplar file.
+
+[item.sofa]
+name = "sofa"
+tags = ["cat.furniture.seating", "from.living", "use.barricade"]
+shape = "complex"
+dims_mm = [2100, 900, 850]
+mass_g = 45000
+blocks = "full"
+blocks_sight = false
+desc = "A three-seat upholstered sofa."
+glyph = "obj.sofa"
+why = "Heavy blocking furniture for barricades; sleeping spot; foam and fabric salvage/fuel."
+value_class = "common"
+details = ["upholstery_look"]
+
+[item.sofa.composition.frame]
+material = "softwood"
+share = 40
+[item.sofa.composition.springs]
+material = "mild_steel"
+share = 20
+[item.sofa.composition.cushions]
+material = "pu_foam"
+share = 20
+[item.sofa.composition.upholstery]
+material = "polyester"
+share = 15
+[item.sofa.composition.legs]
+material = "hardwood"
+share = 5
+
+[item.sofa.features.seat]
+comfort = 6
+sleepable = true
+
+[item.radiator]
+name = "radiator"
+tags = ["cat.fixture.heating", "from.living", "from.bedroom", "from.school"]
+shape = "complex"
+dims_mm = [800, 600, 150]
+mass_g = 60000
+fixed = true
+blocks = "partial"
+desc = "An old cast-iron hot-water radiator bolted to the floor."
+glyph = "obj.radiator"
+why = "Rock-solid anchor for ropes (window escapes) and restraints."
+value_class = "junk"
+
+[item.radiator.composition.body]
+material = "cast_iron"
+share = 100
+
+[item.radiator.features.anchor]
+max_load_g = 300000
+
+[item.broom]
+name = "broom"
+tags = ["cat.household.cleaning", "from.kitchen", "from.garage", "use.tool"]
+shape = "rod"
+dims_mm = [1400, 300, 60]
+mass_g = 700
+fill_pct = 5
+desc = "A long wooden-handled push broom."
+glyph = "item.broom"
+why = "Long haft with a socket end (spear/pole arm base); reach tool; splint stock."
+value_class = "junk"
+
+[item.broom.composition.handle]
+material = "softwood"
+share = 80
+[item.broom.composition.bristles]
+material = "polypropylene"
+share = 20
+
+[item.broom.features.grip]
+hands = 2
+girth_mm = 28
+[item.broom.features.socket]
+end = "near"
+max_attach_mass_g = 1500
+max_attach_size_mm = 60
+accepts = ["blade", "rod", "block", "small", "sphere"]
+joints = ["duct_tape", "cord", "wire", "zip_tie", "screw", "epoxy"]
+
+[item.bedsheet]
+name = "bedsheet"
+tags = ["cat.textile.bedding", "from.bedroom", "use.shelter"]
+shape = "fabric"
+dims_mm = [2600, 2300, 2]
+mass_g = 700
+absorbs_water = true
+absorbs_scent = true
+desc = "A queen-size cotton flat sheet."
+glyph = "item.cloth"
+why = "Tear into bandages and bindings; knot into an escape rope; cover; tinder."
+divisible = { mode = "sheet", needs = "none" }
+details = ["fabric_pattern"]
+value_class = "common"
+
+[item.bedsheet.composition.cloth]
+material = "cotton"
+share = 100

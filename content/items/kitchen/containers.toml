@@ -1,0 +1,131 @@
+# Kitchen containers and cookware. Exemplar file (hand-authored reference quality).
+
+[item.milk_jug]
+name = "milk jug"
+tags = ["cat.container.jug", "from.kitchen", "from.grocery", "use.container"]
+shape = "container"
+dims_mm = [250, 150, 150]
+mass_g = 60
+aerodynamics = "poor"
+desc = "A translucent one-gallon plastic jug with a screw cap."
+glyph = "item.jug"
+why = "Common liquid container; fuel-safe short term; splits and spills when thrown full (firebomb chain)."
+brand_cats = ["dairy"]
+attach_surface = { kind = "smooth", contact_area_mm2 = 20000, wrap_girth_mm = 450 }
+value_class = "common"
+
+[item.milk_jug.composition.body]
+material = "hdpe"
+share = 90
+[item.milk_jug.composition.cap]
+material = "polypropylene"
+share = 10
+
+[item.milk_jug.features.container]
+capacity_ml = 3785
+opening_mm = 38
+closable = true
+sealable = true
+compat = ["liquid", "granular"]
+[item.milk_jug.features.lid]
+kind = "screw"
+reclosable = true
+[item.milk_jug.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.milk_jug.contents]
+substance = "milk"
+fill_pct = [0, 100]
+
+[item.glass_bottle]
+name = "glass bottle"
+tags = ["cat.container.bottle", "from.kitchen", "from.restaurant", "use.container", "hazard.sharp_debris"]
+shape = "container"
+dims_mm = [300, 75, 75]
+mass_g = 450
+aerodynamics = "fair"
+desc = "A heavy glass bottle with a narrow neck."
+glyph = "item.bottle"
+why = "Throwable noise lure that shatters into shards; liquid storage; improvised weapon."
+brand_cats = ["beer", "liquor", "soda"]
+value_class = "common"
+
+[item.glass_bottle.composition.body]
+material = "glass"
+share = 100
+
+[item.glass_bottle.features.container]
+capacity_ml = 750
+opening_mm = 19
+closable = true
+sealable = true
+compat = ["liquid"]
+[item.glass_bottle.features.grip]
+hands = 1
+girth_mm = 25
+
+[item.cooking_pot]
+name = "cooking pot"
+tags = ["cat.kitchen.cookware", "from.kitchen", "from.restaurant", "use.cooking", "use.container"]
+shape = "container"
+dims_mm = [300, 250, 150]
+mass_g = 1500
+heat_resistant = true
+desc = "A stainless steel stockpot with two handles and a lid."
+glyph = "item.pot"
+why = "Boils water and cooks over fire; carries water; loud when banged (lure)."
+value_class = "useful"
+
+[item.cooking_pot.composition.body]
+material = "stainless_steel"
+share = 100
+
+[item.cooking_pot.features.container]
+capacity_ml = 5000
+opening_mm = 220
+closable = true
+sealable = false
+compat = ["liquid", "granular", "solid"]
+[item.cooking_pot.features.lid]
+kind = "snap"
+reclosable = true
+[item.cooking_pot.features.grip]
+hands = 2
+girth_mm = 20
+
+[item.cooking_pot.capabilities]
+noise = 4
+
+[item.bleach_jug]
+name = "bleach jug"
+tags = ["cat.household.cleaner", "from.kitchen", "from.bathroom", "from.grocery", "use.water_treatment", "use.mask_scent", "hazard.corrosive"]
+shape = "container"
+dims_mm = [300, 160, 110]
+mass_g = 150
+desc = "A white plastic jug of household bleach with a child-proof cap."
+glyph = "item.jug"
+why = "Purifies water by the drop; strong chemical scent masks and repels; corrosive."
+brand_cats = ["household"]
+value_class = "useful"
+
+[item.bleach_jug.composition.body]
+material = "hdpe"
+share = 100
+
+[item.bleach_jug.features.container]
+capacity_ml = 3700
+opening_mm = 35
+closable = true
+sealable = true
+compat = ["liquid"]
+[item.bleach_jug.features.grip]
+hands = 1
+girth_mm = 30
+
+[item.bleach_jug.contents]
+substance = "bleach"
+fill_pct = [20, 100]
+
+[item.bleach_jug.capabilities]
+purify = 6

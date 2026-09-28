@@ -1,0 +1,87 @@
+# Salvage parts: things that mostly come out of other things (M5). Exemplar file.
+
+[item.rubber_hose]
+name = "rubber hose"
+tags = ["cat.part.hose", "from.garage", "from.vehicle", "from.kitchen", "use.salvage"]
+shape = "cord"
+dims_mm = [1500, 12, 12]
+mass_g = 110
+hollow = true
+desc = "A length of black rubber hose."
+glyph = "item.hose"
+why = "Siphons fuel/water; cut to length; tourniquet; binding in a pinch."
+attach_surface = { kind = "round", contact_area_mm2 = 1500, wrap_girth_mm = 38 }
+divisible = { mode = "length", min_piece_mm = 50, needs = "cut>=1" }
+value_class = "useful"
+
+[item.rubber_hose.composition.hose]
+material = "rubber"
+share = 100
+
+[item.rubber_hose.features.tube]
+inner_diameter_mm = 8
+length_mm = 1500
+flexible = true
+
+[item.copper_tubing]
+name = "copper tubing"
+tags = ["cat.part.tubing", "from.kitchen", "from.utility", "from.industrial", "use.salvage"]
+shape = "rod"
+dims_mm = [1500, 6, 6]
+mass_g = 150
+hollow = true
+desc = "Thin refrigeration-grade copper tube."
+glyph = "item.tube"
+why = "Rigid siphon/transfer tube; bendable binding wire; valuable metal."
+divisible = { mode = "length", min_piece_mm = 50, needs = "saw>=5" }
+value_class = "useful"
+
+[item.copper_tubing.composition.tube]
+material = "copper"
+share = 100
+
+[item.copper_tubing.features.tube]
+inner_diameter_mm = 4
+length_mm = 1500
+flexible = false
+
+[item.battery_aa]
+name = "AA battery"
+tags = ["cat.battery.aa", "from.living", "from.bedroom", "from.retail", "use.power"]
+shape = "small"
+dims_mm = [50, 14, 14]
+mass_g = 23
+desc = "A standard AA alkaline cell."
+glyph = "item.battery"
+why = "Powers clocks, flashlights, radios, remotes — the currency of small devices."
+brand_cats = ["batteries"]
+value_class = "useful"
+power_source = { voltage = "dc_small", capacity_wh = 3, rechargeable = false }
+
+[item.battery_aa.composition.cell]
+material = "mild_steel"
+share = 100
+
+[item.car_battery]
+name = "car battery"
+tags = ["cat.battery.car", "from.vehicle", "from.garage", "use.power", "hazard.corrosive"]
+shape = "block"
+dims_mm = [300, 190, 175]
+mass_g = 18000
+desc = "A heavy 12-volt lead-acid battery with corroded terminals."
+glyph = "item.battery_large"
+why = "Powers 12 V lights, radios and alarms for weeks; car-alarm lure power."
+brand_cats = ["automotive"]
+value_class = "valuable"
+power_source = { voltage = "dc_12v", capacity_wh = 600, rechargeable = true }
+
+[item.car_battery.composition.plates]
+material = "lead"
+share = 70
+[item.car_battery.composition.case]
+material = "polypropylene"
+share = 30
+
+[item.car_battery.features.strap]
+kind = "handle"
+load_g = 25000

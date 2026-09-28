@@ -1,0 +1,108 @@
+# Hand tools. Exemplar file.
+
+[item.screwdriver]
+name = "screwdriver"
+tags = ["cat.tool.hand", "from.garage", "from.kitchen", "from.construction", "use.tool"]
+shape = "rod"
+dims_mm = [200, 30, 30]
+mass_g = 120
+durability = 7
+desc = "A flat-head screwdriver with a plastic handle."
+glyph = "item.screwdriver"
+why = "Unlocks most disassembly (salvage), light prying, improvised stabbing tool."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.screwdriver.composition.shaft]
+material = "carbon_steel"
+share = 50
+[item.screwdriver.composition.handle]
+material = "polypropylene"
+share = 50
+
+[item.screwdriver.features.grip]
+hands = 1
+girth_mm = 30
+[item.screwdriver.features.point]
+sharpness = 3
+width_mm = 6
+
+[item.screwdriver.capabilities]
+fasten = 3
+
+[item.crowbar]
+name = "crowbar"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [610, 30, 25]
+mass_g = 1600
+durability = 9
+balance = "head"
+desc = "A hooked steel pry bar with a flattened claw."
+glyph = "item.crowbar"
+why = "Best-in-class prying (doors, boards, nails, lids) and a heavy blunt weapon."
+brand_cats = ["tools"]
+value_class = "valuable"
+
+[item.crowbar.composition.bar]
+material = "carbon_steel"
+share = 100
+
+[item.crowbar.features.grip]
+hands = 2
+girth_mm = 25
+[item.crowbar.features.point]
+sharpness = 2
+width_mm = 20
+
+[item.claw_hammer]
+name = "claw hammer"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool", "use.weapon"]
+shape = "rod"
+dims_mm = [330, 130, 30]
+mass_g = 570
+durability = 9
+balance = "head"
+desc = "A steel-headed hammer with a split claw and a hickory handle."
+glyph = "item.hammer"
+why = "Drives and pulls nails (barricades), breaks glass, reliable one-handed weapon."
+brand_cats = ["tools"]
+value_class = "valuable"
+
+[item.claw_hammer.composition.head]
+material = "carbon_steel"
+share = 70
+[item.claw_hammer.composition.handle]
+material = "hardwood"
+share = 30
+
+[item.claw_hammer.features.striking_face]
+area_mm2 = 700
+[item.claw_hammer.features.grip]
+hands = 1
+girth_mm = 32
+
+[item.adjustable_wrench]
+name = "adjustable wrench"
+tags = ["cat.tool.hand", "from.garage", "from.vehicle", "use.tool"]
+shape = "rod"
+dims_mm = [250, 60, 15]
+mass_g = 400
+durability = 9
+desc = "A 10-inch crescent-style wrench."
+glyph = "item.wrench"
+why = "Undoes nuts and bolts (car batteries, valves, fixtures); decent bludgeon."
+brand_cats = ["tools"]
+value_class = "useful"
+
+[item.adjustable_wrench.composition.body]
+material = "carbon_steel"
+share = 100
+
+[item.adjustable_wrench.features.grip]
+hands = 1
+girth_mm = 20
+
+[item.adjustable_wrench.capabilities]
+fasten = 4
+grip_tool = 2

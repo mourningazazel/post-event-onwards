@@ -73,7 +73,7 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-WO-15 | Utilities (power and water) | Power per neighbourhood falls with time and sparseness; water is more reliable; wells hold (N007) | Across a city→rural transect at 7 vs 365 days, powered-neighbourhood rates fall with both; rural wells keep working | **confirmed** |
 | P-WO-16 | Fires | Burned buildings or clusters: intensity by area, collapse through the structural rule, charred items, smoke scent (N007) | A severe fire removes walls; unsupported upper contents fall; charred items get mixed conditions; smoke masks scent nearby | **confirmed** |
 | P-WO-17 | Global clock as a gradient | **Days-since-event drives all aftermath**; new areas generate at the current clock; it works at any value, e.g. 5 years (N007) | Clock sweep 7 → 30 → 365 → 1,825: every aftermath metric is monotonic and sane; a 1-week start that plays a year generates year-old new areas | **confirmed** |
-| P-WO-18 | Revisit aging gate | Places you've been stay as you left them. After about **1 month** away, they catch up to the current clock (N009) | Revisit after 10 days: byte-identical area. After 45 days: untouched content aged, player changes intact | **confirmed** (preserving player changes: proposed) |
+| P-WO-18 | Revisit aging gate | Places you've been stay as you left them. After about **1 month** away, they catch up to the current clock (N009) | Revisit after 10 days: byte-identical area. After 45 days: untouched content aged, player changes intact | **confirmed** |
 | P-WO-07 | Realistic population | Cities and buildings are populated like real ones, and zombies are as numerous as a real outbreak's; the player is one of very few survivors (N004) | Zombie density in a generated district matches its configured real-world population density; buildings hold plausible occupants | **confirmed** |
 | P-WO-03 | Walking-only travel | Makes travel between cities a **perilous expedition** that needs preparation | `walk-between-towns` bot must manage supplies; an unprepared bot fails more often | proposed |
 | P-WO-04 | Landmark-anchored cities | Gives each city an identity and lets players navigate by landmarks | Every generated city records a landmark, visible from inside the city | proposed |
@@ -118,6 +118,5 @@ Remaining:
 2. ~~P-WO-07 follow-up~~: answered in N005. Yes: zombies are the people who were there, and
    sealed buildings still hold theirs.
 3. ~~N005 follow-ups~~: all answered in N007.
-4. ~~ADR-0011 item 4~~: answered in N009 (1-month gate). Please confirm that player-made changes
-   are preserved when an area catches up.
+4. ~~ADR-0011 item 4~~: answered in N009 (1-month gate); player changes are preserved (N011).
 5. ~~Content-model decisions D-CM1 to D-CM4~~: answered in N010.

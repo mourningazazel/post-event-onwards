@@ -1,0 +1,166 @@
+# Features: typed points on an object where it can be held, attached to, used, filled or operated.
+# [feature.X] params = { name = "type" }; all params optional unless listed in `required`.
+
+[feature.grip]
+desc = "Can be held and wielded."
+params = { hands = "int", girth_mm = "int" }
+required = ["hands"]
+readers = ["wielding", "M8 tools", "M4 throwing"]
+
+[feature.socket]
+desc = "Accepts an attached head/part at one end (haft, pole, handle) — N008 'handle/handled'."
+params = { end = "enum:far|near|side", max_attach_mass_g = "int", max_attach_size_mm = "int", accepts = "list<str>", joints = "list<str>" }
+required = ["max_attach_mass_g", "max_attach_size_mm"]
+readers = ["M7 assembly"]
+
+[feature.edge]
+desc = "Cutting edge."
+params = { length_mm = "int", sharpness = "int", serrated = "bool" }
+required = ["sharpness"]
+readers = ["derived cut/chop", "M8 tools", "M6 divide"]
+
+[feature.saw_edge]
+desc = "Toothed sawing edge (handsaws, hacksaws, saw blades)."
+params = { length_mm = "int", coarse = "bool" }
+readers = ["derived saw", "M8 tools"]
+
+[feature.point]
+desc = "Piercing tip."
+params = { sharpness = "int", width_mm = "int" }
+required = ["sharpness"]
+readers = ["derived pierce", "M8 tools"]
+
+[feature.striking_face]
+desc = "Deliberate blunt face (hammer head, club end, mallet)."
+params = { area_mm2 = "int" }
+readers = ["derived hammer"]
+
+[feature.container]
+desc = "Holds substances and/or items."
+params = { capacity_ml = "int", max_mass_g = "int", max_dim_mm = "int", opening_mm = "int", closable = "bool", sealable = "bool", watertight = "bool", compat = "list<enum:liquid|granular|solid|gas>" }
+required = ["capacity_ml", "compat"]
+readers = ["M1 substances", "G03 capacity", "M4 breakage spill"]
+
+[feature.fuel_tank]
+desc = "Built-in tank that feeds the object (vehicles, generators, lawn mowers, lanterns)."
+params = { capacity_ml = "int", fuel = "list<str>", drain = "enum:siphon|valve|puncture_only" }
+required = ["capacity_ml", "fuel"]
+readers = ["M1 substances", "M9 power"]
+
+[feature.tube]
+desc = "Hollow flexible or rigid tube: siphoning, transferring, breathing, blowpipes."
+params = { inner_diameter_mm = "int", length_mm = "int", flexible = "bool" }
+required = ["inner_diameter_mm"]
+readers = ["M1 siphon", "M6 divide"]
+
+[feature.lid]
+desc = "Removable/hinged closure (jars, cans with ring pulls handled by food.needs_opening)."
+params = { kind = "enum:screw|snap|hinged|cork|crown", reclosable = "bool" }
+readers = ["M1 substances", "M14 scent containment"]
+
+[feature.pocket]
+desc = "Compartment on a carried/worn object (G03)."
+params = { name = "str", capacity_ml = "int", max_mass_g = "int", max_dim_mm = "int", closable = "bool" }
+required = ["capacity_ml"]
+readers = ["G03 containment"]
+
+[feature.strap]
+desc = "Carry attachment (shoulder straps, belt loops, clips, lanyards)."
+params = { kind = "enum:shoulder|backpack|belt|clip|lanyard|handle", load_g = "int" }
+readers = ["G03 carrying", "M20"]
+
+[feature.wearable]
+desc = "Worn on the body (M16)."
+params = { slot = "str", layer = "enum:under|base|mid|outer|shell|accessory", coverage = "list<str>", insulation_clo10 = "int", waterproof = "int", windproof = "int" }
+required = ["slot", "layer"]
+readers = ["M16 coverage", "M12 temperature", "P-IT-03 outfits"]
+
+[feature.slot]
+desc = "Accepts a specific standard item (batteries, magazines, cartridges, fuel canisters)."
+params = { accepts = "str", count = "int" }
+required = ["accepts"]
+readers = ["M9 power", "firearms", "devices"]
+
+[feature.mount]
+desc = "Precise assembly point (thread, rail, bracket)."
+params = { standard = "str" }
+readers = ["M7 assembly"]
+
+[feature.ignition]
+desc = "Produces flame or sparks to start fires."
+params = { method = "enum:strike|flint|spark|flame|electric", charges = "int", fails_when_wet = "bool", needs_striker = "bool" }
+required = ["method"]
+readers = ["M3 fire"]
+
+[feature.light]
+desc = "Emits light when on."
+params = { radius_m = "int", beam = "enum:omni|cone", duration_min = "int", fuel = "enum:battery|liquid|candle|chemical|none" }
+required = ["radius_m"]
+readers = ["M11 light"]
+
+[feature.heat_source]
+desc = "Produces controllable heat for cooking/warming (stoves, grills, heaters)."
+params = { output = "int", fuel = "list<str>" }
+readers = ["M22 cooking", "M12 warmth", "M3 fire"]
+
+[feature.alarm]
+desc = "Makes a loud sound on a timer or trigger (M13)."
+params = { loudness = "enum:loud|very_loud|extreme", timer = "bool", trigger = "enum:timer|touch|remote|motion" }
+required = ["loudness"]
+readers = ["M13 noise"]
+
+[feature.lock]
+desc = "Lockable closure (doors, safes, lockers, car doors)."
+params = { tier = "int", keyed = "bool", pickable = "bool", combination = "bool" }
+required = ["tier"]
+readers = ["M10 access"]
+
+[feature.anchor]
+desc = "Solid point to tie rope to (radiators, pipes, bed frames, posts, trees)."
+params = { max_load_g = "int" }
+required = ["max_load_g"]
+readers = ["M19 climbing", "M18 traps", "shelters"]
+
+[feature.climbable]
+desc = "Can be climbed (fences, ladders, trees, drainpipes, stacked crates)."
+params = { difficulty = "int", height_mm = "int" }
+required = ["difficulty"]
+readers = ["M19 climbing"]
+
+[feature.boardable]
+desc = "An opening (door/window frame) that accepts boards or blocking objects."
+params = { width_mm = "int", height_mm = "int" }
+readers = ["M17 barricades"]
+
+[feature.trigger]
+desc = "Converts a disturbance into an event (tripwires, pressure plates, door chimes)."
+params = { kind = "enum:tripwire|pressure|door|motion", sensitivity = "int" }
+required = ["kind"]
+readers = ["M18 traps", "M13 noise"]
+
+[feature.wheels]
+desc = "Rolls when pushed/pulled (carts, wagons, wheelbarrows, dollies, bins)."
+params = { load_g = "int", terrain = "enum:smooth|rough|any", rattle = "enum:quiet|normal|loud" }
+required = ["load_g"]
+readers = ["M20 hauling", "M13 noise"]
+
+[feature.readable]
+desc = "Carries information (notes, maps, manuals, labels, books)."
+params = { kind = "enum:note|map|manual|book|label|sign|photo", coverage = "str" }
+required = ["kind"]
+readers = ["M21 knowledge", "descriptions"]
+
+[feature.valve]
+desc = "Openable drain/outlet on a container/fixture (water heater drain, spigot, tap)."
+params = { needs = "str" }
+readers = ["M1 substances"]
+
+[feature.seat]
+desc = "Can be sat or slept on (comfort for rest, G10)."
+params = { comfort = "int", sleepable = "bool" }
+readers = ["rest"]
+
+[feature.surface]
+desc = "Flat usable top (tables, counters, workbenches) — crafting station, placement."
+params = { area_mm2 = "int", workbench = "bool" }
+readers = ["crafting", "placement"]

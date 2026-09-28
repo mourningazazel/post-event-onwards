@@ -1,0 +1,264 @@
+# Pinned derivation results (executable spec, N002/N011). Values hand-computed from
+# tools/content/derive.py formulas; the C++ port must reproduce them exactly.
+
+# ---- cutting / piercing (edge, point) ----
+[[expect]]
+item = "kitchen_knife"
+path = "cap.cut"
+op = "=="
+value = 4
+why = "sharpness 7 x stainless edge_holding 6 / 10 = 4.2"
+
+[[expect]]
+item = "kitchen_knife"
+path = "cap.pierce"
+op = "=="
+value = 6
+why = "point 7 x blade rigidity 9 / 10 = 6.3"
+
+[[expect]]
+item = "kitchen_knife"
+path = "cap.chop"
+op = "<="
+value = 1
+why = "a light knife barely chops (cut 4 x 150/1200)"
+
+[[expect]]
+item = "kitchen_knife"
+path = "cap.hammer"
+op = "=="
+value = 4
+why = "log2(150/50) + 6/3 = 3.58"
+
+# ---- blunt / prying ----
+[[expect]]
+item = "crowbar"
+path = "cap.pry"
+op = "=="
+value = 9
+why = "rigidity 9 x min(1, 610/600)"
+
+[[expect]]
+item = "crowbar"
+path = "cap.hammer"
+op = "=="
+value = 7
+
+[[expect]]
+item = "claw_hammer"
+path = "cap.hammer"
+op = "=="
+value = 7
+why = "head steel: (log2(570/50) + 7/3) x 1.2 striking face = 7.01"
+
+[[expect]]
+item = "steel_pipe"
+path = "cap.hammer"
+op = "=="
+value = 8
+
+[[expect]]
+item = "steel_pipe"
+path = "cap.pry"
+op = "=="
+value = 9
+
+[[expect]]
+item = "brick"
+path = "cap.hammer"
+op = "=="
+value = 7
+
+[[expect]]
+item = "screwdriver"
+path = "cap.fasten"
+op = ">="
+value = 2
+why = "authored: unlocks salvage with fasten>=2"
+
+[[expect]]
+item = "ruler"
+path = "cap.pry"
+op = "=="
+value = 0
+why = "sheet shapes don't pry"
+
+[[expect]]
+item = "t_shirt"
+path = "cap.hammer"
+op = "=="
+value = 0
+why = "fabric has no blunt force"
+
+# ---- binding / tubes ----
+[[expect]]
+item = "bedsheet"
+path = "cap.bind"
+op = "=="
+value = 3
+why = "tearable textile sheet binds"
+
+[[expect]]
+item = "garden_hose"
+path = "cap.bind"
+op = "=="
+value = 5
+
+[[expect]]
+item = "garden_hose"
+path = "cap.siphon"
+op = "=="
+value = 1
+
+[[expect]]
+item = "rubber_hose"
+path = "cap.siphon"
+op = "=="
+value = 1
+
+[[expect]]
+item = "copper_tubing"
+path = "cap.siphon"
+op = "=="
+value = 1
+why = "inner 4 mm meets the siphon minimum"
+
+# ---- fire / light / heat ----
+[[expect]]
+item = "matchbook"
+path = "cap.ignite"
+op = "=="
+value = 6
+
+[[expect]]
+item = "lighter"
+path = "cap.ignite"
+op = "=="
+value = 6
+
+[[expect]]
+item = "camp_stove"
+path = "cap.heat"
+op = "=="
+value = 6
+
+[[expect]]
+item = "work_light_12v"
+path = "cap.light"
+op = "=="
+value = 8
+
+# ---- reactions ----
+[[expect]]
+item = "glass_bottle"
+path = "impact.medium"
+op = "=="
+value = "shatter"
+
+[[expect]]
+item = "milk_jug"
+path = "impact.medium"
+op = "=="
+value = "split"
+why = "HDPE (moderate) splits on a medium-energy hit — the firebomb spill"
+
+[[expect]]
+item = "milk_jug"
+path = "impact.low"
+op = "=="
+value = "none"
+why = "dropping an empty jug doesn't break it"
+
+[[expect]]
+item = "crowbar"
+path = "impact.high"
+op = "=="
+value = "bend"
+
+# ---- throwing ----
+[[expect]]
+item = "glass_bottle"
+path = "throw_range"
+op = "=="
+value = 9
+
+[[expect]]
+item = "brick"
+path = "throw_range"
+op = "=="
+value = 5
+why = "fair aero 9 x sqrt(800/2300) = 5.3"
+
+[[expect]]
+item = "car_sedan"
+path = "throw_range"
+op = "=="
+value = 0
+why = "fixed objects can't be thrown"
+
+# ---- names from tags and modifiers (N010) ----
+[[expect]]
+item = "milk_jug"
+mods = ["empty"]
+path = "name"
+op = "=="
+value = "milk jug (empty)"
+
+[[expect]]
+item = "t_shirt"
+mods = ["charred", "bloody"]
+path = "name"
+op = "=="
+value = "charred bloody T-shirt"
+
+[[expect]]
+item = "duct_tape"
+mods = ["heavy_duty"]
+path = "name"
+op = "=="
+value = "heavy-duty duct tape"
+
+[[expect]]
+item = "t_shirt"
+mods = ["charred"]
+path = "tags"
+op = "has"
+value = "emits.smoke"
+why = "burned things smell of smoke (N007)"
+
+# ---- modifiers modify ----
+[[expect]]
+item = "cooking_pot"
+mods = ["size_large"]
+path = "dims_mm"
+op = "=="
+value = [390, 325, 195]
+
+[[expect]]
+item = "milk_jug"
+mods = ["container_half"]
+path = "features.container.capacity_ml"
+op = "=="
+value = 1893
+why = "3785 x 0.5 = 1892.5 rounds half away from zero"
+
+# ---- data relationships ----
+[[expect]]
+item = "car_battery"
+path = "power_source.voltage"
+op = "=="
+value = "dc_12v"
+
+[[expect]]
+item = "refrigerator"
+path = "composition.water_line.salvage.item"
+op = "=="
+value = "rubber_hose"
+why = "the owner's fridge hose (N011)"
+
+[[expect]]
+item = "sofa"
+path = "mass_g"
+op = ">="
+value = 20000
+why = "heavy enough to barricade with"

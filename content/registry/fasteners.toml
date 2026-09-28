@@ -1,0 +1,152 @@
+# Joint methods (content-model §7, N010: Load vs Hold vs Set time).
+# hold_per_unit: Hold contributed per unit used (unit named below).
+# surface_match: % effectiveness by attach_surface kind (missing kinds = 0 = won't work).
+# geometry: what caps the amount usable — contact (glue/tape by contact area),
+#   wrap (cord/wire/ties by wrap girth; min_girth_mm below which it's poor), thickness (screws/nails).
+# impact_tolerance 0..10: how well the joint survives repeated impacts.
+# weaknesses: environment stimuli that degrade it.
+
+[fastener.superglue]
+unit = "g"
+hold_per_unit = 40
+set_time_s = 120
+geometry = "contact"
+surface_match = { smooth = 100, rough = 60, porous = 20, fibrous = 30, oily = 0, round = 70, irregular = 30 }
+impact_tolerance = 2
+weaknesses = []
+removable = "break"
+tools = "none"
+items_tag = "cat.fastener.glue.super"
+
+[fastener.epoxy]
+unit = "g"
+hold_per_unit = 60
+set_time_s = 21600
+geometry = "contact"
+surface_match = { smooth = 90, rough = 100, porous = 80, fibrous = 70, oily = 20, round = 90, irregular = 100 }
+impact_tolerance = 7
+weaknesses = []
+removable = "break"
+tools = "none"
+items_tag = "cat.fastener.glue.epoxy"
+
+[fastener.wood_glue]
+unit = "g"
+hold_per_unit = 30
+set_time_s = 14400
+geometry = "contact"
+surface_match = { porous = 100, fibrous = 100, rough = 60, smooth = 10, round = 30, irregular = 40 }
+impact_tolerance = 5
+weaknesses = ["wet"]
+removable = "break"
+tools = "none"
+items_tag = "cat.fastener.glue.wood"
+
+[fastener.duct_tape]
+unit = "wrap"
+hold_per_unit = 25
+set_time_s = 0
+geometry = "contact"
+surface_match = { smooth = 90, rough = 80, porous = 70, fibrous = 60, oily = 10, round = 100, irregular = 60 }
+impact_tolerance = 4
+weaknesses = ["wet", "heat"]
+removable = "consumed"
+tools = "none"
+items_tag = "cat.fastener.tape"
+
+[fastener.cord]
+unit = "wrap"
+hold_per_unit = 30
+set_time_s = 0
+geometry = "wrap"
+min_girth_mm = 60
+surface_match = { smooth = 60, rough = 100, porous = 90, fibrous = 100, oily = 40, round = 90, irregular = 100 }
+impact_tolerance = 8
+weaknesses = ["age"]
+removable = "yes"
+tools = "none"
+items_tag = "cat.fastener.cord"
+
+[fastener.wire]
+unit = "twist"
+hold_per_unit = 45
+set_time_s = 0
+geometry = "wrap"
+min_girth_mm = 20
+surface_match = { smooth = 70, rough = 100, porous = 90, fibrous = 90, oily = 60, round = 100, irregular = 100 }
+impact_tolerance = 7
+weaknesses = []
+removable = "yes"
+tools = "grip_tool>=3"
+items_tag = "cat.fastener.wire"
+
+[fastener.zip_tie]
+unit = "tie"
+hold_per_unit = 35
+set_time_s = 0
+geometry = "wrap"
+min_girth_mm = 15
+surface_match = { smooth = 80, rough = 100, porous = 100, fibrous = 100, oily = 70, round = 100, irregular = 90 }
+impact_tolerance = 3
+weaknesses = ["heat"]
+removable = "cut"
+tools = "none"
+items_tag = "cat.fastener.zip_tie"
+
+[fastener.screw]
+unit = "screw"
+hold_per_unit = 70
+set_time_s = 0
+geometry = "thickness"
+min_thickness_mm = 10
+surface_match = { porous = 100, fibrous = 100, rough = 70, smooth = 40, round = 30, irregular = 30 }
+impact_tolerance = 8
+weaknesses = []
+removable = "yes"
+tools = "fasten>=2"
+items_tag = "cat.fastener.screw"
+
+[fastener.nail]
+unit = "nail"
+hold_per_unit = 50
+set_time_s = 0
+geometry = "thickness"
+min_thickness_mm = 12
+surface_match = { porous = 100, fibrous = 100, rough = 50 }
+impact_tolerance = 6
+weaknesses = []
+removable = "pry"
+tools = "hammer>=4"
+items_tag = "cat.fastener.nail"
+
+[fastener.weld]
+unit = "cm"
+hold_per_unit = 150
+set_time_s = 60
+geometry = "contact"
+surface_match = { smooth = 100, rough = 100, round = 100, irregular = 80 }
+materials_only = ["mat.metal"]
+impact_tolerance = 10
+weaknesses = []
+removable = "break"
+tools = "weld>=5"
+side_effects = ["noise:very_loud", "light", "emits.smoke"]
+items_tag = "cat.tool.welder"
+
+[fastener.stitch]
+unit = "stitch_cm"
+hold_per_unit = 10
+set_time_s = 0
+geometry = "contact"
+surface_match = { fibrous = 100, porous = 60 }
+impact_tolerance = 6
+weaknesses = ["age"]
+removable = "cut"
+tools = "sew>=3"
+items_tag = "cat.fastener.thread"
+
+# Joint status thresholds (Hold / Load), content-model §7.
+[status]
+secure = 200   # percent
+firm = 125
+wobbly = 100

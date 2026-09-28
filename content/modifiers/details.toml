@@ -1,0 +1,52 @@
+# Detail tables: flavour generated at spawn instead of stored as separate items (N011).
+# Entries add description text and may add tags or tweak properties.
+
+[detail_table.clothing_colour]
+applies_to = { tags_any = ["cat.clothing", "cat.textile"] }
+pick = 1
+entries = [
+  { w = 6, text = "black" }, { w = 5, text = "navy blue" }, { w = 5, text = "grey" },
+  { w = 4, text = "white, now yellowed" }, { w = 3, text = "olive green" }, { w = 3, text = "faded red" },
+  { w = 2, text = "hi-vis orange", add_tags = ["flavor.decorative"] },
+  { w = 2, text = "camouflage patterned" }, { w = 1, text = "tie-dyed" },
+]
+
+[detail_table.clothing_print]
+applies_to = { tags_any = ["cat.clothing.top"] }
+chance_pct = 40
+pick = 1
+entries = [
+  { w = 5, text = "printed with a local high school's mascot" },
+  { w = 4, text = "advertising a long-gone summer fun run" },
+  { w = 3, text = "bearing a band logo from a decade ago" },
+  { w = 3, text = "with a company logo over the heart" },
+  { w = 2, text = "with a joke that isn't funny anymore" },
+  { w = 1, text = "hand-lettered: 'WORLD'S BEST DAD'", add_tags = ["flavor.sentimental"] },
+]
+
+[detail_table.fabric_pattern]
+applies_to = { tags_any = ["cat.textile"] }
+pick = 1
+entries = [
+  { w = 5, text = "plain white" }, { w = 3, text = "floral patterned" }, { w = 3, text = "striped" },
+  { w = 2, text = "printed with cartoon characters" }, { w = 2, text = "flannel plaid" },
+]
+
+[detail_table.upholstery_look]
+applies_to = { tags_any = ["cat.furniture"] }
+pick = 1
+entries = [
+  { w = 5, text = "in worn brown microfibre" }, { w = 4, text = "in grey fabric with a coffee stain" },
+  { w = 3, text = "in cracked faux leather" }, { w = 2, text = "under a crocheted throw", add_tags = ["flavor.sentimental"] },
+  { w = 2, text = "shredded along one arm by a cat" },
+]
+
+[detail_table.newspaper_headlines]
+applies_to = { items = ["newspaper"] }
+pick = 1
+entries = [
+  { w = 5, text = "The front page covers local elections and a school fundraiser — ordinary news." },
+  { w = 3, text = "A small column on page six mentions 'unexplained disturbances' overnight." },
+  { w = 2, text = "Someone has circled an apartment listing in red pen.", add_tags = ["flavor.readable"] },
+  { w = 1, text = "The crossword is half-finished in shaky handwriting.", add_tags = ["flavor.sentimental"] },
+]

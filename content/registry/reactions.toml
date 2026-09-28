@@ -1,0 +1,60 @@
+# Stimuli and their outcome vocabularies (content-model §2.5).
+# Default outcomes come from material toughness via [default.<toughness>] tables below;
+# items may override under [item.X.reactions.<stimulus>] = { low = "...", medium = "...", high = "..." }.
+# Energy classes for impact: low (dropped, light tap), medium (thrown, normal hit), high (hard swing, fall > 1 z).
+
+[stimulus.impact]
+outcomes = ["none", "dent", "bend", "crack", "split", "shatter", "burst", "break_joint", "blunt_force"]
+desc = "Hit hard: thrown, struck, dropped, crushed by a fall."
+readers = ["reactions", "M4", "combat"]
+
+[stimulus.heat]
+outcomes = ["none", "warm", "char", "burn", "melt", "cook", "burst", "ignite"]
+desc = "Exposure to fire/heat."
+readers = ["M3", "M22"]
+
+[stimulus.wet]
+outcomes = ["none", "soak", "ruin", "rust", "dissolve", "swell", "short_circuit"]
+desc = "Soaked by water."
+readers = ["M12", "reactions"]
+
+[stimulus.cut]
+outcomes = ["none", "scratch", "tear", "sever", "leak", "bleed"]
+desc = "Cut or pierced."
+readers = ["M8", "combat", "M1 leaks"]
+
+[stimulus.crush]
+outcomes = ["none", "deform", "break", "burst", "flatten"]
+desc = "Heavy weight on it (collapse, being stood on, vehicle)."
+readers = ["collapse", "reactions"]
+
+[stimulus.age]
+outcomes = ["none", "spoil", "rust", "rot", "degrade", "dry_out", "leak"]
+desc = "Global clock aging (ADR-0011)."
+readers = ["aftermath"]
+
+# Default impact outcomes by material toughness, per energy class.
+[default.impact.brittle]      # glass, ceramic, porcelain
+low = "shatter"
+medium = "shatter"
+high = "shatter"
+
+[default.impact.fragile]      # thin plastics, particle board, eggs, light bulbs (non-glass fragile)
+low = "crack"
+medium = "split"
+high = "shatter"
+
+[default.impact.moderate]     # HDPE jugs, hardwood, cast materials, brick
+low = "none"
+medium = "split"
+high = "split"
+
+[default.impact.tough]        # steel, aluminium, leather, rubber, nylon
+low = "none"
+medium = "dent"
+high = "bend"
+
+[default.impact.very_tough]   # forged tools, anvils, rock
+low = "none"
+medium = "none"
+high = "dent"
