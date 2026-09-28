@@ -1,0 +1,23 @@
+# Security / entry tools (N013: locks are pickable ONLY with a lockpick set — a rare find).
+
+[item.lockpick_set]
+name = "lockpick set"
+tags = ["cat.tool.lockpick", "from.bedroom", "from.garage", "from.police", "use.lockpick", "use.tool"]
+shape = "small"
+dims_mm = [150, 70, 15]
+mass_g = 90
+fill_pct = 30
+desc = "A zippered faux-leather pouch of steel picks, rakes and tension wrenches."
+glyph = "item.lockpicks"
+why = "The only way to open a lock silently without its key (N013); most people never owned one, so it is rare."
+value_class = "rare"
+
+[item.lockpick_set.composition.picks]
+material = "carbon_steel"
+share = 70
+[item.lockpick_set.composition.pouch]
+material = "polyester"
+share = 30
+
+[item.lockpick_set.capabilities]
+lockpick = 5

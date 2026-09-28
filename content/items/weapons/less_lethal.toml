@@ -46,7 +46,7 @@ units = 10
 use_noise = "quiet"
 desc = "A police-size canister of capsicum spray with a flip-top actuator."
 glyph = "item.spray_can"
-why = "Blinds and chokes the living (survivors, raiders); its effect on the dead is doubtful; bursts in a fire."
+why = "Does absolutely nothing to the dead (N013) — kept for dark humour and false hope; the canister bursts in a fire."
 value_class = "common"
 
 [item.pepper_spray.composition.can]
@@ -69,7 +69,7 @@ mass_g = 200
 use_noise = "normal"
 desc = "A pistol-shaped conducted-energy weapon with a probe cartridge and a sealed battery pack."
 glyph = "item.stun_gun"
-why = "Drops a living attacker for seconds (probes or contact); the crackle is loud; the pack's charge runs down with the clock."
+why = "Does absolutely nothing to the dead (N013) — its loud crackle is the only effect, and that draws hearing units; the pack runs down with the clock."
 value_class = "useful"
 power_source = { voltage = "dc_small", capacity_wh = 5, rechargeable = false }
 

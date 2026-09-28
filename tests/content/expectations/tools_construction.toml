@@ -286,10 +286,10 @@ why = "electric ignition (needs a battery across it)"
 
 # ---- fasteners carry their registry tags and units ----
 [[expect]]
-item = "superglue"
+item = "instant_glue"
 path = "tags"
 op = "has"
-value = "cat.fastener.glue.super"
+value = "cat.fastener.glue.instant"
 
 [[expect]]
 item = "epoxy"

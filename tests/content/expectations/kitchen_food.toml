@@ -174,7 +174,7 @@ value = "loud"
 why = "the whistle at the boil is a noise event"
 
 [[expect]]
-item = "thermos"
+item = "vacuum_flask"
 path = "cap.insulate"
 op = ">="
 value = 6

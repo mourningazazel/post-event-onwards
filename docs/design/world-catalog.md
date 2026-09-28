@@ -130,14 +130,14 @@ Dropped by the value filter:
 | `front_yard` | fences, hedges, garden gnome, bikes, mailbox |
 | `backyard` | grill, patio furniture, woodpile, shed, rain barrel, kids' play set, pool, garden tools |
 | `downtown_street` | benches, bus shelters, newspaper boxes, planters, parked cars, bike racks, street lights, vending machines |
-| `alley` | dumpsters, pallets, fire escapes, trash |
-| `parking_lot` | cars, shopping carts, light poles, dumpsters |
+| `alley` | trash bins, pallets, fire escapes, trash |
+| `parking_lot` | cars, shopping carts, light poles, trash bins |
 | `gas_station_forecourt` | pumps (underground tanks), propane exchange cage, ice chest, vending machine |
 | `construction_site` | lumber stacks, rebar, cinder blocks, scaffolding, porta-potty, fuel cans, generator |
 | `highway_corridor` | wrecked cars, semi trucks, guardrails, jersey barriers, signs, road flares |
 | `park_grounds` | playground, benches, picnic tables, trees, trash cans |
 | `farmyard` | tractor, elevated fuel tank, hay bales, water trough, hand well pump, barbed wire, fencing |
-| `industrial_yard` | forklift (propane), pallets, 55-gallon drums, shipping containers, dumpsters |
+| `industrial_yard` | forklift (propane), pallets, 55-gallon drums, shipping containers, trash bins |
 | `school_grounds` | school buses, playground, bike racks |
 | `trailer_park` | mobile-home skirting, propane tanks, junk cars, grills |
 | `campground` | tents, fire rings, picnic tables, coolers, parked cars |
@@ -159,7 +159,7 @@ in their domain's report.
 ### A. Kitchen, food and drink (`items/kitchen/`, `items/food/`)
 
 - **Containers and cookware:** ✓milk_jug, ✓glass_bottle, ✓cooking_pot, ✓bleach_jug,
-  frying_pan (cast iron: weapon), baking_sheet, mug, dinner_plate, plastic_tub, cooler, thermos,
+  frying_pan (cast iron: weapon), baking_sheet, mug, dinner_plate, plastic_tub, cooler, vacuum_flask,
   kettle, water_filter_pitcher, bucket (also B)
 - **Tools:** ✓kitchen_knife, cleaver, can_opener, rolling_pin, cutlery (aggregated), fire_extinguisher
 - **Consumables:** trash_bags, aluminum_foil, zip_bags, paper_towels, dish_soap
@@ -178,7 +178,7 @@ in their domain's report.
   metal_file, whetstone, tape_measure, tire_iron, pipe_wrench, shovel, pickaxe
 - **Power tools:** cordless_drill, drill_battery, angle_grinder, circular_saw, arc_welder,
   propane_torch, chainsaw (also E), portable_generator, jumper_cables, car_jack, extension_cord
-- **Fasteners:** ✓duct_tape, ✓nails_box, screws_box, superglue, epoxy, wood_glue, zip_ties,
+- **Fasteners:** ✓duct_tape, ✓nails_box, screws_box, instant_glue, epoxy, wood_glue, zip_ties,
   nylon_rope, paracord, baling_wire, steel_chain, padlock
 - **Materials:** ✓wood_plank, ✓steel_pipe, ✓brick, lumber_2x4, plywood_sheet, cinder_block, rebar,
   sheet_metal, pallet, tarp, plastic_sheeting, sandbag, concrete_mix_bag
@@ -230,7 +230,7 @@ in their domain's report.
 - **Vehicles** (objects): ✓car_sedan, suv, pickup_truck, minivan, delivery_van, semi_truck,
   police_cruiser, ambulance, fire_engine, school_bus, motorcycle, bicycle, shopping_cart,
   tractor, forklift, riding_mower
-- **Street:** mailbox, trash_can_street, dumpster, fire_hydrant, bench, bus_shelter, street_light,
+- **Street:** mailbox, trash_can_street, trash_bin, fire_hydrant, bench, bus_shelter, street_light,
   newspaper_box, vending_machine, parking_meter, manhole_cover, jersey_barrier, traffic_cone,
   road_sign, guardrail, utility_pole, chain_link_fence, wooden_fence, planter, bike_rack,
   shipping_container

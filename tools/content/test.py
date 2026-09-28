@@ -24,8 +24,8 @@ import sys
 
 from common import Db, fail_if, load, load_tests
 from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilities, display_name,
-                    energy_class, impact_outcome, main_material, mass_estimate, resolve_item,
-                    rigidity, throw_range_tiles, total_mass)
+                    energy_class, impact_outcome, lock_resistance, main_material, mass_estimate,
+                    resolve_item, rigidity, throw_range_tiles, total_mass)
 
 REQ_OPS = {
     "==": lambda a, b: a == b, "!=": lambda a, b: a != b, ">=": lambda a, b: a >= b,
@@ -150,6 +150,14 @@ def eval_pred(ctx: Ctx, pred: dict, rid: str, bind: dict) -> tuple[bool, str]:
     if "divisible_mode" in pred:
         mode = (it.get("divisible") or {}).get("mode")
         return mode == pred["divisible_mode"], f"{rid} divisible {mode}"
+    if "lock_bashable_by" in pred:
+        lock = feats.get("lock") or {}
+        tool = bind.get(pred["lock_bashable_by"])
+        if tool is None:
+            return False, f"lock_bashable_by: role '{pred['lock_bashable_by']}' unbound"
+        resist = lock_resistance(lock)
+        h = ctx.caps(tool).get("hammer", 0)
+        return h >= resist, f"{tool} hammer {h} < {rid} lock resistance {resist} ({lock.get('extra', [])})"
     if "divisible_by_hand" in pred:
         needs = (it.get("divisible") or {}).get("needs", "none")
         return (needs == "none") == pred["divisible_by_hand"], f"{rid} divisible needs '{needs}'"

@@ -210,7 +210,7 @@ accessory = [["lanyard_badge", 30], ["wristwatch", 20], ["none", 50]]
 desc = "A tradesman or manual labourer (construction, warehouse, factory, yard): work boots, work trousers or jeans, hi-vis, hard hat, gloves, knife and tape on the belt."
 occupancy = ["construction.weekday_day", "industrial.weekday_day", "industrial.evening", "industrial.night", "warehouse.any"]
 pockets = ["wallet", "smartphone", "car_key", "house_key", "utility_knife", "tape_measure", "pockets_generic"]
-carried = [["tool_belt", 30], ["toolbox", 8], ["thermos", 10], ["cooler", 5], ["claw_hammer", 5], ["none", 42]]
+carried = [["tool_belt", 30], ["toolbox", 8], ["vacuum_flask", 10], ["cooler", 5], ["claw_hammer", 5], ["none", 42]]
 tags = ["cat.profile.worker", "cat.profile.manual"]
 [profile.construction_worker.outfit]
 underwear = [["underwear", 97], ["none", 3]]
@@ -286,7 +286,7 @@ accessory = [["lanyard_badge", 55], ["wristwatch", 20], ["jewelry", 15], ["none"
 desc = "A farmer or ranch hand: jeans or coveralls, a work shirt, barn coat and cap, muck or work boots, gloves, a folding knife and the pickup keys."
 occupancy = ["farm.weekday_day", "farm.weekend_day", "farm.evening", "farm.night"]
 pockets = ["wallet", "smartphone", "car_key", "house_key", "utility_knife", "pockets_generic"]
-carried = [["none", 72], ["bucket", 12], ["pitchfork", 6], ["thermos", 5], ["shotgun", 5]]
+carried = [["none", 72], ["bucket", 12], ["pitchfork", 6], ["vacuum_flask", 5], ["shotgun", 5]]
 tags = ["cat.profile.worker", "cat.profile.rural"]
 [profile.farmer.outfit]
 underwear = [["underwear", 98], ["none", 2]]
@@ -302,10 +302,10 @@ eyes = [["eyeglasses", 30], ["none", 70]]
 accessory = [["wristwatch", 40], ["none", 60]]
 
 [profile.trucker]
-desc = "A long-haul or regional truck driver: jeans, T-shirt or hoodie, cap, boots; a duffel of clothes, a thermos and an atlas in the cab."
+desc = "A long-haul or regional truck driver: jeans, T-shirt or hoodie, cap, boots; a duffel of clothes, a vacuum_flask and an atlas in the cab."
 occupancy = ["truck_stop.night", "truck_stop.any", "highway.any", "warehouse.any", "lodging.night"]
 pockets = ["wallet", "smartphone", "car_key", "pockets_generic"]
-carried = [["duffel_bag", 25], ["thermos", 15], ["road_atlas", 8], ["flashlight", 5], ["none", 47]]
+carried = [["duffel_bag", 25], ["vacuum_flask", 15], ["road_atlas", 8], ["flashlight", 5], ["none", 47]]
 tags = ["cat.profile.worker", "cat.profile.transport"]
 [profile.trucker.outfit]
 underwear = [["underwear", 97], ["none", 3]]

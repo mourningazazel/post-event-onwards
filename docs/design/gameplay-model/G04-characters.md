@@ -93,4 +93,8 @@ and senses. A future system adds a new component without touching existing chara
 - Story-dependent, so this question is for the owner.
 - The model supports it either way: infection is a condition; turning swaps the controller and
   archetype.
-- **Owner decision:** _pending_
+- **Owner decision (N013): bites do NOT infect** (it was a demonic event).
+  - The player takes ordinary damage, with health mechanics.
+  - Damage is **body-part specific**: a hit roll selects a part, and that part's clothing coverage
+    and armour decide the outcome. A thick jacket stops bites; a bare neck is deadly.
+  - Clothing is a **major** defence.

@@ -22,19 +22,19 @@ bind = { tool = "pitchfork", source = "pickup_truck" }
 action = "fill_container"
 bind = { dest = "gas_can", liquid = "gasoline" }
 
-[chain.alley_escape_over_dumpster]
-title = "Climb a dumpster, then a chain-link fence, then a privacy fence to lose a crowd"
+[chain.alley_escape_over_trash_bin]
+title = "Climb a trash bin, then a chain-link fence, then a privacy fence to lose a crowd"
 source = "survival-actions.md §2.1 (climb)"
 
-[[chain.alley_escape_over_dumpster.steps]]
+[[chain.alley_escape_over_trash_bin.steps]]
 action = "climb"
-bind = { fixture = "dumpster" }
+bind = { fixture = "trash_bin" }
 
-[[chain.alley_escape_over_dumpster.steps]]
+[[chain.alley_escape_over_trash_bin.steps]]
 action = "climb"
 bind = { fixture = "chain_link_fence" }
 
-[[chain.alley_escape_over_dumpster.steps]]
+[[chain.alley_escape_over_trash_bin.steps]]
 action = "climb"
 bind = { fixture = "wooden_fence" }
 

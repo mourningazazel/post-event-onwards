@@ -319,7 +319,7 @@ sleepable = false
 [item.cooler.capabilities]
 insulate = 6                       # override: the derived rule only reads wearables; a foam box keeps cold in
 
-[item.thermos]
+[item.vacuum_flask]
 name = "vacuum flask"
 tags = ["cat.container.flask", "from.kitchen", "from.outdoors", "from.vehicle", "from.construction", "use.container"]
 shape = "container"
@@ -331,28 +331,28 @@ why = "Keeps boiled water hot for hours without a second fire; sealed, unbreakab
 brand_cats = ["outdoors"]
 value_class = "useful"
 
-[item.thermos.composition.body]
+[item.vacuum_flask.composition.body]
 material = "stainless_steel"
 share = 90
-[item.thermos.composition.cap]
+[item.vacuum_flask.composition.cap]
 material = "polypropylene"
 share = 10
 
-[item.thermos.features.container]
+[item.vacuum_flask.features.container]
 capacity_ml = 1000
 opening_mm = 45
 closable = true
 sealable = true
 watertight = true
 compat = ["liquid"]
-[item.thermos.features.lid]
+[item.vacuum_flask.features.lid]
 kind = "screw"
 reclosable = true
-[item.thermos.features.grip]
+[item.vacuum_flask.features.grip]
 hands = 1
 girth_mm = 95
 
-[item.thermos.capabilities]
+[item.vacuum_flask.capabilities]
 insulate = 8                       # override: vacuum wall; the derived rule only reads wearables
 
 [item.kettle]

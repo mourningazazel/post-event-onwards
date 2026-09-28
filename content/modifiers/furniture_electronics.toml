@@ -601,3 +601,22 @@ entries = [
   { w = 2, text = "Water-stained, the last lines too blurred to read." },
   { w = 1, text = "On the back of a child's crayon drawing of a house.", add_tags = ["flavor.sentimental"] },
 ]
+
+# ---- extra door locks (N013): generation adds these to doors; each raises bash resistance ----
+[modifier.door_extra_deadbolt]
+kind = "variant"
+applies_to = { items = ["door_exterior", "door_interior"] }
+desc = "a second deadbolt above the knob"
+ops = [ { path = "features.lock.extra", op = "append", value = ["deadbolt"] } ]
+
+[modifier.door_security_chain]
+kind = "variant"
+applies_to = { items = ["door_exterior"] }
+desc = "a security chain on the inside"
+ops = [ { path = "features.lock.extra", op = "append", value = ["chain"] } ]
+
+[modifier.door_barred]
+kind = "variant"
+applies_to = { items = ["door_exterior", "door_steel"] }
+desc = "barred from the inside with a steel security bar"
+ops = [ { path = "features.lock.extra", op = "append", value = ["security_bar"] } ]

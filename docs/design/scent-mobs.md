@@ -249,3 +249,25 @@ area.
 - **Proposal:** a building's zombies come from its occupants (household size, office staff,
   shift). They are generated with the building's identity, and many are trapped behind closed
   doors (awaiting the owner's confirmation in `purposes.md`).
+
+## Hearing units, gunshots and the kill rule ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
+
+**Kill rule.**
+
+- The dead go down only when the **head is destroyed** or they are **totally disabled** (G05 body
+  parts).
+- Shots elsewhere mostly just make noise, and **firearms are common**, so noise is the real cost
+  of using them.
+
+**Hearing units in crowds** (about 1 in 100):
+
+- **Any loud sound** (gunshot, glass, generator, alarm) makes nearby hearing units **move
+  toward its source, even untriggered**.
+  - They push through the crowd using the contest/swap rules.
+  - Their movement drags followers along through the existing follow behaviour.
+- **They only become *triggered*** (alerted: full pursuit and recruitment) when the sound is
+  classified as **"human"**: speech, grunts, footsteps, a shot fired by a person. **Mechanical
+  sounds** (alarms, engines, a thrown bottle breaking) only **attract**.
+- The exact classification of sound events is to be designed later (open).
+- **Pepper spray and stun guns do nothing** to the dead. The stun gun's crackle is itself a noise
+  event.

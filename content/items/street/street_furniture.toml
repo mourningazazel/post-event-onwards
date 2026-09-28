@@ -55,39 +55,39 @@ capacity_ml = 130000
 closable = false
 compat = ["solid"]
 
-[item.dumpster]
-name = "dumpster"
-tags = ["cat.street.dumpster", "from.street", "from.industrial", "from.restaurant", "use.barricade", "use.container", "emits.rot.4"]
+[item.trash_bin]
+name = "trash_bin"
+tags = ["cat.street.trash_bin", "from.street", "from.industrial", "from.restaurant", "use.barricade", "use.container", "emits.rot.4"]
 shape = "container"
 dims_mm = [2000, 1800, 1700]
 mass_g = 520000
 blocks = "full"
 blocks_sight = true
-desc = "A six-yard steel dumpster on casters with two plastic lids."
-glyph = "obj.dumpster"
+desc = "A six-yard steel trash bin on casters with two plastic lids."
+glyph = "obj.trash bin"
 why = "Climbable step up to fire escapes and low roofs; rolls into an alley mouth as a barricade; rot masks your scent."
 details = ["street_graffiti"]
 value_class = "junk"
 
-[item.dumpster.composition.body]
+[item.trash_bin.composition.body]
 material = "mild_steel"
 share = 90
-[item.dumpster.composition.lids]
+[item.trash_bin.composition.lids]
 material = "hdpe"
 share = 7
-[item.dumpster.composition.casters]
+[item.trash_bin.composition.casters]
 material = "rubber"
 share = 3
 
-[item.dumpster.features.container]
+[item.trash_bin.features.container]
 capacity_ml = 4600000
 closable = true
 compat = ["solid"]
-[item.dumpster.features.wheels]
+[item.trash_bin.features.wheels]
 load_g = 2000000
 terrain = "smooth"
 rattle = "loud"
-[item.dumpster.features.climbable]
+[item.trash_bin.features.climbable]
 difficulty = 2
 height_mm = 1700
 

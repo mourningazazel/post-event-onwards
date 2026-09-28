@@ -374,6 +374,16 @@ class match, M9) → light for nights inside a barricaded room.
 
 ## 5. Open questions for the owner
 
+*Answered in [N013](notes/N013-bikes-guns-bites-locks-animals-words.md):*
+
+- **Bicycles:** rideable at 2 tiles per turn, with an extra stopping turn.
+- **Firearms:** common; noise is the cost.
+- **Bites:** don't infect.
+- **Animals:** all dead.
+- **Chemistry:** stays safe and abstract (Claude's recommendation stands).
+
+The original questions follow.
+
 1. **Bicycles:** rideable? It's realistic, but it would soften "walking-only travel" (P-WO-03).
    Options: not rideable; rideable but loud and terrain-limited; or rideable only on clear roads.
 2. **Firearms:** realistic US availability (common in homes, gun shops, police), with their

@@ -73,6 +73,21 @@ commented in place.
 
 ## 4. Questions that need the owner (gameplay-facing)
 
+**All eight were answered in [N013](notes/N013-bikes-guns-bites-locks-animals-words.md):**
+
+| # | Question | Answer |
+|---|---|---|
+| 1 | Bicycles | Rideable: 2 tiles per turn, an extra stopping turn, crash chance |
+| 2 | Firearms | Common; head or total disablement kills; noise draws hearing units; only human noises trigger |
+| 3 | Pepper spray and stun guns | Do nothing to the dead; kept for humour |
+| 4 | Bites | No infection; body-part damage; clothing is a major defence |
+| 5 | Worn backpacks | Covered by the body-part coverage model; backpack coverage to be set in G05 |
+| 6 | Locks | Pickable **only** with a rare lockpick set; bashing works, but extra locks (deadbolt, chain, bar) raise resistance |
+| 7 | Animals | All dead; ambient crows only |
+| 8 | "Dumpster" | Renamed "trash bin". **No real-world brand or marketing words anywhere** (immersion). |
+
+The original questions follow.
+
 1. **Bicycles:** rideable? They're currently pushable haulers only. (Survival-actions §5)
 2. **Firearms:** confirm realistic US availability with extreme noise and scarce ammunition as
    the balance. (Domain E modeled it this way.)

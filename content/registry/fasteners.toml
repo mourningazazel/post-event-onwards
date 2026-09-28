@@ -6,7 +6,7 @@
 # impact_tolerance 0..10: how well the joint survives repeated impacts.
 # weaknesses: environment stimuli that degrade it.
 
-[fastener.superglue]
+[fastener.instant_glue]
 unit = "g"
 hold_per_unit = 40
 set_time_s = 120
@@ -16,7 +16,7 @@ impact_tolerance = 2
 weaknesses = []
 removable = "break"
 tools = "none"
-items_tag = "cat.fastener.glue.super"
+items_tag = "cat.fastener.glue.instant"
 
 [fastener.epoxy]
 unit = "g"

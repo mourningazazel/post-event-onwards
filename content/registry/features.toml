@@ -110,10 +110,16 @@ required = ["loudness"]
 readers = ["M13 noise"]
 
 [feature.lock]
-desc = "Lockable closure (doors, safes, lockers, car doors)."
-params = { tier = "int", keyed = "bool", pickable = "bool", combination = "bool" }
+desc = "Lockable closure (doors, safes, lockers, car doors). N013: picking needs a lockpick set; brute force removes the main lock (e.g. bash off a knob) but extra locks add resistance."
+params = { tier = "int", keyed = "bool", pickable = "bool", combination = "bool", kind = "enum:latch|knob|deadbolt|padlock|combination|electronic|cam", bash_resist = "int", extra = "list<enum:deadbolt|chain|bar|padlock_hasp|security_bar>" }
 required = ["tier"]
 readers = ["M10 access"]
+
+[feature.rideable]
+desc = "Can be ridden for travel (bicycles, N013): moves several tiles per turn; stopping takes extra turns, so obstacles can be hit."
+params = { tiles_per_turn = "int", stop_turns = "int", crash_chance_pct = "int", terrain = "enum:smooth|rough|any", rattle = "enum:quiet|normal|loud" }
+required = ["tiles_per_turn", "stop_turns"]
+readers = ["movement", "M13 noise", "collisions"]
 
 [feature.anchor]
 desc = "Solid point to tie rope to (radiators, pipes, bed frames, posts, trees)."

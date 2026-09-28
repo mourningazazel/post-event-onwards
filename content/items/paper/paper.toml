@@ -239,13 +239,13 @@ compat = ["solid"]
 
 [item.desk_clutter]
 name = "desk clutter"
-tags = ["cat.office.clutter", "from.office", "from.school", "from.bedroom", "use.tinder", "use.lockpick"]
+tags = ["cat.office.clutter", "from.office", "from.school", "from.bedroom", "use.tinder"]
 shape = "complex"
 dims_mm = [300, 200, 100]
 mass_g = 800
 desc = "Assorted desk clutter: a stapler, sticky notes, loose paper, a jar of paper clips."
 glyph = "item.clutter"
-why = "Aggregated flavour (one object, not thirty); paper clips bend into crude lock picks; pens; tinder."
+why = "Aggregated flavour (one object, not thirty); pens; tinder. (No improvised picks: N013 — only a lockpick set picks locks.)"
 details = ["desk_clutter_items"]
 value_class = "junk"
 
@@ -259,9 +259,6 @@ share = 30
 material = "polystyrene"
 share = 20
 salvage = { item = "pen", count = 3, tool = "none", time_s = 10 }
-
-[item.desk_clutter.capabilities]
-lockpick = 1
 
 # Moved from items/misc/exemplars.toml (id kept).
 [item.ruler]

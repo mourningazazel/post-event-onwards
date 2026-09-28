@@ -100,7 +100,7 @@ entries = [
   { item = "baking_sheet", w = 6, count = [1, 2] },
   { item = "plastic_tub", w = 12, count = [2, 8] },
   { item = "kettle", w = 4, count = [1, 1] },
-  { item = "thermos", w = 4, count = [1, 1] },
+  { item = "vacuum_flask", w = 4, count = [1, 1] },
   { item = "water_filter_pitcher", w = 3, count = [1, 1] },
   { item = "canned_food", w = 8, count = [1, 6] },
   { item = "boxed_dry_food", w = 5, count = [1, 3] },
@@ -304,6 +304,7 @@ desc = "A bedside drawer: reading, glasses, pills, a flashlight; sometimes cash 
 rolls = [1, 3]
 empty_chance_pct = 15
 entries = [
+  { item = "lockpick_set", w = 1, count = [1, 1] },   # rare (N013)
   { item = "book", w = 14, count = [1, 2] },
   { item = "eyeglasses", w = 8, count = [1, 1] },
   { item = "painkillers", w = 8, count = [1, 1], mods = ["opened"] },
@@ -420,7 +421,7 @@ entries = [
   { item = "city_map", w = 3, count = [1, 1] },
   { item = "road_atlas", w = 2, count = [1, 1] },
   { item = "flashlight", w = 3, count = [1, 1] },
-  { item = "superglue", w = 3, count = [1, 1] },
+  { item = "instant_glue", w = 3, count = [1, 1] },
   { item = "power_bank", w = 3, count = [1, 1] },
   { item = "photo", w = 3, count = [1, 2] },
   { item = "cash", w = 3, count = [1, 1] },
@@ -433,6 +434,7 @@ desc = "A garage shelf: car fluids, fuel, tape and rope, sports and camping gear
 rolls = [2, 7]
 empty_chance_pct = 3
 entries = [
+  { item = "lockpick_set", w = 1, count = [1, 1] },   # rare (N013)
   { item = "motor_oil_bottle", w = 8, count = [1, 4], substance = "motor_oil", fill_pct = [10, 100] },
   { item = "antifreeze_jug", w = 5, count = [1, 1], substance = "antifreeze", fill_pct = [10, 100] },
   { item = "penetrating_oil_can", w = 6, count = [1, 2] },
@@ -497,7 +499,7 @@ entries = [
   { item = "nails_box", w = 4, count = [1, 3] },
   { item = "wood_glue", w = 2, count = [1, 1] },
   { item = "epoxy", w = 2, count = [1, 1] },
-  { item = "superglue", w = 2, count = [1, 2] },
+  { item = "instant_glue", w = 2, count = [1, 2] },
   { item = "duct_tape", w = 3, count = [1, 2] },
   { item = "zip_ties", w = 2, count = [1, 1] },
   { item = "work_gloves", w = 2, count = [1, 1] },

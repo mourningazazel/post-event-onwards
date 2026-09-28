@@ -281,6 +281,17 @@ def capabilities(db: Db, item: dict) -> dict[str, int]:
     return c
 
 
+EXTRA_LOCK_RESIST = {"deadbolt": 3, "chain": 1, "padlock_hasp": 2, "bar": 6, "security_bar": 6}
+
+
+def lock_resistance(lock: dict) -> int:
+    """Hammer capability needed to force a lock by bashing (N013): the main lock's bash_resist
+    (default 3 + tier/2) plus each extra lock. Bars and security bars make brute force
+    impractical with hand tools."""
+    base = lock.get("bash_resist", 3 + lock.get("tier", 0) // 2)
+    return base + sum(EXTRA_LOCK_RESIST.get(x, 2) for x in lock.get("extra", []))
+
+
 def energy_class(mass_g: int, thrown: bool = True) -> str:
     if mass_g < 300:
         return "low"

@@ -386,7 +386,7 @@ These live on the *attached* item:
 
 Hold = method strength × **surface match** × amount used, where:
 
-- **surface match** comes from a method × surface-kind table (e.g. superglue on porous wood is
+- **surface match** comes from a method × surface-kind table (e.g. instant glue on porous wood is
   poor; epoxy on anything rigid is good)
 - **amount used** is capped by what the geometry allows: glue and tape by contact area, rope by
   wrap girth and length, screws by material thickness

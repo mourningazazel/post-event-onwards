@@ -210,3 +210,12 @@ All six N005 follow-up questions were answered in N007; see below.
   appendages become easier to damage and sever (walkthrough G05).
 - Combined with falling supplies, this gives the difficulty ↔ reward gradient: **early is harder
   and richer; late is easier and poorer.**
+
+## No animals, and the crows ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
+
+- **Only humans remain.** Every animal is inexplicably dead: no birds, squirrels, pets or
+  livestock. This is deliberate and part of the story's strangeness. No animal simulation exists.
+- **Pet food, cages, leashes and feed sacks still exist**; they are leftovers, which adds to the
+  eeriness.
+- **Ambience:** distant **crow calls** play in the background audio, but no crow is ever found or
+  locatable.

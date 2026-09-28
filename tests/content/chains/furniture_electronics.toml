@@ -158,8 +158,9 @@ action = "purify_water_boil"
 bind = { pot = "cooking_pot", heat = "fireplace" }
 
 [chain.office_break_in]
-title = "Paper clips from desk clutter bent into picks for a desk drawer lock"
-source = "survival-actions.md §2.10, skills.toml security"
+title = "Negative control: paper clips from desk clutter can NOT pick a lock (only a lockpick set can, N013)"
+source = "N013"
+expect_fail = true
 
 [[chain.office_break_in.steps]]
 action = "pick_lock"

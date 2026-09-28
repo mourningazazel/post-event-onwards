@@ -99,7 +99,7 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-IT-05 | Capability-based actions and crafting | Objects combine and act "in ways that just make sense logically" through capabilities and tags, never item-specific code (N008) | Sawing, prying, digging and improvised crafts work with any object that meets the capability thresholds | **confirmed** |
 | P-IT-06 | Keys that open real doors | A key in a zombie's pocket references its home or workplace door by generation address | Following a found key's address leads to a door it opens | proposed |
 | P-IT-07 | Load vs Hold attachment | Players understand every joint through Load, Hold and Set time, with a clear status (Secure / Firm / Wobbly / Won't hold); the attach screen predicts it (N010) | The predicted status matches the observed failure rate over many uses of the same build | **confirmed** |
-| P-IT-08 | Fasteners differ meaningfully | Glue cures over time; rope is poor on small items but good on big, irregular ones; tape hates wet and heat; welds need a welder, and are loud and smoky (N010) | For the same head and haft, methods rank as specified (e.g. cord < tape < cured epoxy on a knife-spear; rope > superglue on a brick maul); swinging before cure risks failure | **confirmed** |
+| P-IT-08 | Fasteners differ meaningfully | Glue cures over time; rope is poor on small items but good on big, irregular ones; tape hates wet and heat; welds need a welder, and are loud and smoky (N010) | For the same head and haft, methods rank as specified (e.g. cord < tape < cured epoxy on a knife-spear; rope > instant glue on a brick maul); swinging before cure risks failure | **confirmed** |
 | P-IT-09 | Generated descriptions | Surface details come from property combinations as prose; hidden properties are revealed by use (N010) | A described property changes the text when the property changes; a charred radio reads "not sure it works" until tried | **confirmed** |
 | P-IT-10 | Brands and name composition | Fictional brands with parent-company relationships; brand tags compose names; tier shifts relevant properties (N010) | Fennick Hollow cereal and bread share a parent; "charred Fennick Hollow …" is composed from tags; Tenacor Pro tape gives more Hold than budget tape | **confirmed** |
 
@@ -122,6 +122,18 @@ Evidence is **live**: these chains run in `tests/content/chains/` on every chang
 | P-SK-01 | Beyond-human skills | Trained skills reach feats no real person could (N012) | chain `expert_friction_fire` (min_skill 9); `climb_sheer_wall`, `crack_safe_by_feel` gated by `min_skill` | **confirmed** |
 | P-SK-02 | Learning by reading | Manuals and books found in the world train skills (N012) | skill_manual subjects set `teaches` (domain D tests) | **confirmed** |
 | P-SK-03 | Skill substitutes for tools | Experts do more with worse tools (`tool_substitution`) | engine test once actions are implemented | proposed |
+
+### N013 answers ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
+
+| ID | Function | Intended use | Purpose test (evidence) | Status |
+|---|---|---|---|---|
+| P-TR-01 | Bicycles | Faster travel at a risk: 2 tiles per turn, an extra stopping turn, you can hit things | chains `ride_bicycle`, `shopping_cart_not_rideable` (negative) | **confirmed** |
+| P-EN-10 | Gunfire and hearing units | Shots mainly make noise; hearing units push through crowds toward it; only human noises trigger | engine playtest once sound events exist | **confirmed** |
+| P-EN-11 | Kill rule | Head destruction or total disablement only | G05 / combat tests | **confirmed** |
+| P-CH-06 | Body-part damage and clothing | Hit rolls pick a part; coverage and armour there decide; clothing is a major defence | expectations: leather_jacket forearm coverage and bite armour, scarf neck coverage, T-shirt ~0 | **confirmed** |
+| P-WO-19 | Lock entry ladder | Pick (rare lockpick set, silent) > bash the knob (loud) > extra locks make brute force impractical | chains `pick_front_door`, `bash_interior_knob`, `bash_front_door`, `barred_steel_door_resists` (negative) | **confirmed** |
+| P-WO-20 | No animals; crows as ambience | Eerie emptiness; only humans remain | content has no animal creatures; audio ambience later | **confirmed** |
+| P-IT-11 | Useless less-lethal gear | Pepper spray and stun guns exist and do nothing to the dead (humour) | items present; no effect on the dead | **confirmed** |
 
 ### Tooling
 

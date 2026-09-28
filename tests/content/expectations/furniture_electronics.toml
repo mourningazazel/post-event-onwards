@@ -410,8 +410,8 @@ value = true
 item = "desk_clutter"
 path = "cap.lockpick"
 op = "=="
-value = 1
-why = "paper clips bend into crude picks"
+value = 0
+why = "N013: only a lockpick set picks locks"
 
 [[expect]]
 item = "television"

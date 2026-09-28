@@ -25,9 +25,9 @@ share = 94
 material = "cardboard"
 share = 6
 
-[item.superglue]
-name = "superglue"
-tags = ["cat.fastener.glue.super", "from.garage", "from.kitchen", "from.office", "from.retail", "use.fastener"]
+[item.instant_glue]
+name = "instant glue"
+tags = ["cat.fastener.glue.instant", "from.garage", "from.kitchen", "from.office", "from.retail", "use.fastener"]
 shape = "small"
 dims_mm = [70, 20, 12]
 mass_g = 10
@@ -39,18 +39,18 @@ brand_cats = ["adhesives"]
 details = ["fastener_amount"]
 value_class = "useful"
 
-[item.superglue.composition.tube]
+[item.instant_glue.composition.tube]
 material = "aluminum"
 share = 60
-[item.superglue.composition.adhesive]
+[item.instant_glue.composition.adhesive]
 material = "acrylic"
 share = 40
 
-[item.superglue.capabilities]
+[item.instant_glue.capabilities]
 adhere = 4
 
 # Cyanoacrylate is used in the field to close small lacerations (medical glue is a cousin).
-[item.superglue.medical]
+[item.instant_glue.medical]
 bleed_stop = 2
 doses = 3
 

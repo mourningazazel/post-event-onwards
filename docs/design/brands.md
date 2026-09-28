@@ -36,7 +36,7 @@ are described in [`content-model.md`](content-model.md) §9.
 | Brand | Tier | Categories | Check |
 |---|---|---|---|
 | **Brakewright** / **Brakewright Pro** | S / P | Hammers, saws, crowbars, wrenches | ⏳ |
-| **Tenacor** / **Tenacor Pro** | S / P | Duct tape, epoxy, superglue, wood glue (fasteners, §7) | ⏳ |
+| **Tenacor** / **Tenacor Pro** | S / P | Duct tape, epoxy, instant glue, wood glue (fasteners, §7) | ⏳ |
 | **Lashline** | S | Rope, paracord, zip ties, bungee cords | ⏳ |
 | **Ironhale** | P | Power tools, tool batteries, work lights | ⏳ |
 

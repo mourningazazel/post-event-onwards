@@ -334,6 +334,15 @@ time_s = 20
 noise = "normal"
 roles.fixture = { desc = "climbable object", need = [ { feature = "climbable" } ] }
 
+[action.ride]
+desc = "Ride a bicycle: 2 tiles per turn; stopping costs an extra turn (2 more tiles); obstacles in the path risk a crash (N013)."
+mechanics = ["movement", "M13"]
+skill = "athletics"
+difficulty = 1
+time_s = 1
+noise = "quiet"
+roles.vehicle = { desc = "rideable", need = [ { feature = "rideable" } ] }
+
 [action.climb_sheer_wall]
 desc = "Free-climb brickwork with no handholds (beyond human)."
 mechanics = ["M19"]
@@ -354,14 +363,25 @@ noise = "silent"
 roles.key = { desc = "matching key", need = [ { tag = "use.key" } ] }
 
 [action.pick_lock]
-desc = "Pick a lock."
+desc = "Pick a lock — only with a lockpick set (N013: a rare item); no improvised picks."
 mechanics = ["M10"]
 skill = "security"
 difficulty = 5
 time_s = 120
 noise = "silent"
 tool_substitution = 0.5
-roles.picks = { desc = "lockpicks or improvised picks", need = [ { capability = "lockpick", min = 1 } ] }
+roles.picks = { desc = "lockpick set", need = [ { tag = "use.lockpick" }, { capability = "lockpick", min = 1 } ] }
+roles.lock = { desc = "pickable lock", optional = true, need = [ { param = "lock.pickable", equals = true } ] }
+
+[action.bash_lock]
+desc = "Force entry by bashing off the knob/lock (N013). Extra locks (deadbolt, chain, bar) raise the resistance; loud."
+mechanics = ["M10", "M8", "M13"]
+skill = "athletics"
+difficulty = 1
+time_s = 30
+noise = "very_loud"
+roles.tool = { desc = "heavy blunt tool", need = [ { capability = "hammer", min = 4 } ] }
+roles.door = { desc = "locked door or container", need = [ { feature = "lock" }, { lock_bashable_by = "tool" } ] }
 
 [action.crack_safe_by_feel]
 desc = "Open a combination safe by feel (expert)."

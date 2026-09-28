@@ -107,9 +107,9 @@ objects = [
 ]
 
 [outdoor_set.alley]
-desc = "A service alley behind buildings: dumpsters, stacked pallets, flattened boxes, overflowing bins, a utility pole, broken glass."
+desc = "A service alley behind buildings: trash bins, stacked pallets, flattened boxes, overflowing bins, a utility pole, broken glass."
 objects = [
-  { item = "dumpster", count = [1, 3], chance_pct = 85 },
+  { item = "trash_bin", count = [1, 3], chance_pct = 85 },
   { item = "pallet", count = [1, 5], chance_pct = 45 },
   { item = "cardboard_box", count = [2, 10], chance_pct = 60 },
   { item = "trash_can_street", count = [1, 6], chance_pct = 55 },
@@ -125,7 +125,7 @@ objects = [
 ]
 
 [outdoor_set.parking_lot]
-desc = "A store or office parking lot: rows of parked cars, stray shopping carts, light poles, a cart corral, dumpsters at the back and kerb stops."
+desc = "A store or office parking lot: rows of parked cars, stray shopping carts, light poles, a cart corral, trash bins at the back and kerb stops."
 objects = [
   { item = "car_sedan", count = [3, 30], chance_pct = 95 },
   { item = "suv", count = [2, 20], chance_pct = 85 },
@@ -135,7 +135,7 @@ objects = [
   { item = "motorcycle", count = [1, 2], chance_pct = 10 },
   { item = "shopping_cart", count = [1, 12], chance_pct = 55 },
   { item = "street_light", count = [2, 8], chance_pct = 90 },
-  { item = "dumpster", count = [1, 2], chance_pct = 50 },
+  { item = "trash_bin", count = [1, 2], chance_pct = 50 },
   { item = "trash_can_street", count = [1, 3], chance_pct = 55 },
   { item = "road_sign", count = [1, 3], chance_pct = 50 },
   { item = "tree", count = [1, 6], chance_pct = 40 },
@@ -163,7 +163,7 @@ objects = [
 ]
 
 [outdoor_set.construction_site]
-desc = "A construction site behind temporary fencing: stacked lumber and sheet goods, rebar and block, a job-box of tools, a generator and fuel cans, a site container and a dumpster."
+desc = "A construction site behind temporary fencing: stacked lumber and sheet goods, rebar and block, a job-box of tools, a generator and fuel cans, a site container and a trash bin."
 objects = [
   { item = "chain_link_fence", count = [6, 30], chance_pct = 85 },
   { item = "lumber_2x4", count = [10, 120], chance_pct = 70 },
@@ -184,7 +184,7 @@ objects = [
   { item = "sledgehammer", count = [1, 1], chance_pct = 20 },
   { item = "toolbox", count = [1, 2], chance_pct = 30 },
   { item = "shipping_container", count = [1, 1], chance_pct = 35 },
-  { item = "dumpster", count = [1, 2], chance_pct = 70 },
+  { item = "trash_bin", count = [1, 2], chance_pct = 70 },
   { item = "traffic_cone", count = [2, 12], chance_pct = 60 },
   { item = "pickup_truck", count = [1, 3], chance_pct = 60 },
   { item = "work_light_12v", count = [1, 2], chance_pct = 20 },
@@ -258,7 +258,7 @@ objects = [
 ]
 
 [outdoor_set.industrial_yard]
-desc = "A fenced industrial yard: forklifts with propane cylinders, pallet stacks, 55-gallon drums, shipping containers, trailers at the dock, dumpsters and scrap."
+desc = "A fenced industrial yard: forklifts with propane cylinders, pallet stacks, 55-gallon drums, shipping containers, trailers at the dock, trash bins and scrap."
 objects = [
   { item = "chain_link_fence", count = [8, 40], chance_pct = 85 },
   { item = "forklift", count = [1, 3], chance_pct = 70 },
@@ -270,7 +270,7 @@ objects = [
   { item = "delivery_van", count = [1, 3], chance_pct = 30 },
   { item = "pickup_truck", count = [1, 4], chance_pct = 55 },
   { item = "car_sedan", count = [2, 20], chance_pct = 70 },
-  { item = "dumpster", count = [1, 4], chance_pct = 85 },
+  { item = "trash_bin", count = [1, 4], chance_pct = 85 },
   { item = "scrap_metal", count = [1, 10], chance_pct = 40 },
   { item = "street_light", count = [1, 6], chance_pct = 80 },
   { item = "cardboard_box", count = [2, 12], chance_pct = 35 },

@@ -41,6 +41,8 @@ share = 5
 tier = 1
 keyed = false
 pickable = true
+kind = "knob"
+bash_resist = 2          # privacy knob: a kick or a hammer pops it
 [item.door_interior.features.boardable]
 width_mm = 760
 height_mm = 2030
@@ -79,6 +81,9 @@ share = 4
 tier = 4
 keyed = true
 pickable = true
+kind = "knob"
+bash_resist = 4          # entry knob; bash it off with a hammer...
+extra = ["deadbolt"]      # ...but most front doors also have a deadbolt (N013)
 [item.door_exterior.features.boardable]
 width_mm = 910
 height_mm = 2030
@@ -117,6 +122,9 @@ share = 12
 tier = 7
 keyed = true
 pickable = true
+kind = "deadbolt"
+bash_resist = 6
+extra = ["security_bar"]  # commercial rear doors: brute force is impractical (N013)
 [item.door_steel.features.boardable]
 width_mm = 910
 height_mm = 2130
