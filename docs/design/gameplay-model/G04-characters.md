@@ -1,7 +1,8 @@
 # G04 — Characters: what makes a player or NPC
 
-Per G01 D1.2 (recommended), the player's character and every survivor NPC are the **same kind of
-creature**. Only the attached controller differs. Zombies share the body model, but usually exist
+Per G01 D1.2 (recommended), the player's character is an ordinary **creature**, driven by a player
+controller. **There are no NPC survivors** (owner note N005); the model still keeps the player
+non-special, which enables zombification and whatever the owner adds later. Zombies share the body model, but usually exist
 as compact mob records (G01 D1.3).
 
 ## Proposal: a character is these components
@@ -19,7 +20,7 @@ as compact mob records (G01 D1.3).
 | **Senses** | Which senses, and how good they are | Symmetric with zombies: the player may *also* sense scent faintly |
 | **Emissions** | **Scent profile per channel**, noise when moving and acting | Drives the core mob mechanic; masking changes this profile |
 | **Knowledge** | Map memory, known places, recipes, facts | What the character knows vs what exists (G09) |
-| **Relationships** | Standing with individuals and groups | Future survivor factions and trade |
+| ~~Relationships~~ | *Removed: no NPCs (N005)* | — |
 | **Controller** | Player, AI behaviour, or none | Possession, companions, zombification |
 
 Any of these can be missing. A zombie has no Skills or Knowledge; a dog has a different body plan

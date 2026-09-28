@@ -111,3 +111,37 @@ entities carry **stable IDs** (see ADR-0002).
   Full-3D chunks exist only inside structures and excavations.
 - **The rivers risk is unchanged, and scale makes it more visible.** Large rivers crossing many
   regions need the coarse-drainage-with-margins approach. That spike comes first.
+
+## Aftermath model: the three stages ([N005](notes/N005-the-event-and-aftermath-stages.md), [ADR-0009](../adr/0009-baseline-plus-aftermath-generation.md))
+
+Every level L0–L5 generates **baseline → event → aftermath(`elapsed_days`)**. The stages are
+presets: **1 week = 7, 1 month = 30, 1 year = 365**. Aftermath effects are monotonic in time
+(threshold sampling), so the three stages of a seed are consistent snapshots of one world.
+
+| Aftermath effect | Driven by | 1 week | 1 month | 1 year |
+|---|---|---|---|---|
+| Zombies leaving buildings | Openness of the building (doors forced during struggles, open entryways) | Many out wherever a struggle opened the building | More wander out | Mostly outside, except in sealed buildings |
+| Zombie attrition | Global curve (killed by survivors, other causes) | Near full population | Lower | Much lower |
+| Looting by other survivors | Priority by building type (pharmacy, grocery, gun shop first) × elapsed time × local survivor density | Priority targets hit near dense areas | Most priority targets, many homes | Most accessible places searched |
+| Spoilage | Shelf life per item, power loss | Fresh food turning, frozen food thawed | Most perishables gone | Only long-life goods usable |
+| Damage and decay | Break curves per fitting (windows, doors), weather | Mostly intact, except struggle sites | Broken windows common | Widespread damage, decay |
+| Traces | Event struggles, aging | Fresh remains, blood | Aged | Old or gone |
+
+**Where zombies are at the event** follows real occupancy: a building's occupants at the moment
+of turning. Buildings no struggle ever opened **stay sealed with their occupants inside**, at
+every stage.
+
+### Open questions (N005 follow-ups)
+
+1. **When did the event happen?** Time of day and day of week decide where people were: homes at
+   night, offices and schools by day. Is it fixed in the lore, or rolled per world seed?
+2. **Traces of other survivors.** Since NPCs are never met, can the player find signs of them:
+   barricades, notes, abandoned camps, bodies of later casualties?
+3. **Zombie decay.** Over a year, do zombies physically deteriorate (slower, weaker), or are there
+   just fewer of them?
+4. **Nature at one year.** Overgrowth in streets, wildlife? This changes terrain footing (streets
+   become underbrush) and therefore crowd movement.
+5. **Utilities.** Does power and water fail instantly, or over the first days or weeks? This
+   affects spoilage (fridges and freezers) and lighting at 1 week.
+6. **Fires.** Did the event start fires (stoves, crashes) that burned areas, more visible at later
+   stages?

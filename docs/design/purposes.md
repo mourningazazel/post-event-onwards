@@ -62,6 +62,9 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-WO-05 | Terrain affects crowd movement | Street vs underbrush vs rubble changes crowd speed and trip chance (N004) | Crossing time and trip rate differ by terrain type, as specified in the terrain data | **confirmed** |
 | P-WO-06 | Falling | Falls into pits or down levels hurt based on drop height, using an acceleration value and a z-drop calculation, **not a physics system** (N004). Spikes at the bottom add damage. | A unit falling 1 vs 2 z-levels takes damage from the configured drop formula; a spiked pit adds its damage | **confirmed** |
 | P-WO-02 | Cutting and breaching (sawing is one example) | Breach into or out of buildings. Outcome and time are decided by **wall material vs tool properties** (or bare hands if even remotely capable) (N004). | Sawing drywall with a handsaw succeeds; sawing concrete with the same saw doesn't; bare hands through drywall is very slow or impossible, per the material data | **confirmed** |
+| P-WO-08 | Aftermath stages (1 week / 1 month / 1 year) | **Difficulty through world state.** Later stages have fewer zombies **and** fewer supplies, with more spoilage and damage (N005). | For one seed across the three stages: zombie counts and usable supplies strictly fall; every window broken at 1 week is still broken at 1 month and 1 year | **confirmed** |
+| P-WO-09 | Sealed buildings hold their zombies | Opening a sealed building is a gamble: supplies nobody looted, but its occupants are still inside (N005) | Sealed buildings keep their occupant zombies and unlooted contents at every stage; forced-open buildings lose both over time | **confirmed** |
+| P-WO-10 | Other survivors as traces only | No NPCs are ever met; their existence shows through looting, damage and struggle traces (N005) | No NPC entity spawns in any scenario; looting and struggle traces exist at the stage-appropriate rates | **confirmed** |
 | P-WO-07 | Realistic population | Cities and buildings are populated like real ones, and zombies are as numerous as a real outbreak's; the player is one of very few survivors (N004) | Zombie density in a generated district matches its configured real-world population density; buildings hold plausible occupants | **confirmed** |
 | P-WO-03 | Walking-only travel | Makes travel between cities a **perilous expedition** that needs preparation | `walk-between-towns` bot must manage supplies; an unprepared bot fails more often | proposed |
 | P-WO-04 | Landmark-anchored cities | Gives each city an identity and lets players navigate by landmarks | Every generated city records a landmark, visible from inside the city | proposed |
@@ -88,6 +91,7 @@ All six earlier questions were answered in [N004](notes/N004-realism-spirit-and-
 Remaining:
 
 1. Please correct any **proposed** purpose above that doesn't match your intent.
-2. **P-WO-07 follow-up:** should zombies *inside* buildings reflect who lived or worked there
-   (household size, office staff), trapped behind closed doors until something opens them? Claude
-   proposes yes; it follows directly from "populated just as in real life".
+2. ~~P-WO-07 follow-up~~: answered in N005. Yes: zombies are the people who were there, and
+   sealed buildings still hold theirs.
+3. The N005 follow-ups listed in `world-generation.md`, "Aftermath model": event timing, traces of
+   other survivors, zombie decay, nature at one year, utilities, fires.

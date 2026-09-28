@@ -15,3 +15,4 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0006](0006-scent-driven-mobs.md) | Scent-driven blind mobs as the core enemy mechanic | Accepted (details proposed) |
 | [0007](0007-endless-staged-world.md) | Endless world with staged, persistent generation | Accepted (structure proposed) |
 | [0008](0008-project-license-mit.md) | Project license — MIT | Accepted |
+| [0009](0009-baseline-plus-aftermath-generation.md) | World generation = baseline + event + time-driven aftermath (the 3 stages) | Accepted (parameters proposed) |
