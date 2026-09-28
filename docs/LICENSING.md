@@ -51,6 +51,25 @@ read where GitHub reported `NOASSERTION`).
 Libraries that SDL3_image may bundle (libpng, zlib) are permissive (libpng license, Zlib). They
 will be recorded when the build configuration is fixed.
 
+## Original implementation policy
+
+All game and engine code in this repository is **our own construction**.
+
+- **Techniques and algorithms are ideas, and we use them freely.** Examples: shadowcasting,
+  Dijkstra maps, cellular automata, timing wheels. We learn them from articles, papers and other
+  games.
+- **Implementations are written from our own understanding and design.** No code is copied, ported
+  line-by-line, or lightly edited from RogueBasin, tutorials, blogs, Stack Overflow, other games or
+  any other source. This holds even when the license would allow it, and even when our result ends
+  up structurally similar.
+- **Reference implementations may be *read* to understand a technique,** but are closed while
+  writing ours. Where a test checks our output against a library (e.g. libtcod as a FOV oracle),
+  the library is a test-only dependency and none of its code enters ours.
+- **The only third-party code in the product is the declared dependencies** listed above, used
+  through their public APIs under their licenses.
+- **Documentation cites sources** for techniques (title and link). Quotes stay short and
+  attributed.
+
 ## Third-party content we do **not** redistribute
 
 - **RogueBasin page text.** Its copyright status is unclear, and
