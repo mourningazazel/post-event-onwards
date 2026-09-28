@@ -43,6 +43,8 @@ class Lint:
             ok = isinstance(value, list) and len(value) == 2 and all(isinstance(x, int) for x in value)
         elif tstr == "table":
             ok = isinstance(value, dict)
+        elif tstr == "any":
+            ok = True
         elif tstr.startswith("list<"):
             inner = tstr[5:-1]
             ok = isinstance(value, list)
@@ -329,16 +331,21 @@ class Lint:
 
     # ---------------------------------------------------------------- brands & world
     def lint_refs(self) -> None:
-        refs = {
-            "brand": [("company", "company")],
-            "store_chain": [("own_label", "brand")],
-        }
-        for rtype, rules in refs.items():
+        for rtype in ("company", "brand", "store_chain", "setting", "building", "room", "loot",
+                      "outdoor_set", "profile"):
+            schema = self.db.get("schema", rtype)
             for rid, rec in self.db[rtype].items():
                 w = f"{self.db.where(rtype, rid)} {rtype}.{rid}"
-                for field, target in rules:
-                    if field in rec and self.db.get(target, rec[field]) is None:
-                        self.err(w, f"{field}: unknown {target} '{rec[field]}'")
+                self.check_schema(w, rec, schema)
+                if rtype == "store_chain" and self.db["building"] and \
+                        self.db.get("building", rec.get("type", "")) is None:
+                    self.err(w, f"type: unknown building '{rec.get('type')}'")
+        cats = {c for b in self.db["brand"].values() for c in b.get("categories", [])}
+        for iid, rec in self.db["item"].items():
+            for c in rec.get("brand_cats", []):
+                if c not in cats:
+                    self.err(f"{self.db.where('item', iid)} item.{iid}",
+                             f"brand_cats: no brand covers category '{c}' (content/brands)")
         self.lint_world()
 
     def item_or_loot(self, w: str, ref: str) -> None:
