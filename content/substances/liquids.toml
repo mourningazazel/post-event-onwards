@@ -367,7 +367,7 @@ scent = { channel = "blood", strength = 8 }
 perishable = "very_short"
 desc = "Fresh blood: strong attractant; becomes rot scent as it ages."
 
-[substance.zombie_gore]
+[substance.corpse_gore]
 phase = "paste"
 density_mg_ml = 1050
 viscosity = "paste"
@@ -377,4 +377,4 @@ toxic = "mild"
 applicable_to_body = true
 surface = "pools"
 scent = { channel = "rot", strength = 9 }
-desc = "Rotting zombie innards: the classic masking agent (P-SC-03)."
+desc = "Rotting dead innards: the classic masking agent (P-SC-03)."

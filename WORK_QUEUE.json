@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 8,
+  "next_id": 19,
   "items": [
     {
       "id": "PEO-001",
@@ -307,6 +307,302 @@
       "references": [
         "docs/architecture.md",
         "docs/production/decisions.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-008",
+      "order": 80,
+      "type": "feature",
+      "title": "Content loader: registry, materials, items, modifiers into runtime tables",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The game reads content/ at startup through toml++ and exposes derived capabilities exactly as tools/content/derive.py computes them, proven by a golden comparison test.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "content/README.md",
+        "tools/content/derive.py",
+        "docs/architecture.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-009",
+      "order": 90,
+      "type": "design",
+      "title": "Weighted-draw movement for the Dead with aggregates and company pull",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "step_horde becomes the round-3 weighted draw (scent, aggregate, company, repellent, footing terms) and the swarm-accumulation and fan-out scenarios pass headlessly.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-007"
+      ]
+    },
+    {
+      "id": "PEO-010",
+      "order": 100,
+      "type": "design",
+      "title": "Triggers, sound events and speeds",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Touch, sight and human-class sound trigger units that steer by general direction at x1.5/x2 speed, expire displaced, and pull idle Dead only through weights; sound events are kind + dB.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
+    },
+    {
+      "id": "PEO-011",
+      "order": 110,
+      "type": "design",
+      "title": "Trips, contests and trample",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Push contests can trip; trips cascade in a frenzy; moving over a prone unit rolls blunt damage; frenzy-trips and trample-damage scenarios pass.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
+    },
+    {
+      "id": "PEO-012",
+      "order": 120,
+      "type": "design",
+      "title": "Skills 1-100: success percentage, failure outcomes, multi-skill, tool gates",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "An action resolver computes per-skill and aggregate chances from unlock/difficulty/ceiling, draws failure outcomes, and refuses skill-gated tools; expectations in tests/content prove the curve.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md",
+        "content/registry/actions.toml"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-013",
+      "order": 130,
+      "type": "design",
+      "title": "Quality on every item: degradation curves and broken text",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Every archetype has quality handling; time and situation set quality at generation; broken and broken_disables exist on every item that does something; lint enforces it.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/content-model.md"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-014",
+      "order": 140,
+      "type": "research",
+      "title": "Building census, category retail and persona houses (content plan)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "content/world/census.toml, retail_categories.toml and personas/ exist with first-pass numbers per setting, and the world catalogue id contract lists every new building type.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/world-catalog.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-015",
+      "order": 150,
+      "type": "research",
+      "title": "Drugs, paraphernalia and pharmacy stock (content)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A realistic spread of narcotics, pharmaceuticals and paraphernalia as archetypes plus modifiers, a drug property block, and locked urban pharmacy stock; no mechanics yet.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-016",
+      "order": 160,
+      "type": "design",
+      "title": "Mood and Sanity data model",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Mood (Depressed..Manic) and Sanity live on the character with the hooks the design names (exhaustion, addiction, failure shifts, hallucination events); hidden by default.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G04-characters.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-017",
+      "order": 170,
+      "type": "feature",
+      "title": "Maps as rare knowledge items that mark general locations",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "city_hall and transit_stop exist; a read map marks POI areas on the player's map before generation and generation lands inside the mark.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/world-catalog.md"
+      ],
+      "depends_on": [
+        "PEO-005"
+      ]
+    },
+    {
+      "id": "PEO-018",
+      "order": 180,
+      "type": "feature",
+      "title": "Ambient crow text",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Periodic ambient text about crows appears at a data-driven rate; no creature exists.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/production/vision.md"
       ],
       "depends_on": [
         "PEO-002"

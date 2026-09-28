@@ -28,7 +28,7 @@ and handles the technical internals behind each decision.
 | G02 | [Authored vs generated, and levels of detail](G02-templates-generation-detail.md) | Draft ready |
 | G03 | [Items, belongings and unlimited detail](G03-items-and-belongings.md) | Draft ready |
 | G04 | [Characters — what makes a player or NPC](G04-characters.md) | Draft ready |
-| G05 | Bodies, health and physical capability. **Limb/appendage damage (N007); body-part hit rolls with clothing coverage as major defence, no bite infection (N013);** zombie fragility follows the clock. | Planned |
+| G05 | Bodies, health and physical capability. **Limb/appendage damage (N007); body-part hit rolls with clothing coverage as major defence, no bite infection (N013);** dead fragility follows the clock. | Planned |
 | G06 | Actions and interactions: verbs, tools, materials, time costs (digging, sawing, climbing) | Planned |
 | G07 | Terrain, materials and structures: tile scale, vertical resolution, walls vs objects | Planned |
 | G08 | Enemies in the gameplay model: mob records vs individuals, senses, alert, contests | Planned (mechanics in `../scent-mobs.md`) |
@@ -48,7 +48,7 @@ and handles the technical internals behind each decision.
   interrupted?
 - **G07:** How large is one tile (≈1 m)? Is one z-level one storey or finer? Is a wall a tile
   material or an object? Do windows and doors sit inside wall tiles?
-- **G08:** When does a zombie become a full individual (looted, examined)? Does a zombie remember
+- **G08:** When does one of the Dead become a full individual (looted, examined)? Does one of the Dead remember
   who it was (occupation, clothing, pockets)?
 - **G09:** Does the character's map memory go stale when the world changes? Can knowledge be
   shared through notes or NPCs?

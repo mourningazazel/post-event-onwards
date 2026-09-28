@@ -1,12 +1,37 @@
 # Architecture
 
-One rule above all: **the simulation never knows about SDL.** `peo::core`
-is a static library with no I/O, no globals and no clocks; given a seed it
-produces the same world and the same horde behaviour on every platform. The
-frontend feeds it input and draws its state.
+One rule above all: **the simulation never knows about SDL.** `peo::core` is a static library
+with no I/O, no globals and no clocks; given a seed and a list of actions it produces the same
+world on every platform. The frontend feeds it actions and draws its state.
+
+## Target system map
+
+`docs/SYSTEMS.md` holds the target framework: the fifteen engineering rules R1–R15 and the
+layered system map (Foundation → Engine → World → Simulation → Game, plus Tools). It was
+written before any code and is the destination. This repo grows toward it **one system at a
+time through the work queue**, never by a framework-first rewrite. Rules that already hold in
+the current code are marked below; the rest apply as each system lands.
+
+| Rule | Status now |
+|---|---|
+| R8 determinism (seeded streams, no wall clock, no `std` distributions) | holds (`rng.hpp`, `stage.hpp`) |
+| R11 every system runs headless | holds (`headless` preset) |
+| R12 no singals, explicit context | holds |
+| R6 content is data (registry, TOML) | data exists in `content/`; loading is queued |
+| R1/R2 one CMake target per system, acyclic | one `core` target today; split as systems appear |
+| R3 commands and events | `Action` is the first command (PEO-002) |
+| R4 batch-first APIs | `step_horde` is batch-first; keep it that way |
+| R9/R10 budgets, metrics, profiling | not yet |
+| R15 playable headless with a rule checker | designed in `docs/design/playtest-harness.md`; queued |
+
+The stack decisions in `docs/GAMEPLAN.md` §2 (SDL_GPU grid renderer, ECS, jobs, noise,
+profiling) are targets; the prototype uses `SDL_Renderer` debug text so the loop is playable
+today. The renderer reads only a committed world snapshot, so swapping it later is contained.
+
+## Current code
 
 ```
- src/app (SDL3)  ──input──▶  peo::core  ──state──▶  src/app draws
+ src/app (SDL3)  ──Action──▶  peo::core  ──state──▶  src/app draws
                               │
                               ├─ rng.hpp    xoshiro256**, seeded, no std::rand
                               ├─ grid.hpp   dense row-major Grid<T>; Grid<bool> is bytes
@@ -15,78 +40,40 @@ frontend feeds it input and draws its state.
                               └─ dead.hpp   Dead, step_horde
 ```
 
-## Core systems
-
 ### Scent (`scent.hpp`)
 
-The signature mechanic. A `ScentField` is a double-buffered `Grid<float>`.
-Each tick the player (and later corpses, bait, fire) `deposit`s; `step`
-diffuses to the four orthogonal neighbours and decays. Walls reflect scent.
-`strongest_neighbour` is the entire horde AI today: climb the gradient.
+The signature mechanic. A `ScentField` is a double-buffered `Grid<float>`. Each turn the
+player (and later blood, bait, fire) `deposit`s; `step` diffuses to the four orthogonal
+neighbours and decays. Walls reflect scent. `strongest_neighbour` is the whole AI today.
 
-Design constraints:
-- `step` is O(cells), linear memory, no allocation. Keep it SIMD-friendly.
-- `ScentParams` are per-stage tunables, never literals in code.
-- Multiple layers (player, blood, fire) are separate fields, not channels.
+Where it is going (`docs/design/scent-mobs.md`): two layers per channel (a cheap fine trail and
+a coarse diffusing cloud that drifts with wind), several channels with a dominance matrix, and
+**aggregates** (coarse sums) that the movement rule reads. Constraints that stay: `step` is
+O(cells), linear memory, no allocation, and **linear** so ADR-0012's patch is exact.
 
 ### Stages (`stage.hpp`)
 
-The world is an endless sequence indexed by `stage_index`. `stage_seed(world,
-index)` is a pure hash, so any stage can be regenerated on demand and never
-needs saving. `generate_stage` is currently random walls with a carved entry
-and exit; room/cave generators replace it behind the same signature.
+Today: an endless sequence of random-wall stages from `stage_seed(world, index)`. Target: the
+hierarchical generation levels of `docs/design/world-generation.md` (macro → region →
+settlement → structure → tile → contents), baseline + Event + aftermath on the global clock
+(ADR-0009, ADR-0011), the building census and persona houses (`world-catalog.md` §10). The
+`generate_stage` signature is the seam; generators are plug-ins behind it.
 
 ### The Dead (`dead.hpp`)
 
-`Dead` is deliberately tiny; thousands must step per turn. `step_horde` is
-one pass over a vector. When profiling asks, the vector becomes
-struct-of-arrays without changing callers.
+`Dead` is deliberately tiny; thousands must step per turn. `step_horde` is one pass over a
+vector. Target: the **weighted draw** of scent-mobs round 3 (scent, aggregate, company,
+attractor, stimulus, repellent, footing terms), triggers by general direction, sound events,
+trips and trample, population aggregates beyond the detailed radius. Struct-of-arrays when the
+profiler asks.
 
-## Turn model (decision D-002)
+## Turn model (ADR-0012)
 
-Time moves only through `World::step(Action)`. An `Action` is a step in a
-direction, a wait, or later an interaction. Order within a turn:
-
-1. apply the player's action (move, deposit scent at the new cell);
-2. scent step (diffuse + decay, all layers);
-3. the Dead step (gradient climb, contact resolution).
-
-### Computing while waiting
-
-Steps 2 and 3 barely depend on the player's action. Scent diffusion is
-linear, so `diffuse(field + δ) == diffuse(field) + diffuse(δ)`, and a
-deposit δ at one cell touches only that cell and its four neighbours
-after one step. A Dead's move depends only on the scent in its eight
-neighbours, so only the Dead within two cells of the player's new position
-can change their minds.
-
-So the world computes the next turn speculatively while the player thinks
-(assume "wait"), and on input patches the small player neighbourhood:
-
-```
-idle:   spec = speculate(world_T)            // full-field work, off the input path
-input:  world_T+1 = commit(spec, action)     // O(neighbourhood) patch, then clamp floor
-```
-
-Rules that make this safe:
-- `commit(speculate(w), a)` must equal `step(w, a)` bit for bit; a golden
-  test enforces it for every action on random worlds.
-- Core exposes `speculate` and `commit` as pure functions on plain data;
-  the frontend owns the worker thread and the buffers. Core never spawns
-  threads, so determinism and tests stay single-threaded.
-- The renderer reads the last committed `World` only. A speculation buffer
-  is never drawn.
-- Lookahead deeper than one turn is allowed only for the "wait" action
-  (an idle player is the common case); a step discards deeper speculation.
-- The non-linear floor clamp is applied after patching, so it cannot break
-  linearity.
-
-## Frontend (`src/app/main.cpp`)
-
-Uses SDL3's callback main (`SDL_AppInit/Event/Iterate/Quit`) and
-`SDL_RenderDebugText`, so no font asset is needed yet. Fixed tick
-(`kTickMs`), render every frame. Anything that looks like game logic here
-should move to core with a test.
+Time moves only through `World::step(Action)`. Order within a turn: apply the player's action;
+scent step; the Dead step (moves, contests, trample); sound events resolve. While the player
+thinks, `speculate()` computes the next turn assuming Wait; on input, `commit()` patches the
+player's neighbourhood and must equal `step()` bit for bit. Core spawns no threads; the
+frontend owns the worker and draws only the committed world.
 
 ## Boundaries that tests protect
 
@@ -97,12 +84,16 @@ should move to core with a test.
 | The Dead | `dead: the dead never enter walls` |
 | Scale | `dead: a thousand dead step` |
 | Turn model | `world: commit(speculate) == step` (PEO-007) |
+| Content | `tools/content/lint.py`, `tools/content/test.py` (374 expectations, 109 chains) |
+| Swarm behaviour | the scenario table in scent-mobs round 3 (harness, queued) |
 
 ## Planned seams (not built)
 
-- `World`: owns current stage, scent layers, horde, player; `step(Action)`
-  is the single simulation entry point the frontend calls (PEO-002).
-- `speculate` / `commit`: the compute-while-waiting pair above (PEO-007).
-- `Replay`: input log + seed = reproducible run; the Architect's tool for
-  reviewing bugs it cannot see.
-- `Profile`: per-system tick timings the Builder reports back.
+- `World`: owns stage, scent layers, horde, player; `step(Action)` is the single entry point
+  (PEO-002). `speculate` / `commit` (PEO-007).
+- `Content`: loads `content/` (registry, materials, items, modifiers) into runtime tables;
+  the derivation rules in `tools/content/derive.py` are the executable spec to port.
+- `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for
+  reviewing bugs it cannot see. First piece of the playtest harness.
+- `Fields`: the generic scalar-field service (scent channels, later sound, heat, light).
+- `Population`: region-cell counts and attraction; spawn-in and merge-out at the edge.

@@ -132,14 +132,14 @@ presets: **1 week = 7, 1 month = 30, 1 year = 365**. Aftermath effects are monot
 
 | Aftermath effect | Driven by | 1 week | 1 month | 1 year |
 |---|---|---|---|---|
-| Zombies leaving buildings | Openness of the building (doors forced during struggles, open entryways) | Many out wherever a struggle opened the building | More wander out | Mostly outside, except in sealed buildings |
-| Zombie attrition | Global curve (killed by survivors, other causes) | Near full population | Lower | Much lower |
+| Dead leaving buildings | Openness of the building (doors forced during struggles, open entryways) | Many out wherever a struggle opened the building | More wander out | Mostly outside, except in sealed buildings |
+| Dead attrition | Global curve (killed by survivors, other causes) | Near full population | Lower | Much lower |
 | Looting by other survivors | Priority by building type (pharmacy, grocery, gun shop first) × elapsed time × local survivor density | Priority targets hit near dense areas | Most priority targets, many homes | Most accessible places searched |
 | Spoilage | Shelf life per item, power loss | Fresh food turning, frozen food thawed | Most perishables gone | Only long-life goods usable |
 | Damage and decay | Break curves per fitting (windows, doors), weather | Mostly intact, except struggle sites | Broken windows common | Widespread damage, decay |
 | Traces | Event struggles, aging | Fresh remains, blood | Aged | Old or gone |
 
-**Where zombies are at the event** follows real occupancy: a building's occupants at the moment
+**Where Dead are at the event** follows real occupancy: a building's occupants at the moment
 of turning. Buildings no struggle ever opened **stay sealed with their occupants inside**, at
 every stage.
 
@@ -153,12 +153,12 @@ All six N005 follow-up questions were answered in N007; see below.
 - **Rolled per world seed:** the moment of the event (time of day, day of week) and the
   **turned fraction (80–99%)**. Both are shown on the opening splash screen.
 - **Moment of the event:** decides where occupants were (home, work, school, commuting). That
-  sets baseline occupancy, and therefore where zombies start.
+  sets baseline occupancy, and therefore where Dead start.
 - **Turned fraction** scales everything survivors left behind:
 
   | Effect of more survivors (lower turned %) | Why |
   |---|---|
-  | More **dead bodies** | Survivors died; the zombies didn't |
+  | More **dead bodies** | Survivors died; the Dead didn't |
   | More **struggle damage** and forced entries | More fights at the event |
   | More **looting and scarcity** over time | More people going through supplies |
   | More **barricades** | Survivors fortified before dying or leaving |
@@ -166,7 +166,7 @@ All six N005 follow-up questions were answered in N007; see below.
 
 - **Encampments hold concentrated useful supplies, but are deserted for a reason.** The reason
   is generated and visible in the evidence:
-  - usually **overrun**: zombie presence, breached barricades, remains
+  - usually **overrun**: dead presence, breached barricades, remains
   - rarely **owner died elsewhere**: intact, untouched, "ripe for the taking"
 
 ### The global clock as a gradient
@@ -203,7 +203,7 @@ All six N005 follow-up questions were answered in N007; see below.
 - **Smoke scent:** burned areas emit a **smoke channel** that decays with time since the fire. By
   the dominance matrix it **masks and modifies** other scents nearby (scent-mobs.md).
 
-### Zombies over time
+### Dead over time
 
 - Damage output stays roughly constant.
 - **Tissue fragility per body part rises with the clock** (in monthly steps), so limbs and

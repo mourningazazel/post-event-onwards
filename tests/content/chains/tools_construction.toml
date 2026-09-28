@@ -120,7 +120,7 @@ bind = { target = "rebar", tool = "angle_grinder" }
 [[chain.rebar_spear_welded.steps]]
 action = "weld_join"
 bind = { welder = "arc_welder" }
-min_skill = 3
+min_skill = 15
 
 [[chain.rebar_spear_welded.steps]]
 action = "attach"

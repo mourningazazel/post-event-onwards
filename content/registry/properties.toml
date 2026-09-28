@@ -129,6 +129,11 @@ type = "enum:silent|quiet|normal|loud|very_loud|extreme"
 desc = "Noise made when used/operated (gunshots extreme, generators very_loud)."
 readers = ["M13 noise"]
 
+[property.tool_min_skill]
+type = "table"
+desc = "Skill levels (1..100) needed before this item can be used as a tool at all, e.g. { security = 10 } on a lockpick set (N014). Below it the action is refused, not merely harder."
+readers = ["skills", "M8 tools", "M10 access"]
+
 [property.durability]
 type = "int"
 desc = "Wear resistance 0..10 (how fast condition drops with use)."
@@ -216,7 +221,7 @@ readers = ["content lint"]
 
 [property.teaches]
 type = "table"
-desc = "Books/manuals that train a skill by reading (N012): { skill, max_level (0..20), rate (1..10) }."
+desc = "Books/manuals that train a skill by reading (N012): { skill, max_level (1..100), rate (1..10) }."
 readers = ["skills", "M21 knowledge"]
 
 [property.blocks_sight]

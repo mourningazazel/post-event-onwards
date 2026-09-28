@@ -110,7 +110,7 @@ required = ["loudness"]
 readers = ["M13 noise"]
 
 [feature.lock]
-desc = "Lockable closure (doors, safes, lockers, car doors). N013: picking needs a lockpick set; brute force removes the main lock (e.g. bash off a knob) but extra locks add resistance."
+desc = "Lockable closure (doors, safes, lockers, car doors). tier 1..15; picking needs security skill unlock = tier x 5 (N014 scale). N013: picking needs a lockpick set; brute force removes the main lock (e.g. bash off a knob) but extra locks add resistance."
 params = { tier = "int", keyed = "bool", pickable = "bool", combination = "bool", kind = "enum:latch|knob|deadbolt|padlock|combination|electronic|cam", bash_resist = "int", extra = "list<enum:deadbolt|chain|bar|padlock_hasp|security_bar>" }
 required = ["tier"]
 readers = ["M10 access"]

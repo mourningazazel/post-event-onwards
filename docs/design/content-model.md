@@ -59,7 +59,7 @@ Each material defines:
 - **water behaviour:** waterproof / absorbs / rusts / dissolves / ruined
 - **conductivity:** thermal and electric (insulation, burns, future electrical systems)
 - **sound when struck:** clang / thud / crack / crunch. This feeds **noise events**, which
-  sound-capable zombies react to.
+  sound-capable Dead react to.
 - **scent when burned or rotting:** links to **scent channels**
 - **edible and nutrition** (for food materials)
 
@@ -156,7 +156,7 @@ and form, with authored overrides.
 | `onAge` (the global clock) | spoil, rust, rot (emits `rot` scent), degrade | shelf life, material aging curves (ADR-0011) |
 
 **Both sides of an impact are resolved with the same rules.** When a glass bottle (as the head
-of a taped club) hits a zombie's arm:
+of a taped club) hits a dead one's arm:
 
 - the bottle's `onImpact` decides whether it shatters (and becomes a jagged `pierce` weapon)
 - the arm's `onImpact` decides the damage (walkthrough G05)
@@ -202,12 +202,12 @@ rules** exist only for true transformations: cooking, boiling water, chemistry, 
 - **Carried and pocket contents:** phone, wallet (ID, cash, cards, **photo**), keys, work items
   (badge, pens, stethoscope, tools), bag or briefcase.
   - **Keys are real relationships.** They reference the mob's home or workplace doors through
-    **generation addresses** (G01 D1.5), so a key found on a zombie can open a real door in the
+    **generation addresses** (G01 D1.5), so a key found on one of the Dead can open a real door in the
     world.
 - **Aftermath and clock effects:** the global clock (ADR-0011) degrades clothing (wear, blood,
   tears, a lost shoe) and rots contents (spoiled lunch).
 - **Cheap until needed:** a mob record stores only its **profile ID and seed**. The full outfit
-  and pockets are generated when the zombie is promoted: examined, killed or looted (G01 D1.3).
+  and pockets are generated when the dead is promoted: examined, killed or looted (G01 D1.3).
   Thousands of mobs cost nothing extra.
 
 ### 3.2 Places
@@ -483,3 +483,38 @@ discovered, by using, testing or a skill check:
 - **Authoring rule:** when Claude authors an archetype that would realistically carry a brand, it
   adds a handful of brand options from categories that fit.
 - **Every brand name gets a conflict check** (web and trademark search) before it ships.
+
+## 10. Quality, degradation and "broken" ([N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md))
+
+Every item instance carries **`quality`** (0–100, integer). Generation sets it from the item's
+material aging curve, the global clock (ADR-0011), and its situation (charred, wet, looted,
+struggle debris); play lowers it through use-wear and reactions. `quality` is the single number
+that time-based and situational degradation write to, so no system needs a special case.
+
+**There is no separate "broken" archetype.** Each archetype that *does* something declares:
+
+- `broken` — one sentence of what broken looks like for this item ("the pump piston is seized
+  and the handle flops freely"), used by description slot 5 when quality reaches 0 or a reaction
+  breaks it;
+- `broken_disables` — the tags and capabilities that stop working when broken (`use.siphon`,
+  `light`, `contain.liquid`), so the engine turns them off generically.
+
+Quality bands map to words the player sees (pristine · worn · rough · failing · broken), and to
+effect: capabilities scale with quality above a per-capability floor; containers may leak below
+a threshold; devices have a failure roll per use that rises as quality falls. The bands and
+scalings are registry data.
+
+## 11. Depth rules (N014)
+
+1. **Detail may be heavy** when it serves a current or planned mechanic. The detail budget (§1.3)
+   still applies; "planned" means it appears in `purposes.md` or the gameplay-model agenda.
+2. **The no-wiki rule.** Everything a property does must be inferable from the item's own
+   description and the action screen. If a detail needs an external explanation to be used, it
+   either gets description rules (§8) or it is cut.
+3. **Modifiers and tags before templates.** A new archetype needs a behaviour no modifier can
+   express. Retail stock, house contents and building types are generated from **tag queries**
+   over modifiers, not from hand-built item lists (see `world-catalog.md` §10).
+4. **Persona-driven places.** A house is generated from *who lived there*: household
+   composition, occupations, hobbies, wealth, tidiness. Hobbies pull tagged item sets (a
+   woodworker's garage, a runner's shoe rack, a fisher's tackle). The persona is data
+   (`content/personas/`), the rooms query it.

@@ -1,38 +1,38 @@
 # Scent channels (scent-mobs.md; N004 lures/repellents; N007 smoke).
-# `zombie_default` is how a regular scent-only zombie weighs the channel:
+# `dead_default` is how a regular scent-only dead weighs the channel:
 # positive attracts, negative repels (archetype tables may override).
 
 [scent.human]
 desc = "Living human: breath, sweat, skin. The player's default emission."
-zombie_default = 10
+dead_default = 10
 
 [scent.blood]
 desc = "Fresh blood (wounds, fresh kills)."
-zombie_default = 8
+dead_default = 8
 
 [scent.flesh]
 desc = "Raw meat, fish, fresh carcasses — usable as lures."
-zombie_default = 5
+dead_default = 5
 
 [scent.rot]
-desc = "Decay: corpses, zombie gore, spoiled meat. Dominant masking scent."
-zombie_default = 0
+desc = "Decay: corpses, corpse gore, spoiled meat. Dominant masking scent."
+dead_default = 0
 
 [scent.food]
 desc = "Cooked/packaged food, cooking smells."
-zombie_default = 1
+dead_default = 1
 
 [scent.smoke]
 desc = "Burning, fire, exhaust. Masks and mildly repels (N007)."
-zombie_default = -3
+dead_default = -3
 
 [scent.chemical]
 desc = "Fuel, solvents, bleach, ammonia. Masks; strong doses repel."
-zombie_default = -2
+dead_default = -2
 
 [scent.perfume]
 desc = "Perfume, cologne, strong soaps and air fresheners. Masks human scent at close range."
-zombie_default = -1
+dead_default = -1
 
 # Dominance (who masks whom): perceived(c) = raw(c) * D / (D + sum dominance(d->c) * raw(d)).
 # Values 0..10; tuning data for the Fields system.

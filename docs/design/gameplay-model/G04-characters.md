@@ -2,28 +2,30 @@
 
 Per G01 D1.2 (recommended), the player's character is an ordinary **creature**, driven by a player
 controller. **There are no NPC survivors** (owner note N005); the model still keeps the player
-non-special, which enables zombification and whatever the owner adds later. Zombies share the body model, but usually exist
+non-special, which enables turning into one of the Dead and whatever the owner adds later. Dead share the body model, but usually exist
 as compact mob records (G01 D1.3).
 
 ## Proposal: a character is these components
 
 | Component | Contains | Why it exists / what it enables later |
 |---|---|---|
-| **Identity** | Name, age, background/occupation, appearance notes | Backstory, NPC recognition, zombie "former lives", heirs |
+| **Identity** | Name, age, background/occupation, appearance notes | Backstory, NPC recognition, dead "former lives", heirs |
 | **Body** | A body plan from a template (human, dog, …) with per-part state | Injuries, bites, amputations, wearing and holding (G05) |
 | **Attributes** | Physical and mental capacities | Checks and contests (pushing, carrying, climbing) |
 | **Skills** | Learned proficiencies | Actions succeed faster or better (G06) |
 | **Traits** | Permanent quirks (asthmatic, strong, light sleeper) | Character variety without special-case code |
 | **Conditions** | Temporary states (bleeding, infected, exhausted, soaked, prone) | Status effects as data |
 | **Needs** | Hunger, thirst, fatigue, warmth… | Survival pressure (G10) |
+| **Mood** | One axis, Depressed ↔ Manic; mostly hidden from the player (N014) | Feeds exhaustion, addiction chance and random negatives when low; survival benefits but failure risk on sensitive crafting and misfires when manic |
+| **Sanity** | Grip on reality (N014) | Low values cause hallucinations: gibberish speech, phantom objects, phantom modifiers (a "full" bottle that is empty when drunk); psychedelics move it and change visuals only |
 | **Equipment** | Physical: hands, worn slots and layers, worn containers | See G03 D3.3 |
-| **Senses** | Which senses, and how good they are | Symmetric with zombies: the player may *also* sense scent faintly |
+| **Senses** | Which senses, and how good they are | Symmetric with Dead: the player may *also* sense scent faintly |
 | **Emissions** | **Scent profile per channel**, noise when moving and acting | Drives the core mob mechanic; masking changes this profile |
 | **Knowledge** | Map memory, known places, recipes, facts | What the character knows vs what exists (G09) |
 | ~~Relationships~~ | *Removed: no NPCs (N005)* | — |
-| **Controller** | Player, AI behaviour, or none | Possession, companions, zombification |
+| **Controller** | Player, AI behaviour, or none | Possession, companions, turning into one of the Dead |
 
-Any of these can be missing. A zombie has no Skills or Knowledge; a dog has a different body plan
+Any of these can be missing. One of the Dead has no Skills or Knowledge; a dog has a different body plan
 and senses. A future system adds a new component without touching existing characters.
 
 ## Decisions
@@ -48,9 +50,10 @@ and senses. A future system adds a new component without touching existing chara
   after that you learn by doing.
 - **Recommendation: C.** Every start is meaningfully different, it makes the apocalypse backstory
   matter, and it needs no XP abstraction.
-- **Owner input (N012):**
-  - Skills train at an unrealistic rate, up to **beyond-human** levels (0–20 scale, see
-    `survival-actions.md` §2.15).
+- **Owner input (N012, N014):**
+  - Skills train at an unrealistic rate, up to **beyond-human** levels. Scale is **1–100**
+    (1 never heard of it · 10 can use it fine · 30 skilled · 50 ten years · above 50 advanced
+    to savant); see `survival-actions.md` §2.15 for the success-percentage model.
   - **Reading** found books and manuals is a real learning path alongside use.
   - Option C therefore gains a third source: background-seeded, then use-based **and reading**.
 - **Owner decision:** _pending_ (confirm option C, with reading as a learning source)
@@ -68,7 +71,7 @@ and senses. A future system adds a new component without touching existing chara
 
 - **A. Permadeath:** new world or new game.
 - **B. Succession:** continue as another survivor in the same persistent world. Your old character
-  may rise as a zombie with your gear.
+  may rise as one of the Dead with your gear.
 - **C. Both,** as a difficulty option.
 - **Recommendation: C, with B as the default.**
   - The persistent, endless world makes continuity valuable.
@@ -86,7 +89,10 @@ and senses. A future system adds a new component without touching existing chara
 - **C. Hidden.**
 - **Recommendation: B.** Descriptive by default, with an optional numeric toggle for players who
   want it.
-- **Owner decision:** _pending_
+- **Owner input (N014):** skills and action success are shown as **percentages** with the
+  contributing skills listed; Mood stays mostly hidden. So: numbers for skills and chances,
+  descriptive for body and needs unless toggled.
+- **Owner decision:** _pending_ (confirm the split above)
 
 ### D4.6 — Can the player be infected and turn?
 

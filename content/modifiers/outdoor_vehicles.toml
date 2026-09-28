@@ -274,7 +274,7 @@ pick = 1
 entries = [
   { w = 5, text = "holding a tiny fishing rod" },
   { w = 3, text = "pushing a wheelbarrow of painted flowers" },
-  { w = 2, text = "painted as a zombie for last Halloween" },
+  { w = 2, text = "painted as one of the Dead for last Halloween" },
   { w = 2, text = "holding a sign reading 'GO AWAY'", add_tags = ["flavor.readable"] },
   { w = 1, text = "wearing a knitted scarf someone made for it", add_tags = ["flavor.sentimental"] },
 ]

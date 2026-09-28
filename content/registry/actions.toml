@@ -3,8 +3,14 @@
 # against authored content (survival-actions.md §4; N011).
 #
 # Each action:
-#   desc, mechanics = [...], skill, difficulty (0..20), min_skill (expert gate, default 0),
-#   tool_substitution (capability points bought per skill point above difficulty, default 0.25),
+#   desc, mechanics = [...], skill, difficulty (1..100: the skill level at which the success
+#   chance reaches `ceiling`), unlock (1..100: below it the chance is 0%; default difficulty-20,
+#   min 1), ceiling (best chance in %, default 95, never 100),
+#   on_fail = [{ w, outcome = failed|damaged_components|bad_event }] (default: failed 70,
+#   damaged_components 25, bad_event 5; weights shift toward the worse outcomes the further the
+#   skill is below difficulty), skills = [...] for multi-skill actions (each entry has skill,
+#   unlock, difficulty; the shown chance is the product),
+#   tool_substitution (capability points bought per skill point above difficulty, default 0.05),
 #   time_s (base), noise, roles.<role> = { desc, need = [predicate, ...], optional = bool }
 #
 # Predicates (all must hold for a role; `any = [[...],[...]]` = at least one group holds):
@@ -29,7 +35,7 @@
 desc = "Empty a container onto the ground or into another."
 mechanics = ["M1", "M2"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 10
 noise = "quiet"
 roles.container = { desc = "container being emptied", need = [ { feature = "container" }, { param = "container.opening_mm", min = 1 } ] }
@@ -38,7 +44,7 @@ roles.container = { desc = "container being emptied", need = [ { feature = "cont
 desc = "Fill a container with a liquid/granular substance from a source."
 mechanics = ["M1"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 30
 noise = "quiet"
 roles.dest = { desc = "container to fill", need = [ { feature = "container" }, { compatible_with = "liquid" } ] }
@@ -48,7 +54,7 @@ roles.liquid = { desc = "substance", need = [ { substance = true } ] }
 desc = "Siphon liquid from a tank to a lower container through a tube."
 mechanics = ["M1"]
 skill = "mechanics"
-difficulty = 1
+difficulty = 5
 time_s = 120
 noise = "quiet"
 roles.tube = { desc = "hose/tubing", need = [ { feature = "tube" }, { capability = "siphon", min = 1 } ] }
@@ -60,7 +66,7 @@ roles.liquid = { desc = "substance being siphoned", need = [ { substance = true 
 desc = "Drain a tank by puncturing it (messy, loud-ish)."
 mechanics = ["M1", "M8"]
 skill = "mechanics"
-difficulty = 2
+difficulty = 10
 time_s = 60
 noise = "normal"
 roles.tool = { desc = "piercing/drilling tool", need = [ { any = [ [ { capability = "pierce", min = 5 } ], [ { capability = "drill", min = 3 } ] ] } ] }
@@ -70,7 +76,7 @@ roles.source = { desc = "tank", need = [ { feature = "fuel_tank" } ] }
 desc = "Boil water to make it safe."
 mechanics = ["M22", "M3"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 900
 noise = "quiet"
 roles.pot = { desc = "heat-resistant liquid container", need = [ { prop = "heat_resistant", min = 1 }, { param = "container.compat", has = "liquid" } ] }
@@ -80,7 +86,7 @@ roles.heat = { desc = "heat source or fire", need = [ { any = [ [ { feature = "h
 desc = "Treat water with tablets or bleach."
 mechanics = ["M22"]
 skill = "survival"
-difficulty = 1
+difficulty = 5
 time_s = 1800
 noise = "silent"
 roles.agent = { desc = "purifier", need = [ { capability = "purify", min = 1 } ] }
@@ -91,7 +97,7 @@ roles.water = { desc = "container of water", need = [ { param = "container.compa
 desc = "Throw an item at a tile."
 mechanics = ["M4"]
 skill = "throwing"
-difficulty = 0
+difficulty = 1
 time_s = 2
 noise = "quiet"
 roles.item = { desc = "thrown item", need = [ { prop = "mass_g", max = 8000 }, { prop = "fixed", max = 0 } ] }
@@ -100,7 +106,7 @@ roles.item = { desc = "thrown item", need = [ { prop = "mass_g", max = 8000 }, {
 desc = "Light a match/lighter/torch."
 mechanics = ["M3"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 3
 noise = "quiet"
 roles.igniter = { desc = "ignition source", need = [ { feature = "ignition" } ] }
@@ -109,7 +115,7 @@ roles.igniter = { desc = "ignition source", need = [ { feature = "ignition" } ] 
 desc = "Set fire to a tile's fuel (spill, debris, flammable terrain)."
 mechanics = ["M3", "M2"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 2
 noise = "normal"
 roles.igniter = { desc = "lit ignition source (may be thrown)", need = [ { feature = "ignition" } ] }
@@ -119,7 +125,7 @@ roles.fuel = { desc = "substance on the tile; must be at/above its flash point (
 desc = "Build a sustained fire from tinder, kindling and fuel."
 mechanics = ["M3"]
 skill = "survival"
-difficulty = 1
+difficulty = 5
 time_s = 300
 noise = "quiet"
 roles.igniter = { desc = "ignition source", need = [ { feature = "ignition" } ] }
@@ -130,8 +136,8 @@ roles.fuel = { desc = "fuel (wood, charcoal, paper stacks)", need = [ { tag = "u
 desc = "Start a fire with no ignition source (bow drill) — expert survival."
 mechanics = ["M3"]
 skill = "survival"
-difficulty = 9
-min_skill = 9
+difficulty = 45
+unlock = 45
 time_s = 1200
 noise = "quiet"
 roles.tinder = { desc = "tinder", need = [ { tag = "use.tinder" } ] }
@@ -141,7 +147,7 @@ roles.wood = { desc = "dry wood stick", need = [ { shape_in = ["rod"] }, { flamm
 desc = "Put out a fire."
 mechanics = ["M3"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 10
 noise = "normal"
 roles.agent = { desc = "extinguisher, blanket, sand, water container", need = [ { any = [ [ { capability = "extinguish", min = 1 } ], [ { param = "container.compat", has = "liquid" } ] ] } ] }
@@ -150,7 +156,7 @@ roles.agent = { desc = "extinguisher, blanket, sand, water container", need = [ 
 desc = "Cook food over heat."
 mechanics = ["M22"]
 skill = "cooking"
-difficulty = 0
+difficulty = 1
 time_s = 900
 noise = "quiet"
 roles.food = { desc = "cookable food", need = [ { tag_prefix = "cat.food" } ] }
@@ -161,7 +167,7 @@ roles.heat = { desc = "heat source", need = [ { any = [ [ { feature = "heat_sour
 desc = "Take an object apart into salvage parts."
 mechanics = ["M5"]
 skill = "mechanics"
-difficulty = 2
+difficulty = 10
 time_s = 600
 noise = "normal"
 roles.target = { desc = "object with salvage parts", need = [ { has_salvage = true } ] }
@@ -171,7 +177,7 @@ roles.tool = { desc = "tool meeting the part's salvage requirement", optional = 
 desc = "Cut a length off hose/rope/cable/cloth, or cut sheets."
 mechanics = ["M6", "M8"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 30
 noise = "quiet"
 roles.target = { desc = "divisible item", need = [ { divisible_mode = "length" } ] }
@@ -181,7 +187,7 @@ roles.tool = { desc = "cutting tool", need = [ { any = [ [ { capability = "cut",
 desc = "Tear cloth into strips (bandages, bindings)."
 mechanics = ["M6"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 30
 noise = "quiet"
 roles.target = { desc = "cloth that tears by hand (divisible.needs = none; denim etc. need a blade: use cut_to_length)", need = [ { divisible_mode = "sheet" }, { divisible_by_hand = true } ] }
@@ -190,7 +196,7 @@ roles.target = { desc = "cloth that tears by hand (divisible.needs = none; denim
 desc = "Cut cloth/leather/tarp into strips or panels with a blade (for tough fabrics that won't tear)."
 mechanics = ["M6", "M8"]
 skill = "tailoring"
-difficulty = 0
+difficulty = 1
 time_s = 120
 noise = "quiet"
 roles.target = { desc = "sheet-divisible material", need = [ { divisible_mode = "sheet" } ] }
@@ -200,7 +206,7 @@ roles.tool = { desc = "blade", need = [ { capability = "cut", min = 2 } ] }
 desc = "Saw through a board, pipe, wall section or door."
 mechanics = ["M8"]
 skill = "carpentry"
-difficulty = 1
+difficulty = 5
 time_s = 300
 noise = "normal"
 roles.tool = { desc = "saw", need = [ { capability = "saw", vs = "target" } ] }
@@ -210,7 +216,7 @@ roles.target = { desc = "thing being sawn", need = [] }
 desc = "Pry open a door, window, crate, lid, or pull boards/nails."
 mechanics = ["M8", "M10"]
 skill = "athletics"
-difficulty = 1
+difficulty = 5
 time_s = 60
 noise = "loud"
 roles.tool = { desc = "lever", need = [ { capability = "pry", min = 4 } ] }
@@ -219,7 +225,7 @@ roles.tool = { desc = "lever", need = [ { capability = "pry", min = 4 } ] }
 desc = "Smash glass, locks, drywall, furniture."
 mechanics = ["M8", "M13"]
 skill = "melee"
-difficulty = 0
+difficulty = 1
 time_s = 5
 noise = "very_loud"
 roles.tool = { desc = "blunt tool", need = [ { capability = "hammer", min = 3 } ] }
@@ -228,7 +234,7 @@ roles.tool = { desc = "blunt tool", need = [ { capability = "hammer", min = 3 } 
 desc = "Dig soil (pits, moats, trenches) — large volumes take long (N004)."
 mechanics = ["M8"]
 skill = "construction"
-difficulty = 1
+difficulty = 5
 time_s = 3600
 noise = "normal"
 roles.tool = { desc = "digging tool", need = [ { capability = "dig", min = 3 } ] }
@@ -237,7 +243,7 @@ roles.tool = { desc = "digging tool", need = [ { capability = "dig", min = 3 } ]
 desc = "Restore an edge."
 mechanics = ["M22"]
 skill = "metalworking"
-difficulty = 1
+difficulty = 5
 time_s = 300
 noise = "quiet"
 roles.stone = { desc = "sharpener", need = [ { capability = "sharpen", min = 1 } ] }
@@ -248,7 +254,7 @@ roles.blade = { desc = "edged item", need = [ { feature = "edge" } ] }
 desc = "Attach a head/part to a socket with a fastener (Load vs Hold)."
 mechanics = ["M7"]
 skill = "carpentry"
-difficulty = 1
+difficulty = 5
 tool_substitution = 0.0
 time_s = 120
 noise = "quiet"
@@ -260,7 +266,7 @@ roles.fastener = { desc = "tape/glue/cord/wire/screws/nails", need = [ { tag = "
 desc = "Tie things together (splints, bundles, rope ladders, knotted sheets)."
 mechanics = ["M7"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 60
 noise = "quiet"
 roles.binding = { desc = "cord/strips/tape", need = [ { any = [ [ { capability = "bind", min = 2 } ], [ { tag = "cat.fastener.tape" } ] ] } ] }
@@ -269,8 +275,8 @@ roles.binding = { desc = "cord/strips/tape", need = [ { any = [ [ { capability =
 desc = "Weld two metal items."
 mechanics = ["M7"]
 skill = "metalworking"
-difficulty = 6
-min_skill = 3
+difficulty = 30
+unlock = 15
 time_s = 300
 noise = "very_loud"
 roles.welder = { desc = "welder", need = [ { capability = "weld", min = 5 } ] }
@@ -279,7 +285,7 @@ roles.welder = { desc = "welder", need = [ { capability = "weld", min = 5 } ] }
 desc = "Stitch cloth/leather (repairs, armour layers, sutures)."
 mechanics = ["M7"]
 skill = "tailoring"
-difficulty = 1
+difficulty = 5
 time_s = 600
 noise = "silent"
 roles.needle = { desc = "needle and thread", need = [ { capability = "sew", min = 3 } ] }
@@ -289,7 +295,7 @@ roles.needle = { desc = "needle and thread", need = [ { capability = "sew", min 
 desc = "Board up a door/window."
 mechanics = ["M17", "M7"]
 skill = "carpentry"
-difficulty = 1
+difficulty = 5
 time_s = 600
 noise = "loud"
 roles.boards = { desc = "planks/boards", need = [ { shape_in = ["sheet"] }, { tag = "use.barricade" } ] }
@@ -300,7 +306,7 @@ roles.tool = { desc = "hammer or driver", need = [ { any = [ [ { capability = "h
 desc = "Push heavy furniture against an opening."
 mechanics = ["M17", "M20"]
 skill = "athletics"
-difficulty = 0
+difficulty = 1
 time_s = 60
 noise = "loud"
 roles.furniture = { desc = "heavy blocking object", need = [ { prop = "mass_g", min = 20000 } ] }
@@ -309,7 +315,7 @@ roles.furniture = { desc = "heavy blocking object", need = [ { prop = "mass_g", 
 desc = "String a tripwire that rattles cans or trips a noisemaker."
 mechanics = ["M18", "M13"]
 skill = "trapping"
-difficulty = 2
+difficulty = 10
 time_s = 300
 noise = "quiet"
 roles.wire = { desc = "cord/wire", need = [ { capability = "bind", min = 2 } ] }
@@ -319,7 +325,7 @@ roles.noisemaker = { desc = "cans/bells/alarm", need = [ { any = [ [ { feature =
 desc = "Descend from height on a rope tied to an anchor."
 mechanics = ["M19"]
 skill = "athletics"
-difficulty = 2
+difficulty = 10
 time_s = 60
 noise = "normal"
 roles.rope = { desc = "rope/sheets/hose", need = [ { capability = "bind", min = 3 }, { param_or_dim_min = 3000 } ] }
@@ -329,7 +335,7 @@ roles.anchor = { desc = "anchor point", need = [ { feature = "anchor" } ] }
 desc = "Climb a fence, ladder, tree or wall."
 mechanics = ["M19"]
 skill = "athletics"
-difficulty = 1
+difficulty = 5
 time_s = 20
 noise = "normal"
 roles.fixture = { desc = "climbable object", need = [ { feature = "climbable" } ] }
@@ -338,7 +344,7 @@ roles.fixture = { desc = "climbable object", need = [ { feature = "climbable" } 
 desc = "Ride a bicycle: 2 tiles per turn; stopping costs an extra turn (2 more tiles); obstacles in the path risk a crash (N013)."
 mechanics = ["movement", "M13"]
 skill = "athletics"
-difficulty = 1
+difficulty = 5
 time_s = 1
 noise = "quiet"
 roles.vehicle = { desc = "rideable", need = [ { feature = "rideable" } ] }
@@ -347,8 +353,8 @@ roles.vehicle = { desc = "rideable", need = [ { feature = "rideable" } ] }
 desc = "Free-climb brickwork with no handholds (beyond human)."
 mechanics = ["M19"]
 skill = "athletics"
-difficulty = 12
-min_skill = 12
+difficulty = 60
+unlock = 60
 time_s = 120
 noise = "quiet"
 
@@ -357,7 +363,7 @@ noise = "quiet"
 desc = "Open a lock with its key."
 mechanics = ["M10"]
 skill = "security"
-difficulty = 0
+difficulty = 1
 time_s = 5
 noise = "silent"
 roles.key = { desc = "matching key", need = [ { tag = "use.key" } ] }
@@ -366,7 +372,7 @@ roles.key = { desc = "matching key", need = [ { tag = "use.key" } ] }
 desc = "Pick a lock — only with a lockpick set (N013: a rare item); no improvised picks."
 mechanics = ["M10"]
 skill = "security"
-difficulty = 5
+difficulty = 25
 time_s = 120
 noise = "silent"
 tool_substitution = 0.5
@@ -377,7 +383,7 @@ roles.lock = { desc = "pickable lock", optional = true, need = [ { param = "lock
 desc = "Force entry by bashing off the knob/lock (N013). Extra locks (deadbolt, chain, bar) raise the resistance; loud."
 mechanics = ["M10", "M8", "M13"]
 skill = "athletics"
-difficulty = 1
+difficulty = 5
 time_s = 30
 noise = "very_loud"
 roles.tool = { desc = "heavy blunt tool", need = [ { capability = "hammer", min = 4 } ] }
@@ -387,8 +393,8 @@ roles.door = { desc = "locked door or container", need = [ { feature = "lock" },
 desc = "Open a combination safe by feel (expert)."
 mechanics = ["M10"]
 skill = "security"
-difficulty = 15
-min_skill = 15
+difficulty = 75
+unlock = 75
 time_s = 1800
 noise = "silent"
 
@@ -397,7 +403,7 @@ noise = "silent"
 desc = "Power a device with a matching battery."
 mechanics = ["M9"]
 skill = "electronics"
-difficulty = 0
+difficulty = 1
 time_s = 10
 noise = "silent"
 roles.device = { desc = "device with a battery slot", need = [ { feature = "slot" } ] }
@@ -407,7 +413,7 @@ roles.battery = { desc = "battery matching the slot", need = [ { fits_slot_of = 
 desc = "Wire a 12 V device to a 12 V battery."
 mechanics = ["M9"]
 skill = "electronics"
-difficulty = 3
+difficulty = 15
 time_s = 300
 noise = "quiet"
 roles.battery = { desc = "12 V source", need = [ { param = "power_source.voltage", equals = "dc_12v" } ] }
@@ -417,7 +423,7 @@ roles.device = { desc = "12 V device", need = [ { param = "power_use.voltage", e
 desc = "Fuel and start a generator (loud, smoky)."
 mechanics = ["M9", "M13", "M14"]
 skill = "mechanics"
-difficulty = 1
+difficulty = 5
 time_s = 60
 noise = "very_loud"
 roles.generator = { desc = "generator", need = [ { feature = "fuel_tank" }, { param = "power_source.voltage", equals = "ac_mains" } ] }
@@ -426,7 +432,7 @@ roles.generator = { desc = "generator", need = [ { feature = "fuel_tank" }, { pa
 desc = "Set a timed noisemaker and leave it."
 mechanics = ["M13"]
 skill = "trapping"
-difficulty = 0
+difficulty = 1
 time_s = 20
 noise = "silent"
 roles.alarm = { desc = "alarm device", need = [ { feature = "alarm" } ] }
@@ -435,7 +441,7 @@ roles.alarm = { desc = "alarm device", need = [ { feature = "alarm" } ] }
 desc = "Throw something that breaks loudly elsewhere."
 mechanics = ["M4", "M13"]
 skill = "throwing"
-difficulty = 0
+difficulty = 1
 time_s = 2
 noise = "very_loud"
 roles.item = { desc = "breakable/noisy thrown item", need = [ { prop = "mass_g", max = 3000 } ] }
@@ -445,7 +451,7 @@ roles.item = { desc = "breakable/noisy thrown item", need = [ { prop = "mass_g",
 desc = "Smear a scent substance on body/clothes (masking, lures on objects)."
 mechanics = ["M14"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 60
 noise = "quiet"
 roles.agent = { desc = "scent substance", need = [ { substance = true }, { substance_param = "applicable_to_body", min = 1 } ] }
@@ -454,7 +460,7 @@ roles.agent = { desc = "scent substance", need = [ { substance = true }, { subst
 desc = "Wash off scent with water and soap."
 mechanics = ["M14", "M1"]
 skill = "survival"
-difficulty = 0
+difficulty = 1
 time_s = 600
 noise = "quiet"
 roles.soap = { desc = "soap", need = [ { tag = "use.soap" } ] }
@@ -464,7 +470,7 @@ roles.soap = { desc = "soap", need = [ { tag = "use.soap" } ] }
 desc = "Open a sealed can."
 mechanics = ["M15"]
 skill = "cooking"
-difficulty = 0
+difficulty = 1
 time_s = 20
 noise = "quiet"
 roles.tool = { desc = "can opener or improvised", need = [ { any = [ [ { capability = "can_open", min = 1 } ], [ { capability = "pierce", min = 4 } ], [ { capability = "pry", min = 5 } ] ] } ] }
@@ -473,7 +479,7 @@ roles.tool = { desc = "can opener or improvised", need = [ { any = [ [ { capabil
 desc = "Bandage a bleeding wound."
 mechanics = ["M15"]
 skill = "medicine"
-difficulty = 0
+difficulty = 1
 time_s = 60
 noise = "silent"
 roles.dressing = { desc = "bandage or clean strips", need = [ { any = [ [ { medical = "bleed_stop", min = 1 } ], [ { divisible_mode = "sheet" } ] ] } ] }
@@ -482,7 +488,7 @@ roles.dressing = { desc = "bandage or clean strips", need = [ { any = [ [ { medi
 desc = "Splint a fracture."
 mechanics = ["M15", "M7"]
 skill = "medicine"
-difficulty = 3
+difficulty = 15
 time_s = 300
 noise = "quiet"
 roles.rigid = { desc = "rigid straight item", need = [ { shape_in = ["rod", "sheet"] }, { rigidity_min = 5 } ] }
@@ -492,8 +498,8 @@ roles.binding = { desc = "strips/tape/cord", need = [ { any = [ [ { capability =
 desc = "Remove debris, repair severe wounds (expert medicine)."
 mechanics = ["M15"]
 skill = "medicine"
-difficulty = 12
-min_skill = 10
+difficulty = 60
+unlock = 50
 time_s = 3600
 noise = "quiet"
 roles.tools = { desc = "sharp blade + needle", need = [ { capability = "cut", min = 5 } ] }
@@ -503,7 +509,7 @@ roles.tools = { desc = "sharp blade + needle", need = [ { capability = "cut", mi
 desc = "Read a note, map, manual or book (manuals/books may teach skills, N012)."
 mechanics = ["M21"]
 skill = "scavenging"
-difficulty = 0
+difficulty = 1
 time_s = 600
 noise = "silent"
 roles.text = { desc = "readable", need = [ { feature = "readable" } ] }

@@ -2,7 +2,7 @@
 """The single pre-commit / pre-review gate. Run before every commit and before
 marking a queue item Validation or complete.
 
-  python3 tools/verify.py            # docs + format + headless build + tests
+  python3 tools/verify.py            # docs + content lint/tests + format + headless build + tests
   python3 tools/verify.py --frontend # also build the SDL frontend (local machines)
   python3 tools/verify.py --fix      # apply clang-format instead of checking
   python3 tools/verify.py --release  # use the optimised headless preset (perf work)
@@ -47,6 +47,8 @@ def main() -> int:
     args = p.parse_args()
 
     run("docs", [sys.executable, "tools/validate_docs.py"])
+    run("content-lint", [sys.executable, "tools/content/lint.py"])
+    run("content-tests", [sys.executable, "tools/content/test.py"])
 
     if shutil.which("clang-format"):
         mode = ["-i"] if args.fix else ["--dry-run", "-Werror"]

@@ -15,7 +15,7 @@ tests/content/chains/*.toml:
         contents = { substance, ml }  used for thrown-mass checks
         expect_impact = "<outcome>"   outcome of the thrown/bound item at its throw energy
         expect_range_min = n          throw range in tiles with contents
-        min_skill = n                 skill level the chain assumes for this step
+        min_skill = n                 skill level (1..100) the chain assumes for this step; must reach the action's unlock
 """
 
 from __future__ import annotations
@@ -258,8 +258,8 @@ def run_chains(ctx: Ctx) -> list[str]:
                         errors.append(f"{where}: bound id '{rid}' is not an item or substance")
                 if any(e.startswith(where) for e in errors):
                     continue
-                if act.get("min_skill", 0) > step.get("min_skill", 0):
-                    errors.append(f"{where}: action needs skill {act['skill']} >= {act['min_skill']}; "
+                if act.get("unlock", 0) > step.get("min_skill", 0):
+                    errors.append(f"{where}: action needs skill {act['skill']} >= {act['unlock']}; "
                                   f"chain step must declare min_skill")
                 for role, rdef in (act.get("roles") or {}).items():
                     if role not in bind:

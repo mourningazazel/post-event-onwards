@@ -54,7 +54,7 @@ A scenario defines:
 - step limit
 - **expectations**
 
-Any value can be overridden from the command line, e.g. `--set spawns.zombie.count=20000`.
+Any value can be overridden from the command line, e.g. `--set spawns.dead.count=20000`.
 
 Starter set (grows with each feature):
 
@@ -67,7 +67,7 @@ Starter set (grows with each feature):
 - `alert-cascade-city-block`
 - `swap-contest-doorway`
 - `dig-under-building`
-- `loot-promoted-zombie`
+- `loot-promoted-dead`
 - `nested-containers-stress`
 - `save-load-mid-cascade`
 - `walk-between-towns`
@@ -110,7 +110,7 @@ Starter set (grows with each feature):
 Scenarios declare outcomes. For example:
 
 - "Approaching upwind, fewer than 5% of mobs reach the player within 200 steps."
-- "The zombie's pockets are generated when searched, and contain items consistent with its former
+- "The dead one's pockets are generated when searched, and contain items consistent with its former
   occupation."
 - "A trip during a swap contest never leaves a unit inside a wall."
 - "One grunt alerts at most *N* units (the chain-depth cap works)."
@@ -137,7 +137,7 @@ These are reachable from the keyboard and the agent protocol:
 - set scent, set wind
 - advance time
 - inspect any thing
-- force-promote a zombie
+- force-promote one of the Dead
 - dump state
 
 ### 8. Playtest journal
@@ -168,7 +168,7 @@ Playtests deliberately combine mechanics. Categories to probe:
 | **Movement × terrain** | A swap-contest trip next to a freshly dug hole: does the unit fall? Does it end up inside terrain? |
 | **Terrain × structures** | Digging under a building: does the floor above hold, collapse, or float? Do items on it fall? |
 | **Items × containment** | Splitting and merging stacks inside nested containers: duplication or loss? Is capacity enforced through parts? |
-| **Detail levels × persistence** | Promote a zombie, loot half its pockets, walk away, return: are the same zombie and pockets there? |
+| **Detail levels × persistence** | Promote one of the Dead, loot half its pockets, walk away, return: are the same dead and pockets there? |
 | **Save × mid-action** | Save during an alert cascade or halfway through a dig: does the reload continue identically? |
 | **Aggregation × individuals** | A horde merges into aggregate population and spawns back: are counts and wounded units conserved? |
 | **Death × succession** | Does the heir spawn inside a horde? Does the old body rise with the right gear? |

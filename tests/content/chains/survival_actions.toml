@@ -121,12 +121,12 @@ action = "rope_descent"
 bind = { rope = "garden_hose", anchor = "radiator" }
 
 [chain.scent_mask]
-title = "Zombie gore smeared on clothes before a supermarket run"
+title = "Corpse gore smeared on clothes before a supermarket run"
 source = "survival-actions.md §4.8, P-SC-03"
 
 [[chain.scent_mask.steps]]
 action = "apply_scent"
-bind = { agent = "zombie_gore" }
+bind = { agent = "corpse_gore" }
 
 [chain.car_battery_lamp]
 title = "Car battery pulled and wired to a 12 V work light"
@@ -142,7 +142,7 @@ action = "wire_12v"
 bind = { battery = "car_battery", device = "work_light_12v" }
 
 [chain.glass_bottle_noise]
-title = "Throw a glass bottle across the street to pull hearing zombies away"
+title = "Throw a glass bottle across the street to pull hearing Dead away"
 source = "survival-actions.md §2.3"
 
 [[chain.glass_bottle_noise.steps]]
@@ -167,4 +167,4 @@ source = "N012"
 [[chain.expert_friction_fire.steps]]
 action = "friction_fire"
 bind = { tinder = "newspaper", wood = "firewood" }
-min_skill = 9
+min_skill = 45

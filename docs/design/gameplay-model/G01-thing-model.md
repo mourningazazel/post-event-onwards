@@ -8,7 +8,7 @@ persistence) builds on the categories chosen here.
 | Kind | What it is | Examples | Why it's separate |
 |---|---|---|---|
 | **Terrain** | The matter of the world grid: one material and shape per cell | Soil, rock, water, asphalt, brick wall, concrete floor, air | There are billions of cells. They must be compact arrays, not objects. Digging and sawing act on *matter*. |
-| **Things** | Discrete objects with identity | The player, survivors, zombies, a knife, a backpack, a door, a car, a fridge | Things carry individual state and can be moved, owned, nested, examined |
+| **Things** | Discrete objects with identity | The player, survivors, Dead, a knife, a backpack, a door, a car, a fridge | Things carry individual state and can be moved, owned, nested, examined |
 | **Fields** | Continuous quantities over space | Scent channels, light, temperature, wind | Things and terrain emit or block them; creatures sense them |
 | **Places** | Named identities with no body | A region, a city, a building, a room, a lake (as a landmark) | Places carry meaning: name, type, owner, history, "the kitchen". Quests, knowledge and generation refer to them. |
 
@@ -43,24 +43,24 @@ persistence) builds on the categories chosen here.
   - switching characters
   - heir or succession on death (the research flagged this as a good fit for permadeath)
   - companions using the same actions
-  - the player **turning into a zombie** after infection (swap the controller and archetype)
+  - the player **turning into one of the Dead** after infection (swap the controller and archetype)
   - NPCs doing everything the player can (looting, digging)
 - **Cost:** player-only conveniences must be written as rules that *could* apply to anyone.
 - **Owner decision:** _pending_
 
-### D1.3 — Are zombies the same kind of thing as humans?
+### D1.3 — Are Dead the same kind of thing as humans?
 
-- **A. Different kinds:** zombies are simple monsters.
+- **A. Different kinds:** Dead are simple monsters.
 - **B. Same kind in principle, different detail tier.**
-  - Every zombie is conceptually a creature with a body, clothes and pockets.
+  - Every dead is conceptually a creature with a body, clothes and pockets.
   - Most exist only as a **compact mob record** (archetype, position, a few numbers).
-  - A zombie is **promoted** to a full creature when something needs the detail: it is examined,
+  - One of the Dead is **promoted** to a full creature when something needs the detail: it is examined,
     killed and searched, or grabs you.
   - Its detail is generated from its record and seed, e.g. a former office worker with a badge
     and keys in the pockets.
-- **Recommendation: B.** Mob performance stays as benchmarked, and every zombie can still be a
+- **Recommendation: B.** Mob performance stays as benchmarked, and every dead can still be a
   person with a story when the player looks closely.
-- **Future flexibility:** zombie variants, visible "former lives" (police zombies carry police
+- **Future flexibility:** dead variants, visible "former lives" (police Dead carry police
   gear), and loot that makes sense.
 - **Owner decision:** _pending_
 

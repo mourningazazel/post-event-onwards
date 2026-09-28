@@ -57,26 +57,26 @@ ops = [
 ]
 
 # ============================================================== skill manual subjects (N012)
-# Tiers: guide (max 3-5, fast) · manual/handbook (6-8) · textbook/reference (10-12, slow, rare).
+# Tiers (1..100 scale): guide (max 15-25, fast) · manual/handbook (30-40) · textbook/reference (50-60, slow, rare).
 # Advanced texts are heavier and loot-worthy (value_class valuable).
 
 [modifier.manual_fitness]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "home fitness", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 4, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_climbing]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "rock climbing", order = 20 }
-ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 7, rate = 5 } } ]
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "athletics", max_level = 35, rate = 5 } } ]
 
 [modifier.manual_stalking]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "tracking and stalking", order = 20 }
-ops = [ { path = "name", op = "set", value = "field guide" }, { path = "teaches", op = "set", value = { skill = "stealth", max_level = 6, rate = 5 } } ]
+ops = [ { path = "name", op = "set", value = "field guide" }, { path = "teaches", op = "set", value = { skill = "stealth", max_level = 30, rate = 5 } } ]
 
 [modifier.manual_recon]
 kind = "variant"
@@ -84,7 +84,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "army reconnaissance", order = 20 }
 ops = [
   { path = "name", op = "set", value = "field manual" },
-  { path = "teaches", op = "set", value = { skill = "stealth", max_level = 11, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "stealth", max_level = 55, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
 ]
 
@@ -92,25 +92,25 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "self-defense", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "melee", max_level = 4, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "melee", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_martial_arts]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "martial arts", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "melee", max_level = 8, rate = 4 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "melee", max_level = 40, rate = 4 } } ]
 
 [modifier.manual_pitching]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "baseball pitching", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "throwing", max_level = 5, rate = 6 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "throwing", max_level = 25, rate = 6 } } ]
 
 [modifier.manual_hunter_education]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "hunter education", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 4, rate = 7 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_precision_rifle]
 kind = "variant"
@@ -118,7 +118,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "precision rifle", order = 20 }
 ops = [
   { path = "name", op = "set", value = "handbook" },
-  { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 10, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "marksmanship", max_level = 50, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
 ]
 
@@ -126,19 +126,19 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "traditional archery", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "archery", max_level = 7, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "archery", max_level = 35, rate = 5 } } ]
 
 [modifier.manual_home_repair]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "home repair", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 4, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_carpentry]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "framing and carpentry", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 7, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 35, rate = 5 } } ]
 
 [modifier.manual_timber_framing]
 kind = "variant"
@@ -146,7 +146,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "timber framing", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 11, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "carpentry", max_level = 55, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -156,7 +156,7 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "welding", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 6, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 30, rate = 5 } } ]
 
 [modifier.manual_blacksmithing]
 kind = "variant"
@@ -164,7 +164,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "blacksmithing", order = 20 }
 ops = [
   { path = "name", op = "set", value = "handbook" },
-  { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 10, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "metalworking", max_level = 50, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
 ]
 
@@ -172,7 +172,7 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "small engine repair", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 6, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 30, rate = 5 } } ]
 
 [modifier.manual_auto_service]
 kind = "variant"
@@ -180,7 +180,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "automotive service", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 10, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "mechanics", max_level = 50, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -190,13 +190,13 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "beginner's electronics", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "electronics", max_level = 4, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "electronics", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_ham_radio]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "amateur radio", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "electronics", max_level = 7, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "electronics", max_level = 35, rate = 5 } } ]
 
 [modifier.manual_electrician]
 kind = "variant"
@@ -204,7 +204,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "electrician's", order = 20 }
 ops = [
   { path = "name", op = "set", value = "reference" },
-  { path = "teaches", op = "set", value = { skill = "electronics", max_level = 10, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "electronics", max_level = 50, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -214,13 +214,13 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "plumbing", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "construction", max_level = 5, rate = 6 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "construction", max_level = 25, rate = 6 } } ]
 
 [modifier.manual_masonry]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "masonry and concrete", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "construction", max_level = 7, rate = 5 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "construction", max_level = 35, rate = 5 } } ]
 
 [modifier.manual_structural]
 kind = "variant"
@@ -228,7 +228,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "structural engineering", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "construction", max_level = 12, rate = 2 } },
+  { path = "teaches", op = "set", value = { skill = "construction", max_level = 60, rate = 2 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -238,25 +238,25 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "sewing", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 5, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 25, rate = 7 } } ]
 
 [modifier.manual_leathercraft]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "leathercraft", order = 20 }
-ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 8, rate = 4 } } ]
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "tailoring", max_level = 40, rate = 4 } } ]
 
 [modifier.manual_first_aid]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "first aid", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "medicine", max_level = 5, rate = 6 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "medicine", max_level = 25, rate = 6 } } ]
 
 [modifier.manual_wilderness_medicine]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "wilderness medicine", order = 20 }
-ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "medicine", max_level = 8, rate = 4 } } ]
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "medicine", max_level = 40, rate = 4 } } ]
 
 [modifier.manual_field_surgery]
 kind = "variant"
@@ -264,7 +264,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "emergency surgery", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "medicine", max_level = 12, rate = 2 } },
+  { path = "teaches", op = "set", value = { skill = "medicine", max_level = 60, rate = 2 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -274,25 +274,25 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "family", order = 20 }
-ops = [ { path = "name", op = "set", value = "cookbook" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 4, rate = 8 } } ]
+ops = [ { path = "name", op = "set", value = "cookbook" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 20, rate = 8 } } ]
 
 [modifier.manual_preserving]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "canning and preserving", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 8, rate = 5 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "cooking", max_level = 40, rate = 5 } } ]
 
 [modifier.manual_scout]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "scout", order = 20 }
-ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "survival", max_level = 5, rate = 6 } } ]
+ops = [ { path = "name", op = "set", value = "handbook" }, { path = "teaches", op = "set", value = { skill = "survival", max_level = 25, rate = 6 } } ]
 
 [modifier.manual_wilderness_survival]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "wilderness survival", order = 20 }
-ops = [ { path = "teaches", op = "set", value = { skill = "survival", max_level = 8, rate = 4 } } ]
+ops = [ { path = "teaches", op = "set", value = { skill = "survival", max_level = 40, rate = 4 } } ]
 
 [modifier.manual_military_survival]
 kind = "variant"
@@ -300,7 +300,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "military survival", order = 20 }
 ops = [
   { path = "name", op = "set", value = "field manual" },
-  { path = "teaches", op = "set", value = { skill = "survival", max_level = 12, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "survival", max_level = 60, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
 ]
 
@@ -308,7 +308,7 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "home security", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "security", max_level = 3, rate = 8 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "security", max_level = 15, rate = 8 } } ]
 
 [modifier.manual_locksmithing]
 kind = "variant"
@@ -316,7 +316,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "locksmithing", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "security", max_level = 10, rate = 3 } },
+  { path = "teaches", op = "set", value = { skill = "security", max_level = 50, rate = 3 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -326,7 +326,7 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "soap and candle making", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 4, rate = 7 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 20, rate = 7 } } ]
 
 [modifier.manual_chemistry]
 kind = "variant"
@@ -334,7 +334,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "high school chemistry", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 6, rate = 4 } },
+  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 30, rate = 4 } },
   { path = "dims_mm", op = "set", value = [280, 220, 40] },
   { path = "mass_g", op = "set", value = 1600 },
 ]
@@ -345,7 +345,7 @@ applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "organic chemistry", order = 20 }
 ops = [
   { path = "name", op = "set", value = "textbook" },
-  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 11, rate = 2 } },
+  { path = "teaches", op = "set", value = { skill = "chemistry", max_level = 55, rate = 2 } },
   { path = "value_class", op = "set", value = "valuable" },
   { path = "dims_mm", op = "set", value = [280, 220, 45] },
   { path = "mass_g", op = "set", value = 1800 },
@@ -355,13 +355,13 @@ ops = [
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "antique picker's", order = 20 }
-ops = [ { path = "name", op = "set", value = "price guide" }, { path = "teaches", op = "set", value = { skill = "scavenging", max_level = 5, rate = 6 } } ]
+ops = [ { path = "name", op = "set", value = "price guide" }, { path = "teaches", op = "set", value = { skill = "scavenging", max_level = 25, rate = 6 } } ]
 
 [modifier.manual_trapping]
 kind = "variant"
 applies_to = { items = ["skill_manual"] }
 name_part = { slot = "variant", text = "trapping and snaring", order = 20 }
-ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "trapping", max_level = 7, rate = 5 } } ]
+ops = [ { path = "name", op = "set", value = "guide" }, { path = "teaches", op = "set", value = { skill = "trapping", max_level = 35, rate = 5 } } ]
 
 [detail_table.skill_manual_subject]
 applies_to = { items = ["skill_manual"] }

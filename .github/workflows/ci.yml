@@ -11,13 +11,15 @@ concurrency:
 
 jobs:
   docs:
-    name: docs & queue
+    name: docs, queue & content
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: python3 tools/validate_docs.py
+      - run: python3 tools/content/lint.py
+      - run: python3 tools/content/test.py
 
   format:
     name: clang-format

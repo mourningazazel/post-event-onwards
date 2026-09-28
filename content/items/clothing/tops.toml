@@ -430,7 +430,7 @@ encumbrance = 0
 armor = { blunt = 0, cut = 0, pierce = 0, bite = 0 }
 desc = "A short-sleeved V-neck medical scrubs top with a chest pocket."
 glyph = "item.shirt"
-why = "Nurse/doctor outfit (P-IT-03) marks hospital zombies; tears into clean strips."
+why = "Nurse/doctor outfit (P-IT-03) marks hospital Dead; tears into clean strips."
 divisible = { mode = "sheet", needs = "none" }
 details = ["scrubs_colour", "clothing_fit"]
 value_class = "junk"

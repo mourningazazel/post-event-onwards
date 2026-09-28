@@ -136,7 +136,7 @@ data knob.
    - The **dominance matrix** is data. For example, rotting-flesh scent strongly suppresses human
      scent; smoke suppresses everything a little.
 5. **Masking.** An emitter has an emission profile per channel. Items and states change the
-   profile. For example, "smeared in zombie guts" swaps *human* emission for *rotting*; rain scales
+   profile. For example, "smeared in corpse gore" swaps *human* emission for *rotting*; rain scales
    emission down and speeds up decay.
 
 ### Mob behaviour
@@ -163,7 +163,7 @@ data knob.
 
 **Owner's answers:**
 
-- **Regular zombies:** scent only.
+- **Regular Dead:** scent only.
 - **About 1 in 100:** also hear, but sound is processed only within some distance of the player.
 - **Vision:** rarer still, and usually spawned by a trigger.
 - **Alerting events:** physical contact, the player speaking, human sounds (grunts), being seen.
@@ -236,17 +236,17 @@ area.
 
 ### Realistic population: first numbers
 
-"As many zombies as a real outbreak":
+"As many Dead as a real outbreak":
 
 - **Density.** Real urban densities run ~1,000–3,000 people/km² (suburbs) up to
   ~10,000–25,000/km² (dense cores).
 - **Detailed area.** A 512 m × 512 m detailed area (0.26 km²) therefore holds about **260–800**
-  zombies in suburbs and **2,600–6,500** in dense cores.
+  Dead in suburbs and **2,600–6,500** in dense cores.
 - **Headroom.** The benchmark ran 100k mobs in ~3 ms per step, so there is a lot of margin: even
   a packed downtown at full detail is fine.
-- **Whole cities.** A city of 1M means about 1M zombies. Those live almost entirely in the
+- **Whole cities.** A city of 1M means about 1M Dead. Those live almost entirely in the
   **aggregate tier** (counts per region cell), which costs next to nothing.
-- **Proposal:** a building's zombies come from its occupants (household size, office staff,
+- **Proposal:** a building's Dead come from its occupants (household size, office staff,
   shift). They are generated with the building's identity, and many are trapped behind closed
   doors (awaiting the owner's confirmation in `purposes.md`).
 
@@ -271,3 +271,102 @@ area.
 - The exact classification of sound events is to be designed later (open).
 - **Pepper spray and stun guns do nothing** to the dead. The stun gun's crackle is itself a noise
   event.
+
+## Owner answers, round 3 ([N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md)) and the design they lead to
+
+Round 3 replaces the **alert state machine and recruitment cascade** above with a single
+weighted-draw model, adds **sound events**, **trample**, **speeds** and **aggregate scent
+attraction**, and makes swarm behaviour a **reproducible test**. Where this section and the
+earlier proposals disagree, this section wins.
+
+### One movement rule for every one of the Dead
+
+Each of the Dead picks its next cell by **one weighted random draw** over its free neighbours
+plus "stay". The weight of a candidate cell is a sum of terms, each a data knob per archetype:
+
+| Term | What it reads | Purpose |
+|---|---|---|
+| `scent` | fine trail layer + interpolated coarse cloud in that cell | the core mechanic |
+| `aggregate` | the coarse **aggregate** (e.g. 8×8 tiles) scent total in the direction of that cell | pulls crowds toward the **higher-aggregate area**, so an even plain with one richer region drains the crowd that way |
+| `company` | count of Dead within *r* in that direction | mild pull toward other Dead; with the draw's randomness this makes a crowd **fan out** yet **accumulate** where scent is strongest |
+| `attractor` | pull from nearby **alerted or following** units, weighted by their state | how an alerted unit "brings" others: through the weights, never by handing out a state |
+| `stimulus` | this unit's own **trigger target** (see below) | only non-zero for triggered units |
+| `repellent` | negative for repellent channels (N004) | lures, decoys, repellents |
+| `footing` | terrain footing and obstruction | terrain shapes crowds (P-WO-05) |
+
+Idle Dead with no scent anywhere keep a random 8-direction step (round 1). "Stay" keeps its own
+weight. All terms are integers and the draw comes from the unit's seeded stream, so the whole
+crowd is deterministic and replayable.
+
+### Triggers: general direction, not a path
+
+A unit becomes **triggered** only by its own stimulus: it **touched** the player, **saw** the
+player (vision units), or **heard** a human-class sound (hearing units). Triggered units:
+
+- steer by **general direction** toward the trigger's last known position (the `stimulus`
+  term is a direction cone, not a path), so a doorway or a wall can defeat a blind one;
+- move faster: **alerted ×1.5**, **following ×2** steps per turn (data);
+  - *alerted*: has a stimulus position;
+  - *following*: has line of contact or fresh sound from the player and keeps updating the
+    position; vision and hearing units are the ones that can follow.
+- **do not spread their state.** Their `attractor` weight pulls idle Dead along; those stay idle.
+  A pulled unit is triggered only by **its own** stimulus, for example the player's retaliation
+  sound when a leading hearing unit attacks, or a following unit's contact.
+- **expire** after moving a set distance (data) without a fresh stimulus, or after a set number
+  of turns, and resume idle behaviour **where they now are**. That displacement is the point:
+  the group is now somewhere else, which changes local attraction and where the next Dead
+  spawn in. Being triggered by a scent-only unit is a **swarming** risk, not a chase: walk away
+  and it cannot follow far, but the place you left is now a bigger group.
+
+### Sound events
+
+Kept deliberately simple:
+
+- A sound event is `(position, kind, dB)`. **Kinds:** `human` (speech, grunts, footsteps of a
+  running player, a shot fired by a person), `mechanical` (alarms, engines, glass, a thrown
+  bottle), later others. **dB** sets the radius through one attenuation rule (distance, walls,
+  doors); the classification never grows into a taxonomy.
+- The event **queries the radius** for sound-reactive units (about 1 in 100) and applies the
+  rules: any loud sound **attracts** hearing units toward the source (they push through crowds by
+  the contest rules); a `human` sound **triggers** them.
+- A hearing unit moves toward **that** source and follows only that or a **newer** sound, so it
+  can be led, and so a running player is trackable by footsteps.
+- Cost scales with sounds made, not with the Dead's count.
+
+### Trips and trample
+
+- **Push contests** (round 1) can end in a trip. A tripped unit is prone for *N* turns and is an
+  obstacle. Units pushing through a crowd **roll to trip on every contested move**, so a frenzied
+  horde trips itself and slows down. Trip chance rises with speed multiplier and bad footing.
+- **Trample:** a unit that moves over a prone unit (including the player) rolls, with a weight
+  from its mass and speed, to deal **blunt** damage to the one underneath. Body-part damage
+  (G05) applies. A prone player in a crowd is in mortal danger, which is intended.
+
+### Population and spawning
+
+Confirmed direction (round 1 "Population over time", P-EN-07): beyond the detailed radius the
+Dead are a **population number per region cell** that drifts along attraction, not units. At the
+edge they **spawn in as units** and **merge back**. Round 3 adds:
+
+- The weighted draw's accumulation behaviour is meant to **replace most spawning rules**: crowds
+  form because units walk to strong scent, not because a generator places them there.
+- Areas with high concentration **place more Dead** when adjacent areas are explored: the region
+  population feeds the edge spawn count.
+- The radius is a data value chosen for performance.
+
+### Reproducible swarm tests
+
+Every change to the movement rule or its knobs must keep these scenarios passing (harness §2):
+
+| Scenario | Expectation |
+|---|---|
+| `swarm-accumulation` | An even field of Dead with one stronger scent region ends with a measurably higher share of units in that region after *T* turns. |
+| `fan-out` | A tight starting cluster with flat scent spreads to a wider area over *T* turns (no clumping artifacts). |
+| `trigger-displacement` | A scent-only unit touched by the player moves toward the player, expires, and ends closer to the player's old position than it started. |
+| `no-state-spread` | After one unit is triggered in a crowd, no other unit's state changes unless it receives its own stimulus. |
+| `sound-lure` | A `mechanical` sound draws hearing units without triggering; a `human` sound triggers them. |
+| `frenzy-trips` | A horde forced through a doorway trips more often than the same horde on open ground and arrives later. |
+| `trample-damage` | A prone unit under a moving crowd takes blunt damage at the configured rate. |
+
+Each runs headlessly with the golden seed set and reports its metric, so a tuning change shows
+as a number, not a feeling.

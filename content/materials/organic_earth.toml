@@ -10,7 +10,7 @@ water = "absorbs"
 conductivity = "conductor"
 struck_sound = "slap"
 surface = "irregular"
-desc = "Human/zombie/animal tissue; raw meat. Emits blood when cut, rot when decaying."
+desc = "Human/dead/animal tissue; raw meat. Emits blood when cut, rot when decaying."
 
 [material.bone]
 family = "organic"
@@ -24,7 +24,7 @@ water = "waterproof"
 conductivity = "insulator"
 struck_sound = "crack"
 surface = "rough"
-desc = "Skeleton; zombie bone becomes brittle with the clock (G05)."
+desc = "Skeleton; dead bone becomes brittle with the clock (G05)."
 
 [material.food_dry]
 family = "organic"

@@ -82,7 +82,7 @@ mass_g = 1500
 use_noise = "extreme"
 desc = "A consumer aerial repeater cake: dozens of tubes on one fuse."
 glyph = "item.fireworks"
-why = "Light the fuse and walk (or throw): a minute of bangs and flashes that pulls hearing zombies from blocks away; starts fires where it lands."
+why = "Light the fuse and walk (or throw): a minute of bangs and flashes that pulls hearing Dead from blocks away; starts fires where it lands."
 details = ["fireworks_kind"]
 value_class = "useful"
 

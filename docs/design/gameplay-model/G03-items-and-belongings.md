@@ -75,7 +75,7 @@ Items are never "stored inside" another item's data. Each item simply records **
 - **Recommendation: B.**
   - What you carry depends on what you wear.
   - Losing a backpack loses its contents.
-  - A zombie grabbing your jacket matters.
+  - One of the Dead grabbing your jacket matters.
   - Pockets on clothing are just containers.
 - **Owner decision:** _pending_
 

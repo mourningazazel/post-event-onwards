@@ -9,8 +9,9 @@ mass_g = 90
 fill_pct = 30
 desc = "A zippered faux-leather pouch of steel picks, rakes and tension wrenches."
 glyph = "item.lockpicks"
-why = "The only way to open a lock silently without its key (N013); most people never owned one, so it is rare."
+why = "The only way to open a lock silently without its key (N013); most people never owned one, so it is rare. Useless below security 10 (N014)."
 value_class = "rare"
+tool_min_skill = { security = 10 }
 
 [item.lockpick_set.composition.picks]
 material = "carbon_steel"

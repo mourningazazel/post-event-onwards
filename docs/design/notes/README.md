@@ -3,7 +3,8 @@
 This is an inbox for design notes the owner gives during sessions, **recorded close to verbatim**.
 Each note is dated, and links to the design documents that act on it.
 
-- Notes are never rewritten.
+- Notes are never rewritten. They quote the owner verbatim, so the word "zombie" appears in
+  them; everywhere else the enemies are **the Dead** (decision D-001).
 - If a later decision changes a note's direction, the note links to that decision.
 
 | # | Date | Topic | Acted on in |
@@ -21,3 +22,4 @@ Each note is dated, and links to the design documents that act on it.
 | [N012](N012-trainable-expert-skills.md) | 2026-09-27 | Skills train at an unrealistic rate, up to beyond-human feats; reading books teaches | survival-actions.md §2.15, registry skills.toml/actions.toml, G04 D4.2, purposes P-SK-* |
 | [N011](N011-survival-actions-and-world-catalog.md) | 2026-09-27 | Survival-action analysis → item properties and tags; US-like world catalogue; **lean content** (archetypes only where they add value, flavour via generation details); test combinations | survival-actions.md, world-catalog.md, `content/`, `tools/content/`, `tests/content/` |
 | [N013](N013-bikes-guns-bites-locks-animals-words.md) | 2026-09-28 | Bicycles rideable (2 tiles/turn); guns common, head-kill rule, noise draws hearing units; pepper spray/stun useless; bites don't infect, body-part damage, clothing defence; locks only pickable with a rare set, bashing with extra-lock resistance; no animals (ambient crows); no real-world brand words | content, registry (rideable, lock, bash_lock), tests, scent-mobs, world-generation, G04 D4.6, purposes, content-backlog |
+| [N014](N014-the-dead-ai-content-skills-mood-drugs.md) | 2026-09-28 | The Dead's AI (triggers, sound, trample, aggregates, speeds), content depth and quality, building census, skills 1–100 with failure, Mood and Sanity, drugs, maps, guns, chemistry, ambient crows | scent-mobs.md round 3, survival-actions.md, content-model.md, world-catalog.md, G04, ADR-0012, registry skills/actions, purposes |

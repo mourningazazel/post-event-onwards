@@ -74,7 +74,7 @@ dims_mm = [230, 150, 50]
 mass_g = 480
 desc = "Raw meat on a foam tray under cling film."
 glyph = "item.meat"
-why = "Rich calories if cooked soon; raw flesh scent draws zombies (a throwable lure); spoils into rot (masking)."
+why = "Rich calories if cooked soon; raw flesh scent draws Dead (a throwable lure); spoils into rot (masking)."
 details = ["meat_kind"]
 value_class = "useful"
 food = { kcal = 1150, servings = 4, perishable = "very_short", needs_opening = false, cookable = true, raw_risk = 7 }

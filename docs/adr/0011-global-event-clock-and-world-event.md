@@ -19,9 +19,9 @@
      - notes and encampments
      - **dead bodies** (survivors who died)
 2. **The game clock *is* days-since-event.**
-   - Every aftermath effect is a continuous function of it: zombies leaving buildings,
+   - Every aftermath effect is a continuous function of it: Dead leaving buildings,
      attrition, looting, spoilage, damage, **overgrowth**, **environmental damage**, utilities
-     failing, zombie tissue fragility, fire aging.
+     failing, dead tissue fragility, fire aging.
    - **Difficulty selection sets the starting clock:** 7, 30 or 365 days. No code branches on a
      stage.
    - Curves must behave sensibly for any value, e.g. 5 years (1,825 days): they saturate rather
@@ -36,7 +36,7 @@
      per-object thresholds. Monotonic sampling makes this identical to generating it at `t_now`.
    - Player-made changes are preserved (confirmed by the owner in N011).
    - The gate is a data value.
-5. **Zombie fragility is a function of the clock** (gated by months). Damage output stays
+5. **Dead fragility is a function of the clock** (gated by months). Damage output stays
    similar, but limbs and appendages become easier to damage and sever. Together with falling
    supplies, this gives the intended **difficulty ↔ reward gradient**: early is harder but
    richer, late is easier but poorer.

@@ -5,6 +5,27 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-28 · N014 · The Dead's AI, content depth, skills 1–100, Mood and Sanity, drugs
+
+User direction, recorded verbatim in `docs/design/notes/N014-*.md` and worked into
+`scent-mobs.md` round 3, `survival-actions.md` §2.15–2.16, `content-model.md` §10–11,
+`world-catalog.md` §10, G04, ADR-0012 and `purposes.md`. Headlines: one weighted-draw movement
+rule with aggregate and company pull replaces the recruitment cascade; triggers steer by
+general direction and expire displaced; sound events are kind + dB; trips cascade and trample
+hurts; alerted ×1.5, following ×2; skills are 1–100 with percentages and failure outcomes;
+every item has a quality and a "broken" text; building census and category retail; Mood and
+Sanity are main mechanics; drugs and explosives exist; maps are rare and mark general
+locations; crows are text. Consequence: the registry skill scale changed to 1–100
+(`content/registry/skills.toml`, `actions.toml` use `unlock`/`difficulty`).
+
+## 2026-09-28 · The design corpus from the feature branches is the design of record
+
+The `content/survival-catalog` branch (GAMEPLAN, SYSTEMS, ADR-0001–0011, gameplay model,
+notes N001–N013, content model, survival actions, world catalogue, purposes, playtest harness,
+403 authored archetypes) is merged. ADRs stay the record of architecture decisions; this file
+stays the rolling log and points at them. `SYSTEMS.md` is the target map, reached one system at
+a time through the queue, not by a framework-first rewrite (architecture.md).
+
 ## 2026-09-28 · D-002 · Turn-based, with the world computed while waiting
 
 User decision. The world advances only when the player acts (a step or a
@@ -28,9 +49,9 @@ wounds from the Event, discoloured or rotting. Consequence: `Hordeling` is
 gone; descriptions of individual Dead come from a corpse descriptor, not a
 type name.
 
-## 2026-09-28 · The enemies are "the Dead", never "zombies"
+## 2026-09-28 · The enemies are "the Dead", never "Dead"
 
-User decision. They behave like zombies; the word is banned everywhere for
+User decision. They behave like Dead; the word is banned everywhere for
 aesthetic reasons. Consequence: docs, UI strings, identifiers and comments
 say Dead/dead/horde. Code identifier choice is open as D-001.
 

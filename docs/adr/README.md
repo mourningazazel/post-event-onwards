@@ -18,3 +18,4 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0009](0009-baseline-plus-aftermath-generation.md) | World generation = baseline + event + time-driven aftermath (the 3 stages) | Accepted (fixed-stage part superseded by 0011) |
 | [0010](0010-rivers-as-lazy-long-features.md) | Rivers are long features, generated lazily at finer detail | Accepted (parameters proposed) |
 | [0011](0011-global-event-clock-and-world-event.md) | One global days-since-event clock; per-world event parameters | Accepted (curves proposed) |
+| [0012](0012-speculative-turns.md) | Turn-based, with the next turn computed while waiting | Accepted (names and budgets proposed) |

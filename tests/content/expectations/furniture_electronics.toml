@@ -106,7 +106,7 @@ item = "safe"
 path = "features.lock.tier"
 op = "=="
 value = 15
-why = "matches crack_safe_by_feel min_skill 15"
+why = "tier 15 = security unlock 75, matching crack_safe_by_feel"
 
 [[expect]]
 item = "safe"
@@ -248,7 +248,7 @@ item = "skill_manual"
 mods = ["manual_first_aid"]
 path = "teaches.max_level"
 op = "=="
-value = 5
+value = 25
 
 [[expect]]
 item = "skill_manual"
@@ -262,7 +262,7 @@ item = "skill_manual"
 mods = ["manual_field_surgery"]
 path = "teaches.max_level"
 op = ">="
-value = 10
+value = 50
 why = "advanced texts train to expert level (N012)"
 
 [[expect]]

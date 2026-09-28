@@ -10,7 +10,7 @@
 | Building types and room programs ("suburban house: 2–4 bedrooms, kitchen, …") | Each building's floor plan (from its type's rules) |
 | Loot and placement tables ("kitchen drawer: cutlery 60%, batteries 5%, …") | Which items exist in which containers (rolled from the tables) |
 | Scent channels and their dominance matrix | Per-instance variation: condition, fill level, wear, labels, handwriting |
-| Actions and recipes | Names, occupations and backstories of NPCs and former people (zombies) |
+| Actions and recipes | Names, occupations and backstories of NPCs and former people (Dead) |
 | Name lists, text fragments | Notes, inscriptions and other text assembled from fragments |
 
 Rule of thumb: **if a designer would want to tune it, it's authored. If it should differ every

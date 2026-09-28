@@ -6,7 +6,7 @@
 ## Context
 
 The game has three difficulty stages, which are three world states: **1 week, 1 month and
-1 year** after an instant, simultaneous turning event. Later stages have fewer zombies, fewer
+1 year** after an instant, simultaneous turning event. Later stages have fewer Dead, fewer
 supplies, and more spoilage and damage. Switching between stages must be easy, and world
 generation must account for it everywhere, especially in buildings and items.
 
@@ -27,8 +27,8 @@ Every generator (L0–L5, ADR-0007) produces the world in **three conceptual pas
    - Moving vehicles crash or stop.
    - **Also identical in every stage.**
 3. **Aftermath:** a pure function of `elapsed_days`. It covers:
-   - zombies leaving buildings through open paths
-   - zombie attrition
+   - Dead leaving buildings through open paths
+   - dead attrition
    - looting by the other survivors, prioritized by building and container type
    - spoilage by shelf life
    - damage and decay
@@ -54,13 +54,13 @@ Aftermath behaviour lives in content data:
 - **Items:** shelf-life curves.
 - **Fittings:** break curves (e.g. windows).
 - **Buildings and containers:** loot priorities.
-- **Occupants:** leave-rates for zombies, depending on how open the building is.
+- **Occupants:** leave-rates for Dead, depending on how open the building is.
 - **Global:** attrition curves.
 
 ## Consequences
 
 - Stage switching is cheap and coherent, and purpose tests can compare stages of one seed
-  directly: supplies and zombie counts must fall monotonically.
+  directly: supplies and dead counts must fall monotonically.
 - Saves record the stage (`elapsed_days`) with the world seed, and it never changes for a run.
   *(Superseded by [ADR-0011](0011-global-event-clock-and-world-event.md): the clock advances
   during play, and areas generate at the current clock.)*

@@ -79,7 +79,7 @@ desc = "Cookware and utensils."
 [tag."use.fastener"]
 desc = "Joins things (tape, glue, rope, wire, screws, nails, zip ties)."
 [tag."use.lure"]
-desc = "Attracts zombies (noise/scent)."
+desc = "Attracts Dead (noise/scent)."
 [tag."use.mask_scent"]
 desc = "Masks or changes scent."
 [tag."use.soap"]

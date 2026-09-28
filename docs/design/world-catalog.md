@@ -73,9 +73,11 @@ rules (N007): the power and water state per neighbourhood.
 - `warehouse`, `factory`, `auto_repair_garage`, `lumber_yard`, `junkyard`, `truck_stop`
 - `barn`, `power_substation`, `water_treatment`, `water_tower`
 
-Dropped by the value filter:
+Re-added by [N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md) as **map sources**:
+`city_hall` (a civic office with public maps and records) and `transit_stop` / `transit_station`
+(route maps). Dropped by the value filter:
 
-- **City hall and courthouse:** play like offices, so they use `office_lowrise` with a detail table.
+- **Courthouse:** plays like an office, so it uses `office_lowrise` with a detail table.
 - **Malls:** a `strip_mall` plus several store types covers the gameplay.
 - **Stadiums, airports, harbours:** out of scope for now.
 
@@ -321,3 +323,70 @@ See [`content-backlog.md`](content-backlog.md) §1–2:
   burn_gel, dryer_lint, fuel_pump, semi_trailer, ammo_38spl, stun_gun_cartridge
 - **Extra rooms:** five specialty store floors
 - **Extra loot tables:** twelve
+
+## 10. Building census and category retail ([N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md))
+
+The owner wants **far more building types**, in the proportions a real city shows, and generic
+retail such as "a store that sells clothing" stocked from tags. This section is the plan; the
+data lands in `content/world/census.toml` and `content/world/retail_categories.toml`.
+
+### Census: what a walk through a real city passes
+
+Per setting, a **frequency table** of building types (counts per km² or per block face), taken
+from real streetscapes rather than gameplay wishes, then filtered by the value rule. First pass
+(numbers are planning estimates, to be tuned per setting):
+
+| Setting | Roughly what you see, per 100 buildings |
+|---|---|
+| `downtown_core` | 35 office (low/mid/high), 20 street-level retail units, 10 restaurants and bars, 8 apartment towers, 6 hotels, 5 parking structures, 4 banks, 3 civic (city hall, courthouse, library), 3 transit, 2 hospitals or clinics, 2 churches, 2 theatres or venues |
+| `commercial_strip` | 40 strip-mall units (nail salon, phone store, tax office, dollar store, vape shop, tattoo parlour, dry cleaner, pet supply, cell repair, insurance), 15 fast food, 10 chain restaurants, 8 auto (parts, repair, tyres, dealership, car wash), 6 gas stations, 5 big box, 4 supermarkets, 4 pharmacies, 3 motels, 2 gyms, 2 banks, 1 storage |
+| `suburb` | 85 single-family houses across styles and eras, 5 townhouse rows, 4 schools and daycare, 2 churches, 2 parks with facilities, 1 corner convenience, 1 fire station |
+| `urban_residential` | 50 rowhouses and duplexes, 25 walk-ups, 8 corner stores and bodegas, 5 laundromats and barbers, 4 churches, 3 schools, 2 clinics, 2 bars, 1 community centre |
+| `industrial` | 40 warehouses, 20 light factories, 10 truck depots and logistics, 8 auto and machine shops, 6 yards (lumber, scrap, materials), 5 self-storage, 4 utilities, 4 offices, 3 food processing |
+| `small_town` | 30 main-street storefronts (hardware, pharmacy, diner, bar, barber, antiques, thrift, feed, bank branch), 40 houses, 8 churches and civic (post office, town hall, library, fire), 6 gas and auto, 5 schools and clinic, rest farms and yards at the edge |
+
+Every row above is an **id contract**: each named type becomes a `[building.X]`, or a
+**variant of a generic** (`retail_unit` + a category), with a room program and loot drawn from
+tags.
+
+### Category retail: stores stocked by tag query
+
+A generic **`retail_unit`** building takes a **retail category** record:
+
+```toml
+[retail_category.clothing]
+name = "clothing store"
+stock = { tags_all = ["cat.clothing"], tags_any = ["cat.clothing.top", "cat.clothing.bottom", "cat.clothing.footwear"] }
+quantity_per_m2 = [4, 8]           # items per floor square metre before looting
+modifiers = ["retail_new", "with_tags_attached"]
+rooms = ["store_floor_generic", "stockroom", "checkout", "restroom_public"]
+security = "shutter"               # retail shutter; alarm if powered
+```
+
+Categories planned for the first pass: clothing, shoes, sporting goods, outdoor, electronics,
+phones, hardware, paint, auto parts, pet supply, dollar store, thrift, bookstore, office
+supply, pharmacy, liquor, convenience, bakery, butcher, florist, jewellery, furniture, mattress,
+appliance, bike shop, gun store, vape and tobacco, nail and hair salon, dry cleaner, tax and
+insurance offices (offices with retail fronts). A category is a **tag query plus quantities**,
+so new stores cost a record, not an item list.
+
+### Big-box stores
+
+`big_box_store` variants (hardware and building supply, general merchandise, warehouse club,
+electronics, sporting goods) hold **thousands of items** generated from category queries per
+aisle. Placement: almost always in dense urban commercial zones full of the Dead; a small
+chance (data) of one outside town, still heavily populated. Their aisles are room programs with
+`quantity_per_m2` high enough to feel real and aggregated clutter for the rest.
+
+### Persona houses
+
+Residential buildings draw a **persona** first (household composition, occupations, hobbies,
+wealth band, tidiness, era of the house), then rooms query the persona's tag sets. The same
+`ranch_house` shell yields a retired mechanic's cluttered garage or a young family's toy-strewn
+living room. Personas live in `content/personas/` and reuse the occupant profiles for outfits.
+
+### Pharmacies
+
+Heavily locked (steel door, shutter, alarm when powered), urban, and stocked from the drug
+classes in `content/items/medical/` and `content/items/drugs/` (narcotics, pharmaceuticals,
+paraphernalia) with looting priority high (ADR-0009).

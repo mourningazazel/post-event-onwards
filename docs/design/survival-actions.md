@@ -38,7 +38,7 @@ carry data these systems read.
 | M10 | **Access and locks** | Locked doors and containers; keys, lockpicking, forcing, breaking glass | `lock` feature (tier, key link); openings' materials |
 | M11 | **Light** | Emitted light radius and duration; darkness for the player | `light` capability, fuel or battery use |
 | M12 | **Temperature, wetness, weather** | Body heat, clothing insulation, getting soaked, drying | `insulation`, `waterproof`, `windproof`, `absorbs_water` |
-| M13 | **Noise events** | Actions and objects emit sounds that hearing zombies react to | material `struck_sound`, `use_noise`, `alarm` feature |
+| M13 | **Noise events** | Actions and objects emit sounds that hearing Dead react to | material `struck_sound`, `use_noise`, `alarm` feature |
 | M14 | **Scent** | Emission, absorption and masking (scent-mobs.md) | `emits.*` profiles, `absorbs_scent`, substances' scent |
 | M15 | **Consumption** | Eating, drinking, medicine; spoilage over the clock | nutrition, hydration, perishability, medical effects |
 | M16 | **Body coverage and armour** | Worn layers protect body parts (bite matters most) | `wearable` feature: slots, layer, coverage; armour per damage type |
@@ -91,7 +91,7 @@ Each action lists the **mechanics** it uses and the **item data** it reads.
 | Trigger a car alarm | M13 | vehicle *alarm*, car battery charge |
 | Fireworks or flares (US holidays) | M3, M13 | `hazard.flammable`, very loud noise, light |
 | Scent lure: meat, blood, gore | M14 | `emits.flesh`, `emits.blood` |
-| Repellent scent (N004) | M14 | `emits.*` repellent channels (e.g. smoke, strong chemical, dead-zombie rot) |
+| Repellent scent (N004) | M14 | `emits.*` repellent channels (e.g. smoke, strong chemical, dead-dead rot) |
 
 ### 2.4 Fighting and defending
 
@@ -166,7 +166,7 @@ Each action lists the **mechanics** it uses and the **item data** it reads.
 
 | Action | Mechanics | Item data |
 |---|---|---|
-| Search containers, rooms, bodies | G02 detail levels | containers, promoted zombies |
+| Search containers, rooms, bodies | G02 detail levels | containers, promoted Dead |
 | Unlock with found keys | M10 | keys linked to doors by generation address (P-IT-06) |
 | Pick locks | M10 | *lock* tier, pickable; `use.lockpick` tool; skill |
 | Force doors, windows, lockers, vending machines | M8, M10, M13 | material vs `pry`/`hammer`; noise |
@@ -209,36 +209,63 @@ Each action lists the **mechanics** it uses and the **item data** it reads.
 | Mark your own map, write notes | M21 | pen or pencil + paper |
 | Compass, watch | M21 | `navigate`, `time` |
 
-### 2.15 Skills and expert actions ([N012](notes/N012-trainable-expert-skills.md))
+### 2.15 Skills, success chance and failure ([N012](notes/N012-trainable-expert-skills.md), [N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md))
 
-Skills run 0–20 (`content/registry/skills.toml`). They train faster than in reality, through use
-and through **reading** manuals and books found in the world (`teaches`).
+Skills run **1–100** (`content/registry/skills.toml`). Anchors: **1** never heard of it ·
+**10** can use it fine · **30** skilled · **50** done it for ten years · **51–100** advanced
+through savant, beyond any real person. They train faster than reality, through use and through
+**reading** manuals and books (`teaches`).
 
-| Tier | Level | What changes |
+**Every action shows a percentage chance to succeed**, and what failure costs. The model is
+data on the action, never a preset range:
+
+| Field (per skill requirement) | Meaning |
+|---|---|
+| `skill` | which skill |
+| `unlock` | below this level the chance is **0%** ("you would not know where to start") |
+| `difficulty` | at this level and above the chance reaches the action's `ceiling` |
+| `ceiling` | the best possible chance (default 95; **never 100**) |
+
+Between `unlock` and `difficulty` the chance rises **linearly** from 0 to `ceiling`. An action
+may list **several skills**; each shows its own percentage and the aggregate is their product.
+Example: *make pharmaceuticals* needs chemistry {unlock 60, difficulty 90} and medicine
+{unlock 30, difficulty 50}; a chemist 75 / medic 45 sees `chemistry 48% · medicine 71% · overall
+34%`.
+
+**Failure outcomes** are weighted entries on the action (`on_fail`): `failed` (time and maybe a
+consumable lost), `damaged_components`, `bad_event` (a fire, a cut, a misfire, a noise). Being
+far below `difficulty` shifts weight toward the worse outcomes; above `difficulty` a failure is
+always plain `failed`.
+
+**Beyond the ceiling, skill still pays:** each point above `difficulty` makes the action
+faster (time ×0.985 per point), quieter (one noise step per 20 points) and lets skill
+**substitute for tool quality** (`tool_substitution`, capability points per skill point). A
+savant metalworker cuts a padlock with a file and patience; a real person needs the hacksaw.
+
+**Tools gated by skill.** An item's capability may carry `min_skill`, e.g. the lockpick set's
+`lockpick` needs security 10: below it the tool cannot be used at all, not merely badly.
+
+**Expert-only actions** (`content/registry/actions.toml`) are simply actions with a high
+`unlock`: `friction_fire` survival 45, `climb_sheer_wall` athletics 60, `crack_safe_by_feel`
+security 75, `field_surgery` medicine 50, `weld_join` metalworking 15. The `expert` lists in
+`skills.toml` describe what each band makes possible so content and the UI speak the same
+language.
+
+**Design consequence:** content records the *physical* requirement (capability vs material);
+skill is a separate axis that can partly pay it, and the percentage the player sees is the
+honest combination of both.
+
+### 2.16 Drugs, maps, guns, bikes, chemistry (N014)
+
+| Action | Mechanics | Item and world data |
 |---|---|---|
-| Untrained → competent | 0–5 | Basic success; slow; tools must meet requirements fully |
-| Professional → master | 6–10 | Faster (×0.92 time per point above an action's difficulty), quieter (one noise step per 5 points), **skill substitutes for tool quality** (`tool_substitution` capability points per skill point) |
-| Beyond human | 11–20 | **Expert-only actions unlock** (`min_skill`), and ordinary actions reach levels no real person could |
-
-**Expert-only actions** are registered in `content/registry/actions.toml`:
-
-- `friction_fire`: survival 9
-- `climb_sheer_wall`: athletics 12
-- `crack_safe_by_feel`: security 15
-- `field_surgery`: medicine 10, difficulty 12
-- `weld_join` gate: metalworking 3
-
-**Expert extremes per skill** are listed in `skills.toml`, for example:
-
-- leaping a 2-tile rooftop gap
-- landing a thrown jug on the exact tile 8 tiles away
-- forging a blade from a leaf spring over a charcoal fire
-- building a remote noise lure from phone parts
-- reducing your own scent emission through controlled breathing
-
-**Design consequence:** content always records the *physical* requirement (capability vs material).
-Skill is a separate axis that can partly pay that requirement. So a real person needs a hacksaw to
-cut a padlock, but a beyond-human metalworker might get through with a file and patience.
+| Take pharmaceuticals, narcotics, psychedelics | M15, Mood/Sanity (G04) | `drug` {class, dose, onset, duration, addiction, effects}; **psychedelics change visuals and sanity only**; paraphernalia as items; pharmacies are **heavily locked** and urban |
+| Read a map | M21, knowledge (G09) | *readable* kind `map`, `coverage`; **rare**, found where it makes sense (`city_hall`, `transit_stop`, gas station racks); marks **general locations** of major places even before generation, and generation later lands inside the mark |
+| Ride a bicycle | ride (N013) | 2 tiles per turn; terrain footing; **crash** on obstacle or bad footing: a `mechanical` sound, and a body-part injury roll (fracture, concussion) |
+| Use firearms | ranged (pending vocabulary), M13 | brand-generic or fictional brands with **real specifications**; **few ammo types** (9 mm, .38, 12 ga, .308, 5.56 and little else); `use_noise` extreme; gun stores: **giant selection**, an *alarm* that fires only with power, ammunition thinned by a week of looting, high-end weapons rare or impractically loud |
+| Chemistry | M22 | outcomes stay abstract (fuel, soap, bleach dilutions, repellents, medicine at high skill) but recipes name **real ingredient classes**; multi-skill chains at the top end (chemistry + medicine for pharmaceuticals) |
+| Explosives | M22, M3, M4 | **generic ingredients** (oxidiser, fuel, container, initiator), minimal blast model: a radius, blunt and heat effects, a very loud `mechanical` sound; no real recipes |
+| Hear the crows | ambience | periodic **text** only; there are no crows and never a creature |
 
 ## 3. The vocabulary this implies
 
@@ -324,16 +351,16 @@ Added:
 | 3 | Cuts a length of hose | M6, M8 | `hose`: `divisible` length mode, needs `cut ≥ rubber.hardness`; knife qualifies |
 | 4 | Siphons gasoline from a car | M1 | `car` has *fuel_tank* holding `gasoline`; hose *tube* (inner diameter, length ≥ reach); jug below the tank (gravity) |
 | 5 | Fills the jug | M1 | jug *container* compat: HDPE holds gasoline (short term); capacity limits the amount |
-| 6 | Throws the jug in front of the zombies | M4, M2 | throwable (mass ~2.8 kg full, poor aerodynamics → short range); HDPE `onImpact` at that energy → **split and spill** (lid off or cracked); gasoline goes onto the tile surface layer and spreads by viscosity |
+| 6 | Throws the jug in front of the Dead | M4, M2 | throwable (mass ~2.8 kg full, poor aerodynamics → short range); HDPE `onImpact` at that energy → **split and spill** (lid off or cracked); gasoline goes onto the tile surface layer and spreads by viscosity |
 | 7 | Lights a match | M3 | `matchbook`: *ignition* (strike method, charges, **fails if wet**) |
 | 8 | Throws the match onto the tile | M4, M3 | lit match is throwable; gasoline's very low flash point → ignition on contact |
-| 9 | The tile burns, and so do the zombies on it | M3 | the burning tile's fuel amount sets duration; creatures on it get `onHeat`; smoke scent emitted; spreads to flammable neighbours |
+| 9 | The tile burns, and so do the Dead on it | M3 | the burning tile's fuel amount sets duration; creatures on it get `onHeat`; smoke scent emitted; spreads to flammable neighbours |
 
 ### 4.2 Noise lure with an alarm clock
 
 Find an alarm clock (*alarm*, battery *slot*) → take batteries from a remote (*slot* compat AA) →
 set the timer → place it in a building across the street → leave → it rings (M13) → hearing
-zombies redirect, and their agitation pulls crowds (P-EN-02).
+Dead redirect, and their agitation pulls crowds (P-EN-02).
 
 ### 4.3 Barricading a front door
 
@@ -364,7 +391,7 @@ Tie a garden hose or bedsheets knotted into rope (M7 joints between sheets, `bin
 
 ### 4.8 Scent masking before a supermarket run
 
-Kill a zombie → its gore (`emits.rot` substance) → apply to your clothes (`applicable_to_body`) → your
+Kill one of the Dead → its gore (`emits.rot` substance) → apply to your clothes (`applicable_to_body`) → your
 human emission is dominated (scent dominance) → cross the car park with fewer contacts (P-SC-03).
 
 ### 4.9 Car battery lamp
@@ -374,13 +401,17 @@ class match, M9) → light for nights inside a barricaded room.
 
 ## 5. Open questions for the owner
 
-*Answered in [N013](notes/N013-bikes-guns-bites-locks-animals-words.md):*
+*Answered in [N013](notes/N013-bikes-guns-bites-locks-animals-words.md) and refined in
+[N014](notes/N014-the-dead-ai-content-skills-mood-drugs.md):*
 
-- **Bicycles:** rideable at 2 tiles per turn, with an extra stopping turn.
-- **Firearms:** common; noise is the cost.
+- **Bicycles:** rideable at 2 tiles per turn, with an extra stopping turn; crashes make noise and
+  injure limbs (N014).
+- **Firearms:** common; noise is the cost; real specifications, fictional brands, few ammo
+  types; gun stores alarmed when powered (N014).
 - **Bites:** don't infect.
-- **Animals:** all dead.
-- **Chemistry:** stays safe and abstract (Claude's recommendation stands).
+- **Animals:** all dead; crows exist only as ambient text (N014).
+- **Chemistry:** abstract outcomes grounded in real ingredient classes; **explosives exist**
+  with generic ingredients and minimal mechanics (N014 supersedes the "no explosives" line).
 
 The original questions follow.
 
