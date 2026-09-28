@@ -1,0 +1,22 @@
+# Build output
+build/
+out/
+cmake-build-*/
+_deps/
+CMakeUserPresets.json
+compile_commands.json
+
+# Editors / OS
+.vscode/
+.idea/
+.cache/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Local agent state (never committed)
+.claude/settings.local.json

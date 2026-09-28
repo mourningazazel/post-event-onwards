@@ -1,0 +1,18 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  readability-braces-around-statements,
+  readability-magic-numbers,
+  cppcoreguidelines-avoid-magic-numbers,
+  -modernize-use-trailing-return-type,
+  -bugprone-easily-swappable-parameters
+WarningsAsErrors: ''
+HeaderFilterRegex: 'src/.*'
+CheckOptions:
+  - key: readability-magic-numbers.IgnoredIntegerValues
+    value: '0;1;2;3;4;8;10;16;32;64;100;255;256'
+  - key: readability-magic-numbers.IgnoredFloatingPointValues
+    value: '0.0;0.5;1.0;2.0;100.0'

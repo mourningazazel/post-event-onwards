@@ -1,0 +1,234 @@
+{
+  "schema": 1,
+  "next_id": 7,
+  "items": [
+    {
+      "id": "PEO-001",
+      "order": 10,
+      "type": "chore",
+      "title": "Builder bootstrap: build, run, record baseline",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "The game builds and runs on the developer's machine and a first perf baseline is recorded in the queue.",
+        "context": [
+          "README.md",
+          "docs/roles.md",
+          "docs/testing.md",
+          "CMakePresets.json"
+        ],
+        "units": [
+          "chore: run python3 tools/bootstrap.py; fix anything it reports missing (SDL3 is fetched automatically if not installed)",
+          "chore: cmake --preset dev (win-dev on Windows) && cmake --build --preset dev && ctest --preset dev; note the first-build wall time",
+          "chore: run ./build/dev/bin/peo 7 and complete every manual step below",
+          "docs: if any step on this OS needed an extra package or flag, add it to README.md under Build (one line each)"
+        ],
+        "acceptance": [
+          "python3 tools/verify.py --frontend passes on the developer's machine",
+          "the game window opens, @ moves with arrows/WASD, h units approach the player",
+          "the report note contains OS, compiler, first-build time, and the Release-preset numbers below"
+        ],
+        "tests": [
+          "ctest --preset dev (all 21 core cases)"
+        ],
+        "manual": [
+          "Launch ./build/dev/bin/peo 7. Expect an 80x45 map of # and . with @ near the left edge and > near the right.",
+          "Stand still 30 ticks (3 s). Expect red h glyphs to converge on @ from multiple directions.",
+          "Shift+S toggles the scent view. Expect a gradient (@ + : .) centred on the player that follows you as you walk.",
+          "Walk into the > cell. Expect the HUD stage counter to become 1 and a denser map.",
+          "Press N five times. Expect stage 6 to have visibly more walls than stage 0.",
+          "Build the release preset and run it: watch the HUD for hitching while 40 h units move. Report anything not smooth.",
+          "Perf baseline: run ./build/headless-release/tests/peo_core_tests -tc='*thousand*' -d and report the duration doctest prints."
+        ],
+        "out_of_scope": [
+          "gameplay changes of any kind; record ideas with /work",
+          "adding fonts, colours or tiles"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed; start here"
+        }
+      ],
+      "references": [
+        "README.md",
+        "docs/roles.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-002",
+      "order": 20,
+      "type": "feature",
+      "title": "Introduce World as the single tick owner",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Frontend calls one World::tick(); all simulation state lives in core.",
+        "context": [
+          "docs/architecture.md",
+          "src/app/main.cpp",
+          "src/core/include/peo/core/scent.hpp",
+          "src/core/include/peo/core/horde.hpp",
+          "src/core/include/peo/core/stage.hpp",
+          "tests/core/test_horde.cpp"
+        ],
+        "units": [
+          "core: add src/core/include/peo/core/world.hpp with class World { explicit World(Seed); void load_stage(uint32_t); bool try_move_player(Vec2i delta); void tick(); const Stage& stage() const; const ScentField& scent() const; const std::vector<Hordeling>& horde() const; Vec2i player() const; Tick tick_count() const; uint32_t stage_index() const; }. Constants kInitialHorde and kPlayerScent move into a WorldParams struct with defaults.",
+          "core: implement src/core/src/world.cpp by moving load_stage/try_move/simulate out of main.cpp verbatim; reaching the exit inside try_move_player loads the next stage. Add world.cpp to src/core/CMakeLists.txt.",
+          "test: tests/core/test_world.cpp — 'same seed same world after 100 ticks' (compare player, horde positions, scent total for two Worlds), 'player cannot enter walls', 'reaching exit advances stage_index'. Register in tests/CMakeLists.txt.",
+          "app: main.cpp keeps only SDL setup, key mapping, and draw(); App holds a World and calls world.tick() on the fixed timestep.",
+          "docs: update the 'Planned seams' section of docs/architecture.md: World is built."
+        ],
+        "acceptance": [
+          "src/app/main.cpp contains no simulation logic: no ScentField, Rng or Hordeling manipulation, only World calls and drawing",
+          "the three new world tests pass and the suite stays under 500 ms",
+          "the game plays exactly as before (manual steps below)"
+        ],
+        "tests": [
+          "tests/core/test_world.cpp (new)",
+          "all existing suites"
+        ],
+        "manual": [
+          "Run ./build/dev/bin/peo 7 and repeat PEO-001 steps 1-4. Behaviour must be identical.",
+          "Pause with space, walk, unpause: hordelings must not teleport (tick catch-up bug check)."
+        ],
+        "out_of_scope": [
+          "new mechanics (blood, fire) — PEO-003",
+          "renaming existing core headers",
+          "changing tunable values"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "briefed; Architect will write test_world.cpp expectations on request, Builder may write them per unit 3"
+        }
+      ],
+      "references": [
+        "docs/architecture.md",
+        "src/app/main.cpp"
+      ],
+      "depends_on": [
+        "PEO-001"
+      ]
+    },
+    {
+      "id": "PEO-003",
+      "order": 30,
+      "type": "feature",
+      "title": "Blood scent layer on hordeling contact",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Touching the player leaves blood, a second scent layer hordes follow more strongly than trail.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/production/vision.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-004",
+      "order": 40,
+      "type": "perf",
+      "title": "Benchmark ScentField::step at 200x120",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A headless-release benchmark prints microseconds per step and the number is recorded for the vision target.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/production/vision.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-005",
+      "order": 50,
+      "type": "feature",
+      "title": "Cave stage generator behind generate_stage",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Stages alternate between open random walls and cellular-automata caves with a guaranteed entry-exit path.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "src/core/include/peo/core/stage.hpp"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-006",
+      "order": 60,
+      "type": "feature",
+      "title": "Replay: seed plus input log reproduces a run headlessly",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A replay file lets the Architect reproduce any Builder-reported bug in a test.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/architecture.md"
+      ],
+      "depends_on": [
+        "PEO-002"
+      ]
+    }
+  ]
+}

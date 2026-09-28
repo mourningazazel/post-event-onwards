@@ -1,0 +1,25 @@
+---
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++20
+IndentWidth: 4
+ColumnLimit: 110
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+PointerAlignment: Left
+DerivePointerAlignment: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"peo/'
+    Priority: 1
+  - Regex: '^<SDL3/'
+    Priority: 2
+  - Regex: '^<doctest/'
+    Priority: 3
+  - Regex: '^<.*>'
+    Priority: 4
+SortIncludes: CaseSensitive
+SpaceAfterTemplateKeyword: true

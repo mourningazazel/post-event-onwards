@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 tools/*)",
+      "Bash(cmake --preset *)",
+      "Bash(cmake --build --preset *)",
+      "Bash(ctest --preset *)",
+      "Bash(clang-format *)",
+      "Bash(git fetch *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git status)"
+    ]
+  }
+}
