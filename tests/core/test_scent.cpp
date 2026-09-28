@@ -8,19 +8,19 @@ TEST_SUITE("scent") {
     TEST_CASE("deposit then sample") {
         ScentField f(10, 10);
         f.deposit({5, 5}, 1.0F);
-        CHECK(f.sample({5, 5}) == doctest::Approx(1.0F));
-        CHECK(f.sample({4, 5}) == doctest::Approx(0.0F));
-        CHECK(f.sample({99, 99}) == doctest::Approx(0.0F)); // out of bounds is silent
+        CHECK(f.sample({5, 5}) == doctest::Approx(1.0));
+        CHECK(f.sample({4, 5}) == doctest::Approx(0.0));
+        CHECK(f.sample({99, 99}) == doctest::Approx(0.0)); // out of bounds is silent
     }
 
     TEST_CASE("one step spreads to orthogonal neighbours only") {
         ScentField f(10, 10, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
         f.deposit({5, 5}, 1.0F);
         f.step();
-        CHECK(f.sample({5, 5}) == doctest::Approx(0.6F));
-        CHECK(f.sample({5, 4}) == doctest::Approx(0.1F));
-        CHECK(f.sample({6, 5}) == doctest::Approx(0.1F));
-        CHECK(f.sample({6, 6}) == doctest::Approx(0.0F)); // diagonal untouched
+        CHECK(f.sample({5, 5}) == doctest::Approx(0.6));
+        CHECK(f.sample({5, 4}) == doctest::Approx(0.1));
+        CHECK(f.sample({6, 5}) == doctest::Approx(0.1));
+        CHECK(f.sample({6, 6}) == doctest::Approx(0.0)); // diagonal untouched
     }
 
     TEST_CASE("mass is conserved without decay") {
@@ -29,14 +29,14 @@ TEST_SUITE("scent") {
         for (int i = 0; i < 50; ++i) {
             f.step();
         }
-        CHECK(f.total() == doctest::Approx(4.0F).epsilon(0.001));
+        CHECK(f.total() == doctest::Approx(4.0).epsilon(0.001));
     }
 
     TEST_CASE("decay removes mass") {
         ScentField f(20, 20, {.diffusion = 0.0F, .decay = 0.5F, .floor = 0.0F});
         f.deposit({10, 10}, 1.0F);
         f.step();
-        CHECK(f.total() == doctest::Approx(0.5F));
+        CHECK(f.total() == doctest::Approx(0.5));
     }
 
     TEST_CASE("walls block scent") {
@@ -45,10 +45,10 @@ TEST_SUITE("scent") {
         walls.at(3, 2) = true;
         f.deposit({2, 2}, 1.0F);
         f.step(&walls);
-        CHECK(f.sample({3, 2}) == doctest::Approx(0.0F));
-        CHECK(f.sample({1, 2}) == doctest::Approx(0.1F));
+        CHECK(f.sample({3, 2}) == doctest::Approx(0.0));
+        CHECK(f.sample({1, 2}) == doctest::Approx(0.1));
         // Mass still conserved: the blocked side simply reflects.
-        CHECK(f.total() == doctest::Approx(1.0F));
+        CHECK(f.total() == doctest::Approx(1.0));
     }
 
     TEST_CASE("strongest neighbour climbs the gradient") {
@@ -71,6 +71,6 @@ TEST_SUITE("scent") {
         ScentField f(3, 3, {.diffusion = 0.0F, .decay = 0.9F, .floor = 0.05F});
         f.deposit({1, 1}, 0.1F);
         f.step();
-        CHECK(f.sample({1, 1}) == doctest::Approx(0.0F));
+        CHECK(f.sample({1, 1}) == doctest::Approx(0.0));
     }
 }

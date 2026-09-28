@@ -40,6 +40,6 @@ TEST_SUITE("stage") {
 
     TEST_CASE("difficulty curve rises and caps") {
         CHECK(stage_spec(1, 0).wall_density < stage_spec(1, 10).wall_density);
-        CHECK(stage_spec(1, 1000).wall_density == doctest::Approx(0.35F));
+        CHECK(stage_spec(1, 1000).wall_density == doctest::Approx(0.35));
     }
 }

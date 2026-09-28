@@ -1,13 +1,19 @@
 {
   "version": 6,
-  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "base",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": { "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" }
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
     },
     {
       "name": "dev",
@@ -22,7 +28,9 @@
       "name": "release",
       "displayName": "Release (optimised, frontend + tests)",
       "inherits": "base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     },
     {
       "name": "headless",
@@ -48,20 +56,72 @@
       "displayName": "Windows Dev (Visual Studio 2022)",
       "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     }
   ],
   "buildPresets": [
-    { "name": "dev", "configurePreset": "dev" },
-    { "name": "release", "configurePreset": "release" },
-    { "name": "headless", "configurePreset": "headless" },
-    { "name": "headless-release", "configurePreset": "headless-release" },
-    { "name": "win-dev", "configurePreset": "win-dev", "configuration": "Debug" }
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "headless",
+      "configurePreset": "headless"
+    },
+    {
+      "name": "headless-release",
+      "configurePreset": "headless-release"
+    },
+    {
+      "name": "win-dev",
+      "configurePreset": "win-dev",
+      "configuration": "Debug"
+    }
   ],
   "testPresets": [
-    { "name": "dev", "configurePreset": "dev", "output": { "outputOnFailure": true } },
-    { "name": "headless", "configurePreset": "headless", "output": { "outputOnFailure": true } },
-    { "name": "headless-release", "configurePreset": "headless-release", "output": { "outputOnFailure": true } },
-    { "name": "win-dev", "configurePreset": "win-dev", "configuration": "Debug", "output": { "outputOnFailure": true } }
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "headless",
+      "configurePreset": "headless",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "headless-release",
+      "configurePreset": "headless-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-dev",
+      "configurePreset": "win-dev",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
   ]
 }
