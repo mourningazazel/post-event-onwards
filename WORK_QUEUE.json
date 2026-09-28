@@ -820,10 +820,10 @@
         "acceptance": [
           "on an open map the field is strictly positive and strictly decreasing out to at least 60 cells from the player: no flat zero region inside the map",
           "in game (peo 7): standing still, the Dead close in from across the map, not only from within ~8 cells",
-          "both new tests pass and the whole suite stays under 500 ms",
+          "both new tests pass and the whole suite stays under 500 ms — size the new cases deliberately: the briefed scent-reach case (200 steps over 80x45) is more cell-updates than the heaviest case in the suite today, so use the smallest field and step count that still demonstrates the reach",
           "ScentField::step stays linear: no value-dependent decay and no pow/exp inside step. The floor flush remains the only nonlinearity, so PEO-007's step_linear + clamp_floor split survives.",
           "no magic numbers: the deposit and every retuned default is a named constant or a ScentParams field",
-          "the thousand-dead perf case is no worse than the 0.000735 s baseline"
+          "the thousand-dead case is no slower than the PEO-027 baseline above"
         ],
         "tests": [
           "tests/core/test_scent.cpp (new reach case)",
@@ -834,7 +834,7 @@
           "peo 7: stand still 30 s. The Dead should close in from the far side of the map, not only from nearby. Report roughly how many turns before a distant one first moves.",
           "Shift+S: the scent view must still show a readable gradient rather than one solid block. Describe what it looks like.",
           "Walk a long loop, then stand still: report whether the Dead track your current position or trail toward where you have been. This tells us whether decay needs raising.",
-          "headless-release: re-run the thousand-dead perf case and report the number against the 0.000735 s baseline."
+          "headless-release: re-run the thousand-dead case and report the number. The old 0.000735 s figure is void — it was ~99% scent diffusion, and PEO-027 shortened that warm-up. The current baseline is 0.000261 s."
         ],
         "out_of_scope": [
           "the weighted random draw and the pow(scent, k) draw exponent — that is PEO-009, which D-007 also covers",
@@ -903,6 +903,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "Raised after PR #5: ctest --preset headless reported 0.50 s against the 500 ms budget in AGENTS.md, with no code change in that PR to explain it. Sitting exactly on the line, so the next test added breaches it — and PEO-026 adds two new cases (a scent reach case and a Dead convergence case), so this will bite during that item. Worth measuring before the Builder starts PEO-026."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "Measured with peo_core_tests -d: the suite's 21 cases totalled 0.412 s, and 'a thousand dead step without touching each other' was 0.314 s of it (76%). A phase-split probe showed 99% of that case was its 100-tick 64x64 ScentField warm-up, not the step_horde call it asserts on (2.6 ms). Warm-up cut to 20 ticks, which still lays the gradient the horde climbs; the assertion moved == 1000 is unchanged. A sweep found the assertion holds from 10 warm-up ticks up (9 fails), so 20 leaves 2x margin. Suite now 0.121 s. Note the headless preset builds Debug with ASan+UBSan, which is the multiplier on all these numbers. Also found: the 0.000735 s figure recorded as the '1000 Dead step' baseline in PEO-001 was ~99% scent diffusion, so it never measured horde stepping; new release figure for the case is 0.000261 s."
         }
       ],
       "references": [],
