@@ -37,6 +37,7 @@ and handles the technical internals behind each decision.
 | G11 | Persistence as a gameplay rule: what the world remembers, what decays, what resets | Planned |
 | G12 | Extensibility: content packs, mod hooks, scripting, future-system slots | Planned |
 | G13 | Gameplay rules and playtesting: what must always hold, what may break for realism, standard test scenarios (owner note N001, `../playtest-harness.md`) | Planned |
+| G14 | Content model: materials, features and joints, capabilities, reactions, tags; environment-driven mobs and rooms (N008, [`../content-model.md`](../content-model.md)); decisions D-CM1–4 | Draft ready |
 
 **Planned topics — first questions to answer:**
 

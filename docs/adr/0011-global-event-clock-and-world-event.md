@@ -28,11 +28,14 @@
      than overflow.
 3. **An area generates at the clock value current when it is first generated.** A 1-week start
    that has played for a year meets year-old new areas.
-4. **Proposed: stored areas catch up when revisited.** An area stores the clock value it was
-   last brought up to. On revisit, the same per-object thresholds advance it from `t_last` to
-   `t_now` (more spoilage, damage, overgrowth). Anything the player changed is exempt, so an
-   item the player moved keeps its state. Monotonic sampling makes this consistent: catching up
-   from week 1 to month 6 gives the same result as generating at month 6.
+4. **Revisits: stored areas stay as they were, unless the player has been away about a month**
+   (owner note N009).
+   - Within the gate (default **30 days** of game time since the last visit), a stored area loads
+     exactly as it was.
+   - Beyond the gate, it is brought forward from its stored clock to `t_now`, using the same
+     per-object thresholds. Monotonic sampling makes this identical to generating it at `t_now`.
+   - Player-made changes are preserved (N009 assumption, to confirm).
+   - The gate is a data value.
 5. **Zombie fragility is a function of the clock** (gated by months). Damage output stays
    similar, but limbs and appendages become easier to damage and sever. Together with falling
    supplies, this gives the intended **difficulty ↔ reward gradient**: early is harder but

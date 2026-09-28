@@ -73,6 +73,7 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-WO-15 | Utilities (power and water) | Power per neighbourhood falls with time and sparseness; water is more reliable; wells hold (N007) | Across a city→rural transect at 7 vs 365 days, powered-neighbourhood rates fall with both; rural wells keep working | **confirmed** |
 | P-WO-16 | Fires | Burned buildings or clusters: intensity by area, collapse through the structural rule, charred items, smoke scent (N007) | A severe fire removes walls; unsupported upper contents fall; charred items get mixed conditions; smoke masks scent nearby | **confirmed** |
 | P-WO-17 | Global clock as a gradient | **Days-since-event drives all aftermath**; new areas generate at the current clock; it works at any value, e.g. 5 years (N007) | Clock sweep 7 → 30 → 365 → 1,825: every aftermath metric is monotonic and sane; a 1-week start that plays a year generates year-old new areas | **confirmed** |
+| P-WO-18 | Revisit aging gate | Places you've been stay as you left them. After about **1 month** away, they catch up to the current clock (N009) | Revisit after 10 days: byte-identical area. After 45 days: untouched content aged, player changes intact | **confirmed** (preserving player changes: proposed) |
 | P-WO-07 | Realistic population | Cities and buildings are populated like real ones, and zombies are as numerous as a real outbreak's; the player is one of very few survivors (N004) | Zombie density in a generated district matches its configured real-world population density; buildings hold plausible occupants | **confirmed** |
 | P-WO-03 | Walking-only travel | Makes travel between cities a **perilous expedition** that needs preparation | `walk-between-towns` bot must manage supplies; an unprepared bot fails more often | proposed |
 | P-WO-04 | Landmark-anchored cities | Gives each city an identity and lets players navigate by landmarks | Every generated city records a landmark, visible from inside the city | proposed |
@@ -86,6 +87,17 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-CH-03 | Promoted zombies with former lives | Looting a zombie is meaningful and fits who it was | A promoted "police officer" zombie carries occupation-consistent items | proposed |
 | P-CH-04 | Permadeath | Real stakes: bad decisions and bad luck end runs (owner N003) | Death ends the run; no path restores the character | **confirmed** |
 | P-CH-05 | Getting permanently stuck (ditch, pit) | Realism over protection (owner N003) | A player in a pit they can't climb out of stays stuck; the rule checker does **not** flag it | **confirmed** |
+
+### Items and content model ([N008](notes/N008-ai-authored-content-and-properties.md), [content-model.md](content-model.md))
+
+| ID | Function | Intended use | Purpose test (evidence) | Status |
+|---|---|---|---|---|
+| P-IT-01 | Generic attachment through features | Attach any object of fitting size to a `socket`/handle (limits such as `maxAttachSize`) and have it *behave*, e.g. a knife on a pipe acts as a spear, with no recipe (N008) | Several unrelated head/haft pairs attach within limits and produce derived reach, pierce and hammer; out-of-limit pairs are refused | **confirmed** |
+| P-IT-02 | Generic reactions (`onImpact`, `onHeat`, `onWet`, …) | Objects respond to stimuli from their physical properties: break easily, deal blunt force, cut, shatter into shards (N008) | A glass bottle club shatters on hard impact and becomes a `pierce` weapon; a steel pipe dents but holds | **confirmed** |
+| P-IT-03 | Mobs as outputs of their environment | Clothing and pockets follow occupation, place, time of day and season, e.g. an office worker in a suit (N008) | Promoted zombies from an office at 2 p.m. wear office clothing; from homes at 3 a.m., mostly sleepwear | **confirmed** |
+| P-IT-04 | Realistic place inventories | Rooms hold real-world items in realistic quantities, filtered to useful, flavour or aesthetic items, with clutter aggregated (N008) | Generated kitchens and offices fall within their room programs' quantity ranges; no orphan items | **confirmed** |
+| P-IT-05 | Capability-based actions and crafting | Objects combine and act "in ways that just make sense logically" through capabilities and tags, never item-specific code (N008) | Sawing, prying, digging and improvised crafts work with any object that meets the capability thresholds | **confirmed** |
+| P-IT-06 | Keys that open real doors | A key in a zombie's pocket references its home or workplace door by generation address | Following a found key's address leads to a door it opens | proposed |
 
 ### Tooling
 
@@ -102,6 +114,6 @@ Remaining:
 2. ~~P-WO-07 follow-up~~: answered in N005. Yes: zombies are the people who were there, and
    sealed buildings still hold theirs.
 3. ~~N005 follow-ups~~: all answered in N007.
-4. **ADR-0011 item 4 (proposal):** should stored areas **catch up** in time when revisited (more
-   spoilage and decay since you were last there), except for things you changed? Claude recommends
-   yes, for realism.
+4. ~~ADR-0011 item 4~~: answered in N009 (1-month gate). Please confirm that player-made changes
+   are preserved when an area catches up.
+5. Content-model decisions D-CM1 to D-CM4 (`content-model.md` §6).
