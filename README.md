@@ -18,6 +18,7 @@ system by system, with review gates.
 | [docs/GAMEPLAN.md](docs/GAMEPLAN.md) | Research-backed stack and architecture proposal, and the decisions log |
 | [docs/SYSTEMS.md](docs/SYSTEMS.md) | Framework rules and the proposed map of major systems |
 | [docs/adr/](docs/adr/) | Architecture Decision Records |
+| [docs/design/gameplay-model/](docs/design/gameplay-model/) | **Gameplay model walkthrough:** owner decisions on how gameplay concepts are represented |
 | [docs/design/scent-mobs.md](docs/design/scent-mobs.md) | Enemy movement analysis, with benchmark |
 | [docs/design/world-generation.md](docs/design/world-generation.md) | Endless staged-generation analysis |
 | [docs/LICENSING.md](docs/LICENSING.md) | License policy and verified dependency licenses |
