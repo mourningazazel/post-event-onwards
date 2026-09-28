@@ -1,0 +1,23 @@
+# Build outputs
+/build/
+/out/
+/cmake-build-*/
+CMakeUserPresets.json
+compile_commands.json
+.cache/
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.user
+
+# Spike binaries
+docs/research/spikes/**/*.spv
+docs/research/spikes/scent-movement/scentbench
+docs/research/spikes/gpu-compute-probe/gpuprobe
+docs/research/spikes/gpu-compute-probe/computeprobe
+
+# Third-party reference caches must never enter the repo (see ADR-0004)
+roguelike-refs/
+roguebasin-raw/
