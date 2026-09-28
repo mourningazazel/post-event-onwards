@@ -10,33 +10,32 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
   and review. Never claims to have run the game.
 - **Builder** runs on the developer's machine. Owns implementation, running
   the game, manual test steps and real-hardware perf numbers.
-- The contract between them is `docs/roles.md`. Work only moves through
+- The contract is `docs/roles.md`. Work moves only through
   `WORK_QUEUE.json` via `tools/work_queue.py`; never edit the JSON by hand.
 - Precedence when sources disagree: user → `docs/production/decisions.md` →
   topic docs → this file.
-- Gameplay, abstraction and direction choices, and big rewrites, are the
-  user's: add an entry to `docs/production/DECISIONS_NEEDED.md` (fixed A/B/C
-  format), set the item `AwaitingUser`, move on. Technical method is yours.
-- The enemies are **the Dead**. The word "zombie" is banned everywhere.
+- Gameplay, abstraction, direction and big rewrites are the user's call:
+  add a `docs/production/DECISIONS_NEEDED.md` entry, set the item
+  `AwaitingUser`, move on. Technical method is yours.
+- The enemies are **the Dead**; "zombie" is banned everywhere.
 
 ## Build and test
 
 - `python3 tools/bootstrap.py` once per checkout (installs git hooks).
 - `python3 tools/verify.py` before every commit (docs caps, clang-format,
   headless build, tests); `--frontend` on a machine with a display.
-- Presets: `headless` (core + tests, no SDL), `dev`, `release`, `win-dev`.
-- `src/core` is the simulation: no SDL, no I/O, no globals, deterministic
-  from a seed. Every mechanic lands here first, with a doctest under `tests/`.
-- `src/app` is the SDL3 frontend and stays thin. Logic in it is a bug.
+- `src/core` is the simulation: no SDL, I/O or globals; deterministic from
+  a seed. Every mechanic lands here first, with a doctest under `tests/`.
+- `src/app` is the SDL3 frontend and stays thin; logic in it is a bug.
 - Unit tests stay headless; the suite runs in under 500 ms. What cannot be
   tested headlessly gets a `manual` step in its brief.
-- Performance is a feature: no allocation in per-tick loops, flat arrays,
-  measure with `headless-release` before optimising.
+- Performance is a feature: no allocation in per-tick loops; measure with
+  `headless-release` before optimising.
 
 ## Code
 
 - C++20, warnings are errors, `.clang-format` is law (run `verify.py --fix`).
-- No magic numbers: name constants (`kTickMs`), keep tunables in structs.
+- No magic numbers: name constants (`kTickMs`); tunables live in structs.
 - Public headers under `src/core/include/peo/core/`; one concept per file.
 - Comments say why; names say what.
 
@@ -45,8 +44,8 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 - Commit explicit paths. Never `git add -A`, stash, or `--no-verify`.
 - Message `[PEO-123] imperative summary`; one queue unit per commit.
 - `main` is integration: fast-forward only, no force-push, no squash.
-- Read queue state from `origin/main` before choosing work. On a queue
-  conflict, take theirs and re-apply your change with the tool.
+- Read queue state from `origin/main` before choosing work. On a conflict,
+  take theirs and re-apply your change with the tool.
 
 ## Queue lifecycle
 
