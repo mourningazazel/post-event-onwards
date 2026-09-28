@@ -1,6 +1,6 @@
-# Roguelike (working title)
+# Post Event: Onwards
 
-A performance-heavy, open-source roguelike:
+A performance-heavy, open-source roguelike of super-realistic zombie survival:
 
 - ASCII-first grid presentation in the spirit of Dwarf Fortress, with swappable PNG
   fonts and tilesets
@@ -21,6 +21,7 @@ system by system, with review gates.
 | [docs/design/gameplay-model/](docs/design/gameplay-model/) | **Gameplay model walkthrough:** owner decisions on how gameplay concepts are represented |
 | [docs/design/notes/](docs/design/notes/) | Owner design notes, recorded as given |
 | [docs/design/content-model.md](docs/design/content-model.md) | Content model: materials, features and joints, capabilities, reactions, tags; how Claude authors content |
+| [docs/design/brands.md](docs/design/brands.md) | Fictional brand universe (parent companies, brands, store own labels) |
 | [docs/design/purposes.md](docs/design/purposes.md) | Purpose catalog: what each gameplay function is for, and its permanent purpose tests |
 | [docs/design/playtest-harness.md](docs/design/playtest-harness.md) | How Claude plays and tests the game: headless play, scenarios, bots, rule checker, replays |
 | [docs/design/scent-mobs.md](docs/design/scent-mobs.md) | Enemy movement analysis, with benchmark |

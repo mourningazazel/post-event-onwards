@@ -300,6 +300,17 @@ Nobody wrote a "spear" recipe.
 
 ## 6. Decisions for the owner
 
+**All four were answered in [N010](notes/N010-name-attachment-joints-descriptions-brands.md):**
+
+| Decision | Answer | Detailed design |
+|---|---|---|
+| D-CM1 | Physically plausible attachment, yes. The *attached* item carries an **attachment surface** and an **attachment strength** relative to its weight. | §7 |
+| D-CM2 | Joints cost something and differ by method. Deep, but easy to understand at its base. | §7 |
+| D-CM3 | Surface details generated from properties and their combinations, written as a **description**, not tag lists | §8 |
+| D-CM4 | **No real brands.** Invented, believable brands with parent-company relationships; brand tags compose item names. | §9, [`brands.md`](brands.md) |
+
+The original questions are kept below for the record.
+
 - **D-CM1 — Free-form assembly.**
   - Question: may *any* physically plausible attachment be made (features plus limits), or only
     curated combinations?
@@ -318,3 +329,157 @@ Nobody wrote a "spear" recipe.
   - **Recommendation: generic only.** Real brands raise trademark issues for an open-source
     release (ADR-0004 spirit) and date the setting. Generic, plausible fictional brands can add
     flavour.
+
+## 7. Attachment and joints: "Load vs Hold"
+
+### The base mechanic players learn
+
+Every attachment has three things, shown plainly in the attach screen:
+
+| Term | Meaning to the player | Shown as |
+|---|---|---|
+| **Load** | How hard the attached thing pulls on the joint. Heavier, longer, or swung hard means more load. | a number, or light / medium / heavy |
+| **Hold** | How strongly the joint grips. It depends on the method, the surfaces, and how much fastener you use. | a number |
+| **Set time** | How long until the joint reaches full Hold. Zero for tape and rope; minutes to hours for glue. | a duration |
+
+The joint's **status** is simply Hold compared with Load:
+
+- **Secure** (Hold ≥ 2 × Load)
+- **Firm** (≥ 1.25 ×)
+- **Wobbly** (≥ 1 ×)
+- **Won't hold** (< 1 ×)
+
+When attaching, the screen lists every method you have available, each with its predicted
+status, how much it uses, and the time it takes. Everything deeper sits behind those three terms.
+
+### Item side (the owner's two values)
+
+These live on the *attached* item:
+
+- **`attachSurface`:** what the item offers a joint.
+  - *Kind:* smooth, rough, porous, fibrous, oily/wet, round, irregular.
+  - *Contact area:* the size of the face that can be joined.
+  - *Wrap girth:* whether cord can go around it.
+  - Derived from material and form; can be overridden.
+- **`attachStrength`:** the hold the item *requires*.
+  - At rest: its weight.
+  - In use: weight × lever distance from the joint × use intensity (carried < swung < striking).
+  - Derived; can be overridden.
+  - This sets **how much fastener** a joint needs, e.g. how much glue.
+
+### Method side (fasteners are ordinary consumable items with a `fastener` feature)
+
+| Method | Hold comes from | Works best on | Weak at | Set time | Needs | Wear |
+|---|---|---|---|---|---|---|
+| **Superglue** | Contact area | Small, smooth, hard parts | Porous or large parts; impact (brittle) | Seconds to minutes | — | Cracks under repeated impact |
+| **Epoxy** | Contact area; fills gaps | Nearly anything rigid, irregular fits | — | 5 min to 24 h (by product) | Mixing | Very durable |
+| **Wood glue** | Contact area | Porous and fibrous: wood, paper, cloth | Metal, plastic, glass | Hours | Clamping helps | Weak when wet |
+| **Duct tape** | Wraps × tape width | Most dry surfaces, quick fixes | Wet, oily or hot; heavy loads | None | — | Loosens with impacts, heat and water; can be topped up |
+| **Rope / cord** | Wraps × cord strength × knot | **Large, heavy, irregular** items | **Small items** (needs wrap girth); rigid precision | None | — | Forgiving under impact; rots slowly |
+| **Wire** | Twists × wire gauge | Round and irregular, medium items | Very large loads | None | Pliers for full hold | Durable; can cut hands |
+| **Zip ties** | Count × tie rating | Loopable shapes | Heavy impact | None | — | Snaps rather than loosening |
+| **Screws / nails** | Count × material grip | Wood; drilled thin metal | Glass, stone; small or brittle items | None | Screwdriver, drill or hammer | Rigid and strong; may split wood |
+| **Welding** | Weld length | Metal to metal only | Everything else | Minutes | Welder, power | Strongest; **noise, light, smoke scent** |
+| **Sewing** | Stitch count | Cloth to cloth (patches, armour layers) | Rigid items | Time to sew | Needle and thread | Frays |
+
+**Hold formula, conceptually:**
+
+Hold = method strength × **surface match** × amount used, where:
+
+- **surface match** comes from a method × surface-kind table (e.g. superglue on porous wood is
+  poor; epoxy on anything rigid is good)
+- **amount used** is capped by what the geometry allows: glue and tape by contact area, rope by
+  wrap girth and length, screws by material thickness
+
+The game **suggests the amount needed** to reach *Secure* for the item's in-use `attachStrength`.
+The player can use less to save supplies, and accept a weaker joint.
+
+**Curing.** Glue joints start at about 10% Hold and rise to 100% over their set time. Swinging an
+uncured spear risks losing its head.
+
+**Wear.** Each use applies fatigue based on Load ÷ Hold and on the method's impact tolerance.
+Environment matters: tape hates water and heat; wood glue hates water. Joints can be
+**reinforced**, by adding more of the same or a second method, and their Holds combine.
+
+**Removal.** Rope, wire, zip ties and screws come off, sometimes needing tools. Tape comes off and
+is consumed. Glue and welds must be **broken apart**, using the reactions (§2.5), which may damage
+the parts.
+
+### Worked examples
+
+| Build | Method | Result |
+|---|---|---|
+| Kitchen knife on a steel pipe (spear) | Duct tape, 6 wraps | Firm; Wobbly after a few hard thrusts; top up with more tape |
+| Same spear | Cord | Wobbly: the knife tang is too small to wrap well (the owner's rope example) |
+| Same spear | Epoxy, cured | Secure, but can't be undone, and ties you up for hours |
+| Brick on a stick (crude maul) | Rope, many wraps | Firm: rope suits big, irregular items |
+| Same maul | Superglue | Won't hold: too heavy, porous surface |
+
+## 8. Descriptions generated from properties (D-CM3)
+
+**Description rules** are content data: phrase rules keyed on property ranges and combinations,
+grouped into sentence slots.
+
+**Sentence slots, in order:**
+
+1. what it is (the composed name, §9)
+2. size and weight feel
+3. material and feel
+4. edges, points and handles
+5. condition and state
+6. assembly and joints
+7. world-building (provenance, brand, notes)
+
+Each slot has a maximum number of sentences, and rules have priorities, so the text stays short.
+
+**Examples of rules:**
+
+- density high for its size → "heavy for its size"
+- `edge.sharpness` ≥ 7 and `edge_holding` ≥ 6 → "the edge is keen"
+- joint status Wobbly → "the head shifts when you swing it"
+- `state.charred` → "blackened and blistered by fire"
+
+**Hidden properties** (does it still work, how sharp exactly) are described vaguely until
+discovered, by using, testing or a skill check:
+
+- before: "you're not sure it still works"
+- after: "it crackles, but works"
+
+**Numbers** stay optional in a detail view (G04 D4.5).
+
+**Example output:**
+
+> A kitchen knife bound to the end of a steel pipe. Heavy and long, awkward in tight spaces. The
+> blade is keen, but the tape is peeling and the head shifts when you thrust. Soot streaks the
+> pipe.
+
+## 9. Brands and name composition (D-CM4)
+
+- **No real brands.** A fictional brand universe of **parent companies → brands → product
+  categories**, plus **store chains with own labels**. The starter set is in
+  [`brands.md`](brands.md).
+- **Brands are relationships, not strings.**
+  - An item's `brand.*` tag links to a brand, and the brand links to its parent company.
+  - Realistic association follows: the same parent makes the cereal and the bread.
+  - Region and store context weight the choice: a supermarket chain stocks its own label; an area
+    favours certain brands.
+- **Brands can matter mechanically.** A brand has a **tier** (budget / standard / premium) that
+  shifts relevant properties: premium tape has more Hold; budget batteries hold less charge.
+  Brands also carry description flavour (slogans, packaging colours used in the tile palette).
+- **Name-altering tags.** Any tag in the registry can declare a `name_part`: a slot, a template
+  and a precedence. The display name is assembled from slots, so a tag appears in the name **just
+  by existing**:
+
+  | Slot | Examples |
+  |---|---|
+  | condition prefix | charred, wet, rusted, bloody |
+  | **brand** | Fennick Hollow, Tenacor Pro |
+  | variant | Honey Oat, Heavy-Duty |
+  | base name | cereal, duct tape |
+  | suffix | (half full), (cured), (wobbly) |
+
+  Example: "charred Fennick Hollow Honey Oat cereal (half full)". Lists show a short form, and
+  the full name appears on inspect.
+- **Authoring rule:** when Claude authors an archetype that would realistically carry a brand, it
+  adds a handful of brand options from categories that fit.
+- **Every brand name gets a conflict check** (web and trademark search) before it ships.

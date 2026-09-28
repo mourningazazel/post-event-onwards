@@ -1,4 +1,4 @@
-# Roguelike — base-engine gameplan (v0.2, for review)
+# Post Event: Onwards — base-engine gameplan (v0.2, for review)
 
 Status: **proposal.** No game code exists yet.
 

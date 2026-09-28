@@ -98,6 +98,10 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-IT-04 | Realistic place inventories | Rooms hold real-world items in realistic quantities, filtered to useful, flavour or aesthetic items, with clutter aggregated (N008) | Generated kitchens and offices fall within their room programs' quantity ranges; no orphan items | **confirmed** |
 | P-IT-05 | Capability-based actions and crafting | Objects combine and act "in ways that just make sense logically" through capabilities and tags, never item-specific code (N008) | Sawing, prying, digging and improvised crafts work with any object that meets the capability thresholds | **confirmed** |
 | P-IT-06 | Keys that open real doors | A key in a zombie's pocket references its home or workplace door by generation address | Following a found key's address leads to a door it opens | proposed |
+| P-IT-07 | Load vs Hold attachment | Players understand every joint through Load, Hold and Set time, with a clear status (Secure / Firm / Wobbly / Won't hold); the attach screen predicts it (N010) | The predicted status matches the observed failure rate over many uses of the same build | **confirmed** |
+| P-IT-08 | Fasteners differ meaningfully | Glue cures over time; rope is poor on small items but good on big, irregular ones; tape hates wet and heat; welds need a welder, and are loud and smoky (N010) | For the same head and haft, methods rank as specified (e.g. cord < tape < cured epoxy on a knife-spear; rope > superglue on a brick maul); swinging before cure risks failure | **confirmed** |
+| P-IT-09 | Generated descriptions | Surface details come from property combinations as prose; hidden properties are revealed by use (N010) | A described property changes the text when the property changes; a charred radio reads "not sure it works" until tried | **confirmed** |
+| P-IT-10 | Brands and name composition | Fictional brands with parent-company relationships; brand tags compose names; tier shifts relevant properties (N010) | Fennick Hollow cereal and bread share a parent; "charred Fennick Hollow …" is composed from tags; Tenacor Pro tape gives more Hold than budget tape | **confirmed** |
 
 ### Tooling
 
@@ -116,4 +120,4 @@ Remaining:
 3. ~~N005 follow-ups~~: all answered in N007.
 4. ~~ADR-0011 item 4~~: answered in N009 (1-month gate). Please confirm that player-made changes
    are preserved when an area catches up.
-5. Content-model decisions D-CM1 to D-CM4 (`content-model.md` §6).
+5. ~~Content-model decisions D-CM1 to D-CM4~~: answered in N010.
