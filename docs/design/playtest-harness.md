@@ -140,6 +140,18 @@ When Claude plays exploratively (not scripted), findings go into
 `docs/playtests/<date>-<topic>.md`. Each entry records what was tried, what felt wrong, and the
 replay file. Every confirmed issue becomes a test before it's fixed.
 
+### 9. Purpose tests: intended uses stay possible (owner note N002)
+
+- **Every gameplay function** has an entry in the [purpose catalog](purposes.md) saying what it's
+  *for*.
+- **Every intended use** has a purpose test: a scenario plus a key script or bot, with an
+  observable outcome as evidence.
+- **The purpose suite is the long-term regression net.** It runs on every change, and tests are
+  never deleted silently. If a new mechanic makes an old intended use impossible, e.g. a crowd
+  change that makes scent masking useless, CI fails and names the broken purpose.
+- **When Claude is unsure what something is for, it asks.** The entry stays `question`, and gets no
+  test, until the owner answers.
+
 ## What "gameplay bugs" means here: cross-system hunting list
 
 Playtests deliberately combine mechanics. Categories to probe:
@@ -159,9 +171,10 @@ Playtests deliberately combine mechanics. Categories to probe:
 
 ## Owner decisions needed
 
-- **D-PT1:** Should the owner-facing game ship with the wizard/debug mode, e.g. behind a flag, as
-  many roguelikes do? Recommendation: yes, clearly marked; it doesn't count for achievements or
-  high scores.
+- **D-PT1:** Should the owner-facing game ship with the wizard/debug mode? **Owner decision
+  (N003): yes.** Clearly marked; wizard runs are flagged and excluded from scores.
 - **D-PT2:** The gameplay rules list (G13). Claude drafts it; the owner approves which rules are
-  laws and which are allowed to break for realism (e.g. "the player can never be permanently
-  stuck").
+  laws and which may break for realism. **Owner principle (N003): realism over protection.**
+  - Getting permanently stuck, or dying to bad luck or a bad decision, is intended, not a bug.
+  - The rule checker enforces only *simulation integrity* (e.g. item conservation, no overlapping
+    units, save/load identity), never *player safety*.

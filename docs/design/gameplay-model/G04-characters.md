@@ -67,7 +67,11 @@ and senses. A future system adds a new component without touching existing chara
 - **Recommendation: C, with B as the default.**
   - The persistent, endless world makes continuity valuable.
   - "Meeting your former self" is a strong emergent moment.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-27, N003): A, hard permadeath.** Death ends the run. Bad luck and bad
+  decisions are allowed to end a 50-hour character.
+- **Follow-up for the owner:** does the next run start in a **new world**, or as a new character
+  in the **same persistent world**, where the previous character's body (maybe risen) and gear
+  could be found?
 
 ### D4.5 — How much of the numbers does the player see?
 

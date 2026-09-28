@@ -27,7 +27,7 @@ later features are compositions of existing building blocks, and changes stay lo
 | R12 | **No singletons.** Dependencies are passed explicitly in a context struct at construction. | Testability, and multiple worlds (e.g. a gen-preview tool) side by side |
 | R13 | **Configuration is layered:** defaults → data → user config → command line, typed and validated in one place. | Tuning without recompiling |
 | R14 | **Architecture decisions are recorded as ADRs** (`docs/adr/`) before implementation. | Future contributors and future-us know *why* |
-| R15 | **The game is playable headless from day one** (owner note N001, `design/playtest-harness.md`). Every system exposes its state to the gameplay rule checker. Every feature lands with at least one **scenario plus playtest** (a key script or bot policy with expectations), not only unit tests. | Claude plays the real game throughout development. Cross-system gameplay bugs are caught when they're introduced, and each one becomes a permanent replay test. |
+| R15 | **The game is playable headless from day one** (owner note N001, `design/playtest-harness.md`). Every system exposes its state to the gameplay rule checker. Every feature lands with at least one **scenario plus playtest** (a key script or bot policy with expectations), not only unit tests. Every gameplay function declares its **intended uses** in the purpose catalog (owner note N002, `design/purposes.md`). Each use gets a **purpose test** that stays in the regression suite permanently. | Claude plays the real game throughout development. Cross-system gameplay bugs are caught when they're introduced, and each one becomes a permanent replay test. |
 
 ## 2. Proposed major systems (bottom layer first)
 

@@ -20,6 +20,7 @@ system by system, with review gates.
 | [docs/adr/](docs/adr/) | Architecture Decision Records |
 | [docs/design/gameplay-model/](docs/design/gameplay-model/) | **Gameplay model walkthrough:** owner decisions on how gameplay concepts are represented |
 | [docs/design/notes/](docs/design/notes/) | Owner design notes, recorded as given |
+| [docs/design/purposes.md](docs/design/purposes.md) | Purpose catalog: what each gameplay function is for, and its permanent purpose tests |
 | [docs/design/playtest-harness.md](docs/design/playtest-harness.md) | How Claude plays and tests the game: headless play, scenarios, bots, rule checker, replays |
 | [docs/design/scent-mobs.md](docs/design/scent-mobs.md) | Enemy movement analysis, with benchmark |
 | [docs/design/world-generation.md](docs/design/world-generation.md) | Endless staged-generation analysis |
