@@ -299,7 +299,13 @@
         "manual": [],
         "out_of_scope": []
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "D-007 (see decisions.md) fixes the shape of the draw: weight a candidate cell by pow(scent, k) with a tunable exponent k slightly above 1, never exp(k*scent) — at the 0-500 scale from PEO-026 exp saturates immediately. A power law keys off the ratio between neighbouring cells, so one k stays decisive next to the player and becomes a gentle drift far away, which is the horde-drift behaviour the user asked for. Fold this into the brief when PEO-009 is planned."
+        }
+      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -788,34 +794,64 @@
       "order": 260,
       "type": "bug",
       "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "user",
+      "owner": "builder",
       "created": "2026-09-28",
       "brief": {
-        "goal": "The Dead visibly converge within seconds, or the expectation is revised.",
+        "goal": "The Dead converge from across the map: the scent field carries a usable gradient to the map edges on a 0-500 scale, so none of the Dead is ever frozen on a flat zero field.",
         "context": [
+          "docs/production/decisions.md (D-007)",
+          "src/core/include/peo/core/scent.hpp",
           "src/core/src/scent.cpp",
-          "src/core/src/dead.cpp"
+          "src/core/src/dead.cpp",
+          "src/app/main.cpp",
+          "tests/core/test_scent.cpp"
         ],
         "units": [
-          "core: measure scent front vs ticks; tune or raise a D-entry if it is a pacing call"
+          "core: name the player's full-strength deposit as a constant (kPlayerScent = 500.0F) and use it instead of the literal 1.0F at the deposit call site in src/app/main.cpp.",
+          "core: retune the ScentParams defaults in scent.hpp for long reach. Raise diffusion (try ~0.5), lower decay (try ~0.01), and drop floor by orders of magnitude (try ~1e-6). Reach is about sqrt(diffusion/4/decay) * ln(peak/floor), so floor is the dominant lever: keep it tiny but non-zero so the field stays sparse. Tune against the tests and the manual steps below, and record the values you settled on in the report.",
+          "test: tests/core/test_scent.cpp — add 'the scent front crosses the map': on an open 80x45 field deposit kPlayerScent at (8,22) every step for 200 steps, then CHECK sample({70,22}) > 0.0F and CHECK that values strictly decrease along y=22 as x goes from 9 to 70 (a usable gradient, not a plateau).",
+          "test: tests/core/test_dead.cpp — add 'distant Dead close in': after 200 steps of depositing at (8,22) on an open 80x45 field, one of the Dead starting at (60,22) must close at least 25 cells over 200 calls to step_horde. This is the regression test for this bug.",
+          "app: the scent view's bands are tuned for a 0..1 field and will render as one solid block at the new scale. Make the bands relative — derive them from the current field maximum, or space them logarithmically — so the view survives future retuning. This overlaps PEO-024 (new glyph for the strongest band): land whichever of the two is second on top of the first.",
+          "docs: add one or two lines to docs/design/scent-mobs.md recording the 0-500 scale and the reach relationship."
         ],
         "acceptance": [
-          "a test pins the scent front radius after N ticks"
+          "on an open map the field is strictly positive and strictly decreasing out to at least 60 cells from the player: no flat zero region inside the map",
+          "in game (peo 7): standing still, the Dead close in from across the map, not only from within ~8 cells",
+          "the two new tests pass and the whole suite stays under 500 ms",
+          "ScentField::step remains a linear operator: no value-dependent decay and no pow/exp inside step. The only nonlinearity stays the existing floor flush, so PEO-007's step_linear + clamp_floor split is still possible.",
+          "no new magic numbers: the deposit amount and every retuned default is a named constant or a ScentParams field"
         ],
-        "tests": [],
+        "tests": [
+          "tests/core/test_scent.cpp (new reach case)",
+          "tests/core/test_dead.cpp (new convergence case)",
+          "all existing suites"
+        ],
         "manual": [
-          "see PEO-001 report"
+          "peo 7: stand still 30 s. The Dead should close in from the far side of the map, not only from nearby. Report roughly how many turns before a distant one first moves.",
+          "Shift+S: the scent view must still show a readable gradient rather than one solid block. Describe what it looks like.",
+          "Walk a long loop, then stand still: report whether the Dead track your current position or trail toward where you have been. This tells us whether decay needs raising.",
+          "headless-release: re-run the thousand-dead perf case and report the number against the 0.000735 s baseline."
         ],
-        "out_of_scope": []
+        "out_of_scope": [
+          "the weighted random draw and the pow(scent, k) draw exponent — that is PEO-009, which D-007 also covers",
+          "a second scent layer (blood) — PEO-003",
+          "making the field integer or fixed-point: D-007 keeps it float deliberately",
+          "speculate/commit — PEO-007"
+        ]
       },
       "notes": [
         {
           "at": "2026-09-28",
           "by": "architect",
           "text": "Raised D-007 (scent reach / convergence pacing). Blocked on the pacing answer: the front-radius test in this brief can only pin a number once the target reach is chosen. Technical instrumentation is ready to write behind the decision."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "D-007 answered and recorded in decisions.md; briefed. Root cause identified from the code: the ~8-cell reach is the floor flush in scent.cpp (v < floor -> 0.0F, floor 0.001F against a 1.0F deposit); past it the field is exactly zero, strongest_neighbour requires v > best strictly, so distant Dead never move. Fix is dynamic range, not diffusion rate."
         }
       ],
       "references": [],

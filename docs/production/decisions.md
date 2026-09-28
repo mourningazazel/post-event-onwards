@@ -5,6 +5,34 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-28 · WORK_QUEUE.json's word cap raised to 4000
+
+Architect decision, tooling. `docs/README.md` keeps briefs on the queue item, but a brief the
+Builder can finish without asking runs 300–500 words, and six briefed items already exceeded the
+old 2500-word cap — the cap and the documented workflow could not both hold, so every `/plan` from
+here would have failed validation. Why: the cap exists so that docs which grow unbounded stop
+being read, and nobody reads the queue whole — agents read one item through `work_queue.py show`.
+Consequence: the cap is 4000 in `tools/validate_docs.py`; the real pressure valve stays `complete`,
+which archives an item into `docs/COMPLETED_WORK/` and drops it from the queue, so the queue is
+bounded by throughput rather than by the cap. Brief just-in-time rather than briefing the whole
+backlog. Revisit if briefs ever move into their own files.
+
+## 2026-09-28 · D-007 · Scent carries far on a 0–500 scale; the Dead are drawn by a power law
+
+User decision. The player deposits at a nominal full strength of 500 rather than 1, the field
+spreads much further, and the Dead weight a candidate cell by its scent raised to a tunable
+exponent, so a stronger cell pulls disproportionately harder while a wide, flat far field still
+yields directional drift. Why: the ~8-cell reach in the PEO-001 playtest is the `floor` flush —
+past it every cell is exactly `0.0F`, `strongest_neighbour` finds nothing strictly greater, and
+distant Dead freeze for good; reach goes as `λ · ln(peak/floor)`, so a wide dynamic range over a
+tiny floor is what carries a gradient across the map. Consequence: `floor` drops by orders of
+magnitude and the 500 scale supplies the headroom (PEO-026); the field stays a linear operator so
+D-002's `speculate/commit` patch survives — every nonlinearity lives in the read path, as
+`pow(scent, k)` in the weighted draw, never `exp`, which saturates at these magnitudes (PEO-009);
+storage stays `float`, because quantising cells to integers 0–500 would recreate the plateau that
+froze the Dead; if long reach and fresh trails ever conflict, the sanctioned fix is two linear
+layers (fast/near, slow/far) summed at read time, not value-dependent decay.
+
 ## 2026-09-28 · N015 · D-003 to D-006 answered; locks; books
 
 User decisions, verbatim in `docs/design/notes/N015-*.md`. D-003 A: every G01–G03
