@@ -48,7 +48,12 @@ and senses. A future system adds a new component without touching existing chara
   after that you learn by doing.
 - **Recommendation: C.** Every start is meaningfully different, it makes the apocalypse backstory
   matter, and it needs no XP abstraction.
-- **Owner decision:** _pending_
+- **Owner input (N012):**
+  - Skills train at an unrealistic rate, up to **beyond-human** levels (0–20 scale, see
+    `survival-actions.md` §2.15).
+  - **Reading** found books and manuals is a real learning path alongside use.
+  - Option C therefore gains a third source: background-seeded, then use-based **and reading**.
+- **Owner decision:** _pending_ (confirm option C, with reading as a learning source)
 
 ### D4.3 — Character creation
 

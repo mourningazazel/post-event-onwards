@@ -209,6 +209,37 @@ Each action lists the **mechanics** it uses and the **item data** it reads.
 | Mark your own map, write notes | M21 | pen or pencil + paper |
 | Compass, watch | M21 | `navigate`, `time` |
 
+### 2.15 Skills and expert actions ([N012](notes/N012-trainable-expert-skills.md))
+
+Skills run 0–20 (`content/registry/skills.toml`). They train faster than in reality, through use
+and through **reading** manuals and books found in the world (`teaches`).
+
+| Tier | Level | What changes |
+|---|---|---|
+| Untrained → competent | 0–5 | Basic success; slow; tools must meet requirements fully |
+| Professional → master | 6–10 | Faster (×0.92 time per point above an action's difficulty), quieter (one noise step per 5 points), **skill substitutes for tool quality** (`tool_substitution` capability points per skill point) |
+| Beyond human | 11–20 | **Expert-only actions unlock** (`min_skill`), and ordinary actions reach levels no real person could |
+
+**Expert-only actions** are registered in `content/registry/actions.toml`:
+
+- `friction_fire`: survival 9
+- `climb_sheer_wall`: athletics 12
+- `crack_safe_by_feel`: security 15
+- `field_surgery`: medicine 10, difficulty 12
+- `weld_join` gate: metalworking 3
+
+**Expert extremes per skill** are listed in `skills.toml`, for example:
+
+- leaping a 2-tile rooftop gap
+- landing a thrown jug on the exact tile 8 tiles away
+- forging a blade from a leaf spring over a charcoal fire
+- building a remote noise lure from phone parts
+- reducing your own scent emission through controlled breathing
+
+**Design consequence:** content always records the *physical* requirement (capability vs material).
+Skill is a separate axis that can partly pay that requirement. So a real person needs a hacksaw to
+cut a padlock, but a beyond-human metalworker might get through with a file and patience.
+
 ## 3. The vocabulary this implies
 
 ### 3.1 Properties (item-level data; units are integers)

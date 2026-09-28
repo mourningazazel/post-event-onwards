@@ -103,6 +103,26 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-IT-09 | Generated descriptions | Surface details come from property combinations as prose; hidden properties are revealed by use (N010) | A described property changes the text when the property changes; a charred radio reads "not sure it works" until tried | **confirmed** |
 | P-IT-10 | Brands and name composition | Fictional brands with parent-company relationships; brand tags compose names; tier shifts relevant properties (N010) | Fennick Hollow cereal and bread share a parent; "charred Fennick Hollow …" is composed from tags; Tenacor Pro tape gives more Hold than budget tape | **confirmed** |
 
+### Survival actions and skills ([N011](notes/N011-survival-actions-and-world-catalog.md), [N012](notes/N012-trainable-expert-skills.md), [survival-actions.md](survival-actions.md))
+
+Evidence is **live**: these chains run in `tests/content/chains/` on every change.
+
+| ID | Function | Intended use | Purpose test (evidence) | Status |
+|---|---|---|---|---|
+| P-SA-01 | Improvised incendiaries | Burn crowds with salvaged, siphoned fuel in a breakable container, lit by any flame (N011's own example) | chain `firebomb` (7 steps) | **confirmed** |
+| P-SA-02 | Disassembly and salvage | Take real objects apart for useful parts (fridge → hose; car → battery, hoses; remote → batteries) | chains `firebomb`, `alarm_lure`, `car_battery_lamp` | **confirmed** |
+| P-SA-03 | Timed noise lures | Pull hearing zombies away with a device left behind | chain `alarm_lure` | proposed |
+| P-SA-04 | Barricading | Block and board openings with furniture, planks, nails | chain `barricade_front_door` | proposed |
+| P-SA-05 | Water from the built environment | Drain water heaters/cisterns; make it safe by boiling or bleach | chain `water_heater_water` | proposed |
+| P-SA-06 | Improvised weapons | Attach heads to hafts (Load vs Hold) | chain `improvised_spear` | **confirmed** (N008/N010) |
+| P-SA-07 | Improvised medicine | Splints and bandages from rulers, T-shirts, tape | chain `splint` | proposed |
+| P-SA-08 | Improvised climbing/escape | Knotted sheets/hoses on solid anchors | chain `rope_escape` | proposed |
+| P-SA-09 | Scavenged power | Car batteries run 12 V lights for nights inside | chain `car_battery_lamp` | proposed |
+| P-SA-10 | Fuel realism | Gasoline catches from a match, diesel puddles don't (tool choice matters) | negative chain `diesel_does_not_catch` | proposed |
+| P-SK-01 | Beyond-human skills | Trained skills reach feats no real person could (N012) | chain `expert_friction_fire` (min_skill 9); `climb_sheer_wall`, `crack_safe_by_feel` gated by `min_skill` | **confirmed** |
+| P-SK-02 | Learning by reading | Manuals and books found in the world train skills (N012) | skill_manual subjects set `teaches` (domain D tests) | **confirmed** |
+| P-SK-03 | Skill substitutes for tools | Experts do more with worse tools (`tool_substitution`) | engine test once actions are implemented | proposed |
+
 ### Tooling
 
 | ID | Function | Intended use | Purpose test (evidence) | Status |
@@ -120,3 +140,10 @@ Remaining:
 3. ~~N005 follow-ups~~: all answered in N007.
 4. ~~ADR-0011 item 4~~: answered in N009 (1-month gate); player changes are preserved (N011).
 5. ~~Content-model decisions D-CM1 to D-CM4~~: answered in N010.
+6. The survival-actions open questions (`survival-actions.md` §5):
+   - bicycles
+   - firearms availability
+   - whether bites infect
+   - chemistry limits
+   - animals
+7. Please confirm or correct the **proposed** P-SA / P-SK entries above.
