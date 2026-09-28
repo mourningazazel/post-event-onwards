@@ -19,4 +19,9 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-_No open decisions._
+## D-007 · How far should the player's scent carry, and how fast should the Dead converge?   (raised by architect · 2026-09-28 · PEO-026)
+Why now: PEO-001's playtest shows scent reaching only ~8 cells in ~20 s, so Dead beyond that never move; before we tune the scent rate or write the front-radius test, the target feel is a pacing choice.
+Affects: gameplay · rewrite: none
+- A) Medium reach — raise diffusion so the scent front crosses the 80-wide map in ~40-60 turns; near Dead home fast, distant ones drift in slowly. Balanced, steady pressure.   ← recommended
+- B) Long reach — near map-wide pull within a few turns; the whole horde is always closing in. Tense, few safe cells, easy to get swarmed.
+- C) Sound-driven — keep scent short (~10 cells); movement/noise events (per N014) wake distant Dead in bursts, so convergence is event-driven rather than passive. Stealth-forward, more to build.
