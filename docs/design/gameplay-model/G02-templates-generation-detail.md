@@ -40,7 +40,7 @@ The same ladder applies to places: a city (identified) → its buildings (identi
   - The result is identical to generating it earlier, because it's seeded, so nothing is lost.
 - **Future flexibility:** skills or tools that reveal contents without opening (X-ray, a stethoscope
   on a safe) just trigger generation earlier.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D2.2 — Do instances copy their template, or reference it?
 
@@ -53,7 +53,7 @@ The same ladder applies to places: a city (identified) → its buildings (identi
     that particular knife has changed.
 - **Trade-off:** a balance patch changes items in existing saves. That's usually desirable. If a
   property must *never* change retroactively, the instance pins it.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D2.3 — Template inheritance
 
@@ -61,7 +61,7 @@ The same ladder applies to places: a city (identified) → its buildings (identi
 - **B. Single inheritance plus traits.** For example, `kitchen knife` → `knife` → `blade tool`,
   plus traits like `metal`, `sharp`, `small`.
 - **Recommendation: B.** Content authoring scales, and one change to `knife` fixes every knife.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D2.4 — How are generated places kept stable?
 
@@ -71,4 +71,5 @@ The same ladder applies to places: a city (identified) → its buildings (identi
   - Untouched, never-instantiated areas pick up new generator versions.
 - **Question for the owner:** is it acceptable that *unexplored* parts of an existing save may
   look different after a game update (better generators), while explored parts never change?
-- **Owner decision:** _pending_
+  **Answered (N015 / D-003): yes.**
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**

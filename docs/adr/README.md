@@ -19,3 +19,4 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0010](0010-rivers-as-lazy-long-features.md) | Rivers are long features, generated lazily at finer detail | Accepted (parameters proposed) |
 | [0011](0011-global-event-clock-and-world-event.md) | One global days-since-event clock; per-world event parameters | Accepted (curves proposed) |
 | [0012](0012-speculative-turns.md) | Turn-based, with the next turn computed while waiting | Accepted (names and budgets proposed) |
+| [0013](0013-tile-scale-and-shared-occupancy.md) | One-metre tiles, one storey per z-level, shared tile occupancy | Accepted |

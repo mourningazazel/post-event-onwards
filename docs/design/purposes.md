@@ -161,6 +161,15 @@ Evidence is **live**: these chains run in `tests/content/chains/` on every chang
 | P-SA-11 | Explosives | Generic ingredients, minimal explosion mechanics, grounded in real chemistry | chain with generic ingredients; blast resolved by a radius and blunt/heat effect only | **confirmed** |
 | P-WO-24 | Ambient crows | Eerie text now and then; never a creature | ambient text events appear at the configured rate; no crow entity exists | **confirmed** |
 
+### N015 answers ([N015](notes/N015-locks-books-death-stats-tiles.md))
+
+| ID | Function | Intended use | Purpose test (evidence) | Status |
+|---|---|---|---|---|
+| P-WO-25 | Lock gradient by kind, weighted by place | Security is legible and realistic: the lock kind tells you the effort; secure places get secure locks | generated locks per building/container type match the weight tables; pick and bash difficulties follow the tier band | **confirmed** |
+| P-CH-10 | The dead player rises | Death has a lasting mark on the world; ending yourself near death is a real choice; the risen self is a hunter | after death without brain destruction, a vision-tracking Dead with the old stats and gear stands at the old start; with brain destruction, none; the new character spawns 1–2 miles away | **confirmed** |
+| P-SK-07 | Books as slow, capped learning | Libraries are worth the risk but cannot be ground: time passes, hordes build, each book gives at most one point once, gates cut both ends | a scripted reader gains ≤ 1 point per book, never twice from the same instance, nothing from too-easy or too-hard books; reading advances the clock | **confirmed** |
+| P-EN-19 | Shared tiles with trip, knock-out and trample | Being swarmed means being on a tile with the Dead; crowds churn through doorways instead of freezing | tile occupancy never exceeds capacity; crowded-tile steps trip and knock out at the configured rates; a prone unit is trampled | **confirmed** |
+
 ### Tooling
 
 | ID | Function | Intended use | Purpose test (evidence) | Status |

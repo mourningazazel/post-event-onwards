@@ -335,6 +335,10 @@ Kept deliberately simple:
 
 ### Trips and trample
 
+- **Tiles are shared (ADR-0013, N015).** Several units may stand on one tile up to its
+  capacity; "free neighbour" means "below capacity". Every step into, out of or within a
+  crowded tile rolls for **trip** or **knock-out** to an adjacent tile, so packed doorways
+  churn and spill instead of freezing.
 - **Push contests** (round 1) can end in a trip. A tripped unit is prone for *N* turns and is an
   obstacle. Units pushing through a crowd **roll to trip on every contested move**, so a frenzied
   horde trips itself and slows down. Trip chance rises with speed multiplier and bad footing.

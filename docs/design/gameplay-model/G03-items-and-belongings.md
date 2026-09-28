@@ -56,7 +56,7 @@ Items are never "stored inside" another item's data. Each item simply records **
 - **Recommendation: C.** It matches the "physically plausible" direction.
 - **Future flexibility:** encumbrance, awkward loads, strapping items *onto* a pack (a `PartOf`
   or `Attached` location).
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D3.2 — Stacks
 
@@ -65,7 +65,7 @@ Items are never "stored inside" another item's data. Each item simply records **
   one nail gets bent).
 - **Recommendation: B**, with merging allowed only when *all* properties are identical. Detail is
   never lost; the stack just splits.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D3.3 — Where do belongings live on a character?
 
@@ -77,7 +77,7 @@ Items are never "stored inside" another item's data. Each item simply records **
   - Losing a backpack loses its contents.
   - One of the Dead grabbing your jacket matters.
   - Pockets on clothing are just containers.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D3.4 — Item identity
 
@@ -85,7 +85,7 @@ Items are never "stored inside" another item's data. Each item simply records **
   by generation address (G01 D1.5).
 - History (who owned it, where it was found) is an optional component. It is added only when a
   feature needs it, so there is no cost otherwise.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D3.5 — Condition model
 
@@ -94,4 +94,4 @@ Items are never "stored inside" another item's data. Each item simply records **
   whole item's effectiveness derived from its parts.
 - **Recommendation: start with A on simple items and B on items made of parts.** It follows
   automatically from the parts model.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**

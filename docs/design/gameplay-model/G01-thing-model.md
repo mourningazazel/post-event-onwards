@@ -31,7 +31,7 @@ persistence) builds on the categories chosen here.
     changes.
   - Player-built barricades could be either. Rule of thumb: *if it has state or can be carried,
     it's a thing.*
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D1.2 — Is the player special?
 
@@ -46,7 +46,7 @@ persistence) builds on the categories chosen here.
   - the player **turning into one of the Dead** after infection (swap the controller and archetype)
   - NPCs doing everything the player can (looting, digging)
 - **Cost:** player-only conveniences must be written as rules that *could* apply to anyone.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D1.3 — Are Dead the same kind of thing as humans?
 
@@ -62,7 +62,7 @@ persistence) builds on the categories chosen here.
   person with a story when the player looks closely.
 - **Future flexibility:** dead variants, visible "former lives" (police Dead carry police
   gear), and loot that makes sense.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D1.4 — How is a thing composed?
 
@@ -74,7 +74,7 @@ persistence) builds on the categories chosen here.
   hierarchy. New features add new component types and never modify old ones.
 - **Future flexibility:** very high. This is the answer to "later game features can add more and
   more logic and detail".
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
 ### D1.5 — Can things be referenced before they exist?
 
@@ -86,4 +86,4 @@ persistence) builds on the categories chosen here.
   safe" before that building has any detail. Quests, rumours and maps can reference the unseen
   world.
 - **Future flexibility:** quests, NPC knowledge, treasure maps, radio broadcasts.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**

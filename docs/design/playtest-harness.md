@@ -97,7 +97,7 @@ Starter set (grows with each feature):
 
 - The owner-approved gameplay rules ([walkthrough G13](gameplay-model/README.md)) are checked
   after every step. Examples:
-  - two units never occupy one cell
+  - a tile never holds more units than its capacity, and a knocked-out unit always lands on a valid tile (ADR-0013)
   - items never vanish except by an explicit destroy event
   - containers never exceed capacity
   - every mob is in a valid state

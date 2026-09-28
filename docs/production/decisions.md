@@ -5,6 +5,21 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-28 · N015 · D-003 to D-006 answered; locks; books
+
+User decisions, verbatim in `docs/design/notes/N015-*.md`. D-003 A: every G01–G03
+recommendation accepted (walls are terrain, player is an ordinary creature, the Dead are the
+same kind at a compact tier, template + components, generation addresses, on-demand hidden
+contents, reference + delta instances, physical inventory, volume + weight + dimension
+capacity, stacks, per-part condition). D-004 B: persistent world; the dead player rises as a
+vision-tracking Dead with its stats at the start unless decapitated or brain-destroyed; new
+character 1–2 miles away. D-005: real physical stats, real-world skills; books generated in
+thousands with difficulty and read time, at most one point once, gates both ends. D-006: 1 m
+tiles, one storey per z, shared occupancy with trip, knock-out and trample (ADR-0013). Locks:
+tier bands by lock kind, appearance weighted by building, container and security markers.
+Consequence: `teaches` is now {skill, difficulty, read_time_min, gain_chance_pct, window};
+occupancy is a count per tile.
+
 ## 2026-09-28 · N014 · The Dead's AI, content depth, skills 1–100, Mood and Sanity, drugs
 
 User direction, recorded verbatim in `docs/design/notes/N014-*.md` and worked into

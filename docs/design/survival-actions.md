@@ -168,7 +168,7 @@ Each action lists the **mechanics** it uses and the **item data** it reads.
 |---|---|---|
 | Search containers, rooms, bodies | G02 detail levels | containers, promoted Dead |
 | Unlock with found keys | M10 | keys linked to doors by generation address (P-IT-06) |
-| Pick locks | M10 | *lock* tier, pickable; `use.lockpick` tool; skill |
+| Pick locks | M10 | *lock* kind → tier band → picking `unlock`/`difficulty` (security); `use.lockpick` tool gated by `tool_min_skill`; a gradient with tiered steps (N015) |
 | Force doors, windows, lockers, vending machines | M8, M10, M13 | material vs `pry`/`hammer`; noise |
 | Break glass | M8, M13 | glass `onImpact → shatter`, very loud; shards on tile |
 | Drain a vehicle fuel tank (siphon, or puncture the tank) | M1, M8 | vehicle *fuel tank* container (gasoline or diesel); `pierce`/`drill` |
@@ -254,6 +254,29 @@ language.
 **Design consequence:** content records the *physical* requirement (capability vs material);
 skill is a separate axis that can partly pay it, and the percentage the player sees is the
 honest combination of both.
+
+**Locks as a gradient (N015).** Each **lock kind** carries a tier band (latch 1–2, knob 2–4,
+deadbolt 4–7, padlock 3–8, cam 2–5, combination 8–12, electronic 6–10, bar/extra locks add
+resistance) and the tier sets both the picking difficulty (security `unlock = tier × 5`,
+`difficulty = tier × 5 + 20`) and the bashing resistance. **Which lock a thing gets is
+weighted** by its building type, its container type, and any generative marker that says it
+should be secure (armory, pharmacy, gun store, safe, evidence locker, server room), so a
+suburban interior door is a latch and a pharmacy back door is a deadbolt with a bar.
+
+**Books (N015).** Libraries are rare and valuable. Books are **generated in thousands**,
+organised by library **section** (trades, sciences, medicine, cooking, outdoors, fiction…), each
+with:
+
+| Field | Meaning |
+|---|---|
+| `teaches.skill` | which skill, or none (fiction, flavour) |
+| `teaches.difficulty` | 1–100; the level the book is written for |
+| `teaches.read_time_min` | game minutes to finish; time passes and the horde builds |
+| `teaches.gain_chance_pct` | chance of **one** point on finishing; rises with difficulty and length |
+| `teaches.window` | gate width: below `difficulty − window` you cannot follow the text; at or above `difficulty + window` it is too simple to teach |
+
+A book gives **at most one point, once**; the instance records that it has been read. Grinding
+is expensive by design: time, danger, and diminishing books at your level.
 
 ### 2.16 Drugs, maps, guns, bikes, chemistry (N014)
 

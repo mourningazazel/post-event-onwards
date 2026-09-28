@@ -40,7 +40,8 @@ and senses. A future system adds a new component without touching existing chara
   - It maps onto real actions (digging uses strength and endurance; lock work uses dexterity).
   - It suits "what you could physically do in real life".
   - A mental set is needed later for fear and stress.
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-28, N015 / D-005): B.** Attributes resemble the physical stats of a
+  real person; skills match real-world skills; Mood and Sanity are the mental side.
 
 ### D4.2 — Skill model
 
@@ -56,7 +57,10 @@ and senses. A future system adds a new component without touching existing chara
     to savant); see `survival-actions.md` §2.15 for the success-percentage model.
   - **Reading** found books and manuals is a real learning path alongside use.
   - Option C therefore gains a third source: background-seeded, then use-based **and reading**.
-- **Owner decision:** _pending_ (confirm option C, with reading as a learning source)
+- **Owner decision (2026-09-28, N015 / D-005): C, with reading.** Books are generated in
+  thousands, each with a difficulty and a reading time; a book gives at most one point, once,
+  with a small chance that rises with difficulty and length; too-hard books cannot be
+  understood and too-easy ones teach nothing (`survival-actions.md` §2.15).
 
 ### D4.3 — Character creation
 
@@ -78,9 +82,11 @@ and senses. A future system adds a new component without touching existing chara
   - "Meeting your former self" is a strong emergent moment.
 - **Owner decision (2026-09-27, N003): A, hard permadeath.** Death ends the run. Bad luck and bad
   decisions are allowed to end a 50-hour character.
-- **Follow-up for the owner:** does the next run start in a **new world**, or as a new character
-  in the **same persistent world**, where the previous character's body (maybe risen) and gear
-  could be found?
+- **Follow-up answered (2026-09-28, N015 / D-004): the same persistent world.** The dead
+  character **rises as a vision-tracking Dead with the same stats at the run's starting
+  location**, carrying its gear, unless it was decapitated or its brain destroyed (ending
+  yourself near death is a real choice). The next character spawns **between 1 and 2 miles**
+  from that start.
 
 ### D4.5 — How much of the numbers does the player see?
 

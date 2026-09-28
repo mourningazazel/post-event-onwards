@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 19,
+  "next_id": 23,
   "items": [
     {
       "id": "PEO-001",
@@ -414,7 +414,13 @@
         "manual": [],
         "out_of_scope": []
       },
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-28",
+          "by": "architect",
+          "text": "Scope folds into shared occupancy (ADR-0013): contests happen on and between shared tiles, not only swaps."
+        }
+      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -606,6 +612,115 @@
       ],
       "depends_on": [
         "PEO-002"
+      ]
+    },
+    {
+      "id": "PEO-019",
+      "order": 190,
+      "type": "design",
+      "title": "Lock kinds, tier bands and security-weighted placement",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Lock records carry a kind with a tier band; picking and bashing difficulty derive from the tier; generation picks lock kinds weighted by building, container and security markers; expectations prove the weights.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md",
+        "content/registry/features.toml"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-020",
+      "order": 200,
+      "type": "design",
+      "title": "Generated books by library section with difficulty, read time and one-point gain",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "A book generator produces thousands of titles per library section with teaches {difficulty, read_time_min, gain_chance_pct, window}; reading passes game time and grants at most one point once; gates hold at both ends.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/survival-actions.md"
+      ],
+      "depends_on": [
+        "PEO-012"
+      ]
+    },
+    {
+      "id": "PEO-021",
+      "order": 210,
+      "type": "design",
+      "title": "Death: the player rises as a vision tracker; respawn 1-2 miles away",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "On death without brain destruction a vision-tracking Dead with the old stats and gear appears at the run's start; the new character spawns between 1 and 2 miles from it; decapitation or brain destruction prevents rising.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G04-characters.md"
+      ],
+      "depends_on": [
+        "PEO-010"
+      ]
+    },
+    {
+      "id": "PEO-022",
+      "order": 220,
+      "type": "design",
+      "title": "Shared tile occupancy with capacity, trip, knock-out and trample",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-28",
+      "brief": {
+        "goal": "Occupancy is a count per tile with a capacity; steps in crowded tiles roll trip or knock-out; prone units are trampled; the rule checker enforces capacity.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
+      "references": [
+        "docs/adr/0013-tile-scale-and-shared-occupancy.md"
+      ],
+      "depends_on": [
+        "PEO-009"
       ]
     }
   ]

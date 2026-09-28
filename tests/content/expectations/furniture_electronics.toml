@@ -246,7 +246,7 @@ value = "medicine"
 [[expect]]
 item = "skill_manual"
 mods = ["manual_first_aid"]
-path = "teaches.max_level"
+path = "teaches.difficulty"
 op = "=="
 value = 25
 
@@ -260,7 +260,7 @@ value = "emergency surgery textbook"
 [[expect]]
 item = "skill_manual"
 mods = ["manual_field_surgery"]
-path = "teaches.max_level"
+path = "teaches.difficulty"
 op = ">="
 value = 50
 why = "advanced texts train to expert level (N012)"

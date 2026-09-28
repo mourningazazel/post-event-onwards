@@ -24,13 +24,13 @@ and handles the technical internals behind each decision.
 
 | # | Topic | Status |
 |---|---|---|
-| G01 | [The thing model — what everything in the world is made of](G01-thing-model.md) | Draft ready |
-| G02 | [Authored vs generated, and levels of detail](G02-templates-generation-detail.md) | Draft ready |
-| G03 | [Items, belongings and unlimited detail](G03-items-and-belongings.md) | Draft ready |
+| G01 | [The thing model — what everything in the world is made of](G01-thing-model.md) | **Decided** (N015) |
+| G02 | [Authored vs generated, and levels of detail](G02-templates-generation-detail.md) | **Decided** (N015) |
+| G03 | [Items, belongings and unlimited detail](G03-items-and-belongings.md) | **Decided** (N015) |
 | G04 | [Characters — what makes a player or NPC](G04-characters.md) | Draft ready |
 | G05 | Bodies, health and physical capability. **Limb/appendage damage (N007); body-part hit rolls with clothing coverage as major defence, no bite infection (N013);** dead fragility follows the clock. | Planned |
 | G06 | Actions and interactions: verbs, tools, materials, time costs (digging, sawing, climbing) | Planned |
-| G07 | Terrain, materials and structures: tile scale, vertical resolution, walls vs objects | Planned |
+| G07 | Terrain, materials and structures: tile scale, vertical resolution, walls vs objects. **1 m tiles, one storey per z, shared occupancy (ADR-0013); walls are terrain, fittings are things (D1.1).** | Partly decided |
 | G08 | Enemies in the gameplay model: mob records vs individuals, senses, alert, contests | Planned (mechanics in `../scent-mobs.md`) |
 | G09 | Perception, knowledge and memory: what the character knows vs what exists | Planned |
 | G10 | Time, needs and survival: hunger, thirst, fatigue, temperature, infection | Planned |

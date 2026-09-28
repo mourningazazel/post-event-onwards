@@ -221,7 +221,7 @@ readers = ["content lint"]
 
 [property.teaches]
 type = "table"
-desc = "Books/manuals that train a skill by reading (N012): { skill, max_level (1..100), rate (1..10) }."
+desc = "Books/manuals that train a skill by reading (N012, N015): { skill, difficulty (1..100: the level the text is written for), read_time_min (game minutes to finish), gain_chance_pct (chance of exactly one point on finishing), window (below difficulty-window the text cannot be followed; at or above difficulty+window it teaches nothing) }. A book instance teaches at most once."
 readers = ["skills", "M21 knowledge"]
 
 [property.blocks_sight]

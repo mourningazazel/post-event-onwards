@@ -9,7 +9,8 @@
 # capability points per skill point). Failure draws an outcome from the action's `on_fail`.
 # Tools may carry `tool_min_skill` (e.g. lockpicks: security 10): below it they cannot be used.
 # Books: items with features.readable.kind = "manual" or "book" and a `teaches` table
-# { skill, max_level (1..100), rate } teach up to max_level (N012: reading is a real path).
+# { skill, difficulty, read_time_min, gain_chance_pct, window } (N015): reading takes game time,
+# gives at most one point once, and teaches nothing outside difficulty +/- window.
 # `expert` lists what each band makes possible, so content and UI speak the same language.
 
 [skill.athletics]

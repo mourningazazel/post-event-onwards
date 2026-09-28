@@ -28,10 +28,17 @@ owner's verbatim notes. In code: `Dead` is one unit, `horde` is any collection.
    does and what broken means.
 4. **Onwards, always.** An endless, staged, persistent world on one clock, days since the
    Event. Early is harder and richer; late is easier and poorer. There is no going back. Runs
-   end; hard permadeath. Seeds make runs shareable.
+   end in hard permadeath, but the world persists: your last character rises as one of the
+   Dead that can see, with your stats and gear, unless you made sure it could not. The next
+   one starts a mile or two away.
 5. **A mind under pressure.** Mood (Depressed ↔ Manic) and Sanity are main mechanics. Low
    sanity makes the world unreliable; drugs, including psychedelics, are real choices with
    real costs.
+
+## Scale
+
+One tile is one metre, one z-level is one storey, and several units may share a tile at a
+price: crowded tiles trip, knock out and trample (ADR-0013).
 
 ## Turn model
 
