@@ -90,17 +90,24 @@ entities carry **stable IDs** (see ADR-0002).
 - Rendering and simulation use positions relative to a moving local origin, which avoids precision
   problems far from spawn.
 
-## Questions for the design session
+## Owner answers (2026-09-27) and the design they lead to
 
-1. **Truly endless in every direction,** or endless along one axis? Any hard world features (oceans,
-   poles)?
-2. **Travel speed.** Is there fast travel, vehicles or a world map? Top travel speed sets the
-   required generation throughput.
-3. **Terrain modification.** Can the player alter terrain (dig, build, burn, flood)? That decides
-   whether L4 needs full mutable persistence everywhere or only in buildings.
-4. **Item depth.** How far does nesting go (a drawer containing a box containing letters with
-   text)? That sets the Items/Containment design and L5 storage size.
-5. **Z-levels.** How many floors, basements and underground layers? Is there a global depth
-   dimension (caves, sewers, mines)?
-6. **Change over time.** Does the world change while the player is away (decay, mobs moving
-   between cities, factions)? If so, which layer simulates it, at what fidelity?
+| Topic | Owner's answer | Design consequence (proposal) |
+|---|---|---|
+| Extent and scale | Endless, with **real-world size and distances**. Long empty stretches; lakes and rivers are large on screen. | The level scales above need re-basing. If 1 tile ≈ 1 m (to be decided in the walkthrough): L0 macro cells are tens of km, L1 regions ~8–16 km, a city 2–30 km across. At walking pace a step is ≈ 1 m, so 20 km between towns is ≈ 20,000 steps. |
+| Settlement siting | The player starts in cities, and cities **prefer visual landmarks** (a lake, a mountain) | Site selection is a **scoring function over L0/L1 features**: lake shore, river confluence, coast, foothills, crossroads. It's evaluated at hashed candidate points per L1 cell, and the best-scoring point wins. Each city records its landmark, which makes the landmark part of the city's identity. |
+| Travel | **Walking only**; cars exist but don't run (setting) | Good news for streaming: the player can never outrun generation. Budgets can favour depth (detail) over reach. Cars are world objects: containers, obstacles, landmarks. |
+| Terrain modification | **Dig and saw anything a person physically could.** Record **only changed tiles**. | Store the terrain **baseline** as a procedural function plus column data. Store player changes as **sparse per-chunk modification records**, so untouched land costs nothing on disk. Materials carry physical properties (hardness, cuttable, diggable) that feed the actions system. |
+| Items | **Unlimited nesting and detail**; storage must not care about depth | A graph / database-style item model. This is the first topic of the gameplay-model walkthrough (`docs/design/gameplay-model/`). |
+| Buildings and height | Physical representations of **real building types**; terrain **climbs in height**. Streets can slope across z-levels, but houses are level. | **Column terrain model:** height, strata and materials per column, never stored as full 3D except where needed. Explicit 3D chunks exist only where structure exists (buildings, caves, dug holes). Buildings get a level foundation, with cut and fill against the terrain. Streets follow the terrain with ramps. **Vertical resolution** (z-unit vs storey height) is a gameplay decision for the walkthrough. |
+| Change over time | **Mob population migration** between regions, driven by accumulated scent and density. More enemies spawn where crowds accumulate. | Aggregate population and attraction fields per region cell, spawning in and merging out at the detailed-area edge. See `scent-mobs.md`, "Population over time". |
+
+### Memory implications of real-world scale (first estimate)
+
+- **Building identities are small.** About 64 bytes each, so ≈ 100k buildings (a large city) is
+  ≈ 6.4 MB. "A city's worth of identities around the player" is cheap.
+- **Detailed terrain is the expensive part.** It has to be bounded by the rings and stored as
+  columns, not voxels: a 512×512-tile detailed window in column form is a few MB.
+  Full-3D chunks exist only inside structures and excavations.
+- **The rivers risk is unchanged, and scale makes it more visible.** Large rivers crossing many
+  regions need the coarse-drainage-with-margins approach. That spike comes first.

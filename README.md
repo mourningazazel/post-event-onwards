@@ -26,4 +26,4 @@ system by system, with review gates.
 
 ## License
 
-Open source. The project license has not been chosen yet (see `docs/LICENSING.md`).
+[MIT](LICENSE). Dependency licenses and policy: `docs/LICENSING.md`.

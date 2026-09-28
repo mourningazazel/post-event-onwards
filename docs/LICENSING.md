@@ -3,22 +3,16 @@
 Policy: see [ADR-0004](adr/0004-open-source-and-dependency-licensing.md). In short: open source,
 permissive dependencies only, every dependency verified and recorded here.
 
-## Project license — decision pending
+## Project license: MIT
 
-| Option | Effect | Fits if… |
-|---|---|---|
-| **GPL-3.0-or-later** | Anyone may use, modify and sell it, but distributed forks must stay open under the GPL. This is the roguelike tradition (Angband and DCSS use GPLv2+, Brogue CE uses AGPL). | You want the game and any derivative to stay open |
-| **MPL-2.0** | Modified *files* must stay open, but they can be combined into closed products | You want engine improvements shared back without forcing whole projects open |
-| **MIT or Apache-2.0** | Anyone may reuse anything, including in closed-source products. Apache-2.0 adds an explicit patent grant. | You want maximum adoption of the engine |
+The code is MIT-licensed ([ADR-0008](adr/0008-project-license-mit.md), `LICENSE`). All candidate
+dependencies below are compatible.
 
-All candidate dependencies below are compatible with every option.
+Still open for later:
 
-Two related decisions:
-
-- **Original art and text assets** are usually licensed separately, e.g. **CC-BY-SA-4.0** or
-  **CC-BY-4.0**.
-- **Outside contributions.** If the project may ever be relicensed or sold under different terms,
-  decide early whether contributors sign off under a DCO or a CLA.
+- **Original art and text assets** are usually licensed separately, e.g. CC-BY-4.0 or CC0.
+- **Outside contributions** would come in under MIT through a DCO sign-off, if contributions are
+  accepted.
 
 ## Candidate dependencies
 

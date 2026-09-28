@@ -10,7 +10,8 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0001](0001-platforms-and-gpu-backend.md) | Target platforms and GPU backend | Accepted |
 | [0002](0002-save-format.md) | Save format and persistence strategy | Accepted |
 | [0003](0003-single-cell-size.md) | Single grid cell size everywhere | Accepted |
-| [0004](0004-open-source-and-dependency-licensing.md) | Open source and dependency licensing policy | Accepted (project license TBD) |
+| [0004](0004-open-source-and-dependency-licensing.md) | Open source and dependency licensing policy | Accepted |
 | [0005](0005-turn-model.md) | Player-stepped turns with level-of-detail simulation | Accepted |
 | [0006](0006-scent-driven-mobs.md) | Scent-driven blind mobs as the core enemy mechanic | Accepted (details proposed) |
 | [0007](0007-endless-staged-world.md) | Endless world with staged, persistent generation | Accepted (structure proposed) |
+| [0008](0008-project-license-mit.md) | Project license — MIT | Accepted |

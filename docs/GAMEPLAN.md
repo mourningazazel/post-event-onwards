@@ -352,13 +352,12 @@ the Lua decision.
 | 4 | Enemies and scale | **Blind scent-following mobs** are the core mechanic: sequential moves, weighted random choice, blocked mobs skip. | ADR-0006, `design/scent-mobs.md` |
 | 5 | ECS | **Delegated to Claude,** to be decided once the full system picture is designed | Pending (Sim Core design) |
 | 6 | Cell size | **One cell size everywhere** | ADR-0003 |
-| 7 | License | **Open source.** Careful, verified dependency licensing. Project license still to choose. | ADR-0004, `LICENSING.md` |
+| 7 | License | **Open source, MIT.** Careful, verified dependency licensing. | ADR-0004, ADR-0008, `LICENSING.md` |
 | 8 | Repo | **Private GitHub repo** on the owner's account | — |
 | — | Save format | **Approved as proposed** | ADR-0002 |
 | — | Process | **Framework first, system by system,** with enterprise-style internal APIs and early decisions that reduce later change impact | `SYSTEMS.md` |
 
-Still open: the project license (`LICENSING.md`), the questions in the two design docs, and the
-owner's phase approach.
+Still open: the owner's phase approach, which is now the gameplay-model design walkthrough.
 
 ## 7. Risks I'm tracking
 

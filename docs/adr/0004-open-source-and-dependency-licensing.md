@@ -1,6 +1,6 @@
 # ADR-0004: Open source and dependency licensing policy
 
-- Status: Accepted (the choice of project license is still open; see `docs/LICENSING.md`)
+- Status: Accepted (the project license was chosen in ADR-0008: MIT)
 - Date: 2026-09-27
 
 ## Decision
