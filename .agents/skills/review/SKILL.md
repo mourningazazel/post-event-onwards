@@ -25,6 +25,11 @@ Decide whether finished work goes where the project is going.
      asked.
 4. Pass: `python3 tools/work_queue.py complete <id> --by architect --commit
    <last sha>`. Update `docs/architecture.md` if a seam changed.
+   If the work is correct but raises a gameplay, abstraction or direction
+   question (or the next step is a big rewrite), still complete it, then add
+   a `D-xxx` entry to `docs/production/DECISIONS_NEEDED.md` and set the
+   follow-up item `AwaitingUser`. Findings about technical method are
+   yours to decide; do not send them to the user.
 5. Fail: `set <id> --status Pending --owner builder --note "1. … 2. …" --by
    architect`. Findings are concrete edits, not opinions. If the failure is a
    direction change, also add a decision entry.

@@ -25,4 +25,10 @@ Work the queue, earliest actionable item first, until told to stop.
    `set <id> --status Validation --owner architect`; commit and push the
    queue file `[PEO-xxx] report`.
 8. Bugs seen on the way: `/bug`, do not fix unless they block the unit.
+   A unit that turns out to need a gameplay, abstraction or direction
+   choice, or a big rewrite (three or more core headers, or a signature
+   used outside its file): stop, add a `D-xxx` entry to
+   `docs/production/DECISIONS_NEEDED.md` with A/B/C options and your
+   recommendation, `set <id> --status AwaitingUser --note "D-xxx"`, commit,
+   and take the next item. Technical method questions you answer yourself.
 9. Blocked for more than one honest attempt: `/handoff`.

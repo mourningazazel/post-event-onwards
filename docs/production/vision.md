@@ -1,8 +1,14 @@
 # Vision
 
-*Post-Event Onwards* is an ASCII roguelike about being hunted by something
-that cannot see you but never stops smelling you. Every design choice serves
-three pillars.
+*Post-Event Onwards* is an ASCII roguelike about being hunted by the Dead:
+they cannot see you, but they never stop smelling you. Every design choice
+serves three pillars.
+
+## Naming
+
+The enemies are **the Dead** (also "the dead", "dead ones", "a dead").
+They behave like zombies; the word "zombie" never appears in docs, UI, code,
+comments or commit messages. Aesthetic rule, not negotiable.
 
 ## Pillars
 
@@ -16,6 +22,12 @@ three pillars.
 3. **Onwards, always.** The world is an endless sequence of stages. There is
    no going back; the exit is the only goal, and each stage is denser than
    the last. Runs end. Seeds make them shareable.
+
+## Decisions
+
+Gameplay, abstraction and direction choices are the user's. Agents raise
+them in `DECISIONS_NEEDED.md` in a fixed A/B/C format and move on; they do
+not guess. Technical method is the agents' own call.
 
 ## What it is not
 

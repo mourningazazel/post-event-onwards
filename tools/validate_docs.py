@@ -29,6 +29,7 @@ WORD_CAPS = {
     "docs/roles.md": 1200,
     "docs/production/vision.md": 900,
     "docs/production/decisions.md": 1500,
+    "docs/production/DECISIONS_NEEDED.md": 800,
     "WORK_QUEUE.json": 1500,
     "DEFERRED_WORK.json": 1500,
 }

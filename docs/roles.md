@@ -51,8 +51,29 @@ Never: skips `manual` steps, reinterprets the brief (ask via a note and
 
 ## User
 
-Sets intent, promotes deferred items, answers `AwaitingUser`, merges
-Architect branches into `main`, and is the only one who may relax a rule.
+Sets intent, promotes deferred items, answers decisions and `AwaitingUser`
+items, merges Architect branches into `main`, and is the only one who may
+relax a rule.
+
+## Decision points (both agents)
+
+Stop and write an entry in `docs/production/DECISIONS_NEEDED.md` when a
+choice is about:
+- **gameplay** (what the player does, what the Dead do, pacing, difficulty);
+- **abstraction** (a new core interface, a change to a public header the
+  frontend uses, where state lives);
+- **direction** (anything that contradicts or extends `vision.md`);
+- **big rewrites** (touching three or more core headers, or changing a
+  signature used outside its own file) even when the change is clearly useful.
+
+Then: set the item `AwaitingUser` with the D-id in a note, pick a different
+item, and do not implement any option on speculation. Do **not** ask about
+technical method (data structure, algorithm, file layout, test style);
+decide, and record it in `decisions.md` if it is worth remembering.
+
+When the user answers (`D-002: B`), the agent that sees it moves the entry
+into `decisions.md` with the chosen option and reason, removes it from
+`DECISIONS_NEEDED.md`, and returns the item to `Pending`.
 
 ## Handoff formats
 

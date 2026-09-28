@@ -5,6 +5,20 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-28 · The enemies are "the Dead", never "zombies"
+
+User decision. They behave like zombies; the word is banned everywhere for
+aesthetic reasons. Consequence: docs, UI strings, identifiers and comments
+say Dead/dead/horde. Code identifier choice is open as D-001.
+
+## 2026-09-28 · The user owns gameplay and direction decisions
+
+Agents never pick between gameplay, abstraction or direction options, nor
+start a large rewrite, without an answered entry in `DECISIONS_NEEDED.md`.
+Technical method is the agents' call. Why: the user wants to steer what the
+game is, not how each function is written. Consequence: an item waiting on a
+decision is `AwaitingUser` with the D-id in its note.
+
 ## 2026-09-28 · Two-role agent pipeline
 
 Cloud Claude (Architect) plans, briefs, tests headlessly and reviews; local

@@ -23,6 +23,11 @@ Turn an item into something the Builder can finish without asking.
    - Manual: what the Builder should do and what to look for, including
      one perf observation when the change touches a per-tick loop.
 4. Split anything over effort L into several items with `depends_on`.
+   If briefing needs a gameplay, abstraction or direction choice, or the
+   right design is a big rewrite: add a `D-xxx` entry to
+   `docs/production/DECISIONS_NEEDED.md` (fixed A/B/C format, recommend
+   one), set the item `AwaitingUser --note "D-xxx"`, and brief a different
+   item. Never brief the recommended option on speculation.
 5. `set <id> --owner builder --note "briefed" --by architect`.
 6. If it needs a decision, add it to `docs/production/decisions.md` in the
    same commit.

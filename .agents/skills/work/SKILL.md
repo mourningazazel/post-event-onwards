@@ -30,3 +30,5 @@ never writes code.
 - Effort: S fits in one commit, M a session, L several sessions, XL split it.
 - Keep titles imperative and under ten words.
 - Never mark an item InProgress from here; that is `/start-work`.
+- A request that is really a gameplay or direction choice goes to
+  `docs/production/DECISIONS_NEEDED.md` as a `D-xxx` entry, not the queue.
