@@ -37,8 +37,9 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-SC-01 | Player scent emission | Makes the player findable by blind mobs even when unseen, so staying still is not permanently safe | A stationary player in the open is eventually reached by idle mobs downwind | proposed |
 | P-SC-02 | Wind carries scent | Makes **approach direction** a real decision: upwind approaches are safer | `upwind-approach` gets measurably fewer mob arrivals than `downwind-approach` | proposed |
 | P-SC-03 | Scent masking / changing (e.g. zombie guts) | Lets a prepared player move through or loot a mob-dense area | `masked-scent-walkthrough`: masked player crosses a horde area with mob contact below a threshold; unmasked control run fails | proposed |
-| P-SC-04 | Scent overpowering | ❓ Should the player be able to use strong scents as **lures or decoys** (throw rotten meat to pull a horde away)? Or does overpowering only exist for realism, e.g. an area soaked in blood hides the player? | — | question |
-| P-SC-05 | Rain and weather reducing scent | ❓ Is rain meant as a **window of opportunity** the player should learn to exploit? | — | question |
+| P-SC-04 | Scent overpowering, lures and decoys | Use strong scents as **lures and decoys** to pull or redirect hordes (N004) | A thrown lure pulls a measurable share of nearby idle mobs away from the player's position | **confirmed** |
+| P-SC-06 | Repellent scents | Built-up **repellent** scents drive mobs away and **reduce regional build-up**, so a player staying in one place has tools against growing crowds (N004) | In a long `camp-in-one-place` run, repellent build-up keeps local mob density and regional population growth below an untreated control run | **confirmed** |
+| P-SC-05 | Rain and strong wind | Make **outdoor travel much more feasible**. Rain washes scent out. Wind carries scent further and faster but loses it upward faster. Scent exists **only on ground tiles**; nothing accumulates in the sky. (N004) | The same `walk-between-towns` route gets measurably fewer mob contacts in rain or strong wind than in calm, dry weather | **confirmed** |
 
 ### Enemies
 
@@ -47,17 +48,21 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 | P-EN-01 | Blind bump-to-attack | Danger comes even from mobs that don't know you're there, so crowds are dangerous by density alone | A mob steered only by scent attacks a player it never "detected" | proposed |
 | P-EN-02 | Alert cascade | **Punishes noise and exposure** (speaking, grunting, being seen) with escalating threat | One grunt in `alert-cascade-city-block` recruits more mobs than a silent control run, and recruitment stops at the chain limit | proposed |
 | P-EN-03 | Sound-capable units (~1 in 100) | Make **noise discipline** matter near the player | A noisy action alerts a sound unit within range; a quiet one does not | proposed |
-| P-EN-04 | Vision units (rare, triggered) | ❓ What triggers them, and what is their role: an escalation event, a "boss", or a hunter that forces the player to move? | — | question |
+| P-EN-04 | Vision units (rare, triggered) | **Boss/hunter units.** They find you through better senses and **pathfinding**, and their agitation **draws crowds toward you** (N004). | A triggered hunter reaches a hidden player that scent-only mobs don't, and the crowd drawn by its agitation converges on the player | **confirmed** |
+| P-EN-08 | Being swarmed | **The main way to die** (N004). Density, cascades and hunters combine into swarms. | In `alert-cascade-city-block`, a careless bot dies by being surrounded; a careful bot survives the same seed | **confirmed** |
 | P-EN-05 | Push/swap contest when alerted or following | Alerted hordes can **surge through their own crowd** toward the player; trips create pile-ups | An alerted unit behind an idle crowd reaches a doorway faster than without swapping | proposed |
-| P-EN-06 | Tripping in contests | ❓ Is tripping meant to be **exploitable** (e.g. creating choke-point pile-ups on purpose), or only incidental chaos? | — | question |
+| P-EN-06 | Tripping | **Exploitable:** terrain becomes a **defence tool**. It also **punishes the player**, who can trip too, and is incidental chaos that slows crowds (N004). | A crowd crossing dense underbrush or rubble trips more often and arrives later than the same crowd on a clear street; the player can trip too | **confirmed** |
 | P-EN-07 | Regional population migration | Staying too long, or making a scene in one area, **draws crowds** over time. The world "reacts". | A long camp in one region raises its population and the spawn rate at the detailed edge | proposed |
 
 ### World and interaction
 
 | ID | Function | Intended use | Purpose test (evidence) | Status |
 |---|---|---|---|---|
-| P-WO-01 | Digging | ❓ Which uses are intended? Escape routes, pits and traps for mobs, reaching basements or underground, burying things, making barriers? | — | question |
-| P-WO-02 | Sawing through walls | ❓ Breaching locked buildings, making escape routes, both? Should it be noisy (tying into P-EN-03)? | — | question |
+| P-WO-01 | Digging | Anything plausible: **moats, spike pits, escape routes, reaching basements, barriers**. The point is that you *can*. A hole one full z-level deep is a **very large effort** (N004). | A bot digs a moat across an entrance; mobs fall in or are held up; the time cost scales with volume and soil hardness | **confirmed** |
+| P-WO-05 | Terrain affects crowd movement | Street vs underbrush vs rubble changes crowd speed and trip chance (N004) | Crossing time and trip rate differ by terrain type, as specified in the terrain data | **confirmed** |
+| P-WO-06 | Falling | Falls into pits or down levels hurt based on drop height, using an acceleration value and a z-drop calculation, **not a physics system** (N004). Spikes at the bottom add damage. | A unit falling 1 vs 2 z-levels takes damage from the configured drop formula; a spiked pit adds its damage | **confirmed** |
+| P-WO-02 | Cutting and breaching (sawing is one example) | Breach into or out of buildings. Outcome and time are decided by **wall material vs tool properties** (or bare hands if even remotely capable) (N004). | Sawing drywall with a handsaw succeeds; sawing concrete with the same saw doesn't; bare hands through drywall is very slow or impossible, per the material data | **confirmed** |
+| P-WO-07 | Realistic population | Cities and buildings are populated like real ones, and zombies are as numerous as a real outbreak's; the player is one of very few survivors (N004) | Zombie density in a generated district matches its configured real-world population density; buildings hold plausible occupants | **confirmed** |
 | P-WO-03 | Walking-only travel | Makes travel between cities a **perilous expedition** that needs preparation | `walk-between-towns` bot must manage supplies; an unprepared bot fails more often | proposed |
 | P-WO-04 | Landmark-anchored cities | Gives each city an identity and lets players navigate by landmarks | Every generated city records a landmark, visible from inside the city | proposed |
 
@@ -79,10 +84,10 @@ Status: everything below is **proposed** until the owner confirms it. ❓ marks 
 
 ## Open questions for the owner
 
-1. **P-SC-04** Scent overpowering: lures and decoys, or realism only?
-2. **P-SC-05** Rain: a deliberate opportunity window?
-3. **P-EN-04** Vision units: what triggers them, and what role do they play?
-4. **P-EN-06** Tripping: exploitable on purpose, or incidental?
-5. **P-WO-01** Digging: which uses are intended?
-6. **P-WO-02** Sawing: which uses are intended, and is it noisy?
-7. Please also correct any **proposed** purpose above that doesn't match your intent.
+All six earlier questions were answered in [N004](notes/N004-realism-spirit-and-purpose-answers.md).
+Remaining:
+
+1. Please correct any **proposed** purpose above that doesn't match your intent.
+2. **P-WO-07 follow-up:** should zombies *inside* buildings reflect who lived or worked there
+   (household size, office staff), trapped behind closed doors until something opens them? Claude
+   proposes yes; it follows directly from "populated just as in real life".

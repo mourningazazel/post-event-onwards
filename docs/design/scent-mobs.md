@@ -210,3 +210,42 @@ area.
   and **merges back** when mobs leave.
 - The flow is deterministic at the aggregate level, so it is cheap, and it matches the aggregate
   tier in ADR-0005.
+
+## Owner answers, round 2 (2026-09-27, [N004](notes/N004-realism-spirit-and-purpose-answers.md))
+
+- **Scent exists only on ground tiles.**
+  - "Upward drift" means removal from the field; there is no sky layer.
+  - The coarse cloud layer is a 2D layer over the ground surface, following the terrain height.
+    It is not a 3D volume.
+- **Wind has two effects:** it spreads scent further and faster, **and** it loses scent upward
+  faster. Rain washes scent out. Together they make outdoor travel much more feasible (purpose
+  P-SC-05).
+- **Lures, decoys and repellents are intended** (P-SC-04, P-SC-06).
+  - Each archetype's weight table gets **negative weights** for repellent channels, so mobs step
+    away from them. Mobs already choose between neighbouring cells, so this needs no new movement
+    rule.
+  - Repellent build-up also **reduces a region's attraction value**. That counters the slow crowd
+    build-up of the population migration (see "Population over time").
+- **Vision units are hunters** (P-EN-04).
+  - They use real pathfinding (the tiers in `GAMEPLAN.md` §3.4) over the detailed area.
+  - Their agitation raises the alert level around them, which pulls crowds along through the
+    follow cascade. **Being swarmed is the main way to die** (P-EN-08).
+- **Terrain changes crowd behaviour** (P-EN-06, P-WO-05). Each terrain material gets a **footing**
+  value (movement time, trip chance) and an **obstruction** value (e.g. underbrush vs asphalt).
+  Both feed the contest and trip rules. The player is subject to the same rules.
+
+### Realistic population: first numbers
+
+"As many zombies as a real outbreak":
+
+- **Density.** Real urban densities run ~1,000–3,000 people/km² (suburbs) up to
+  ~10,000–25,000/km² (dense cores).
+- **Detailed area.** A 512 m × 512 m detailed area (0.26 km²) therefore holds about **260–800**
+  zombies in suburbs and **2,600–6,500** in dense cores.
+- **Headroom.** The benchmark ran 100k mobs in ~3 ms per step, so there is a lot of margin: even
+  a packed downtown at full detail is fine.
+- **Whole cities.** A city of 1M means about 1M zombies. Those live almost entirely in the
+  **aggregate tier** (counts per region cell), which costs next to nothing.
+- **Proposal:** a building's zombies come from its occupants (household size, office staff,
+  shift). They are generated with the building's identity, and many are trapped behind closed
+  doors (awaiting the owner's confirmation in `purposes.md`).
