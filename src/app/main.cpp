@@ -2,8 +2,9 @@
 // lives in peo::core::World and never sees SDL. Keep it thin: anything with
 // logic in it belongs in core where it can be tested headlessly.
 //
-// Turn-based (D-002): a key press becomes exactly one World::step(Action);
-// nothing advances on a timer.
+// Turn-based (D-002): a key press becomes exactly one turn; nothing advances on
+// a timer. While the player thinks, one worker thread speculates the next turn
+// (PEO-007); input commits it. Core spawns no threads: this file owns the only one.
 
 #include "peo/core/world.hpp"
 
@@ -13,9 +14,13 @@
 
 #include <algorithm>
 #include <array>
+#include <condition_variable>
 #include <cstdio>
+#include <mutex>
 #include <optional>
+#include <stop_token>
 #include <string>
+#include <thread>
 
 namespace {
 
@@ -48,14 +53,89 @@ char scent_glyph(float scent, float max_scent) {
     return '.';
 }
 
+/// Runs World::speculate() on a worker while the world is idle. The worker only
+/// reads the World; the main thread mutates it only after quiesce(), so the two
+/// never touch it at once. The buffer is reused, so a turn allocates nothing.
+class Speculator {
+public:
+    explicit Speculator(const World& world)
+        : world_(&world), worker_([this](std::stop_token st) { run(st); }) {}
+
+    /// Start speculating the current turn. Call after every change to the world.
+    void request() {
+        {
+            const std::lock_guard lock(mutex_);
+            ready_ = false;
+            requested_ = true;
+        }
+        wake_.notify_all();
+    }
+
+    /// Was a speculation already finished when the player acted?
+    [[nodiscard]] bool ready_now() {
+        const std::lock_guard lock(mutex_);
+        return ready_;
+    }
+
+    /// Stop the worker touching the world: cancel a queued request, wait out one in
+    /// flight. Returns the finished speculation, if any; valid until request().
+    [[nodiscard]] Speculation* quiesce() {
+        std::unique_lock lock(mutex_);
+        requested_ = false;
+        wake_.wait(lock, [this] { return !busy_; });
+        return ready_ ? &buffer_ : nullptr;
+    }
+
+private:
+    void run(std::stop_token st) {
+        std::unique_lock lock(mutex_);
+        while (wake_.wait(lock, st, [this] { return requested_; })) {
+            requested_ = false;
+            busy_ = true;
+            lock.unlock();
+            world_->speculate(buffer_);
+            lock.lock();
+            busy_ = false;
+            ready_ = true;
+            wake_.notify_all();
+        }
+    }
+
+    const World* world_;
+    std::mutex mutex_;
+    std::condition_variable_any wake_;
+    bool requested_ = false;
+    bool busy_ = false;
+    bool ready_ = false;
+    Speculation buffer_;
+    std::jthread worker_; // last: joins before the state above is destroyed
+};
+
 struct App {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     std::optional<World> world;
+    std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
     /// Redraw only when something changed (a turn, a view toggle, an expose).
     bool dirty = true;
+    /// PEO-007 manual test: was the last turn's speculation ready at input?
+    bool last_hit = false;
+    unsigned long long misses = 0;
 };
+
+/// Spend one turn on `action`: commit the speculation if there is one, else step.
+void take_turn(App& app, Action action) {
+    const bool hit = app.speculator->ready_now();
+    if (Speculation* spec = app.speculator->quiesce()) {
+        app.world->commit(*spec, action);
+    } else {
+        app.world->step(action);
+    }
+    app.last_hit = hit;
+    app.misses += hit ? 0U : 1U;
+    app.speculator->request();
+}
 
 void draw(App& app) {
     const World& world = *app.world;
@@ -96,8 +176,9 @@ void draw(App& app) {
 
     char hud[128];
     std::snprintf(hud, sizeof hud,
-                  "stage %u  turn %llu  dead %zu  [arrows/wasd move] [space/. wait] [shift+s scent] [n next]",
-                  world.stage_index(), static_cast<unsigned long long>(world.turn()), world.horde().size());
+                  "stage %u  turn %llu  dead %zu  spec:%s (miss %llu)  [arrows/wasd] [space/.] [shift+s] [n]",
+                  world.stage_index(), static_cast<unsigned long long>(world.turn()), world.horde().size(),
+                  app.last_hit ? "hit" : "miss", app.misses);
     SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);
     SDL_RenderDebugText(app.renderer, 0.0F, 0.0F, hud);
 
@@ -138,6 +219,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
         seed = std::stoull(argv[1]);
     }
     app->world.emplace(seed);
+    app->speculator.emplace(*app->world);
+    app->speculator->request();
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
@@ -173,10 +256,12 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             app->show_scent = !app->show_scent;
             app->dirty = true;
         } else if (key == SDLK_N) {
+            (void)app->speculator->quiesce(); // the speculation is for the old stage
             app->world->load_stage(app->world->stage_index() + 1);
+            app->speculator->request();
             app->dirty = true;
         } else if (const std::optional<Action> action = action_for(key)) {
-            app->world->step(*action); // exactly one turn per key press
+            take_turn(*app, *action); // exactly one turn per key press
             app->dirty = true;
         }
         break;
