@@ -495,10 +495,10 @@
       "order": 347,
       "type": "design",
       "title": "World clock: one-second ticks; actions carry durations (D-015)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -515,6 +515,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "commits 44673d9..21d9ba3; CI 36639093582 green. Pinned pre-clock hash passes; golden 3/6/12 s passes (mutation-checked); 0 allocs over 1000 actions; perf best-of-200 spec 224.5 vs 223.4 us, commit 32.2 vs 31.7 us. Manual: 30-key run pixel-identical to pre-clock build."
         }
       ],
       "references": [
