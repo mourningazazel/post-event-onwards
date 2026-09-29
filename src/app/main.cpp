@@ -37,6 +37,13 @@ constexpr int kHudRows = 1;
 constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
 constexpr const char* kFallbackIterateHz = "60";
 
+/// D-011: at most this many turns a second from the keyboard. A turn key (press or
+/// auto-repeat) sooner than the interval after the last accepted turn is dropped,
+/// not queued, so releasing a held key stops the player at once.
+constexpr Uint64 kMaxTurnsPerSecond = 3;
+constexpr Uint64 kNsPerSecond = 1'000'000'000;
+constexpr Uint64 kMinTurnIntervalNs = kNsPerSecond / kMaxTurnsPerSecond;
+
 /// Scent view bands, log-spaced relative to the field's current maximum so the
 /// view reads the same at any deposit scale (0-500 today, D-007). Strongest first;
 /// none uses @, which is the player's glyph.
@@ -124,6 +131,8 @@ struct App {
     /// PEO-007 manual test: was the last turn's speculation ready at input?
     bool last_hit = false;
     unsigned long long misses = 0;
+    /// SDL_GetTicksNS() when the last turn key was accepted; empty before the first.
+    std::optional<Uint64> last_turn_ns;
 };
 
 /// Spend one turn on `action`: commit the speculation if there is one, else step.
@@ -263,7 +272,15 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             app->speculator->request();
             app->dirty = true;
         } else if (const std::optional<Action> action = action_for(key)) {
-            take_turn(*app, *action); // exactly one turn per key press
+            // Handling time, not event->key.timestamp: that is only as good as the
+            // input device, and synthetic keyboards (wtype) stamp every press with
+            // the same frozen time, which would drop every tap after the first.
+            const Uint64 now = SDL_GetTicksNS();
+            if (app->last_turn_ns && now - *app->last_turn_ns < kMinTurnIntervalNs) {
+                break; // over the D-011 cap: drop it, never queue it
+            }
+            app->last_turn_ns = now;
+            take_turn(*app, *action); // exactly one turn per accepted key press
             app->dirty = true;
         }
         break;
