@@ -33,58 +33,86 @@ struct WorldParams {
     Seconds update_period = kUpdatePeriodSeconds;
 };
 
-/// The next turn computed ahead, assuming the player waits and deposits nothing
-/// (PEO-007). The scent is post-step_linear and unclamped so commit() can patch
-/// the real deposit in; `before` keeps the pre-turn horde so the few Dead near the
-/// player can be re-decided. Valid only for the turn and stage it was made on.
+/// Game seconds the player spent on one tile since the last update. The log of
+/// these is applied as scent at the next update (D-015).
+struct Occupancy {
+    Vec2i tile{};
+    Seconds seconds = 0;
+};
+
+/// The next update computed ahead, with no player deposit (PEO-007, D-015). The
+/// scent is post-step_linear and unclamped so commit() can patch the logged
+/// deposits in; `before` keeps the pre-update horde so the few Dead near a logged
+/// tile can be re-decided. Valid for the update and stage it was made on, across
+/// any number of actions that cross no update boundary.
 /// Reusable: speculate(out) and commit() recycle its buffers, so a frontend that
-/// keeps one Speculation allocates nothing per turn.
+/// keeps one Speculation allocates nothing per update.
 struct Speculation {
     ScentField scent{1, 1};
     /// Scratch: `scent` after clamp_floor, which the Dead decide on.
     ScentField clamped{1, 1};
     std::vector<Dead> horde;
     std::vector<Dead> before;
-    Tick turn = 0;
+    Tick update = 0;
     std::uint32_t stage_index = 0;
 };
 
 /// Owns the whole simulation: stage, scent, the Dead and the player. Time moves
-/// only through step() (D-002: turn-based; the world waits for the player).
-/// No clock, no thread, no SDL: deterministic from the seed and the actions.
+/// only through step() (D-002: the world waits for the player). Game time is kept
+/// in seconds; each action takes some, and scent and the Dead update once per
+/// update_period (D-015). No wall clock, no thread, no SDL: deterministic from the
+/// seed and the actions.
 class World {
 public:
     explicit World(Seed seed, WorldParams params = {});
 
-    /// Build stage `index` from the world seed and reset the turn counter.
+    /// Build stage `index` from the world seed; reset the turn count and the clock.
     void load_stage(std::uint32_t index);
 
-    /// Spend one turn: apply the action, then the world reacts (scent, the Dead).
+    /// Spend one action: apply it at once (the player is on the new tile for its
+    /// whole duration), then run the clock forward by its seconds, logging them on
+    /// the player's tile and running an update at each update_period boundary.
     void step(Action action);
 
-    /// Compute the next turn assuming a Wait with no deposit. Pure: safe to run on
+    /// Compute the next update with no player deposit. Pure: safe to run on
     /// another thread while nothing mutates this World.
     [[nodiscard]] Speculation speculate() const;
     /// As speculate(), into `out`, reusing its buffers.
     void speculate(Speculation& out) const;
 
-    /// Spend one turn from a speculation: bit-identical to step(action). A stale
-    /// speculation (other turn or stage) falls back to step(). Consumes `spec`:
-    /// afterwards it holds recycled buffers, ready for the next speculate(spec).
+    /// Spend one action using a speculation: bit-identical to step(action). If the
+    /// action crosses no update boundary, `spec` is left untouched and still valid.
+    /// At the first boundary it is consumed (it then holds recycled buffers, ready
+    /// for the next speculate(spec)); further boundaries run the plain way. A stale
+    /// speculation (other update or stage) falls back to step().
     void commit(Speculation& spec, Action action);
 
-    /// Same stage, turn, player, horde and scent bits. For tests.
+    /// Same stage, turn, clock, occupancy log, player, horde and scent bits. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
     [[nodiscard]] const ScentField& scent() const noexcept { return scent_; }
     [[nodiscard]] const std::vector<Dead>& horde() const noexcept { return horde_; }
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
+    /// Actions taken on this stage (the HUD's turn counter).
     [[nodiscard]] Tick turn() const noexcept { return turn_; }
+    /// Game seconds elapsed on this stage.
+    [[nodiscard]] Seconds seconds() const noexcept { return seconds_; }
+    /// Updates of scent and the Dead run on this stage.
+    [[nodiscard]] Tick updates() const noexcept { return updates_; }
+    /// Seconds per tile since the last update, in first-visit order.
+    [[nodiscard]] const std::vector<Occupancy>& occupancy() const noexcept { return log_; }
     [[nodiscard]] std::uint32_t stage_index() const noexcept { return stage_index_; }
 
 private:
     void apply_action(Action action) noexcept;
+    /// Run the clock forward `duration` seconds. At the first boundary, finish the
+    /// update from `spec` if given; any other boundary runs run_update().
+    void advance(Seconds duration, Speculation* spec);
+    void log_seconds(Seconds s);
+    void deposit_log(ScentField& field) const noexcept;
+    void run_update();
+    void finish_from(Speculation& spec);
     void finish_turn();
 
     Seed seed_;
@@ -96,6 +124,9 @@ private:
     Vec2i player_{};
     Rng rng_{1};
     Tick turn_ = 0;
+    Seconds seconds_ = 0;
+    Tick updates_ = 0;
+    std::vector<Occupancy> log_;
 };
 
 } // namespace peo::core

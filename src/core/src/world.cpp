@@ -18,12 +18,24 @@ constexpr int kMaxDeadSpeed = 3;
 /// The deposit patch touches the player's cell and its 4 neighbours; one of the Dead
 /// reads the 3x3 around itself. So only Dead within 2 (Chebyshev) can see a change.
 constexpr int kRepatchRadius = 2;
+/// Cap on the occupancy log's up-front reservation. At most update_period distinct
+/// tiles fit in one update (each action spends at least a second on one tile).
+constexpr Seconds kMaxLogReserve = 64;
+
+/// A spent speculation's update number: never equal to a live World's.
+constexpr Tick kSpentUpdate = ~Tick{0};
+
+bool near(Vec2i a, Vec2i b) noexcept {
+    const Vec2i d = a - b;
+    return std::max(std::abs(d.x), std::abs(d.y)) <= kRepatchRadius;
+}
 } // namespace
 
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_width = std::max(params_.stage_width, kMinStageSide);
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
     params_.update_period = std::max<Seconds>(params_.update_period, 1);
+    log_.reserve(std::min(params_.update_period, kMaxLogReserve));
     load_stage(0);
 }
 
@@ -59,6 +71,9 @@ void World::load_stage(std::uint32_t index) {
                  static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
     turn_ = 0;
+    seconds_ = 0;
+    updates_ = 0;
+    log_.clear();
 }
 
 void World::apply_action(Action action) noexcept {
@@ -78,15 +93,78 @@ void World::finish_turn() {
     }
 }
 
+void World::log_seconds(Seconds s) {
+    for (Occupancy& o : log_) {
+        if (o.tile == player_) {
+            o.seconds += s;
+            return;
+        }
+    }
+    log_.push_back({.tile = player_, .seconds = s});
+}
+
+// Each logged tile gets player_scent * (seconds / period). A full period on one
+// tile makes the factor exactly 1.0F, so walking deposits exactly player_scent,
+// as before the clock existed; that is what keeps default play bit-identical.
+void World::deposit_log(ScentField& field) const noexcept {
+    const auto period = static_cast<float>(params_.update_period);
+    for (const Occupancy& o : log_) {
+        const float share = static_cast<float>(o.seconds) / period;
+        field.patch_deposit(o.tile, params_.player_scent * share, &stage_.blocked);
+    }
+}
+
 // step(), speculate() and commit() run the same float operations in the same
-// order: step_linear, patch_deposit at the player, clamp_floor. That is what makes
-// commit(speculate()) bit-identical to step(), not the algebra.
-void World::step(Action action) {
-    apply_action(action);
+// order: step_linear, patch_deposit per logged tile, clamp_floor. That is what
+// makes commit(speculate()) bit-identical to step(), not the algebra.
+void World::run_update() {
     scent_.step_linear(&stage_.blocked);
-    scent_.patch_deposit(player_, params_.player_scent, &stage_.blocked);
+    deposit_log(scent_);
     scent_.clamp_floor();
     step_horde(horde_, scent_, stage_.blocked, params_.update_period);
+    log_.clear();
+    ++updates_;
+}
+
+void World::finish_from(Speculation& spec) {
+    deposit_log(spec.scent);
+    spec.scent.clamp_floor();
+    for (std::size_t i = 0; i < spec.before.size(); ++i) {
+        const Vec2i at = spec.before[i].pos;
+        if (std::any_of(log_.begin(), log_.end(), [&](const Occupancy& o) { return near(at, o.tile); })) {
+            Dead unit = spec.before[i];
+            step_dead(unit, spec.scent, stage_.blocked, params_.update_period);
+            spec.horde[i] = unit;
+        }
+    }
+    std::swap(scent_, spec.scent); // swap, not move: spec keeps buffers to reuse
+    std::swap(horde_, spec.horde);
+    spec.update = kSpentUpdate;
+    log_.clear();
+    ++updates_;
+}
+
+void World::advance(Seconds duration, Speculation* spec) {
+    const Seconds period = params_.update_period;
+    for (Seconds left = std::max<Seconds>(duration, 1); left > 0;) {
+        const Seconds chunk = std::min(left, period - seconds_ % period);
+        log_seconds(chunk);
+        seconds_ += chunk;
+        left -= chunk;
+        if (seconds_ % period == 0) {
+            if (spec != nullptr) {
+                finish_from(*spec);
+                spec = nullptr;
+            } else {
+                run_update();
+            }
+        }
+    }
+}
+
+void World::step(Action action) {
+    apply_action(action);
+    advance(action.seconds, nullptr);
     finish_turn();
 }
 
@@ -100,42 +178,36 @@ void World::speculate(Speculation& out) const {
     out.scent = scent_; // copy-assign reuses out's storage once it is the right size
     out.horde = horde_;
     out.before = horde_;
-    out.turn = turn_;
+    out.update = updates_;
     out.stage_index = stage_index_;
     out.scent.step_linear(&stage_.blocked);
     // The Dead decide on the clamped field, as they will after commit; only the
-    // cells the deposit patch touches can differ, and commit re-decides those.
+    // cells the deposit patches touch can differ, and commit re-decides those.
     out.clamped = out.scent;
     out.clamped.clamp_floor();
     step_horde(out.horde, out.clamped, stage_.blocked, params_.update_period);
 }
 
 void World::commit(Speculation& spec, Action action) {
-    if (spec.turn != turn_ || spec.stage_index != stage_index_ || spec.horde.size() != horde_.size()) {
+    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.horde.size() != horde_.size()) {
         step(action);
         return;
     }
     apply_action(action);
-    spec.scent.patch_deposit(player_, params_.player_scent, &stage_.blocked);
-    spec.scent.clamp_floor();
-    for (std::size_t i = 0; i < spec.before.size(); ++i) {
-        const Vec2i d = spec.before[i].pos - player_;
-        if (std::max(std::abs(d.x), std::abs(d.y)) <= kRepatchRadius) {
-            Dead unit = spec.before[i];
-            step_dead(unit, spec.scent, stage_.blocked, params_.update_period);
-            spec.horde[i] = unit;
-        }
-    }
-    std::swap(scent_, spec.scent); // swap, not move: spec keeps buffers to reuse
-    std::swap(horde_, spec.horde);
-    spec.turn = ~Tick{0}; // spent: a second commit falls back to step()
+    advance(action.seconds, &spec);
     finish_turn();
 }
 
 bool World::equivalent(const World& a, const World& b) noexcept {
-    if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.player_ != b.player_ ||
+    if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.seconds_ != b.seconds_ ||
+        a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
         a.horde_.size() != b.horde_.size() || a.scent_.cells().size() != b.scent_.cells().size()) {
         return false;
+    }
+    for (std::size_t i = 0; i < a.log_.size(); ++i) {
+        if (a.log_[i].tile != b.log_[i].tile || a.log_[i].seconds != b.log_[i].seconds) {
+            return false;
+        }
     }
     for (std::size_t i = 0; i < a.horde_.size(); ++i) {
         const Dead& x = a.horde_[i];
