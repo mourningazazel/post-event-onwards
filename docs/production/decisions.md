@@ -5,6 +5,16 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+## 2026-09-29 · Scent drifts into walls and dies there
+
+User decision. A wall receives scent exactly as an open cell does but passes none on, so the value is
+lost; the map edge behaves the same. Why: scent should not pile up against a wall — in reality it
+vents upward — and the Dead navigate by scent alone, treating walls as impassable tiles, so the field
+never has to model a path around one. Consequence: `ScentField::step` stops reflecting; `out` becomes
+unconditional and only `in` tests the mask, dropping a branch from the inner loop. Mass is no longer
+conserved, so the two tests asserting conservation state the new contract instead. Reach shortens, so
+PEO-026's tuning and its measured test parameters must both be re-derived after this lands.
+
 ## 2026-09-28 · WORK_QUEUE.json's word cap raised to 4000
 
 Architect decision, tooling. `docs/README.md` keeps briefs on the queue item, but a brief the

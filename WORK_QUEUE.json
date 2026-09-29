@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 29,
+  "next_id": 30,
   "items": [
     {
       "id": "PEO-002",
@@ -790,8 +790,61 @@
       "depends_on": []
     },
     {
+      "id": "PEO-029",
+      "order": 255,
+      "type": "feature",
+      "title": "Scent flows into walls and the map edge and is lost there",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "brief": {
+        "goal": "A wall or the map edge absorbs scent exactly as an open cell would receive it, and passes none on, so scent never piles up against geometry.",
+        "context": [
+          "docs/production/decisions.md (Scent drifts into walls and dies there)",
+          "src/core/src/scent.cpp",
+          "tests/core/test_scent.cpp",
+          "docs/design/scent-performance.md"
+        ],
+        "units": [
+          "core: in ScentField::step, make the outflow unconditional — every open cell loses here*diffusion spread over its four orthogonal directions whether or not each neighbour is a wall or off-map. Keep the inflow gated on the mask so walls and off-map cells contribute nothing. Blocked cells are still zeroed in the back buffer, so whatever enters a wall is discarded. This removes a branch from the inner loop rather than adding one.",
+          "test: rewrite 'walls block scent'. It currently asserts total() == 1.0, which encodes the old reflecting behaviour. Assert the new contract instead: the wall cell itself stays exactly zero, the open neighbour receives its share, and total() has decreased by the absorbed amount.",
+          "test: 'mass is conserved without decay' now holds only while the front has not reached the edge. Either shrink the step count so the front stays interior, or rename it to state the interior-only contract and assert that. Do not delete or skip it.",
+          "docs: one line in docs/design/scent-mobs.md noting that walls and the map edge absorb."
+        ],
+        "acceptance": [
+          "a wall cell never holds scent, and an open cell beside a wall is no higher than the same cell would be with the wall absent — no pile-up",
+          "total() strictly decreases once the front reaches a wall or the map edge",
+          "the inner loop of step() has one fewer branch per neighbour than before",
+          "every existing test either passes unchanged or states the new contract explicitly; none is deleted, skipped or weakened"
+        ],
+        "tests": [
+          "tests/core/test_scent.cpp (walls block scent, rewritten)",
+          "tests/core/test_scent.cpp (mass conservation, re-scoped)",
+          "all existing suites"
+        ],
+        "manual": [
+          "peo 7 with Shift+S on: walk along a wall and into a corner. Scent should not bunch up against the geometry the way it does today. Describe what you see."
+        ],
+        "out_of_scope": [
+          "the two-layer / IIR rewrite — that is D-008",
+          "PEO-026's retune and its test parameters, which must be re-derived after this lands"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
       "id": "PEO-026",
-      "order": 260,
+      "order": 265,
       "type": "bug",
       "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
       "status": "Pending",
@@ -863,6 +916,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Re-briefed against measured data. Two corrections to my earlier brief: the acceptance test I wrote was unsatisfiable (at 200 steps the front reaches 45 cells, and I asserted at 62 — sample was exactly 0.0), and diffusion 0.8 is in the oscillatory regime. Verified replacements are in the units. Separately, D-008 now covers the finding that a moving player outruns their own scent entirely, which this item cannot fix."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Do not start this before the wall-absorption item (order 255). That change alters the field's shape, so both the retune constants and the test parameters in these units — which were measured on an open grid with reflecting edges — must be re-derived afterwards. Ask the Architect to re-measure rather than guessing new numbers."
         }
       ],
       "references": [],

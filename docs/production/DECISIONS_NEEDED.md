@@ -19,9 +19,9 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-## D-008 · How should the Dead find the player: keep diffusing, or solve the field?   (raised by architect · 2026-09-29 · PEO-026)
-Why now: measurement shows a player walking 1 cell/turn permanently outruns their own scent — the field ahead of a moving player is exactly zero at every distance, so the Dead can only ever trail you, never intercept. No tuning changes this; the stencil is one cell wide. See docs/design/scent-performance.md.
-Affects: gameplay | abstraction · rewrite: small to medium (ScentField internals; the public interface and D-002's linearity both survive)
-- A) Solve the field each turn with a separable IIR — the same screened-Poisson equation the current loop half-solves, solved directly: full-map reach every turn at 0.30 ms, linear to 2e-16 so speculate/commit survives, zero leakage through walls. Splits history (a decaying source layer) from reach (lambda), so long reach and fresh trails stop fighting, and the Dead can intercept.   ← recommended
-- B) Keep diffusing and accept trailing-only Dead — retune per PEO-026 and stop there: 57 cells of reach for a standing player, the Dead always behind you. Cheapest, and "they can never head you off" is a legitimate horror aesthetic.
-- C) Add a geodesic distance field (a Dijkstra map) alongside scent — exact routing around walls to your current cell, O(N) per turn, but min-plus rather than linear, so it cannot be patched and must live outside the speculate/commit path.
+## D-008 · How much scent machinery do we build?   (raised by architect · 2026-09-29 · PEO-026)
+Why now: the Dead cannot head off a moving player, which is the behaviour you want — but it currently falls out of the solver being too slow to converge, not from any dial we control. Measurements and the maths are in docs/design/scent-performance.md.
+Affects: gameplay | abstraction · rewrite: none to medium
+- A) Ship the retune only (PEO-026) — three constants and two tests. Reach ~57 cells for a standing player, the doorway scenario works, the Dead never intercept. Cheapest to build, but "how far ahead can they smell me" stays an accident of the solver rather than a setting.
+- B) Two layers, staggered — a near layer (small lambda, every turn) for the cloud around you, and a far layer solved directly with a separable IIR every 8-16 turns for scent pooled where you lingered. Amortises to ~0.02 ms/turn, below what you pay now, and converged instead of perpetually lagging; the near layer's lambda becomes an explicit interception-distance dial. Costs a real rewrite of ScentField.
+- C) Both, in order — ship A now to see it in game, then B as its own item with the doorway scenario as its acceptance test.   ← recommended
