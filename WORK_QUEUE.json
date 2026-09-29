@@ -7,10 +7,10 @@
       "order": 20,
       "type": "feature",
       "title": "Introduce World as the turn-based step owner",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "brief": {
         "goal": "The game is turn-based: World::step(Action) is the only way time moves, the frontend holds no simulation state, and the world waits for the player.",
@@ -69,6 +69,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "Report in commit '[PEO-002] report'. Manual pass; open: suite 0.57s, PEO-023 resolved, CPU 99%."
         }
       ],
       "references": [
