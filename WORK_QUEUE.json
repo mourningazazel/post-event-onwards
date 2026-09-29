@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 40,
+  "next_id": 42,
   "items": [
     {
       "id": "PEO-003",
@@ -460,6 +460,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Walls: Ryan asked whether keeping 10% of wall-bound scent would help buildup. Probe: a 10% bounce raises indoor values only 2-10% (camp tile 1110 to 1130), and soak is fed by contact, not the field, so walls stay fully absorbing."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-015: soak charges and leaks per game second, so it runs on the one-second world clock (PEO-040)."
         }
       ],
       "references": [
@@ -483,6 +488,40 @@
       ],
       "depends_on": [
         "PEO-009"
+      ]
+    },
+    {
+      "id": "PEO-040",
+      "order": 347,
+      "type": "design",
+      "title": "World clock: one-second ticks; actions carry durations (D-015)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/production/decisions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-041",
+      "order": 357,
+      "type": "feature",
+      "title": "Running: a step that takes 3 seconds (D-015)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/production/decisions.md"
+      ],
+      "depends_on": [
+        "PEO-040"
       ]
     }
   ]
