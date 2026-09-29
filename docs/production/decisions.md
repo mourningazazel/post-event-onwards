@@ -8,20 +8,18 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
-## 2026-09-29 · D-015 · The world runs on a one-second clock; actions take time
+## 2026-09-29 · D-015 · The world keeps a clock in seconds; actions take time
 
-User decision, amending D-002 and D-014. The world steps in fixed ticks of one game second.
-Scent, soak, rot and the Dead are defined per second; a system may run every few ticks, but its
-rates stay per second. Each action has a duration in seconds: a walking step 6, a running step 3, a
-bicycle tile 3, a thrown or falling body a run of moves each with its own time. The world advances
-by the action's duration and still waits for input (D-002). Why: speed is a gradient, not a choice
-of fixed tick counts, so running, riding and being thrown can be added without scaling any rate, and
-running cannot double scent. Consequence: an action of N ticks changes the world only within about
-N cells of the player (scent and the Dead move one cell a tick), so everything outside that cone is
-computed ahead while the player is idle; PEO-007's repatch radius grows with the action. A walking step
-costs 6 ticks. Live scent values move from per step to per second, spreading as far per game
-second as today. The Dead's speeds become seconds per step. PEO-040 reworks the clock; running is
-PEO-041.
+User decision, amending D-002 and D-014. The world counts game seconds. Heavy systems (scent spread,
+the Dead) update on their own fixed cadence, every 6 s by default, whatever the player does. Each action
+has a duration in seconds (a walking step 6, a running step 3, a bicycle tile 3, a thrown or falling body
+a run of moves each with its own time) and lands between updates, so a runner moves twice per update
+and a walker once. The player's scent is logged per second on the tile occupied and applied at the next
+update. Rates (scent, soak, rot, Dead speed) are per second. Why: speed is a gradient, not a fixed count
+of ticks, and compute per update does not depend on how the player moves, so running never doubles
+scent or cost. Consequence: the world still waits for input (D-002); the next update is computed ahead
+while idle and the player's moves only patch around the tiles they touched (PEO-007's model). Dead
+speeds become seconds per step. PEO-040 reworks the clock; running is PEO-041.
 
 ## 2026-09-29 · D-014 · A walking step is six seconds of game time
 

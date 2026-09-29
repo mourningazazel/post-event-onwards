@@ -500,7 +500,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Ryan (2026-09-29): no per-second stepping. The clock counts seconds; scent and the Dead update on a fixed cadence (default 6 s) and player actions land between updates, so compute per update does not depend on player speed. The title's 'one-second ticks' means the clock's unit."
+        }
+      ],
       "references": [
         "docs/production/decisions.md"
       ],
