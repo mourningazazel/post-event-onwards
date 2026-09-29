@@ -450,10 +450,10 @@
       "order": 240,
       "type": "bug",
       "title": "Scent view draws the strongest scent level as @, identical to the player glyph",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -465,6 +465,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "Fixed in own commit; manual pass: peo 7, Shift+S, 10 waits -> * band around player, single @."
         }
       ],
       "references": [],
