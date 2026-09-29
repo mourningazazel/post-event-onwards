@@ -356,6 +356,12 @@ def cmd_set(args: argparse.Namespace) -> int:
         item["status"] = args.status
     if args.owner:
         item["owner"] = args.owner
+    if args.severity:
+        item["severity"] = args.severity
+    if args.effort:
+        item["effort"] = args.effort
+    if args.type:
+        item["type"] = args.type
     if args.order is not None:
         item["order"] = args.order
     if args.note:
@@ -412,6 +418,12 @@ def cmd_complete(args: argparse.Namespace) -> int:
         other["depends_on"] = [d for d in other["depends_on"] if d != args.id]
     save(QUEUE, q)
     print(f"{args.id} logged to {log.relative_to(ROOT)} and removed from queue")
+    # The log keeps the goal and git history keeps the rest, so the brief file
+    # has done its job; leaving it behind would orphan one file per completion.
+    brief = brief_path(args.id)
+    if brief.exists():
+        brief.unlink()
+        print(f"{args.id}: brief file removed")
     return 0
 
 
@@ -476,6 +488,9 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("id")
     sp.add_argument("--status", choices=STATUSES)
     sp.add_argument("--owner", choices=OWNERS)
+    sp.add_argument("--severity", choices=SEVERITIES)
+    sp.add_argument("--effort", choices=EFFORTS)
+    sp.add_argument("--type", choices=TYPES)
     sp.add_argument("--order", type=int)
     sp.add_argument("--note")
     sp.add_argument("--by", default="builder", choices=ACTORS)

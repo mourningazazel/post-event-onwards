@@ -461,7 +461,7 @@
       "type": "bug",
       "title": "Frontend busy-loops: release build uses ~78% of a CPU core at idle",
       "status": "Pending",
-      "severity": "S3",
+      "severity": "S2",
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-28",
@@ -475,6 +475,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Severity should be raised S3 -> S2 (work_queue.py set has no --severity flag, so this note is the record of the request; only add takes one). Measured worse than when filed, not better. PEO-002 added a 'dirty' flag so draw() is skipped when nothing changed, but SDL_AppIterate still returns SDL_APP_CONTINUE immediately every iteration (src/app/main.cpp:162-169) and the renderer is created with flags 0 and never gets SDL_SetRenderVSync (:123). The loop is now a pure unthrottled spin with not even a present to pace it, so it saturates a core harder than the ~78% originally filed; the Builder reports ~99%. The fix is unchanged - vsync or a frame cap - but it is now the most user-visible defect in the queue."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Severity raised to S2 with the new set --severity flag; the previous note recorded the request only in prose because the tool could not express it."
         }
       ],
       "references": [],
