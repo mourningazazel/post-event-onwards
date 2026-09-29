@@ -23,6 +23,11 @@ constexpr int kWaitTurns = 30;
 constexpr int kTestStageWidth = 24;
 constexpr int kTestStageHeight = 16;
 constexpr int kTestDead = 20;
+/// Waits for 'every Dead moves'. A 24x16 stage fits inside even the old 29-cell
+/// reach, so 300 waits would pass at floor 1e-6 too. Speed is what differs here:
+/// measured, the last unit first moves at turn 23-26 at 1e-30 (seeds 7/1/42/3) but
+/// 56-70 at 1e-6. 40 passes with margin and catches a regression to the old floor.
+constexpr int kEveryDeadWaits = 40;
 
 WorldParams small_world(int dead = kTestDead) {
     return {.initial_dead = dead, .stage_width = kTestStageWidth, .stage_height = kTestStageHeight};
@@ -140,6 +145,24 @@ TEST_SUITE("world") {
         CHECK(w.turn() == kWaitTurns);
         CHECK(w.player() == where);
         CHECK(horde_distance(w) < before);
+    }
+
+    TEST_CASE("every Dead moves when the player waits") {
+        // PEO-026: with the default scent params the field must reach every one of
+        // the Dead on a real stage; one frozen on a flat zero field never moves.
+        World w(kSeed, small_world());
+        const std::vector<Dead> start = w.horde();
+        std::vector<bool> moved(start.size(), false);
+        for (int t = 0; t < kEveryDeadWaits; ++t) {
+            w.step(Action::wait());
+            for (std::size_t i = 0; i < start.size(); ++i) {
+                moved[i] = moved[i] || w.horde()[i].pos != start[i].pos;
+            }
+        }
+        for (std::size_t i = 0; i < start.size(); ++i) {
+            CAPTURE(i);
+            CHECK(moved[i]);
+        }
     }
 
     TEST_CASE("reaching exit advances stage_index") {
