@@ -1,65 +1,7 @@
 {
   "schema": 1,
-  "next_id": 34,
+  "next_id": 36,
   "items": [
-    {
-      "id": "PEO-002",
-      "order": 20,
-      "type": "feature",
-      "title": "Introduce World as the turn-based step owner",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed; Architect will write test_world.cpp expectations on request, Builder may write them per unit 3"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "re-briefed for D-002 (turn-based) and D-001 (Dead). Supersedes the earlier real-time brief."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "Report in commit '[PEO-002] report'. Manual pass; open: suite 0.57s, PEO-023 resolved, CPU 99%."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "review: rework. The World seam itself is good and is on main; these are concrete changes, not a redesign. 1. The determinism case asserts scent().total() through doctest::Approx, which allows about 145 ULP (+/-0.000277 on a total near 22.2). Both worlds run in one process from one binary, so the result is expected bit-identical, and every neighbouring assertion in the same case (player, turn, each horde position) is already exact. Assert exact equality. 2. total() is a std::accumulate over the whole grid, a lossy summary: two genuinely different fields can share a total, so the case does not test what the brief means by 'same world'. Compare the field cell-wise, or hash it. 3. The brief specifies 100 turns; the test runs 30 with an inline note about sanitizer cost. The suite now sits at 0.15 s against a 500 ms budget, so measure it and restore 100, or change the brief and say why in the report. 4. Build the release preset and a clang build before pushing to main. This series left main red for about 25 minutes because -O3 and clang-18 both reject code the Debug preset accepts; that gap is tooling's fault as much as anyone's and is now its own queue item."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Correction to point 3 of my review: I quoted the suite at 0.15 s, which was measured before this item's own tests were merged in, and the advice that followed was backwards. Measured now: 0.95 s for 25 cases, against the 500 ms budget in AGENTS.md - the suite is over, not under. The four test_world.cpp cases account for 0.82 s of that; the slowest is 'reaching exit advances stage_index' at 0.46 s. So point 3 is replaced: do not restore 100 turns. Bring these cases under budget first - measure with peo_core_tests -d, and note that a World step is a full ScentField sweep, so turns multiply by grid area. Then judge whether 100 turns is affordable at a smaller grid. Points 1, 2 and 4 stand as written."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting rework"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "Rework in d99d563, 61a34de; CI green. 1-2: bit-exact cell-wise scent compare + non-empty guard. 3: WorldParams stage_width/height; tests on 24x16, 100 turns; world cases 0.063 s, suite ok. 4: headless-release built+passed locally; local clang is 22 (not 18), doctest fails -Werror on it, no warnings in our code without it."
-        }
-      ],
-      "references": [
-        "docs/architecture.md",
-        "src/app/main.cpp"
-      ],
-      "depends_on": []
-    },
     {
       "id": "PEO-003",
       "order": 30,
@@ -80,9 +22,7 @@
       "references": [
         "docs/production/vision.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-004",
@@ -98,9 +38,7 @@
       "references": [
         "docs/production/vision.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-005",
@@ -116,9 +54,7 @@
       "references": [
         "src/core/include/peo/core/stage.hpp"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-006",
@@ -134,9 +70,7 @@
       "references": [
         "docs/architecture.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-007",
@@ -159,9 +93,7 @@
         "docs/architecture.md",
         "docs/production/decisions.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-008",
@@ -179,9 +111,7 @@
         "tools/content/derive.py",
         "docs/architecture.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-009",
@@ -332,9 +262,7 @@
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-017",
@@ -368,9 +296,7 @@
       "references": [
         "docs/production/vision.md"
       ],
-      "depends_on": [
-        "PEO-002"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-019",
@@ -697,6 +623,41 @@
         }
       ],
       "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-034",
+      "order": 287,
+      "type": "bug",
+      "title": "World accepts stage sizes and Dead counts that hang load_stage",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "src/core/src/world.cpp",
+        "src/core/include/peo/core/world.hpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-035",
+      "order": 297,
+      "type": "research",
+      "title": "Turn cost and Dead movement in cramped layouts: houses, offices, corridors",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/design/scent-performance.md",
+        "src/core/src/scent.cpp",
+        "src/core/src/dead.cpp"
+      ],
       "depends_on": []
     }
   ]
