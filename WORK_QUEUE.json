@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 36,
+  "next_id": 37,
   "items": [
     {
       "id": "PEO-003",
@@ -372,76 +372,6 @@
       ]
     },
     {
-      "id": "PEO-024",
-      "order": 240,
-      "type": "bug",
-      "title": "Scent view draws the strongest scent level as @, identical to the player glyph",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "Fixed in own commit; manual pass: peo 7, Shift+S, 10 waits -> * band around player, single @."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-025",
-      "order": 250,
-      "type": "bug",
-      "title": "Frontend busy-loops: release build uses ~78% of a CPU core at idle",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Severity should be raised S3 -> S2 (work_queue.py set has no --severity flag, so this note is the record of the request; only add takes one). Measured worse than when filed, not better. PEO-002 added a 'dirty' flag so draw() is skipped when nothing changed, but SDL_AppIterate still returns SDL_APP_CONTINUE immediately every iteration (src/app/main.cpp:162-169) and the renderer is created with flags 0 and never gets SDL_SetRenderVSync (:123). The loop is now a pure unthrottled spin with not even a present to pace it, so it saturates a core harder than the ~78% originally filed; the Builder reports ~99%. The fix is unchanged - vsync or a frame cap - but it is now the most user-visible defect in the queue."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Severity raised to S2 with the new set --severity flag; the previous note recorded the request only in prose because the tool could not express it."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting; brief predates PEO-002 (no kTickMs now)"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "Fix e2d6822. Release idle 0% CPU (was 99%); 20 presses -> turn 20 in 0.2 s. Tick-rate acceptance obsolete post-PEO-002."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-029",
       "order": 255,
       "type": "feature",
@@ -657,6 +587,23 @@
         "docs/design/scent-performance.md",
         "src/core/src/scent.cpp",
         "src/core/src/dead.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-036",
+      "order": 307,
+      "type": "chore",
+      "title": "Fetched SDL is 3.2.30, so platforms without a system SDL fall back to a 60 Hz redraw loop",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "cmake/FindOrFetchSDL3.cmake",
+        "src/app/main.cpp"
       ],
       "depends_on": []
     }
