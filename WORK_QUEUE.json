@@ -432,7 +432,7 @@
       "order": 277,
       "type": "chore",
       "title": "Nothing enforces the 500 ms suite budget, so it is breached silently",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -452,6 +452,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed; ready for the Builder"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [],
