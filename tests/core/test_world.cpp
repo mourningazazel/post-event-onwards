@@ -45,6 +45,37 @@ std::size_t scent_mismatches(const ScentField& a, const ScentField& b) {
     return differ;
 }
 
+/// FNV-1a over the state that must not drift when the clock changes (PEO-040).
+struct Fnv1a {
+    std::uint64_t h = 0xCBF29CE484222325ULL;
+    void add(std::uint64_t v) {
+        for (int i = 0; i < 8; ++i) {
+            h = (h ^ ((v >> (8 * i)) & 0xFFU)) * 0x100000001B3ULL;
+        }
+    }
+};
+
+/// Cooldown in updates, the unit it had before PEO-040 moved the Dead to seconds.
+std::uint64_t cooldown_updates(const Dead& d) {
+    return d.cooldown;
+}
+
+std::uint64_t world_hash(const World& w) {
+    Fnv1a f;
+    f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.player().x)));
+    f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.player().y)));
+    f.add(w.stage_index());
+    for (const Dead& d : w.horde()) {
+        f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.x)));
+        f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.y)));
+        f.add(cooldown_updates(d));
+    }
+    for (const float v : w.scent().cells()) {
+        f.add(std::bit_cast<std::uint32_t>(v));
+    }
+    return f.h;
+}
+
 /// A fixed, varied action script: steps in all four directions plus waits.
 Action scripted_action(int i) {
     const int k = i % 5;
@@ -115,6 +146,28 @@ TEST_SUITE("world") {
         for (std::size_t i = 0; i < a.horde().size(); ++i) {
             CHECK(a.horde()[i].pos == b.horde()[i].pos);
         }
+    }
+
+    TEST_CASE("the pre-clock world is pinned") {
+        // PEO-040: recorded on main before the world clock existed. Default 6 s
+        // steps and waits must reproduce it bit for bit after the rework.
+        constexpr int kRandomActions = 100; // before and after the walk to the exit
+        constexpr std::uint64_t kPinnedHash = 0xB2A3557FBD9AD93EULL;
+        World w(kSeed, small_world());
+        Rng pick(kSeed);
+        const auto random_actions = [&] {
+            for (int i = 0; i < kRandomActions; ++i) {
+                const int k = pick.range(0, 4); // 0-3 the four directions, 4 wait
+                w.step(k == 4 ? Action::wait() : Action::step(kNeighbours4[k]));
+            }
+        };
+        random_actions(); // walls turn some of these steps into waits
+        for (const Vec2i d : path_to_exit(w)) {
+            w.step(Action::step(d));
+        }
+        random_actions();
+        CHECK(w.stage_index() == 1); // the script crosses one stage
+        CHECK(world_hash(w) == kPinnedHash);
     }
 
     TEST_CASE("step into wall consumes the turn but does not move") {
