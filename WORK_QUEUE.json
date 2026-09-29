@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 37,
+  "next_id": 38,
   "items": [
     {
       "id": "PEO-003",
@@ -79,39 +79,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-007",
-      "order": 70,
-      "type": "feature",
-      "title": "Compute the next turn while waiting for input",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed. Architect owns the golden-test design; Builder may ask for the linearity test to be written first."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "commits c3cbf03 f39f05d b55c61f 097ade7 da549c2 8444cf2; CI 36528232494 green. tests: golden 200x8 pass, mutation-checked. manual: 100 turns 0 misses; mash 46 keys/s 0 misses no crash; debug==release. perf M1: speculate 224-542us, commit 31-65us. open: 2 deviations, see report commit."
-        }
-      ],
-      "references": [
-        "docs/architecture.md",
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-008",
       "order": 80,
       "type": "feature",
@@ -144,14 +111,17 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "D-007 (see decisions.md) fixes the shape of the draw: weight a candidate cell by pow(scent, k) with a tunable exponent k slightly above 1, never exp(k*scent) — at the 0-500 scale from PEO-026 exp saturates immediately. A power law keys off the ratio between neighbouring cells, so one k stays decisive next to the player and becomes a gentle drift far away, which is the horde-drift behaviour the user asked for. Fold this into the brief when PEO-009 is planned."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-007 constraint: World::commit re-decides only the Dead within 2 cells of the player, so a Dead's decision must not depend on how many others decided before it. The weighted draw must take its randomness from a counter-based hash of (world seed, stage, turn, Dead index), never from one shared Rng stream consumed in horde order, or commit(speculate()) stops being bit-identical to step(). Keep the golden test in test_world.cpp passing."
         }
       ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": [
-        "PEO-007"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-010",
@@ -388,71 +358,6 @@
       ]
     },
     {
-      "id": "PEO-026",
-      "order": 265,
-      "type": "bug",
-      "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "Raised D-007 (scent reach / convergence pacing). Blocked on the pacing answer: the front-radius test in this brief can only pin a number once the target reach is chosen. Technical instrumentation is ready to write behind the decision."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "D-007 answered and recorded in decisions.md; briefed. Root cause identified from the code: the ~8-cell reach is the floor flush in scent.cpp (v < floor -> 0.0F, floor 0.001F against a 1.0F deposit); past it the field is exactly zero, strongest_neighbour requires v > best strictly, so distant Dead never move. Fix is dynamic range, not diffusion rate."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "Brief corrected: kPlayerScent already exists at src/app/main.cpp:26 as 1.0F, so the unit raises it rather than introducing it. Starting tuning values (diffusion 0.8, decay 0.01, floor 1e-6) are carried over from branch claude/fervent-curie-iqonhg, which reached the same numbers independently; that branch's pinning test asserted only sample > 0.0F against a 1e-6 floor, which passes on the tail crossing rather than a usable scent level, so the tests here assert a strictly decreasing gradient and actual Dead convergence instead."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Re-briefed against measured data. Two corrections to my earlier brief: the acceptance test I wrote was unsatisfiable (at 200 steps the front reaches 45 cells, and I asserted at 62 — sample was exactly 0.0), and diffusion 0.8 is in the oscillatory regime. Verified replacements are in the units. Separately, D-008 now covers the finding that a moving player outruns their own scent entirely, which this item cannot fix."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Do not start this before the wall-absorption item (order 255). That change alters the field's shape, so both the retune constants and the test parameters in these units — which were measured on an open grid with reflecting edges — must be re-derived afterwards. Ask the Architect to re-measure rather than guessing new numbers."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting; re-deriving test numbers after PEO-029"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "All units landed, tests pass. GOAL NOT MET in game: with absorbing walls, steady-state reach is 29 cells; 28/40 Dead in peo 7 never move. Numbers in report commit; needs a decision."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "review: rework. Units are correct; the goal is not met, and no decision is needed to meet it. Reach goes as lambda * ln(peak/floor) (D-007): at floor 1e-6 the field is cut off at 25-29 cells. Architect probe, World defaults, 300 waits: seeds 7/1/42 give reach 29/25/27 and 12/12/11 of 40 Dead moving; with floor 1e-30 reach is 77 (whole map) and 40/40 move on all three. 1. ScentParams::floor default 1e-6 -> 1e-30. Comment why, and why not lower: it must stay well above FLT_MIN (1.18e-38) so step never touches subnormals. 2. Add 'every Dead moves when the player waits' to test_world.cpp on the small stage (24x16, default scent params, 300 waits or fewer if the suite budget needs it): every unit's position has changed. Measure its time with -d. 3. docs/design/scent-mobs.md:74 claims 'a gradient reaches the map edge' at floor 1e-6; correct it to the new floor and state it for real stages with absorbing walls. 4. Re-run the in-game manual steps from the brief and report the counts. The pinned bit-pattern test sets floor 1e-6 explicitly and needs no change. D-010 (scent buildup) is separate and lands in PEO-030; do not start it here."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting rework"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "rework: 4de3c1b 49f2a33 17f6e84. floor 1e-30; all 40 Dead move in peo 7 (was 12); reach 77 = whole stage; no subnormals. New test uses 40 waits, not 300 (300 can't tell the floors apart on 24x16). Details in report commit."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-030",
       "order": 270,
       "type": "feature",
@@ -467,6 +372,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-010 (2026-09-29): the far layer becomes a buildup layer. A cell's fade rate falls as the sliding 3x3 box total around it rises, to a nonzero minimum; box totals refresh on a turn schedule (every turn near the player, staggered further out); buildup pulls harder than a fresh trail. The separable IIR solve assumes a single decay everywhere, so re-examine the method (e.g. a coarse FTCS far layer stepped on a stagger) when briefing. Acceptance adds: a den where the player lingered, and a path walked often, both outlast and outpull a fresh trail."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-007 constraint: compute D-010 fade rates (box totals) at the start of a turn from committed state, before the player's deposit is patched in, so speculate() sees the same rates commit() uses; the golden test must stay bit-exact. If a rate had to depend on this turn's deposit, commit would need to recompute every cell whose box includes the patched cells."
         }
       ],
       "references": [],
@@ -527,6 +437,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-011: the budget is now 1 s, not 500 ms (AGENTS.md, docs/testing.md). Enforce 1 s; the brief's out-of-scope line about choosing the budget is settled."
         }
       ],
       "references": [],
@@ -580,6 +495,28 @@
       "notes": [],
       "references": [
         "cmake/FindOrFetchSDL3.cmake",
+        "src/app/main.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-037",
+      "order": 317,
+      "type": "feature",
+      "title": "Cap turn input at 3 per second so holding a key never builds up lag",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
         "src/app/main.cpp"
       ],
       "depends_on": []

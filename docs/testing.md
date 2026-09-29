@@ -6,7 +6,7 @@
 |-------|-------------|---------|--------|
 | Docs & queue | both, CI | `python3 tools/validate_docs.py` | instant |
 | Format | both, CI | `python3 tools/verify.py` (or `--fix`) | instant |
-| Core unit tests | both, CI | `ctest --preset headless` | < 500 ms total |
+| Core unit tests | both, CI | `ctest --preset headless` | < 1 s total |
 | Core perf | Builder (numbers), Architect (thresholds) | `ctest --preset headless-release` | per-brief |
 | Frontend build | Builder, CI (Linux) | `cmake --build --preset dev` | n/a |
 | Manual in-game | Builder only | brief's `manual` steps | n/a |
