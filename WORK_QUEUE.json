@@ -432,10 +432,10 @@
       "order": 277,
       "type": "chore",
       "title": "Nothing enforces the 500 ms suite budget, so it is breached silently",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -457,6 +457,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "commits: 127a857. CI 36613574386 green; suite_budget runs in every ctest job. local headless 248 ms / 1000 ms; CI g++-13 run 0.53 s. Over-budget path shown with a 100 ms stand-in: exit 1 + slowest 5."
         }
       ],
       "references": [],
