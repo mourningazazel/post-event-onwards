@@ -5,6 +5,33 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
+Settled infrastructure decisions, now encoded in the build and tooling, live in
+`decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-29 · D-008 · Ship the scent retune, then build the two-layer field
+
+User decision: C. Land PEO-026's retune first so the behaviour can be seen in game, then build the
+two-layer field as its own item. The near layer keeps a small lambda and is stepped every turn for the
+cloud around the player; the far layer is solved directly with a separable IIR every 8-16 turns for
+scent pooled where the player lingered. Why: the Dead must never head off a moving player, and today
+that only holds because the solver is too slow to project scent ahead — the near layer's lambda turns
+it into a setting rather than an artefact. The staggered solve also amortises to roughly 0.02 ms per
+turn, under the 0.134 ms a single FTCS sweep costs now, while being converged instead of perpetually
+lagging. Consequence: the field stays linear, so D-002's speculate/commit patch survives; the
+recurrence, timings and caveats are in `docs/design/scent-performance.md`; the doorway scenario (enter
+a building, linger, return to your entry point and find the Dead there) is the acceptance test for the
+second item.
+
+## 2026-09-29 · Scent drifts into walls and dies there
+
+User decision. A wall receives scent exactly as an open cell does but passes none on, so the value is
+lost; the map edge behaves the same. Why: scent should not pile up against a wall — in reality it
+vents upward — and the Dead navigate by scent alone, treating walls as impassable tiles, so the field
+never has to model a path around one. Consequence: `ScentField::step` stops reflecting; `out` becomes
+unconditional and only `in` tests the mask, dropping a branch from the inner loop. Mass is no longer
+conserved, so the two tests asserting conservation state the new contract instead. Reach shortens, so
+PEO-026's tuning and its measured test parameters must both be re-derived after this lands.
+
 ## 2026-09-28 · WORK_QUEUE.json's word cap raised to 4000
 
 Architect decision, tooling. `docs/README.md` keeps briefs on the queue item, but a brief the
@@ -105,40 +132,3 @@ start a large rewrite, without an answered entry in `DECISIONS_NEEDED.md`.
 Technical method is the agents' call. Why: the user wants to steer what the
 game is, not how each function is written. Consequence: an item waiting on a
 decision is `AwaitingUser` with the D-id in its note.
-
-## 2026-09-28 · Two-role agent pipeline
-
-Cloud Claude (Architect) plans, briefs, tests headlessly and reviews; local
-Claude (Builder) implements and runs the game. State is exchanged only via
-`WORK_QUEUE.json`. Why: the cloud has no display and no user hardware, the
-laptop has no time for planning and review; both need to survive context
-resets. Consequence: no work starts without a brief; nothing completes
-without a report.
-
-## 2026-09-28 · Core/frontend split enforced by the build
-
-`peo::core` cannot link SDL; the `headless` preset builds without it. Why:
-tests and cloud sessions must run with no display and no network beyond git.
-Consequence: any logic in `src/app` is a review finding.
-
-## 2026-09-28 · doctest, vendored
-
-`third_party/doctest/doctest.h` is committed. Why: zero network during
-configure, sub-second compile, one binary. Consequence: upgrade by replacing
-the header and noting the version here (currently 2.4.12).
-
-## 2026-09-28 · SDL3 from system or FetchContent
-
-`find_package(SDL3)` first, else fetch the pinned tag in
-`cmake/FindOrFetchSDL3.cmake`. Why: one command works on a fresh laptop and
-in CI. Consequence: bumping SDL is one line and one CI run.
-
-## 2026-09-28 · xoshiro256** for all randomness
-
-No `std::mt19937`, no `rand()`. Why: identical sequences on every platform,
-fast, tiny state. Consequence: every random decision takes an `Rng&`.
-
-## 2026-09-28 · Word caps on agent-facing docs
-
-Caps live in `tools/validate_docs.py`; CI enforces them. Why: docs that
-grow unbounded stop being read. Consequence: to add, first cut.

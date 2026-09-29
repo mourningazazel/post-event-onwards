@@ -31,10 +31,16 @@ TEST_SUITE("dead") {
         CHECK(horde[0].pos == Vec2i{1, 2});
     }
 
+    // The warm-up only has to lay a gradient the horde can climb: the Dead start
+    // 12 cells (Manhattan) from the source, and with no decay and no floor nothing
+    // is flushed, so the front arrives well inside this many ticks. Keep it short —
+    // this loop, not step_horde, dominated the whole headless suite (PEO-027).
+    constexpr int kHordeWarmupTicks = 20;
+
     TEST_CASE("a thousand dead step without touching each other") {
         ScentField f(64, 64, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
         Grid<bool> walls(64, 64, false);
-        for (int i = 0; i < 100; ++i) { // a player standing still for 100 ticks
+        for (int i = 0; i < kHordeWarmupTicks; ++i) { // a player standing still
             f.deposit({32, 32}, 1.0F);
             f.step();
         }
