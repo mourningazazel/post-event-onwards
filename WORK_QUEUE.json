@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "next_id": 31,
+  "next_id": 33,
   "items": [
     {
       "id": "PEO-002",
       "order": 20,
       "type": "feature",
       "title": "Introduce World as the turn-based step owner",
-      "status": "Validation",
+      "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "notes": [
         {
@@ -32,6 +32,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "Report in commit '[PEO-002] report'. Manual pass; open: suite 0.57s, PEO-023 resolved, CPU 99%."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "review: rework. The World seam itself is good and is on main; these are concrete changes, not a redesign. 1. The determinism case asserts scent().total() through doctest::Approx, which allows about 145 ULP (+/-0.000277 on a total near 22.2). Both worlds run in one process from one binary, so the result is expected bit-identical, and every neighbouring assertion in the same case (player, turn, each horde position) is already exact. Assert exact equality. 2. total() is a std::accumulate over the whole grid, a lossy summary: two genuinely different fields can share a total, so the case does not test what the brief means by 'same world'. Compare the field cell-wise, or hash it. 3. The brief specifies 100 turns; the test runs 30 with an inline note about sanitizer cost. The suite now sits at 0.15 s against a 500 ms budget, so measure it and restore 100, or change the brief and say why in the report. 4. Build the release preset and a clang build before pushing to main. This series left main red for about 25 minutes because -O3 and clang-18 both reject code the Debug preset accepts; that gap is tooling's fault as much as anyone's and is now its own queue item."
         }
       ],
       "references": [
@@ -576,6 +581,46 @@
       "owner": "architect",
       "created": "2026-09-29",
       "notes": [],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-031",
+      "order": 275,
+      "type": "chore",
+      "title": "verify.py cannot catch what CI catches: no release build, no clang",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-032",
+      "order": 276,
+      "type": "bug",
+      "title": "CI concurrency cancels per-commit runs on main, so breakage goes unseen",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [],
       "depends_on": []
     }
