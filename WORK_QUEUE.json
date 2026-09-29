@@ -600,10 +600,10 @@
       "order": 270,
       "type": "bug",
       "title": "Build sets no floating-point flags, so FMA contraction can break D-002 bit-identity",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -615,6 +615,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "Done; CI 36515630608 green: x86-64 g++-13/clang-18/release match aarch64-generated bit patterns."
         }
       ],
       "references": [],
