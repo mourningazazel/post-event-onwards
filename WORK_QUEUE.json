@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 42,
+  "next_id": 52,
   "items": [
     {
       "id": "PEO-003",
@@ -39,6 +39,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "PEO-028 set -ffp-contract=off on core and did not re-measure docs/design/scent-performance.md. Re-measure those numbers here with the flag in place."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-043 carries the larger variants and both timings (D-021); keep this item for the per-step ScentField number only, or fold it in when PEO-043 lands."
         }
       ],
       "references": [
@@ -116,6 +121,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "PEO-007 constraint: World::commit re-decides only the Dead within 2 cells of the player, so a Dead's decision must not depend on how many others decided before it. The weighted draw must take its randomness from a counter-based hash of (world seed, stage, turn, Dead index), never from one shared Rng stream consumed in horde order, or commit(speculate()) stops being bit-identical to step(). Keep the golden test in test_world.cpp passing."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-022 (N016) settles Dead speed: probabilistic extra steps per update, built in PEO-042 ahead of this item. The pathfinding review found that occupancy and a wake-up cascade make moves order-dependent, which breaks the commit patch; the draw needs an intents-then-resolve step, and PEO-022 stacks on that."
         }
       ],
       "references": [
@@ -362,7 +372,7 @@
       "order": 270,
       "type": "feature",
       "title": "Two-layer staggered scent field: near layer each turn, far layer by IIR",
-      "status": "Pending",
+      "status": "AwaitingUser",
       "severity": "S2",
       "effort": "L",
       "owner": "architect",
@@ -382,6 +392,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-013 (2026-09-29) supersedes D-010's fade rule: buildup moves to a per-tile soak value (PEO-038), so the far layer returns to a single decay and D-008's separable IIR solve stands. Drop the buildup acceptance from this item; the doorway scenario stays."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Waits on D-024 (transport). The pathfinding review (reviews/2026-09-29-pathfinding-and-scent-review.md) measured the IIR far layer failing on a town map; D-019 and D-020 (N016) add reach radius, wind and indoor rules the transport must carry. Rebrief once D-024 is answered."
         }
       ],
       "references": [],
@@ -395,13 +410,18 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Ready for the Builder (2026-09-29 review); brief unchanged."
         }
       ],
       "references": [],
@@ -415,13 +435,18 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Ready for the Builder (2026-09-29 review); brief unchanged."
         }
       ],
       "references": [],
@@ -432,12 +457,18 @@
       "order": 297,
       "type": "research",
       "title": "Turn cost and Dead movement in cramped layouts: houses, offices, corridors",
-      "status": "Pending",
+      "status": "AwaitingUser",
       "severity": "S2",
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Waits on D-024. If D-024 A is taken, this becomes the town fixture and acceptance test for the geodesic field (pathfinding review section 7), not a study. The owner's corridor reasoning is in N016."
+        }
+      ],
       "references": [
         "docs/design/scent-performance.md",
         "src/core/src/scent.cpp",
@@ -482,7 +513,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-025 (open) asks whether rot masks by scaling instead of 1:1 subtraction; the pathfinding review measured subtraction zeroing every cell past about 12 cells. Fold the answer into the draw formula before starting. PEO-051 may supply the section grid."
+        }
+      ],
       "references": [
         "docs/production/decisions.md"
       ],
@@ -544,6 +581,217 @@
       "depends_on": [
         "PEO-040"
       ]
+    },
+    {
+      "id": "PEO-042",
+      "order": 367,
+      "type": "design",
+      "title": "Dead speed: probabilistic extra steps per update (D-022)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Briefed from D-022 (N016). Ready after PEO-040 is accepted; the golden variant with fast Dead is the gate."
+        }
+      ],
+      "references": [
+        "docs/production/decisions.md",
+        "src/core/src/dead.cpp",
+        "src/core/src/world.cpp"
+      ],
+      "depends_on": [
+        "PEO-040"
+      ]
+    },
+    {
+      "id": "PEO-043",
+      "order": 377,
+      "type": "perf",
+      "title": "Perf variants: 512x512 with 20k and 50k Dead, emitters, both timings (D-021)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Briefed from D-021 (N016). Ready after PEO-040 is accepted. The M1 Air numbers are the deliverable; this container's are the comparison."
+        }
+      ],
+      "references": [
+        "docs/production/vision.md",
+        "docs/design/scent-performance.md"
+      ],
+      "depends_on": [
+        "PEO-040"
+      ]
+    },
+    {
+      "id": "PEO-044",
+      "order": 387,
+      "type": "bug",
+      "title": "The Dead cut corners: strongest_neighbour allows a diagonal past two walls",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Found in the 2026-09-29 full review (scent.cpp:99-114). Small and independent; take it any time."
+        }
+      ],
+      "references": [
+        "src/core/src/scent.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-045",
+      "order": 397,
+      "type": "feature",
+      "title": "Ambient sound kind and the ambient noise floor (D-018)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": [
+        "PEO-010"
+      ]
+    },
+    {
+      "id": "PEO-046",
+      "order": 407,
+      "type": "design",
+      "title": "Random character generation: background, physique, conditions, job, where you were (D-016, D-017)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G04-characters.md"
+      ],
+      "depends_on": [
+        "PEO-008",
+        "PEO-012"
+      ]
+    },
+    {
+      "id": "PEO-047",
+      "order": 417,
+      "type": "feature",
+      "title": "Scent only near the player: reach radius, sealed buildings skipped, opened tag (D-019)",
+      "status": "AwaitingUser",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Waits on D-024."
+        }
+      ],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-048",
+      "order": 427,
+      "type": "feature",
+      "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
+      "status": "AwaitingUser",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Waits on D-024."
+        }
+      ],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-049",
+      "order": 437,
+      "type": "feature",
+      "title": "Z-level scent routes near the player (D-019)",
+      "status": "AwaitingUser",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Waits on D-024 and a multi-z stage."
+        }
+      ],
+      "references": [
+        "docs/design/scent-mobs.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-050",
+      "order": 447,
+      "type": "design",
+      "title": "Items as seeds: read through the seed, instantiate on change, resolve on access, hidden container cap (D-023)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G03-items-and-belongings.md",
+        "docs/design/gameplay-model/G02-templates-generation-detail.md"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-051",
+      "order": 457,
+      "type": "design",
+      "title": "Section view over the stage: a 6x6 aggregate layer for rot, reach and sealed buildings",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "src/core/include/peo/core/grid.hpp"
+      ],
+      "depends_on": []
     }
   ]
 }
