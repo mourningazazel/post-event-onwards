@@ -556,10 +556,10 @@
       "order": 317,
       "type": "feature",
       "title": "Cap turn input at 3 per second so holding a key never builds up lag",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -571,6 +571,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "commits: 3fbb62d 5f28069. manual: hold 5 s = 15 turns, stops at release; 228 taps/3 s = +9; Shift+S and N respond while held; spec:hit, 0 misses. Deviation: SDL_GetTicksNS not key.timestamp (wtype stamps are frozen)."
         }
       ],
       "references": [
