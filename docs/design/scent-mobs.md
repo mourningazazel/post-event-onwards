@@ -68,7 +68,8 @@ of mobs, yet they barely win.
 3. **Make the heavier cost, the scent field itself, a first-class system (Fields).** It covers:
    - emission (player, blood, food, noise-as-scent?)
    - diffusion and decay per world step
-   - blocking by walls and closed doors
+   - blocking by walls and closed doors: walls and the map edge absorb the share sent into
+     them and pass none on, so scent never piles up against geometry (PEO-029)
    - several channels, e.g. 4 × u16 over 1024² = 8 MB
 
    This is the first GPU compute kernel, with a CPU reference implementation.

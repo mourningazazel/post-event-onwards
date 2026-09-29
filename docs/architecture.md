@@ -44,7 +44,7 @@ today. The renderer reads only a committed world snapshot, so swapping it later 
 
 The signature mechanic. A `ScentField` is a double-buffered `Grid<float>`. Each turn the
 player (and later blood, bait, fire) `deposit`s; `step` diffuses to the four orthogonal
-neighbours and decays. Walls reflect scent. `strongest_neighbour` is the whole AI today.
+neighbours and decays. Walls and the map edge absorb what flows into them. `strongest_neighbour` is the whole AI today.
 
 Where it is going (`docs/design/scent-mobs.md`): two layers per channel (a cheap fine trail and
 a coarse diffusing cloud that drifts with wind), several channels with a dominance matrix, and
@@ -80,7 +80,7 @@ frontend owns the worker and draws only the committed world.
 | Boundary | Test |
 |----------|------|
 | Determinism | `stage: generation is deterministic`, `rng: same seed` |
-| Scent physics | `scent: mass is conserved`, `walls block scent` |
+| Scent physics | `scent: mass is conserved ... while the front is interior`, `walls absorb scent` |
 | The Dead | `dead: the dead never enter walls` |
 | Scale | `dead: a thousand dead step` |
 | Turn model | `world: commit(speculate) == step` (PEO-007) |
