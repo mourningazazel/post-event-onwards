@@ -129,8 +129,21 @@ void World::run_update() {
 void World::finish_from(Speculation& spec) {
     deposit_log(spec.scent);
     spec.scent.clamp_floor();
+    // Box around every logged tile, widened by the re-decide radius: one cheap test
+    // per unit, and only units inside it scan the log (thousands of Dead, a few tiles).
+    Vec2i lo = log_.front().tile;
+    Vec2i hi = lo;
+    for (const Occupancy& o : log_) {
+        lo = {std::min(lo.x, o.tile.x), std::min(lo.y, o.tile.y)};
+        hi = {std::max(hi.x, o.tile.x), std::max(hi.y, o.tile.y)};
+    }
+    lo = lo - Vec2i{kRepatchRadius, kRepatchRadius};
+    hi = hi + Vec2i{kRepatchRadius, kRepatchRadius};
     for (std::size_t i = 0; i < spec.before.size(); ++i) {
         const Vec2i at = spec.before[i].pos;
+        if (at.x < lo.x || at.x > hi.x || at.y < lo.y || at.y > hi.y) {
+            continue;
+        }
         if (std::any_of(log_.begin(), log_.end(), [&](const Occupancy& o) { return near(at, o.tile); })) {
             Dead unit = spec.before[i];
             step_dead(unit, spec.scent, stage_.blocked, params_.update_period);
