@@ -472,7 +472,7 @@
       "order": 287,
       "type": "bug",
       "title": "World accepts stage sizes and Dead counts that hang load_stage",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -482,6 +482,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed; ready for the Builder"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
