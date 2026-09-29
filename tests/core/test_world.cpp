@@ -1,3 +1,4 @@
+#include "peo/core/rng.hpp"
 #include "peo/core/world.hpp"
 
 #include <doctest/doctest.h>
@@ -150,5 +151,56 @@ TEST_SUITE("world") {
         CHECK(w.stage_index() == 1);
         CHECK(w.turn() == 0);
         CHECK(w.player() == w.stage().entry);
+    }
+
+    TEST_CASE("commit(speculate()) is bit-identical to step()") {
+        // PEO-007 golden test. Random seeds and action sequences, biased east so
+        // runs cross stage exits; walls ahead make some steps into waits.
+        constexpr int kSequences = 200;
+        constexpr int kTurns = 8;
+        constexpr int kGoldenWidth = 6;
+        constexpr int kGoldenHeight = 6;
+        constexpr int kGoldenDead = 8;
+        constexpr int kWaitOneIn = 5;
+        constexpr int kEastOneIn = 3; // two in three steps go east
+        const WorldParams params{
+            .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
+        int transitions = 0;
+        for (int seq = 0; seq < kSequences; ++seq) {
+            const Seed seed = static_cast<Seed>(seq) + 1;
+            Rng pick(seed);
+            World a(seed, params);
+            World b(seed, params);
+            Speculation spec; // reused every turn, as the frontend does
+            for (int t = 0; t < kTurns; ++t) {
+                Action act = Action::wait();
+                if (pick.range(1, kWaitOneIn) != 1) {
+                    act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0})
+                                                         : Action::step(kNeighbours4[pick.range(0, 3)]);
+                }
+                const std::uint32_t stage_before = a.stage_index();
+                a.step(act);
+                b.speculate(spec);
+                b.commit(spec, act);
+                transitions += a.stage_index() != stage_before ? 1 : 0;
+                // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
+                // the sanitizers cost more than the turn itself.
+                if (!World::equivalent(a, b)) {
+                    FAIL("diverged at sequence " << seq << " turn " << t);
+                }
+            }
+        }
+        CHECK(transitions > 0); // the sequences really do cross stages
+    }
+
+    TEST_CASE("a stale speculation falls back to step") {
+        World a(kSeed, small_world());
+        World b(kSeed, small_world());
+        Speculation stale = b.speculate();
+        a.step(Action::wait());
+        b.step(Action::wait());
+        a.step(Action::step({1, 0}));
+        b.commit(stale, Action::step({1, 0}));
+        CHECK(World::equivalent(a, b));
     }
 }
