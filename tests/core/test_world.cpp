@@ -263,15 +263,19 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("commit(speculate()) is bit-identical to step()") {
-        // PEO-007 golden test. Random seeds and action sequences, biased east so
-        // runs cross stage exits; walls ahead make some steps into waits.
+        // PEO-007 golden test, extended for D-015. Random seeds and action sequences,
+        // biased east so runs cross stage exits; walls make some steps into waits.
+        // Durations are 3, 6 or 12 s, so some actions cross no update boundary, some
+        // one and some two; like the frontend, B re-speculates only when the update
+        // or stage moved on, so one speculation serves several short actions.
         constexpr int kSequences = 200;
         constexpr int kTurns = 8;
         constexpr int kGoldenWidth = 6;
         constexpr int kGoldenHeight = 6;
-        constexpr int kGoldenDead = 8;
+        constexpr int kGoldenDead = 16; // fills the 6x6 interior (capped at open cells)
         constexpr int kWaitOneIn = 5;
         constexpr int kEastOneIn = 3; // two in three steps go east
+        constexpr Seconds kDurations[] = {3, 6, 12};
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
@@ -281,16 +285,21 @@ TEST_SUITE("world") {
             World a(seed, params);
             World b(seed, params);
             Speculation spec; // reused every turn, as the frontend does
+            b.speculate(spec);
             for (int t = 0; t < kTurns; ++t) {
-                Action act = Action::wait();
+                const Seconds secs = kDurations[pick.range(0, 2)];
+                Action act = Action::wait(secs);
                 if (pick.range(1, kWaitOneIn) != 1) {
-                    act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0})
-                                                         : Action::step(kNeighbours4[pick.range(0, 3)]);
+                    act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
+                                                         : Action::step(kNeighbours4[pick.range(0, 3)], secs);
                 }
                 const std::uint32_t stage_before = a.stage_index();
+                const Tick update_before = b.updates();
                 a.step(act);
-                b.speculate(spec);
                 b.commit(spec, act);
+                if (b.updates() != update_before || b.stage_index() != stage_before) {
+                    b.speculate(spec);
+                }
                 transitions += a.stage_index() != stage_before ? 1 : 0;
                 // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
                 // the sanitizers cost more than the turn itself.
@@ -300,6 +309,78 @@ TEST_SUITE("world") {
             }
         }
         CHECK(transitions > 0); // the sequences really do cross stages
+    }
+
+    TEST_CASE("two 3 s steps share one update's scent") {
+        // D-015: each tile gets player_scent * seconds / period; two half-period
+        // steps deposit half each, one walking step's worth in total.
+        constexpr Seconds kHalf = kUpdatePeriodSeconds / 2;
+        const WorldParams params = small_world(0);
+        World w(kSeed, params);
+        const Grid<bool>& blocked = w.stage().blocked;
+        const Vec2i start = w.player();
+        Vec2i dir{};
+        for (const Vec2i d : kNeighbours4) {
+            if (blocked.in_bounds(start + d) && !blocked.at(start + d)) {
+                dir = d;
+                break;
+            }
+        }
+        REQUIRE(dir != Vec2i{});
+        ScentField expected = w.scent();
+
+        w.step(Action::step(dir, kHalf));
+        CHECK(w.updates() == 0);
+        REQUIRE(w.occupancy().size() == 1);
+        CHECK(w.occupancy()[0].tile == start + dir);
+        CHECK(w.occupancy()[0].seconds == kHalf);
+
+        w.step(Action::step(Vec2i{} - dir, kHalf)); // back to the start tile
+        CHECK(w.updates() == 1);
+        CHECK(w.occupancy().empty());
+
+        const float half = params.player_scent * 0.5F;
+        CHECK(half + half == params.player_scent); // one walking step's worth in total
+        expected.step_linear(&blocked);
+        expected.patch_deposit(start + dir, half, &blocked);
+        expected.patch_deposit(start, half, &blocked);
+        expected.clamp_floor();
+        CHECK(scent_mismatches(w.scent(), expected) == 0);
+    }
+
+    TEST_CASE("a 12 s action runs two updates") {
+        constexpr Seconds kTwoPeriods = 2 * kUpdatePeriodSeconds;
+        World once(kSeed, small_world());
+        World twice(kSeed, small_world());
+        once.step(Action::wait(kTwoPeriods));
+        twice.step(Action::wait());
+        twice.step(Action::wait());
+        CHECK(once.updates() == 2);
+        CHECK(once.seconds() == kTwoPeriods);
+        // The Dead got two chances to move: the same as two 6 s waits.
+        REQUIRE(once.horde().size() == twice.horde().size());
+        for (std::size_t i = 0; i < once.horde().size(); ++i) {
+            CHECK(once.horde()[i].pos == twice.horde()[i].pos);
+            CHECK(once.horde()[i].cooldown_s == twice.horde()[i].cooldown_s);
+        }
+        CHECK(scent_mismatches(once.scent(), twice.scent()) == 0);
+    }
+
+    TEST_CASE("an action that does not reach a boundary changes no scent and no Dead") {
+        constexpr Seconds kShort = kUpdatePeriodSeconds / 2;
+        World w(kSeed, small_world());
+        const ScentField scent_before = w.scent();
+        const std::vector<Dead> horde_before = w.horde();
+        w.step(Action::wait(kShort));
+        CHECK(w.updates() == 0);
+        CHECK(w.seconds() == kShort);
+        CHECK(w.turn() == 1);
+        CHECK(scent_mismatches(w.scent(), scent_before) == 0);
+        REQUIRE(w.horde().size() == horde_before.size());
+        for (std::size_t i = 0; i < horde_before.size(); ++i) {
+            CHECK(w.horde()[i].pos == horde_before[i].pos);
+            CHECK(w.horde()[i].cooldown_s == horde_before[i].cooldown_s);
+        }
     }
 
     TEST_CASE("a stale speculation falls back to step") {
