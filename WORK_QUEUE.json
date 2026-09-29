@@ -442,7 +442,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-010 (2026-09-29): the far layer becomes a buildup layer. A cell's fade rate falls as the sliding 3x3 box total around it rises, to a nonzero minimum; box totals refresh on a turn schedule (every turn near the player, staggered further out); buildup pulls harder than a fresh trail. The separable IIR solve assumes a single decay everywhere, so re-examine the method (e.g. a coarse FTCS far layer stepped on a stagger) when briefing. Acceptance adds: a den where the player lingered, and a path walked often, both outlast and outpull a fresh trail."
+        }
+      ],
       "references": [],
       "depends_on": []
     },
