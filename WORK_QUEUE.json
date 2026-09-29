@@ -450,7 +450,7 @@
       "order": 240,
       "type": "bug",
       "title": "Scent view draws the strongest scent level as @, identical to the player glyph",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -460,6 +460,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [],
