@@ -7,7 +7,7 @@
       "order": 20,
       "type": "feature",
       "title": "Introduce World as the turn-based step owner",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
@@ -42,6 +42,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Correction to point 3 of my review: I quoted the suite at 0.15 s, which was measured before this item's own tests were merged in, and the advice that followed was backwards. Measured now: 0.95 s for 25 cases, against the 500 ms budget in AGENTS.md - the suite is over, not under. The four test_world.cpp cases account for 0.82 s of that; the slowest is 'reaching exit advances stage_index' at 0.46 s. So point 3 is replaced: do not restore 100 turns. Bring these cases under budget first - measure with peo_core_tests -d, and note that a World step is a full ScentField sweep, so turns multiply by grid area. Then judge whether 100 turns is affordable at a smaller grid. Points 1, 2 and 4 stand as written."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting rework"
         }
       ],
       "references": [
