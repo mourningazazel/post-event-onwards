@@ -2,6 +2,7 @@
 
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <deque>
 #include <vector>
@@ -52,13 +53,16 @@ std::vector<Vec2i> path_to_exit(const World& w) {
             }
         }
     }
+    // Walk back from the exit, appending, then reverse: prepending with insert()
+    // trips a -Wnull-dereference false positive in libstdc++ at -O3.
     std::vector<Vec2i> steps;
     for (Vec2i c = w.stage().exit; c != w.player();) {
         const int d = came_from.at(c);
         REQUIRE(d >= 0);
-        steps.insert(steps.begin(), kNeighbours4[d]);
+        steps.push_back(kNeighbours4[d]);
         c = c - kNeighbours4[d];
     }
+    std::reverse(steps.begin(), steps.end());
     return steps;
 }
 
@@ -76,7 +80,8 @@ TEST_SUITE("world") {
         }
         CHECK(a.player() == b.player());
         CHECK(a.turn() == b.turn());
-        CHECK(a.scent().total() == doctest::Approx(b.scent().total()));
+        CHECK(static_cast<double>(a.scent().total()) ==
+              doctest::Approx(static_cast<double>(b.scent().total())));
         REQUIRE(a.horde().size() == b.horde().size());
         for (std::size_t i = 0; i < a.horde().size(); ++i) {
             CHECK(a.horde()[i].pos == b.horde()[i].pos);
