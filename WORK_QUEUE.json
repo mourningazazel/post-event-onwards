@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 33,
+  "next_id": 34,
   "items": [
     {
       "id": "PEO-002",
@@ -37,6 +37,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "review: rework. The World seam itself is good and is on main; these are concrete changes, not a redesign. 1. The determinism case asserts scent().total() through doctest::Approx, which allows about 145 ULP (+/-0.000277 on a total near 22.2). Both worlds run in one process from one binary, so the result is expected bit-identical, and every neighbouring assertion in the same case (player, turn, each horde position) is already exact. Assert exact equality. 2. total() is a std::accumulate over the whole grid, a lossy summary: two genuinely different fields can share a total, so the case does not test what the brief means by 'same world'. Compare the field cell-wise, or hash it. 3. The brief specifies 100 turns; the test runs 30 with an inline note about sanitizer cost. The suite now sits at 0.15 s against a 500 ms budget, so measure it and restore 100, or change the brief and say why in the report. 4. Build the release preset and a clang build before pushing to main. This series left main red for about 25 minutes because -O3 and clang-18 both reject code the Debug preset accepts; that gap is tooling's fault as much as anyone's and is now its own queue item."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Correction to point 3 of my review: I quoted the suite at 0.15 s, which was measured before this item's own tests were merged in, and the advice that followed was backwards. Measured now: 0.95 s for 25 cases, against the 500 ms budget in AGENTS.md - the suite is over, not under. The four test_world.cpp cases account for 0.82 s of that; the slowest is 'reaching exit advances stage_index' at 0.46 s. So point 3 is replaced: do not restore 100 turns. Bring these cases under budget first - measure with peo_core_tests -d, and note that a World step is a full ScentField sweep, so turns multiply by grid area. Then judge whether 100 turns is affordable at a smaller grid. Points 1, 2 and 4 stand as written."
         }
       ],
       "references": [
@@ -431,26 +436,6 @@
       ]
     },
     {
-      "id": "PEO-023",
-      "order": 230,
-      "type": "bug",
-      "title": "HUD says [s scent] but the scent toggle is Shift+S; plain s moves down",
-      "status": "Pending",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "builder",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-024",
       "order": 240,
       "type": "bug",
@@ -485,6 +470,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Severity should be raised S3 -> S2 (work_queue.py set has no --severity flag, so this note is the record of the request; only add takes one). Measured worse than when filed, not better. PEO-002 added a 'dirty' flag so draw() is skipped when nothing changed, but SDL_AppIterate still returns SDL_APP_CONTINUE immediately every iteration (src/app/main.cpp:162-169) and the renderer is created with flags 0 and never gets SDL_SetRenderVSync (:123). The loop is now a pure unthrottled spin with not even a present to pace it, so it saturates a core harder than the ~78% originally filed; the Builder reports ~99%. The fix is unchanged - vsync or a frame cap - but it is now the most user-visible defect in the queue."
         }
       ],
       "references": [],
@@ -611,6 +601,26 @@
       "title": "CI concurrency cancels per-commit runs on main, so breakage goes unseen",
       "status": "Pending",
       "severity": "S2",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-033",
+      "order": 277,
+      "type": "chore",
+      "title": "Nothing enforces the 500 ms suite budget, so it is breached silently",
+      "status": "Pending",
+      "severity": "S3",
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-29",
