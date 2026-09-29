@@ -28,6 +28,9 @@ struct WorldParams {
     /// costs O(width * height); tests use a small stage to stay in budget.
     int stage_width = StageSpec{}.width;
     int stage_height = StageSpec{}.height;
+    /// Game seconds between updates of scent and the Dead (D-015). ScentParams and
+    /// player_scent are per update, so the defaults need no retune.
+    Seconds update_period = kUpdatePeriodSeconds;
 };
 
 /// The next turn computed ahead, assuming the player waits and deposits nothing

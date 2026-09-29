@@ -11,12 +11,23 @@ enum class ActionKind : std::uint8_t {
     Wait, ///< stay put; the world still takes its turn
 };
 
+/// A walking step and a wait each take six game seconds (D-014, D-015).
+inline constexpr Seconds kStepSeconds = 6;
+inline constexpr Seconds kWaitSeconds = 6;
+
 struct Action {
     ActionKind kind = ActionKind::Wait;
     Vec2i dir{};
+    /// Game time the action takes. The world runs an update at each cadence
+    /// boundary the action crosses (D-015). World treats 0 as 1.
+    Seconds seconds = kWaitSeconds;
 
-    [[nodiscard]] static constexpr Action step(Vec2i d) noexcept { return {ActionKind::Step, d}; }
-    [[nodiscard]] static constexpr Action wait() noexcept { return {ActionKind::Wait, {}}; }
+    [[nodiscard]] static constexpr Action step(Vec2i d, Seconds s = kStepSeconds) noexcept {
+        return {ActionKind::Step, d, s};
+    }
+    [[nodiscard]] static constexpr Action wait(Seconds s = kWaitSeconds) noexcept {
+        return {ActionKind::Wait, {}, s};
+    }
 };
 
 } // namespace peo::core

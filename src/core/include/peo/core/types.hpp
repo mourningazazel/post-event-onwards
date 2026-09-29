@@ -8,6 +8,12 @@ namespace peo::core {
 
 using Tick = std::uint64_t;
 using Seed = std::uint64_t;
+/// Game time in whole seconds (D-015).
+using Seconds = std::uint32_t;
+
+/// Default cadence of the heavy systems (scent, the Dead): one update every 6 game
+/// seconds, whatever the player does (D-015). WorldParams::update_period.
+inline constexpr Seconds kUpdatePeriodSeconds = 6;
 
 /// Integer grid coordinate. (0,0) is the top-left cell; y grows downward.
 struct Vec2i {
