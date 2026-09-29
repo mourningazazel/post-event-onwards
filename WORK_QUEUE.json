@@ -34,7 +34,13 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-028 set -ffp-contract=off on core and did not re-measure docs/design/scent-performance.md. Re-measure those numbers here with the flag in place."
+        }
+      ],
       "references": [
         "docs/production/vision.md"
       ],
@@ -416,36 +422,6 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "All units landed, tests pass. GOAL NOT MET in game: with absorbing walls, steady-state reach is 29 cells; 28/40 Dead in peo 7 never move. Numbers in report commit; needs a decision."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-028",
-      "order": 270,
-      "type": "bug",
-      "title": "Build sets no floating-point flags, so FMA contraction can break D-002 bit-identity",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "Done; CI 36515630608 green: x86-64 g++-13/clang-18/release match aarch64-generated bit patterns."
         }
       ],
       "references": [],
