@@ -16,7 +16,10 @@ World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
 
 void World::load_stage(std::uint32_t index) {
     stage_index_ = index;
-    stage_ = generate_stage(stage_spec(seed_, index));
+    StageSpec spec = stage_spec(seed_, index);
+    spec.width = params_.stage_width;
+    spec.height = params_.stage_height;
+    stage_ = generate_stage(spec);
     scent_ = ScentField(stage_.spec.width, stage_.spec.height, params_.scent);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);

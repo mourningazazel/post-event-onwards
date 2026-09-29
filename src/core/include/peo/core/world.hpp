@@ -17,6 +17,10 @@ struct WorldParams {
     int initial_dead = 40;
     float player_scent = 1.0F;
     ScentParams scent{};
+    /// Stage size in cells. Every turn sweeps the whole scent field, so a turn
+    /// costs O(width * height); tests use a small stage to stay in budget.
+    int stage_width = StageSpec{}.width;
+    int stage_height = StageSpec{}.height;
 };
 
 /// Owns the whole simulation: stage, scent, the Dead and the player. Time moves
