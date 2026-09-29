@@ -1,5 +1,11 @@
 #include "peo/core/world.hpp"
 
+#include <algorithm>
+#include <bit>
+#include <cstdint>
+#include <cstdlib>
+#include <utility>
+
 namespace peo::core {
 
 namespace {
@@ -8,6 +14,9 @@ constexpr Seed kHordeSeedSalt = 0xABCDULL;
 /// Speed range for spawned Dead (ticks between moves come from speed; see dead.hpp).
 constexpr int kMinDeadSpeed = 1;
 constexpr int kMaxDeadSpeed = 3;
+/// The deposit patch touches the player's cell and its 4 neighbours; one of the Dead
+/// reads the 3x3 around itself. So only Dead within 2 (Chebyshev) can see a change.
+constexpr int kRepatchRadius = 2;
 } // namespace
 
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
@@ -37,7 +46,7 @@ void World::load_stage(std::uint32_t index) {
     turn_ = 0;
 }
 
-void World::step(Action action) {
+void World::apply_action(Action action) noexcept {
     if (action.kind == ActionKind::Step) {
         const Vec2i next = player_ + action.dir;
         // A step into a wall (or off the map) becomes a wait: the turn is still spent.
@@ -45,15 +54,89 @@ void World::step(Action action) {
             player_ = next;
         }
     }
+}
 
-    scent_.deposit(player_, params_.player_scent);
-    scent_.step(&stage_.blocked);
-    step_horde(horde_, scent_, stage_.blocked);
+void World::finish_turn() {
     ++turn_;
-
     if (player_ == stage_.exit) {
         load_stage(stage_index_ + 1);
     }
+}
+
+// step(), speculate() and commit() run the same float operations in the same
+// order: step_linear, patch_deposit at the player, clamp_floor. That is what makes
+// commit(speculate()) bit-identical to step(), not the algebra.
+void World::step(Action action) {
+    apply_action(action);
+    scent_.step_linear(&stage_.blocked);
+    scent_.patch_deposit(player_, params_.player_scent, &stage_.blocked);
+    scent_.clamp_floor();
+    step_horde(horde_, scent_, stage_.blocked);
+    finish_turn();
+}
+
+Speculation World::speculate() const {
+    Speculation spec;
+    speculate(spec);
+    return spec;
+}
+
+void World::speculate(Speculation& out) const {
+    out.scent = scent_; // copy-assign reuses out's storage once it is the right size
+    out.horde = horde_;
+    out.before = horde_;
+    out.turn = turn_;
+    out.stage_index = stage_index_;
+    out.scent.step_linear(&stage_.blocked);
+    // The Dead decide on the clamped field, as they will after commit; only the
+    // cells the deposit patch touches can differ, and commit re-decides those.
+    out.clamped = out.scent;
+    out.clamped.clamp_floor();
+    step_horde(out.horde, out.clamped, stage_.blocked);
+}
+
+void World::commit(Speculation& spec, Action action) {
+    if (spec.turn != turn_ || spec.stage_index != stage_index_ || spec.horde.size() != horde_.size()) {
+        step(action);
+        return;
+    }
+    apply_action(action);
+    spec.scent.patch_deposit(player_, params_.player_scent, &stage_.blocked);
+    spec.scent.clamp_floor();
+    for (std::size_t i = 0; i < spec.before.size(); ++i) {
+        const Vec2i d = spec.before[i].pos - player_;
+        if (std::max(std::abs(d.x), std::abs(d.y)) <= kRepatchRadius) {
+            Dead unit = spec.before[i];
+            step_dead(unit, spec.scent, stage_.blocked);
+            spec.horde[i] = unit;
+        }
+    }
+    std::swap(scent_, spec.scent); // swap, not move: spec keeps buffers to reuse
+    std::swap(horde_, spec.horde);
+    spec.turn = ~Tick{0}; // spent: a second commit falls back to step()
+    finish_turn();
+}
+
+bool World::equivalent(const World& a, const World& b) noexcept {
+    if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.player_ != b.player_ ||
+        a.horde_.size() != b.horde_.size() || a.scent_.cells().size() != b.scent_.cells().size()) {
+        return false;
+    }
+    for (std::size_t i = 0; i < a.horde_.size(); ++i) {
+        const Dead& x = a.horde_[i];
+        const Dead& y = b.horde_[i];
+        if (x.pos != y.pos || x.cooldown != y.cooldown || x.speed != y.speed) {
+            return false;
+        }
+    }
+    const float* fa = a.scent_.cells().data();
+    const float* fb = b.scent_.cells().data();
+    for (std::size_t i = 0; i < a.scent_.cells().size(); ++i) {
+        if (std::bit_cast<std::uint32_t>(fa[i]) != std::bit_cast<std::uint32_t>(fb[i])) {
+            return false;
+        }
+    }
+    return true;
 }
 
 } // namespace peo::core
