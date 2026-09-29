@@ -79,39 +79,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-007",
-      "order": 70,
-      "type": "feature",
-      "title": "Compute the next turn while waiting for input",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "briefed. Architect owns the golden-test design; Builder may ask for the linearity test to be written first."
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-28",
-          "by": "builder",
-          "text": "commits c3cbf03 f39f05d b55c61f 097ade7 da549c2 8444cf2; CI 36528232494 green. tests: golden 200x8 pass, mutation-checked. manual: 100 turns 0 misses; mash 46 keys/s 0 misses no crash; debug==release. perf M1: speculate 224-542us, commit 31-65us. open: 2 deviations, see report commit."
-        }
-      ],
-      "references": [
-        "docs/architecture.md",
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-008",
       "order": 80,
       "type": "feature",
@@ -144,14 +111,17 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "D-007 (see decisions.md) fixes the shape of the draw: weight a candidate cell by pow(scent, k) with a tunable exponent k slightly above 1, never exp(k*scent) — at the 0-500 scale from PEO-026 exp saturates immediately. A power law keys off the ratio between neighbouring cells, so one k stays decisive next to the player and becomes a gentle drift far away, which is the horde-drift behaviour the user asked for. Fold this into the brief when PEO-009 is planned."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-007 constraint: World::commit re-decides only the Dead within 2 cells of the player, so a Dead's decision must not depend on how many others decided before it. The weighted draw must take its randomness from a counter-based hash of (world seed, stage, turn, Dead index), never from one shared Rng stream consumed in horde order, or commit(speculate()) stops being bit-identical to step(). Keep the golden test in test_world.cpp passing."
         }
       ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": [
-        "PEO-007"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-010",
@@ -402,6 +372,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-010 (2026-09-29): the far layer becomes a buildup layer. A cell's fade rate falls as the sliding 3x3 box total around it rises, to a nonzero minimum; box totals refresh on a turn schedule (every turn near the player, staggered further out); buildup pulls harder than a fresh trail. The separable IIR solve assumes a single decay everywhere, so re-examine the method (e.g. a coarse FTCS far layer stepped on a stagger) when briefing. Acceptance adds: a den where the player lingered, and a path walked often, both outlast and outpull a fresh trail."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "PEO-007 constraint: compute D-010 fade rates (box totals) at the start of a turn from committed state, before the player's deposit is patched in, so speculate() sees the same rates commit() uses; the golden test must stay bit-exact. If a rate had to depend on this turn's deposit, commit would need to recompute every cell whose box includes the patched cells."
         }
       ],
       "references": [],
