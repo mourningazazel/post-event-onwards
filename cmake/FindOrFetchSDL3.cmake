@@ -20,6 +20,9 @@ set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
 set(SDL_TESTS OFF CACHE BOOL "" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
+# SDL 3.4 makes X11 XTest (synthetic input injection) a hard dependency when X11 is
+# on, which fails configure on machines without libxtst headers (CI did). Unused here.
+set(SDL_X11_XTEST OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG ${PEO_SDL3_TAG}
