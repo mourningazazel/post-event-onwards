@@ -446,39 +446,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-036",
-      "order": 307,
-      "type": "chore",
-      "title": "Fetched SDL is 3.2.30, so platforms without a system SDL fall back to a 60 Hz redraw loop",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed; ready for the Builder"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: bacc845 6714bae 1a2e7ad. CI 36614682529 green (from-source 3.4.16). Linux fetched-SDL build: idle 0% CPU, keys instant. NOT RUN: win-dev manual (no Windows here) - needs Ryan or a Windows box. main red ~5 min: SDL 3.4 needs XTest; fixed."
-        }
-      ],
-      "references": [
-        "cmake/FindOrFetchSDL3.cmake",
-        "src/app/main.cpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-037",
       "order": 317,
       "type": "feature",
