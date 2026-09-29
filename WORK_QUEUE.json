@@ -600,7 +600,7 @@
       "order": 270,
       "type": "bug",
       "title": "Build sets no floating-point flags, so FMA contraction can break D-002 bit-identity",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -610,6 +610,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [],
