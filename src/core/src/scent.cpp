@@ -33,6 +33,7 @@ void ScentField::step(const Grid<bool>* blocked) noexcept {
     const int h = front_.height();
     const float share = params_.diffusion / 4.0F;
     const float keep = 1.0F - params_.decay;
+    const float stay = 1.0F - params_.diffusion;
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
@@ -41,20 +42,18 @@ void ScentField::step(const Grid<bool>* blocked) noexcept {
                 back_.at(p) = 0.0F;
                 continue;
             }
-            const float here = front_.at(p);
-            // Scent that leaves `here` towards open neighbours, and scent that
-            // arrives from them. Edges and walls reflect: scent that cannot leave stays.
-            float out = 0.0F;
+            // Every open cell sheds `diffusion` of its scent, split four ways, whatever
+            // lies beyond. Only open in-bounds neighbours send any back, so the share
+            // that goes into a wall or off the map is absorbed there and lost.
             float in = 0.0F;
             for (const Vec2i d : kNeighbours4) {
                 const Vec2i n = p + d;
                 if (!front_.in_bounds(n) || (blocked && blocked->at(n))) {
                     continue;
                 }
-                out += here * share;
                 in += front_.at(n) * share;
             }
-            float v = (here - out + in) * keep;
+            float v = (front_.at(p) * stay + in) * keep;
             if (v < params_.floor) {
                 v = 0.0F;
             }
