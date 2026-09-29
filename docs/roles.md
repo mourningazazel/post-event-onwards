@@ -14,8 +14,9 @@ Owns:
 - **Abstraction.** Public interfaces in `src/core/include/peo/core/`. When the
   Builder needs a new seam, the Architect designs the header and the tests
   that pin its behaviour, then briefs the implementation.
-- **Briefs.** Every queue item the Builder picks up has a full `brief` (see
-  below). Units are sized so one commit finishes one unit.
+- **Briefs.** Every queue item the Builder picks up has a full brief at
+  `docs/production/briefs/<id>.md` (see below). Units are sized so one commit
+  finishes one unit.
 - **Headless tests and tooling.** Writes doctests that encode acceptance
   criteria before the Builder starts; maintains `tools/`, CI, presets.
 - **Review.** For each `Validation` item: read the diff on `origin/main` for
@@ -24,6 +25,8 @@ Owns:
   the item or set it back to `Pending` with a note that says exactly what to
   change. Reviews are about direction and correctness, not style; the
   formatter owns style.
+- **Integration.** Opens a pull request per unit of work, drives CI green and
+  merges it once the checks pass. Stops only for a decision (see below).
 
 Never: claims to have run the game, tunes feel without Builder numbers,
 edits the queue by hand, pushes to `main` directly.
@@ -52,8 +55,8 @@ Never: skips `manual` steps, reinterprets the brief (ask via a note and
 ## User
 
 Sets intent, promotes deferred items, answers decisions and `AwaitingUser`
-items, merges Architect branches into `main`, and is the only one who may
-relax a rule.
+items, and is the only one who may relax a rule. Not a merge gate: the
+Architect merges its own pull requests.
 
 ## Decision points (both agents)
 
@@ -77,9 +80,12 @@ into `decisions.md` with the chosen option and reason, removes it from
 
 ## Handoff formats
 
-Both are stored on the queue item, so they survive session resets.
+Both survive session resets: the report is a note on the item, the brief is a
+file beside it.
 
-**Brief** (Architect → Builder), `brief` object on the item:
+**Brief** (Architect → Builder), `docs/production/briefs/<id>.md`, written
+with `work_queue.py brief <id> --file <json>` and read back by `show <id>`.
+Never hand-edit it; the tool owns the format:
 
 | Field | Content |
 |-------|---------|
@@ -109,8 +115,9 @@ with commit shas, or `Pending` with a numbered list of concrete changes.
 
 - `main` is the integration branch and holds the queue of record.
 - Builder pushes fast-forward commits to `main`.
-- Architect works on its harness-assigned `claude/*` branch; the user merges
-  it (or opens a PR) when asked. Architect queue edits are small, so merge
+- Architect works on its harness-assigned `claude/*` branch, opens a pull
+  request for the work, drives CI green and merges it itself once the checks
+  pass; merges are merge commits. Architect queue edits are small, so merge
   conflicts are resolved by taking `origin/main` and re-running the same
   `work_queue.py` command.
 - Subagents and experiments use `git worktree`, never the main checkout.

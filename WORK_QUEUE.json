@@ -12,48 +12,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "The game is turn-based: World::step(Action) is the only way time moves, the frontend holds no simulation state, and the world waits for the player.",
-        "context": [
-          "docs/architecture.md#turn-model-decision-d-002",
-          "docs/production/decisions.md",
-          "src/app/main.cpp",
-          "src/core/include/peo/core/scent.hpp",
-          "src/core/include/peo/core/dead.hpp",
-          "src/core/include/peo/core/stage.hpp",
-          "tests/core/test_dead.cpp"
-        ],
-        "units": [
-          "core: add src/core/include/peo/core/action.hpp: enum class ActionKind { Step, Wait }; struct Action { ActionKind kind; Vec2i dir; static Action step(Vec2i); static Action wait(); }.",
-          "core: add src/core/include/peo/core/world.hpp: struct WorldParams { int initial_dead = 40; float player_scent = 1.0F; ScentParams scent; }; class World { public: World(Seed, WorldParams = {}); void load_stage(uint32_t); void step(Action); const Stage& stage() const; const ScentField& scent() const; const std::vector<Dead>& horde() const; Vec2i player() const; Tick turn() const; uint32_t stage_index() const; }. No clock, no thread, no SDL.",
-          "core: implement src/core/src/world.cpp by moving load_stage/try_move/simulate out of main.cpp. step(): apply action (a Step into a wall becomes a Wait, still consumes the turn), deposit scent at player cell, scent.step(&blocked), step_horde, ++turn; reaching the exit loads the next stage at the end of the turn. Add both files to src/core/CMakeLists.txt.",
-          "test: tests/core/test_world.cpp — 'same seed same world after 100 turns' (two Worlds fed the same actions: equal player, horde, scent.total()), 'step into wall consumes the turn but does not move', 'wait advances the turn and the dead approach', 'reaching exit advances stage_index'. Register in tests/CMakeLists.txt; suite stays under 500 ms.",
-          "app: main.cpp keeps SDL setup, key mapping, draw(). App holds a World and a 'dirty' flag; a key press calls world.step(Action) exactly once; nothing advances on a timer. Remove kTickMs, last_tick_ms and the pause toggle (a turn-based game has no pause). Keep Shift+S scent view and N next stage.",
-          "docs: in docs/architecture.md 'Planned seams', mark World as built and note the file names."
-        ],
-        "acceptance": [
-          "src/app/main.cpp contains no ScentField, Rng, Dead or Stage manipulation; only World calls, input mapping and drawing",
-          "the world does not change while the player is idle for 10 seconds",
-          "one key press moves the player one cell and the Dead one step at most",
-          "the four new world tests pass; whole suite under 500 ms"
-        ],
-        "tests": [
-          "tests/core/test_world.cpp (new)",
-          "all existing suites"
-        ],
-        "manual": [
-          "Run ./build/dev/bin/peo 7. Do nothing for 10 s: nothing on screen may change.",
-          "Press right 20 times: @ moves one cell per press; the d glyphs close in one cell per press.",
-          "Hold a movement key: movement must feel immediate with no queued lag after release (report the OS key-repeat feel).",
-          "Press . or space (wait): the Dead advance one step while @ stays.",
-          "Walk into > : stage counter increments and the map changes."
-        ],
-        "out_of_scope": [
-          "compute-while-waiting (speculate/commit) — PEO-007",
-          "blood or other scent layers — PEO-003",
-          "corpse descriptors for individual Dead — later item"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -92,15 +50,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Touching the player leaves blood, a second scent layer hordes follow more strongly than trail.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -125,15 +74,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "A headless-release benchmark prints microseconds per step and the number is recorded for the vision target.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/production/vision.md"
@@ -152,15 +92,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Stages alternate between open random walls and cellular-automata caves with a guaranteed entry-exit path.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "src/core/include/peo/core/stage.hpp"
@@ -179,15 +110,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "A replay file lets the Architect reproduce any Builder-reported bug in a test.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/architecture.md"
@@ -206,46 +128,6 @@
       "effort": "L",
       "owner": "builder",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Between turns the world speculates the next turn assuming Wait; on input, commit() patches only the player's neighbourhood and produces state bit-identical to step().",
-        "context": [
-          "docs/architecture.md#computing-while-waiting",
-          "docs/production/decisions.md",
-          "src/core/include/peo/core/world.hpp",
-          "src/core/include/peo/core/scent.hpp",
-          "src/core/include/peo/core/dead.hpp"
-        ],
-        "units": [
-          "core: make ScentField::step linear-then-clamp explicitly: split into step_linear(blocked) and clamp_floor(); step() calls both. Add ScentField::patch_deposit(Vec2i at, float amount): applies diffuse(δ) for a single deposit to the 5 affected cells (respecting walls exactly as step_linear does), assuming the field is already post-step_linear. Test: for random fields and deposits, step_linear on (field+δ) equals step_linear(field) then patch_deposit(δ), exactly (use == not Approx; choose operation order so this holds).",
-          "core: add struct Speculation { ScentField scent; std::vector<Dead> horde; Tick turn; } and World::speculate() const -> Speculation: the full turn assuming Action::wait() and no player deposit. Pure; no member mutation.",
-          "core: add World::commit(Speculation&&, Action): apply the action, patch_deposit at the player's cell, clamp_floor, then re-run the move decision only for Dead within 2 cells of the player's new cell (reset them from the pre-turn positions kept in the Speculation), resolve contact, adopt the result. Add static bool World::equivalent(const World&, const World&) for tests.",
-          "test: golden test in tests/core/test_world.cpp: for 200 random (seed, action sequence) pairs, run A: step(action) each turn, B: commit(speculate(), action) each turn; assert equivalent() after every turn. Include steps into walls and stage transitions.",
-          "test: perf sanity (headless-release): at 200x120 with 5000 Dead, report microseconds for speculate() and commit() via doctest -d; commit must be under 1 ms on the Builder's machine (record the number).",
-          "app: main.cpp spawns one std::jthread that, whenever the world is idle and no speculation exists, computes world.speculate() into a buffer; the input handler calls commit() if a fresh speculation exists, else step(). The renderer reads only the committed World. Add an on-screen HUD flag 'spec:hit/miss' for the manual test.",
-          "docs: architecture.md 'Computing while waiting' gets the final function names and the measured numbers."
-        ],
-        "acceptance": [
-          "golden test passes for 200 random sequences: commit(speculate()) is bit-identical to step()",
-          "commit() under 1 ms and speculate() under 16 ms at 200x120 with 5000 Dead on the Builder's machine (release)",
-          "core spawns no threads; the only thread lives in src/app/main.cpp",
-          "in game, HUD shows spec:hit on nearly every turn when playing at human speed"
-        ],
-        "tests": [
-          "tests/core/test_scent.cpp linearity test",
-          "tests/core/test_world.cpp golden test",
-          "all existing suites"
-        ],
-        "manual": [
-          "Run the release build with seed 7. Play 100 turns at normal speed: HUD should read spec:hit almost always; report the miss count.",
-          "Mash a movement key as fast as possible for 5 s: no crash, no visual glitch, misses allowed; report feel.",
-          "Compare a 50-turn walk in debug vs release with the same key sequence: the Dead must end in the same cells (determinism across builds)."
-        ],
-        "out_of_scope": [
-          "multi-turn lookahead beyond one Wait turn",
-          "struct-of-arrays for Dead",
-          "GPU or SIMD scent"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -271,15 +153,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "The game reads content/ at startup through toml++ and exposes derived capabilities exactly as tools/content/derive.py computes them, proven by a golden comparison test.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "content/README.md",
@@ -300,15 +173,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "step_horde becomes the round-3 weighted draw (scent, aggregate, company, repellent, footing terms) and the swarm-accumulation and fan-out scenarios pass headlessly.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -333,15 +197,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Touch, sight and human-class sound trigger units that steer by general direction at x1.5/x2 speed, expire displaced, and pull idle Dead only through weights; sound events are kind + dB.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/scent-mobs.md"
@@ -360,15 +215,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Push contests can trip; trips cascade in a frenzy; moving over a prone unit rolls blunt damage; frenzy-trips and trample-damage scenarios pass.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -393,15 +239,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "An action resolver computes per-skill and aggregate chances from unlock/difficulty/ceiling, draws failure outcomes, and refuses skill-gated tools; expectations in tests/content prove the curve.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/survival-actions.md",
@@ -421,15 +258,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Every archetype has quality handling; time and situation set quality at generation; broken and broken_disables exist on every item that does something; lint enforces it.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/content-model.md"
@@ -448,15 +276,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "content/world/census.toml, retail_categories.toml and personas/ exist with first-pass numbers per setting, and the world catalogue id contract lists every new building type.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/world-catalog.md"
@@ -473,15 +292,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "A realistic spread of narcotics, pharmaceuticals and paraphernalia as archetypes plus modifiers, a drug property block, and locked urban pharmacy stock; no mechanics yet.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/survival-actions.md"
@@ -498,15 +308,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Mood (Depressed..Manic) and Sanity live on the character with the hooks the design names (exhaustion, addiction, failure shifts, hallucination events); hidden by default.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
@@ -525,15 +326,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "city_hall and transit_stop exist; a read map marks POI areas on the player's map before generation and generation lands inside the mark.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/world-catalog.md"
@@ -552,15 +344,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Periodic ambient text about crows appears at a data-driven rate; no creature exists.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/production/vision.md"
@@ -579,15 +362,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Lock records carry a kind with a tier band; picking and bashing difficulty derive from the tier; generation picks lock kinds weighted by building, container and security markers; expectations prove the weights.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/survival-actions.md",
@@ -607,15 +381,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "A book generator produces thousands of titles per library section with teaches {difficulty, read_time_min, gain_chance_pct, window}; reading passes game time and grants at most one point once; gates hold at both ends.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/survival-actions.md"
@@ -634,15 +399,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "On death without brain destruction a vision-tracking Dead with the old stats and gear appears at the run's start; the new character spawns between 1 and 2 miles from it; decapitation or brain destruction prevents rising.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
@@ -661,15 +417,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "Occupancy is a count per tile with a capacity; steps in crowded tiles roll trip or knock-out; prone units are trampled; the rule checker enforces capacity.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [
         "docs/adr/0013-tile-scale-and-shared-occupancy.md"
@@ -688,26 +435,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "The HUD scent hint names the real toggle key so a new player can find the scent view.",
-        "context": [
-          "src/app/main.cpp",
-          "PEO-001 report note (in WORK_QUEUE.json)"
-        ],
-        "units": [
-          "app: in main.cpp find the HUD hint string that reads \"[s scent]\" and change it to name the actual binding, Shift+S (e.g. \"[Shift+S scent]\"); confirm plain 's' does not toggle scent."
-        ],
-        "acceptance": [
-          "in game (peo 7): the HUD hint names Shift+S; pressing Shift+S toggles the scent view; pressing plain s does not toggle scent"
-        ],
-        "tests": [],
-        "manual": [
-          "peo 7: read the HUD hint, press the key it names -> scent view toggles; press plain s -> scent does not toggle"
-        ],
-        "out_of_scope": [
-          "changing what plain s does or any other binding — if the down-move on s is unwanted, record a separate item"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -728,26 +455,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "With the scent view on, only the player's cell shows @; the strongest scent band uses a distinct glyph.",
-        "context": [
-          "src/app/main.cpp",
-          "PEO-001 report note (in WORK_QUEUE.json)"
-        ],
-        "units": [
-          "app: in the scent-view draw path, replace the glyph for the strongest scent band (currently @) with one not used elsewhere: player is @, walls #, floor ., exit >, the Dead d, weaker scent bands + : . — use a free glyph such as * for the strongest band. Draw the player @ after the scent layer so the player cell always shows @."
-        ],
-        "acceptance": [
-          "in game (peo 7) with Shift+S on: exactly one @ on screen (the player); the strongest scent band renders as the chosen glyph"
-        ],
-        "tests": [],
-        "manual": [
-          "peo 7: Shift+S on, stand still -> the only @ is the player; the strongest band around you is the new glyph"
-        ],
-        "out_of_scope": [
-          "colour; adding more scent bands; the scent model itself"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -768,27 +475,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "The frontend does not busy-loop: release idle CPU is well under 25% of a core, with sim cadence unchanged.",
-        "context": [
-          "src/app/main.cpp",
-          "PEO-001 report note (in WORK_QUEUE.json)"
-        ],
-        "units": [
-          "app: stop the render loop from spinning. Prefer SDL vsync (SDL_SetRenderVSync(renderer, 1)) so present blocks to the display refresh; if unavailable or insufficient, cap the frame rate with a short sleep. Do not change the simulation tick interval (kTickMs)."
-        ],
-        "acceptance": [
-          "release build idle CPU under 25% of one core (sample with ps/top while the window sits idle)",
-          "sim tick pacing unchanged from the PEO-001 baseline (~10 ticks/s); no visible hitching"
-        ],
-        "tests": [],
-        "manual": [
-          "build release; run peo 7; leave the window idle 15 s and sample %cpu (ps -o %cpu / top) -> under 25% of a core; watch the tick counter -> still ~10/s, smooth"
-        ],
-        "out_of_scope": [
-          "the turn-based/event-driven loop rewrite — that is PEO-002, which will make the loop wait on input and drive idle CPU near zero; PEO-025 is the immediate fix for the current real-time prototype and a simple vsync cap is expected to survive PEO-002"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -809,39 +495,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-29",
-      "brief": {
-        "goal": "A wall or the map edge absorbs scent exactly as an open cell would receive it, and passes none on, so scent never piles up against geometry.",
-        "context": [
-          "docs/production/decisions.md (Scent drifts into walls and dies there)",
-          "src/core/src/scent.cpp",
-          "tests/core/test_scent.cpp",
-          "docs/design/scent-performance.md"
-        ],
-        "units": [
-          "core: in ScentField::step, make the outflow unconditional — every open cell loses here*diffusion spread over its four orthogonal directions whether or not each neighbour is a wall or off-map. Keep the inflow gated on the mask so walls and off-map cells contribute nothing. Blocked cells are still zeroed in the back buffer, so whatever enters a wall is discarded. This removes a branch from the inner loop rather than adding one.",
-          "test: rewrite 'walls block scent'. It currently asserts total() == 1.0, which encodes the old reflecting behaviour. Assert the new contract instead: the wall cell itself stays exactly zero, the open neighbour receives its share, and total() has decreased by the absorbed amount.",
-          "test: 'mass is conserved without decay' now holds only while the front has not reached the edge. Either shrink the step count so the front stays interior, or rename it to state the interior-only contract and assert that. Do not delete or skip it.",
-          "docs: one line in docs/design/scent-mobs.md noting that walls and the map edge absorb."
-        ],
-        "acceptance": [
-          "a wall cell never holds scent, and an open cell beside a wall is no higher than the same cell would be with the wall absent — no pile-up",
-          "total() strictly decreases once the front reaches a wall or the map edge",
-          "the inner loop of step() has one fewer branch per neighbour than before",
-          "every existing test either passes unchanged or states the new contract explicitly; none is deleted, skipped or weakened"
-        ],
-        "tests": [
-          "tests/core/test_scent.cpp (walls block scent, rewritten)",
-          "tests/core/test_scent.cpp (mass conservation, re-scoped)",
-          "all existing suites"
-        ],
-        "manual": [
-          "peo 7 with Shift+S on: walk along a wall and into a corner. Scent should not bunch up against the geometry the way it does today. Describe what you see."
-        ],
-        "out_of_scope": [
-          "the two-layer / IIR rewrite — that is D-008",
-          "PEO-026's retune and its test parameters, which must be re-derived after this lands"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-29",
@@ -862,50 +515,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-09-28",
-      "brief": {
-        "goal": "The Dead converge from across the map: the scent field carries a usable gradient to the map edges on a 0-500 scale, so none of the Dead is ever frozen on a flat zero field.",
-        "context": [
-          "docs/production/decisions.md (D-007)",
-          "src/core/include/peo/core/scent.hpp",
-          "src/core/src/scent.cpp",
-          "src/core/src/dead.cpp",
-          "src/app/main.cpp",
-          "tests/core/test_scent.cpp"
-        ],
-        "units": [
-          "core: kPlayerScent already exists at src/app/main.cpp:26 as 1.0F. Raise it to 500.0F and move it into core beside ScentParams so tests and any future depositor share one constant.",
-          "core: retune the ScentParams defaults to diffusion 0.5, decay 0.01, floor 1e-6. Use 0.5, NOT 0.8: the checkerboard mode's amplification is 1-2D, so 0.8 gives -0.6 and a sign-alternating ripple (5 direction reversals measured in the trail behind a moving player, which can pull a gradient-climber the wrong way), while 0.5 gives exactly 0 and a strictly monotone trail. See docs/design/scent-performance.md.",
-          "test: tests/core/test_scent.cpp — add 'the scent front carries far'. Grid 34x11, source (4,5), deposit kPlayerScent every step for 40 steps. CHECK sample({19,5}) > 1e-5F and CHECK values strictly decrease along y=5 from x=5 to x=19. These numbers are measured, not estimated: the value lands at 4.55e-04 (45x the threshold) and strict decrease actually holds to d=19. Do NOT scale this up to 80x45 with 75+ steps — measured at 200 ms per test under Debug+ASan, which would blow the suite budget on its own.",
-          "test: tests/core/test_dead.cpp — add 'distant Dead close in'. Same 34x11 field after the same 40-step warm-up; one of the Dead at (19,5) with the default speed must close at least 10 cells over 50 calls to step_horde. Measured: it closes all 15 by call 29. Never start one of the Dead outside the scent front — strongest_neighbour returns empty on a flat zero field and the unit never moves, so the test would pin 0 forever.",
-          "app: the scent view's bands are tuned for a 0..1 field and will render as one solid block at the new scale. Make the bands relative to the field maximum or log-spaced. Overlaps PEO-024: land the second of the two on top of the first.",
-          "docs: one line in docs/design/scent-mobs.md recording the 0-500 deposit scale, pointing at docs/design/scent-performance.md for the measurements."
-        ],
-        "acceptance": [
-          "the two new tests pass, and together add under 25 ms to the headless suite (measured 21.6 ms for the pair under Debug+ASan)",
-          "in game (peo 7): standing still, the Dead begin closing from well beyond the old ~8 cells",
-          "ScentField::step stays linear: no value-dependent decay and no pow/exp inside step. The floor flush remains the only nonlinearity, so PEO-007's step_linear + clamp_floor split survives.",
-          "no magic numbers: the deposit and every retuned default is a named constant or a ScentParams field",
-          "the thousand-dead case is no slower than the 0.000261 s baseline",
-          "this item does NOT make the Dead able to intercept a moving player — that is D-008. Scope here is reach for a stationary or slow player."
-        ],
-        "tests": [
-          "tests/core/test_scent.cpp (new reach case)",
-          "tests/core/test_dead.cpp (new convergence case)",
-          "all existing suites"
-        ],
-        "manual": [
-          "peo 7: stand still 30 s. The Dead should close in from the far side of the map, not only from nearby. Report roughly how many turns before a distant one first moves.",
-          "Shift+S: the scent view must still show a readable gradient rather than one solid block. Describe what it looks like.",
-          "Walk a long loop, then stand still: report whether the Dead track your current position or trail toward where you have been. This tells us whether decay needs raising.",
-          "headless-release: re-run the thousand-dead case and report the number. The old 0.000735 s figure is void — it was ~99% scent diffusion, and PEO-027 shortened that warm-up. The current baseline is 0.000261 s."
-        ],
-        "out_of_scope": [
-          "the weighted random draw and the pow(scent, k) draw exponent — that is PEO-009, which D-007 also covers",
-          "a second scent layer (blood) — PEO-003",
-          "making the field integer or fixed-point: D-007 keeps storage float deliberately, since quantising cells would recreate the plateau that froze the Dead",
-          "speculate/commit — PEO-007"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-28",
@@ -946,32 +555,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-09-29",
-      "brief": {
-        "goal": "The simulation produces bit-identical float results between Debug and Release and across architectures, as D-002 requires.",
-        "context": [
-          "cmake/CompilerOptions.cmake",
-          "docs/production/decisions.md (D-002)",
-          "docs/design/scent-performance.md",
-          "src/core/src/scent.cpp"
-        ],
-        "units": [
-          "build: set -ffp-contract=off for the core target (and /fp:precise on MSVC). gcc and clang default to -ffp-contract=fast at -O2, so 'here * share' and '(here - out + in) * keep' in ScentField::step may fuse into an FMA in Release and not in Debug, and differ between x86-64 and aarch64.",
-          "test: pin the exact float bit patterns of a small ScentField after a fixed number of steps (reinterpret as uint32 and compare, not Approx). CI already builds g++-13, clang++-18 and release, so a divergence between those three will fail the test."
-        ],
-        "acceptance": [
-          "-ffp-contract=off (or the MSVC equivalent) is set for the core target",
-          "a test pins exact float bit patterns after a fixed number of steps and passes identically on g++-13, clang++-18 and the release preset",
-          "the numbers recorded in docs/design/scent-performance.md still hold"
-        ],
-        "tests": [
-          "tests/core/test_scent.cpp (new bit-identity case)"
-        ],
-        "manual": [],
-        "out_of_scope": [
-          "converting the field to fixed point — that would be part of D-008 if it is answered that way",
-          "any change to ScentField's algorithm"
-        ]
-      },
       "notes": [
         {
           "at": "2026-09-29",
@@ -992,15 +575,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "brief": {
-        "goal": "Per D-008 C. A near layer (small lambda, stepped every turn) plus a far layer solved by separable IIR every 8-16 turns, so how far ahead the Dead can smell a moving player becomes a setting rather than an artefact of a slow solver. Stub by intent; brief just-in-time after PEO-026. The first unit must settle the one unverified claim in docs/design/scent-performance.md: whether three IIR iterations suffice on real dungeon topology, checked against a BFS geodesic field.",
-        "context": [],
-        "units": [],
-        "acceptance": [],
-        "tests": [],
-        "manual": [],
-        "out_of_scope": []
-      },
       "notes": [],
       "references": [],
       "depends_on": []

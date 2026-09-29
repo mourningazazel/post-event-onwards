@@ -10,8 +10,10 @@ Run `python3 tools/bootstrap.py`. It prints `ARCHITECT (cloud)` when
 `CLAUDE_CODE_REMOTE` is set, otherwise `BUILDER (local)`. Then read the
 matching section of `docs/roles.md` before touching anything.
 
-- Architect sessions land on a `claude/*` branch the harness assigns; the user
-  merges it to `main`. Use the `headless` preset only; there is no display.
+- Architect sessions land on a `claude/*` branch the harness assigns; open a
+  pull request for the work, drive CI green and merge it yourself. Gameplay,
+  abstraction, direction and big-rewrite calls still stop in
+  `DECISIONS_NEEDED.md`. Use the `headless` preset only; there is no display.
 - Builder sessions commit to `main` directly (fast-forward). Run the game with
   `cmake --build --preset dev && ./build/dev/bin/peo` and follow the brief's
   `manual` steps before reporting.

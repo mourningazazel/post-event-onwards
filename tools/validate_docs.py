@@ -30,7 +30,7 @@ WORD_CAPS = {
     "docs/production/vision.md": 900,
     "docs/production/decisions.md": 1500,
     "docs/production/DECISIONS_NEEDED.md": 800,
-    "WORK_QUEUE.json": 4000,
+    "WORK_QUEUE.json": 2500,  # metadata only since D-009; briefs are uncapped files
     "DEFERRED_WORK.json": 1500,
 }
 SKILL_WORD_CAP = 600

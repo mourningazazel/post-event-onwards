@@ -8,6 +8,28 @@ Format: date · title · decision · why · consequences.
 Settled infrastructure decisions, now encoded in the build and tooling, live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-09-29 · The Architect merges its own pull requests
+
+User decision. The Architect opens a pull request per unit of work, drives it green and merges it
+once CI passes; the user is no longer the merge gate and spends their attention on gameplay and
+direction instead. Why: waiting on a merge was the bottleneck. Consequence: the Architect's own
+verification is the only gate, so a check must never share a code path with the thing it checks —
+both defects caught that way this session, an unsatisfiable acceptance test and five silent
+truncation paths in the brief parser, would otherwise have reached `main`. Gameplay, abstraction,
+direction and big-rewrite calls still stop in `DECISIONS_NEEDED.md`. Merges are merge commits, as on
+`main` already.
+
+## 2026-09-29 · D-009 · Briefs live in their own files
+
+User decision: A. A brief is now `docs/production/briefs/PEO-xxx.md`, exactly as a handoff is
+`handoffs/<id>.md`; `WORK_QUEUE.json` keeps only id, order, type, title, status, severity, effort,
+owner, notes, references and depends_on. Why: the queue hit its 4000-word cap the same day it was
+raised from 2500, because a brief the Builder can finish without asking runs 300-500 words and 28 of
+them do not fit one capped file — trimming briefs to satisfy a cap means briefing worse. Consequence:
+`work_queue.py` reads and writes the brief files, so `show` and `brief` behave as before; the cap
+returns to a level the metadata can actually hold; brief files are uncapped, like handoffs and the
+design docs.
+
 ## 2026-09-29 · D-008 · Ship the scent retune, then build the two-layer field
 
 User decision: C. Land PEO-026's retune first so the behaviour can be seen in game, then build the
@@ -31,18 +53,6 @@ never has to model a path around one. Consequence: `ScentField::step` stops refl
 unconditional and only `in` tests the mask, dropping a branch from the inner loop. Mass is no longer
 conserved, so the two tests asserting conservation state the new contract instead. Reach shortens, so
 PEO-026's tuning and its measured test parameters must both be re-derived after this lands.
-
-## 2026-09-28 · WORK_QUEUE.json's word cap raised to 4000
-
-Architect decision, tooling. `docs/README.md` keeps briefs on the queue item, but a brief the
-Builder can finish without asking runs 300–500 words, and six briefed items already exceeded the
-old 2500-word cap — the cap and the documented workflow could not both hold, so every `/plan` from
-here would have failed validation. Why: the cap exists so that docs which grow unbounded stop
-being read, and nobody reads the queue whole — agents read one item through `work_queue.py show`.
-Consequence: the cap is 4000 in `tools/validate_docs.py`; the real pressure valve stays `complete`,
-which archives an item into `docs/COMPLETED_WORK/` and drops it from the queue, so the queue is
-bounded by throughput rather than by the cap. Brief just-in-time rather than briefing the whole
-backlog. Revisit if briefs ever move into their own files.
 
 ## 2026-09-28 · D-007 · Scent carries far on a 0–500 scale; the Dead are drawn by a power law
 
@@ -124,11 +134,3 @@ type name.
 User decision. They behave like Dead; the word is banned everywhere for
 aesthetic reasons. Consequence: docs, UI strings, identifiers and comments
 say Dead/dead/horde. Code identifier choice is open as D-001.
-
-## 2026-09-28 · The user owns gameplay and direction decisions
-
-Agents never pick between gameplay, abstraction or direction options, nor
-start a large rewrite, without an answered entry in `DECISIONS_NEEDED.md`.
-Technical method is the agents' call. Why: the user wants to steer what the
-game is, not how each function is written. Consequence: an item waiting on a
-decision is `AwaitingUser` with the D-id in its note.
