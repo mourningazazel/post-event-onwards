@@ -273,7 +273,7 @@ area.
 - **They only become *triggered*** (alerted: full pursuit and recruitment) when the sound is
   classified as **"human"**: speech, grunts, footsteps, a shot fired by a person. **Mechanical
   sounds** (alarms, engines, a thrown bottle breaking) only **attract**.
-- The exact classification of sound events is to be designed later (open).
+- Classification settled in round 4 (N016 / D-018): `human`, `mechanical`, `ambient`.
 - **Pepper spray and stun guns do nothing** to the dead. The stun gun's crackle is itself a noise
   event.
 
@@ -379,3 +379,51 @@ Every change to the movement rule or its knobs must keep these scenarios passing
 
 Each runs headlessly with the golden seed set and reports its metric, so a tuning change shows
 as a number, not a feeling.
+
+## Owner answers, round 4 ([N016](notes/N016-review-answers-wind-characters-sound-gpu-z-levels-speed-items.md)) and the design they lead to
+
+Answers to the 2026-09-29 codebase reviews. Recorded as D-016 to D-023; the transport and rot
+questions the reviews raised are open as D-024 and D-025.
+
+### Wind, indoors and out (D-020)
+
+- **Wind carries scent ahead** of a moving player when it blows from behind; strong enough, the
+  front outruns the walker. The "never ahead of the player" reading in D-008 is withdrawn: the
+  Dead may head a player off downwind. Round 1's regional wind stands; the transport must do it.
+- **No wind indoors.** The calculation carries an explicit stop: a per-cell openness of 0.
+- **Wall rules are house-specific** and live outside the base transport. The owner's starting
+  point: **inner walls build scent up** rather than absorb it, since there is no air above to
+  vent into; outdoor walls and the map edge still absorb (D-007's wall rule). The pathfinding
+  review measured that buildup restores reach but flattens the gradient in rooms; whether it is
+  needed at all depends on D-024.
+
+### Only near the player (D-019)
+
+- **Dispersion runs within a radius of the player.** Beyond it the section aggregates (round 3,
+  PEO-039) stand in. The radius is a setting and the budget knob.
+- **Z-levels:** a downward tile with a route below is one more neighbour for scent. Scent never
+  travels in the air above ground tiles.
+- **Sealed buildings are never simulated.** Generation tags a building **opened** (broken window,
+  open door); it joins the field when the player approaches. Soak (D-013) remembers long stays,
+  so far-away indoor dispersion need not be exact.
+
+### Sound kinds and the ambient floor (D-018)
+
+- Kinds are `human`, `mechanical`, `ambient`. **Ambient** sound (weather, crows, a distant
+  generator) shows as a descriptor when the player examines the surroundings, an action, and
+  sets the area's **ambient noise floor**.
+- The floor matters in one place: whether hearing Dead can hear the player, human sound
+  against the floor, the inverse relation rot has to human scent (D-012).
+
+### Speed of the Dead (D-022)
+
+- Expected steps per update = update period / `step_seconds`, a real number. The integer part is
+  guaranteed, the fraction is the chance of one more step, drawn from a counter-based hash per
+  Dead. Cap: 6 steps per update. Faster Dead take two extra steps, not one, when the fraction
+  says so twice.
+
+### Budget (D-021)
+
+- Fields stay on the CPU and integer-valued so a GPU port stays possible. Commit under 1 ms; a
+  speculated update under 100 ms on the M1 Air. Measured at 200×120 with 5,000 Dead, 512×512 with
+  20,000 and with 50,000.

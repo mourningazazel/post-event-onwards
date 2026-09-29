@@ -56,10 +56,12 @@ is used to compute the next turn ahead, and the player's action patches only wha
 
 ## Performance target
 
-A 200×120 detailed area with 5,000 Dead resolves a full turn in under 16 ms on a mid-range
-laptop, and a speculated turn commits in under 1 ms, with the renderer holding 60 FPS. Beyond
-the detailed radius the Dead are population numbers. Until measured otherwise, treat this as
-the budget every system must fit inside.
+The player moves at most three times a second (D-011), so a world update has that gap to be
+computed ahead: a speculated update finishes in under 100 ms and its commit in under 1 ms on
+the M1 Air, the low-end test bed, with the renderer holding 60 FPS (D-021). Measured at three
+sizes: 200×120 with 5,000 Dead, 512×512 with 20,000, and 512×512 with 50,000, each with many
+scent emitters. Beyond the detailed radius the Dead are population numbers. Headroom is spent
+on horde size and generation variety, not saved.
 
 ## Where the detail lives
 

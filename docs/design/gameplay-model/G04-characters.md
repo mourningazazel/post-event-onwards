@@ -69,7 +69,12 @@ and senses. A future system adds a new component without touching existing chara
 - **C. Pick from a few generated candidates** in the starting city (e.g. three people with
   backgrounds, traits and starting gear).
 - **Recommendation: C.** Choice without min-maxing, and it fits "cities with identity".
-- **Owner decision:** _pending_
+- **Owner decision (2026-09-29, N016 / D-016): B, fully random, by design.** Stats, starting
+  items, a background, a full physical makeup as flavour text with small telling details, and
+  psychiatric, medical and physical conditions are all rolled per run; some characters are just
+  unlucky. Previous job shapes generation and starting skills (a cop starts with a gun and
+  firearms skill). "Where were you?" at the Event places the start near a fitting area (an
+  office worker near the dense urban core) without matching it exactly.
 
 ### D4.4 — What happens at death?
 
@@ -98,7 +103,12 @@ and senses. A future system adds a new component without touching existing chara
 - **Owner input (N014):** skills and action success are shown as **percentages** with the
   contributing skills listed; Mood stays mostly hidden. So: numbers for skills and chances,
   descriptive for body and needs unless toggled.
-- **Owner decision:** _pending_ (confirm the split above)
+- **Owner decision (2026-09-29, N016 / D-017): physical stats numeric, everything else
+  descriptive, skills included.** A skill shows as one of five level descriptions tiered at 20
+  (1-20, 21-40, 41-60, 61-80, 81-100); the success model keeps its percentages internally. The
+  sheet is prose grouped by category: appearance by trait (hair length, colour and style;
+  physique for strength; conditions as the ailment), preferences that give mood boosts, and a
+  generated history in two parts, "who you are" and "where were you?".
 
 ### D4.6 — Can the player be infected and turn?
 
