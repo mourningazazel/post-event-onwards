@@ -43,7 +43,8 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 
 - Commit explicit paths. Never `git add -A`, stash, or `--no-verify`.
 - Message `[PEO-123] imperative summary`; one queue unit per commit.
-- `main` is integration: fast-forward only, no force-push, no squash.
+- `main` is integration: the Builder fast-forwards, the Architect merges PRs;
+  no force-push, no squash.
 - Read queue state from `origin/main` before choosing work. On a conflict,
   take theirs and re-apply your change with the tool.
 
