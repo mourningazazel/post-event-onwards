@@ -29,6 +29,39 @@ float ScentField::total() const noexcept {
 }
 
 void ScentField::step(const Grid<bool>* blocked) noexcept {
+    sweep(blocked, true);
+}
+
+void ScentField::step_linear(const Grid<bool>* blocked) noexcept {
+    sweep(blocked, false);
+}
+
+void ScentField::clamp_floor() noexcept {
+    for (float& v : front_) {
+        if (v < params_.floor) {
+            v = 0.0F;
+        }
+    }
+}
+
+void ScentField::patch_deposit(Vec2i at, float amount, const Grid<bool>* blocked) noexcept {
+    const auto open = [&](Vec2i p) { return front_.in_bounds(p) && !(blocked && blocked->at(p)); };
+    if (!open(at)) {
+        return; // step_linear zeroes walls, so a deposit there leaves no trace
+    }
+    // Each term is formed exactly as sweep() forms it: (source * factor) * keep.
+    const float keep = 1.0F - params_.decay;
+    const float stay = 1.0F - params_.diffusion;
+    const float share = params_.diffusion / 4.0F;
+    front_.at(at) += (amount * stay) * keep;
+    for (const Vec2i d : kNeighbours4) {
+        if (open(at + d)) {
+            front_.at(at + d) += (amount * share) * keep;
+        }
+    }
+}
+
+void ScentField::sweep(const Grid<bool>* blocked, bool clamp) noexcept {
     const int w = front_.width();
     const int h = front_.height();
     const float share = params_.diffusion / 4.0F;
@@ -54,7 +87,7 @@ void ScentField::step(const Grid<bool>* blocked) noexcept {
                 in += front_.at(n) * share;
             }
             float v = (front_.at(p) * stay + in) * keep;
-            if (v < params_.floor) {
+            if (clamp && v < params_.floor) {
                 v = 0.0F;
             }
             back_.at(p) = v;

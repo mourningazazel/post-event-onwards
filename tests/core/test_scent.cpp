@@ -1,9 +1,11 @@
+#include "peo/core/rng.hpp"
 #include "peo/core/scent.hpp"
 
 #include <doctest/doctest.h>
 
 #include <array>
 #include <bit>
+#include <cmath>
 #include <cstdint>
 
 using namespace peo::core;
@@ -142,6 +144,73 @@ TEST_SUITE("scent") {
                 CHECK(std::bit_cast<std::uint32_t>(f.sample({x, y})) ==
                       kExpected[static_cast<std::size_t>(y * kSize + x)]);
             }
+        }
+    }
+
+    TEST_CASE("step_linear is linear: a deposit can be patched in afterwards") {
+        // PEO-007. Deposit-then-step_linear versus step_linear-then-patch_deposit.
+        // Outside the source and its four neighbours the two must agree bit for bit;
+        // on those five cells, to float rounding (addition is not associative, so
+        // exactness there is guaranteed by World using one order everywhere).
+        constexpr int kTrials = 50;
+        constexpr int kW = 9;
+        constexpr int kH = 7;
+        constexpr float kWallChance = 0.2F;
+        constexpr float kMaxCell = 500.0F;
+        constexpr float kRelTolerance = 1e-5F;
+        const ScentParams params{.diffusion = 0.5F, .decay = 0.01F, .floor = 1e-6F};
+        Rng rng(kTrials);
+        for (int t = 0; t < kTrials; ++t) {
+            Grid<bool> walls(kW, kH, false);
+            ScentField base(kW, kH, params);
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    walls.at(x, y) = rng.chance(kWallChance);
+                    base.deposit({x, y}, rng.unit() * kMaxCell);
+                }
+            }
+            const Vec2i at{rng.range(0, kW - 1), rng.range(0, kH - 1)};
+            walls.at(at) = false;
+            const float amount = rng.unit() * kMaxCell;
+
+            ScentField a = base;
+            a.deposit(at, amount);
+            a.step_linear(&walls);
+            ScentField b = base;
+            b.step_linear(&walls);
+            b.patch_deposit(at, amount, &walls);
+
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    CAPTURE(t);
+                    CAPTURE(x);
+                    CAPTURE(y);
+                    const Vec2i c{x, y};
+                    const bool touched = std::abs(c.x - at.x) + std::abs(c.y - at.y) <= 1;
+                    if (touched) {
+                        CHECK(std::abs(a.sample(c) - b.sample(c)) <= kRelTolerance * std::abs(a.sample(c)));
+                    } else {
+                        CHECK(std::bit_cast<std::uint32_t>(a.sample(c)) ==
+                              std::bit_cast<std::uint32_t>(b.sample(c)));
+                    }
+                }
+            }
+        }
+    }
+
+    TEST_CASE("step equals step_linear then clamp_floor") {
+        const ScentParams params{.diffusion = 0.5F, .decay = 0.01F, .floor = 0.05F};
+        ScentField a(8, 8, params);
+        a.deposit({3, 3}, 1.0F);
+        ScentField b = a;
+        for (int i = 0; i < 6; ++i) {
+            a.step();
+            b.step_linear();
+            b.clamp_floor();
+        }
+        for (int i = 0; i < 64; ++i) {
+            CHECK(std::bit_cast<std::uint32_t>(a.cells().data()[i]) ==
+                  std::bit_cast<std::uint32_t>(b.cells().data()[i]));
         }
     }
 }

@@ -36,8 +36,22 @@ public:
     void clear() noexcept;
 
     /// Advance the field one simulation step. Walls (blocked cells) neither
-    /// receive nor emit scent; pass nullptr for an open field.
+    /// receive nor emit scent; pass nullptr for an open field. Same result as
+    /// step_linear() then clamp_floor(), in one sweep.
     void step(const Grid<bool>* blocked = nullptr) noexcept;
+
+    /// The linear part of step(): diffuse and decay, no floor clamp. Linear in the
+    /// field, so a deposit's effect can be added afterwards (patch_deposit).
+    void step_linear(const Grid<bool>* blocked = nullptr) noexcept;
+
+    /// The only nonlinearity: flush values below params().floor to zero.
+    void clamp_floor() noexcept;
+
+    /// Add what step_linear() would have made of `amount` deposited at `at` before
+    /// it ran: the source cell and its four open neighbours, nothing else. Call it
+    /// between step_linear() and clamp_floor(). Lets PEO-007 speculate a turn
+    /// without the player's deposit and patch it in once the move is known.
+    void patch_deposit(Vec2i at, float amount, const Grid<bool>* blocked = nullptr) noexcept;
 
     [[nodiscard]] float sample(Vec2i at) const noexcept;
     [[nodiscard]] float total() const noexcept;
@@ -52,6 +66,8 @@ public:
     strongest_neighbour(Vec2i from, const Grid<bool>* blocked = nullptr) const noexcept;
 
 private:
+    void sweep(const Grid<bool>* blocked, bool clamp) noexcept;
+
     ScentParams params_;
     Grid<float> front_;
     Grid<float> back_;
