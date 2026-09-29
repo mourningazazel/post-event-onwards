@@ -430,7 +430,7 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
@@ -442,6 +442,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-011: the budget is now 1 s, not 500 ms (AGENTS.md, docs/testing.md). Enforce 1 s; the brief's out-of-scope line about choosing the budget is settled."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed; ready for the Builder"
         }
       ],
       "references": [],
@@ -455,9 +460,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed; ready for the Builder"
+        }
+      ],
       "references": [
         "src/core/src/world.cpp",
         "src/core/include/peo/core/world.hpp"
@@ -490,9 +501,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed; ready for the Builder"
+        }
+      ],
       "references": [
         "cmake/FindOrFetchSDL3.cmake",
         "src/app/main.cpp"
