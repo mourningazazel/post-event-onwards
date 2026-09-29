@@ -480,7 +480,7 @@
       "order": 250,
       "type": "bug",
       "title": "Frontend busy-loops: release build uses ~78% of a CPU core at idle",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -500,6 +500,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Severity raised to S2 with the new set --severity flag; the previous note recorded the request only in prose because the tool could not express it."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting; brief predates PEO-002 (no kTickMs now)"
         }
       ],
       "references": [],
