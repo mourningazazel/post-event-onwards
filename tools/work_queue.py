@@ -16,7 +16,9 @@ Usage:
   python3 tools/work_queue.py brief PEO-001 --file brief.json      (architect fills the brief)
 
 Briefs are not in the queue JSON: each lives in docs/production/briefs/<id>.md,
-written and read only through `brief` / `show` here.
+written and read only through `brief` / `show` here. A list entry that spans
+lines indents its continuations two spaces; an unknown `## ` heading is an
+error, not a silently dropped section; `check` round-trips every brief.
   python3 tools/work_queue.py complete PEO-001 [--by architect] [--commit abc123]
   python3 tools/work_queue.py defer PEO-001 / promote PEO-001
 """
@@ -54,6 +56,11 @@ BRIEF_SECTIONS = (
     ("Manual", "manual"),
     ("Out of scope", "out_of_scope"),
 )
+# Headings are matched case-insensitively: "Out of Scope" must not silently
+# drop a section. An unknown heading is an error, never a skip.
+HEADING_TO_FIELD = {h.lower(): f for h, f in BRIEF_SECTIONS}
+# A list entry spans several lines by indenting its continuations two spaces.
+CONTINUATION = "  "
 
 
 def today() -> str:
@@ -89,34 +96,67 @@ def brief_path(item_id: str) -> Path:
     return BRIEFS_DIR / f"{item_id}.md"
 
 
+def _escape_goal_line(line: str) -> str:
+    """A goal line that looks like a heading would be parsed as one."""
+    stripped = line.lstrip("\\")
+    return "\\" + line if stripped.startswith("## ") else line
+
+
+def _unescape_goal_line(line: str) -> str:
+    stripped = line.lstrip("\\")
+    return line[1:] if line.startswith("\\") and stripped.startswith("## ") else line
+
+
+def parse_brief(text: str, source: str) -> dict:
+    """Parse brief markdown into the 7-key brief dict.
+
+    `source` names the origin (a path, usually) in error messages. Text that
+    cannot be placed is an error: losing it quietly is the bug this guards.
+    """
+    brief = empty_brief()
+    field: str | None = None
+    goal: list[str] = []
+    for line in text.split("\n"):
+        if line.startswith("## "):
+            heading = line[3:].strip()
+            field = HEADING_TO_FIELD.get(heading.lower())
+            if field is None:
+                known = ", ".join(h for h, _ in BRIEF_SECTIONS)
+                sys.exit(f"error: {source}: unknown brief section '## {heading}'; expected one of: {known}")
+            continue
+        if field is None:
+            continue
+        if field == "goal":
+            goal.append(_unescape_goal_line(line))
+        elif line.startswith("- "):
+            brief[field].append(line[2:])
+        elif line.startswith(CONTINUATION) and brief[field]:
+            # Indented line: the rest of the entry above it, newline restored.
+            brief[field][-1] += "\n" + line[len(CONTINUATION):]
+    while goal and not goal[0].strip():
+        goal.pop(0)
+    while goal and not goal[-1].strip():
+        goal.pop()
+    brief["goal"] = "\n".join(goal)
+    return brief
+
+
 def read_brief(item_id: str) -> dict:
     """Load docs/production/briefs/<id>.md into the 7-key brief dict.
 
     Missing file or missing section means empty, so callers never special-case
     a brief that has not been written yet.
     """
-    brief = empty_brief()
     path = brief_path(item_id)
     if not path.exists():
-        return brief
-    heading_to_field = {h: f for h, f in BRIEF_SECTIONS}
-    field: str | None = None
-    for line in path.read_text(encoding="utf-8").split("\n"):
-        if line.startswith("## "):
-            field = heading_to_field.get(line[3:].strip())
-            continue
-        if field is None or not line.strip():
-            continue
-        if field == "goal":
-            brief["goal"] = line
-        elif line.startswith("- "):
-            brief[field].append(line[2:])
-    return brief
+        return empty_brief()
+    name = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+    return parse_brief(path.read_text(encoding="utf-8"), str(name))
 
 
-def write_brief(item_id: str, title: str, brief: dict) -> None:
-    """Write the brief file. One list entry per line, never wrapped."""
-    BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
+def render_brief(item_id: str, title: str, brief: dict) -> str:
+    """Render a brief dict to markdown. One list entry per line, never wrapped;
+    an entry or goal that spans lines keeps them, continuations indented."""
     out = [f"# {item_id} · {title}", ""]
     for heading, field in BRIEF_SECTIONS:
         value = brief.get(field) or ("" if field == "goal" else [])
@@ -125,11 +165,19 @@ def write_brief(item_id: str, title: str, brief: dict) -> None:
         out.append(f"## {heading}")
         out.append("")
         if field == "goal":
-            out.append(value)
+            out.extend(_escape_goal_line(line) for line in value.split("\n"))
         else:
-            out.extend(f"- {entry}" for entry in value)
+            for entry in value:
+                first, *rest = entry.split("\n")
+                out.append(f"- {first}")
+                out.extend(CONTINUATION + line for line in rest)
         out.append("")
-    brief_path(item_id).write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8")
+    return "\n".join(out).rstrip("\n") + "\n"
+
+
+def write_brief(item_id: str, title: str, brief: dict) -> None:
+    BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
+    brief_path(item_id).write_text(render_brief(item_id, title, brief), encoding="utf-8")
 
 
 def validate_item(item: dict, errors: list[str], seen: set[str]) -> None:
@@ -165,6 +213,12 @@ def validate_item(item: dict, errors: list[str], seen: set[str]) -> None:
             errors.append(f"{iid}: bad dependency id {dep}")
 
 
+def clip(value, limit: int = 160) -> str:
+    """repr() short enough to read in an error line."""
+    text = repr(value)
+    return text if len(text) <= limit else text[:limit] + "..."
+
+
 def cmd_check(_: argparse.Namespace) -> int:
     errors: list[str] = []
     seen: set[str] = set()
@@ -180,6 +234,14 @@ def cmd_check(_: argparse.Namespace) -> int:
         for dep in item.get("depends_on", []):
             if dep not in ids:
                 errors.append(f"{item['id']}: depends on {dep} which is not in the active queue")
+    # Every brief must survive a write/read cycle unchanged, in memory, so a
+    # brief that would lose text on the next edit fails the commit instead.
+    for item in q["items"]:
+        brief = read_brief(item["id"])
+        again = parse_brief(render_brief(item["id"], item["title"], brief), f"{item['id']} (round-trip)")
+        for field in BRIEF_FIELDS:
+            if again[field] != brief[field]:
+                errors.append(f"{item['id']}: brief field '{field}' does not survive a write/read cycle: {clip(brief[field])} -> {clip(again[field])}")
     # Orphan brief files are noise, not breakage: report, never fail.
     for path in sorted(BRIEFS_DIR.glob(f"{ID_PREFIX}-*.md")):
         if path.stem not in ids:
