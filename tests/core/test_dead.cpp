@@ -12,12 +12,13 @@ TEST_SUITE("dead") {
         for (int i = 0; i < 6; ++i) {
             f.step();
         }
-        std::vector<Dead> horde{{.pos = {1, 4}, .cooldown = 0, .speed = 1}};
+        // One step per update: after moving it waits out one update, then moves again.
+        std::vector<Dead> horde{{.pos = {1, 4}, .cooldown_s = 0, .step_seconds = kUpdatePeriodSeconds}};
 
-        CHECK(step_horde(horde, f, walls) == 1);
+        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 1);
         CHECK(horde[0].pos == Vec2i{2, 4});
-        CHECK(step_horde(horde, f, walls) == 0); // cooling down
-        CHECK(step_horde(horde, f, walls) == 1);
+        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 0); // cooling down
+        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 1);
         CHECK(horde[0].pos == Vec2i{3, 4});
     }
 
@@ -27,7 +28,7 @@ TEST_SUITE("dead") {
         walls.at(2, 2) = true;
         f.deposit({2, 2}, 1.0F); // scent inside a wall cell: nothing should walk in
         std::vector<Dead> horde{{.pos = {1, 2}}};
-        step_horde(horde, f, walls);
+        step_horde(horde, f, walls, kUpdatePeriodSeconds);
         CHECK(horde[0].pos == Vec2i{1, 2});
     }
 
@@ -45,7 +46,7 @@ TEST_SUITE("dead") {
             f.step();
         }
         std::vector<Dead> horde(1000, Dead{.pos = {26, 26}});
-        const std::size_t moved = step_horde(horde, f, walls);
+        const std::size_t moved = step_horde(horde, f, walls, kUpdatePeriodSeconds);
         CHECK(moved == 1000);
     }
 
@@ -67,7 +68,7 @@ TEST_SUITE("dead") {
         }
         std::vector<Dead> horde{{.pos = kStart}};
         for (int i = 0; i < kCalls; ++i) {
-            step_horde(horde, f, walls);
+            step_horde(horde, f, walls, kUpdatePeriodSeconds);
         }
         CHECK(kStart.x - horde[0].pos.x >= kMinClosed);
     }

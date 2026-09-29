@@ -57,7 +57,7 @@ struct Fnv1a {
 
 /// Cooldown in updates, the unit it had before PEO-040 moved the Dead to seconds.
 std::uint64_t cooldown_updates(const Dead& d) {
-    return d.cooldown;
+    return d.cooldown_s / kUpdatePeriodSeconds;
 }
 
 std::uint64_t world_hash(const World& w) {

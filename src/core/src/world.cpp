@@ -11,7 +11,8 @@ namespace peo::core {
 namespace {
 /// Mixed into the stage seed so the horde's placement stream differs from the map's.
 constexpr Seed kHordeSeedSalt = 0xABCDULL;
-/// Speed range for spawned Dead (ticks between moves come from speed; see dead.hpp).
+/// Range of the spawn draw: updates between a spawned Dead's steps. Stored in
+/// seconds as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
 constexpr int kMaxDeadSpeed = 3;
 /// The deposit patch touches the player's cell and its 4 neighbours; one of the Dead
@@ -22,6 +23,7 @@ constexpr int kRepatchRadius = 2;
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_width = std::max(params_.stage_width, kMinStageSide);
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
+    params_.update_period = std::max<Seconds>(params_.update_period, 1);
     load_stage(0);
 }
 
@@ -50,9 +52,11 @@ void World::load_stage(std::uint32_t index) {
         do {
             p = {rng_.range(1, stage_.spec.width - 2), rng_.range(1, stage_.spec.height - 2)};
         } while (stage_.blocked.at(p) || p == player_);
-        horde_.push_back({.pos = p,
-                          .cooldown = 0,
-                          .speed = static_cast<std::uint8_t>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed))});
+        horde_.push_back(
+            {.pos = p,
+             .cooldown_s = 0,
+             .step_seconds = static_cast<std::uint16_t>(
+                 static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
     turn_ = 0;
 }
@@ -82,7 +86,7 @@ void World::step(Action action) {
     scent_.step_linear(&stage_.blocked);
     scent_.patch_deposit(player_, params_.player_scent, &stage_.blocked);
     scent_.clamp_floor();
-    step_horde(horde_, scent_, stage_.blocked);
+    step_horde(horde_, scent_, stage_.blocked, params_.update_period);
     finish_turn();
 }
 
@@ -103,7 +107,7 @@ void World::speculate(Speculation& out) const {
     // cells the deposit patch touches can differ, and commit re-decides those.
     out.clamped = out.scent;
     out.clamped.clamp_floor();
-    step_horde(out.horde, out.clamped, stage_.blocked);
+    step_horde(out.horde, out.clamped, stage_.blocked, params_.update_period);
 }
 
 void World::commit(Speculation& spec, Action action) {
@@ -118,7 +122,7 @@ void World::commit(Speculation& spec, Action action) {
         const Vec2i d = spec.before[i].pos - player_;
         if (std::max(std::abs(d.x), std::abs(d.y)) <= kRepatchRadius) {
             Dead unit = spec.before[i];
-            step_dead(unit, spec.scent, stage_.blocked);
+            step_dead(unit, spec.scent, stage_.blocked, params_.update_period);
             spec.horde[i] = unit;
         }
     }
@@ -136,7 +140,7 @@ bool World::equivalent(const World& a, const World& b) noexcept {
     for (std::size_t i = 0; i < a.horde_.size(); ++i) {
         const Dead& x = a.horde_[i];
         const Dead& y = b.horde_[i];
-        if (x.pos != y.pos || x.cooldown != y.cooldown || x.speed != y.speed) {
+        if (x.pos != y.pos || x.cooldown_s != y.cooldown_s || x.step_seconds != y.step_seconds) {
             return false;
         }
     }
