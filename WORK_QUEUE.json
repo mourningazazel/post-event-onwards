@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 30,
+  "next_id": 31,
   "items": [
     {
       "id": "PEO-002",
@@ -969,6 +969,29 @@
           "text": "briefed"
         }
       ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-030",
+      "order": 270,
+      "type": "feature",
+      "title": "Two-layer staggered scent field: near layer each turn, far layer by IIR",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "brief": {
+        "goal": "Per D-008 C. A near layer (small lambda, stepped every turn) plus a far layer solved by separable IIR every 8-16 turns, so how far ahead the Dead can smell a moving player becomes a setting rather than an artefact of a slow solver. Stub by intent; brief just-in-time after PEO-026. The first unit must settle the one unverified claim in docs/design/scent-performance.md: whether three IIR iterations suffice on real dungeon topology, checked against a BFS geodesic field.",
+        "context": [],
+        "units": [],
+        "acceptance": [],
+        "tests": [],
+        "manual": [],
+        "out_of_scope": []
+      },
+      "notes": [],
       "references": [],
       "depends_on": []
     }

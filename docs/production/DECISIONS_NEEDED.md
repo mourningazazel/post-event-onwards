@@ -19,9 +19,9 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-## D-008 · How much scent machinery do we build?   (raised by architect · 2026-09-29 · PEO-026)
-Why now: the Dead cannot head off a moving player, which is the behaviour you want — but it currently falls out of the solver being too slow to converge, not from any dial we control. Measurements and the maths are in docs/design/scent-performance.md.
-Affects: gameplay | abstraction · rewrite: none to medium
-- A) Ship the retune only (PEO-026) — three constants and two tests. Reach ~57 cells for a standing player, the doorway scenario works, the Dead never intercept. Cheapest to build, but "how far ahead can they smell me" stays an accident of the solver rather than a setting.
-- B) Two layers, staggered — a near layer (small lambda, every turn) for the cloud around you, and a far layer solved directly with a separable IIR every 8-16 turns for scent pooled where you lingered. Amortises to ~0.02 ms/turn, below what you pay now, and converged instead of perpetually lagging; the near layer's lambda becomes an explicit interception-distance dial. Costs a real rewrite of ScentField.
-- C) Both, in order — ship A now to see it in game, then B as its own item with the doorway scenario as its acceptance test.   ← recommended
+## D-009 · Where should briefs live?   (raised by architect · 2026-09-29 · tooling)
+Why now: WORK_QUEUE.json hit its 4000-word cap the same day it was raised from 2500. Briefs live on the queue item, a usable brief runs 300-500 words, and 28 items do not fit. The next brief fails validation, and trimming briefs to fit means briefing worse.
+Affects: abstraction · rewrite: small (tools/work_queue.py, docs/roles.md, docs/README.md)
+- A) Move briefs into their own files — docs/production/briefs/PEO-xxx.md, exactly as handoffs already work. The queue keeps id, title, status, owner, effort, depends_on and a pointer; work_queue.py gains read/write of the brief file. The queue stops growing with detail and the cap becomes easy to hold.   ← recommended
+- B) Raise the cap again, to 8000 or so — one line, no refactor, but the same problem returns and the cap stops meaning anything.
+- C) Keep the cap and brief fewer items at once — only brief what the Builder takes next, stripping briefs from distant items. No code change, but it discards prepared work and needs constant pruning.
