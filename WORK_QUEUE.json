@@ -392,10 +392,10 @@
       "order": 265,
       "type": "bug",
       "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -442,6 +442,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting rework"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "rework: 4de3c1b 49f2a33 17f6e84. floor 1e-30; all 40 Dead move in peo 7 (was 12); reach 77 = whole stage; no subnormals. New test uses 40 waits, not 300 (300 can't tell the floors apart on 24x16). Details in report commit."
         }
       ],
       "references": [],
