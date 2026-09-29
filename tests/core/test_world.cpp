@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <deque>
@@ -203,4 +204,39 @@ TEST_SUITE("world") {
         b.commit(stale, Action::step({1, 0}));
         CHECK(World::equivalent(a, b));
     }
+
+#ifdef NDEBUG
+    // Perf sanity (PEO-007), release builds only: under Debug+ASan this one case
+    // would cost ~100 ms of the 500 ms suite. Reports, does not assert on time:
+    // shared CI runners are too noisy. Budgets: commit < 1 ms, speculate < 16 ms.
+    TEST_CASE("speculate and commit at 200x120 with 5000 Dead") {
+        constexpr int kPerfWidth = 200;
+        constexpr int kPerfHeight = 120;
+        constexpr int kPerfDead = 5000;
+        constexpr int kWarmTurns = 20;
+        constexpr int kSamples = 10;
+        using Clock = std::chrono::steady_clock;
+        World w(kSeed, {.initial_dead = kPerfDead, .stage_width = kPerfWidth, .stage_height = kPerfHeight});
+        for (int i = 0; i < kWarmTurns; ++i) {
+            w.step(Action::wait());
+        }
+        Speculation spec;
+        w.speculate(spec); // size the buffers once
+        double best_spec_us = 1e30;
+        double best_commit_us = 1e30;
+        for (int i = 0; i < kSamples; ++i) {
+            const auto t0 = Clock::now();
+            w.speculate(spec);
+            const auto t1 = Clock::now();
+            w.commit(spec, Action::wait());
+            const auto t2 = Clock::now();
+            best_spec_us = std::min(best_spec_us, std::chrono::duration<double, std::micro>(t1 - t0).count());
+            best_commit_us =
+                std::min(best_commit_us, std::chrono::duration<double, std::micro>(t2 - t1).count());
+        }
+        MESSAGE("speculate " << best_spec_us << " us, commit " << best_commit_us << " us (best of "
+                             << kSamples << ")");
+        CHECK(w.turn() == static_cast<Tick>(kWarmTurns + kSamples));
+    }
+#endif
 }
