@@ -20,8 +20,13 @@ struct ScentParams {
     float diffusion = 0.5F;
     /// Fraction of scent that evaporates each step, applied after diffusion.
     float decay = 0.01F;
-    /// Scent below this is clamped to zero so the field stays sparse.
-    float floor = 1e-6F;
+    /// Scent below this is clamped to zero so the field stays sparse. Reach goes as
+    /// lambda * ln(peak / floor) (D-007): at 1e-6 the field was cut off at 25-29
+    /// cells on real stages and distant Dead never moved; 1e-30 spans an 80x45
+    /// stage. Not lower: a cell at the floor times the smallest factor step applies
+    /// (diffusion / 4) must stay far above FLT_MIN (1.18e-38), or step would touch
+    /// subnormals, which are slow on many CPUs.
+    float floor = 1e-30F;
 };
 
 /// A diffusing, decaying scalar field. The player (and anything else that
