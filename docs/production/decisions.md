@@ -8,6 +8,17 @@ Format: date · title · decision · why · consequences.
 Settled infrastructure decisions, now encoded in the build and tooling, live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-09-29 · D-010 · Scent builds up where the player lingers and fades slower there
+
+User decision, amending D-007 and D-008. Pooled scent, at a den or a path walked often, fades more
+slowly and pulls the Dead harder than a fresh trail. A cell's fade rate falls as the total of the
+sliding 3x3 box around it rises, to a nonzero minimum. Box totals are a reference map that neither
+spreads nor decays, refreshed on a turn schedule: every turn near the player, staggered further out.
+Why: dens and worn entryways should read as such to the Dead. Consequence: D-007's ban on
+value-dependent decay is lifted for this rule only. Fade rates are fixed between refreshes, so `step`
+stays linear and speculate/commit survives. A sliding box, not tiles, avoids seams that leave false
+peaks. It lives in PEO-030's far layer, whose single-decay IIR solve must be re-examined.
+
 ## 2026-09-29 · The Architect merges its own pull requests
 
 User decision. The Architect opens a pull request per unit of work, drives it green and merges it
@@ -118,19 +129,3 @@ looking. Consequence: `World::step(action)` is the only way time moves; a
 `speculate / commit` pair must produce bit-identical state to `step`
 (golden test); rendering reads the last committed turn, never a
 speculation buffer.
-
-## 2026-09-28 · D-001 · `Dead`, `horde`, and how the Dead are described
-
-User decision. Code: `struct Dead` is one unit, `horde` is any collection
-(`std::vector<Dead>`, `step_horde`). Fiction: generically "the Dead"; a
-large group is "a Horde"; a specific one is described as the corpse it was
-("dead office worker", "mutilated cop", "armless child"), bearing unhealed
-wounds from the Event, discoloured or rotting. Consequence: `Hordeling` is
-gone; descriptions of individual Dead come from a corpse descriptor, not a
-type name.
-
-## 2026-09-28 · The enemies are "the Dead", never "Dead"
-
-User decision. They behave like Dead; the word is banned everywhere for
-aesthetic reasons. Consequence: docs, UI strings, identifiers and comments
-say Dead/dead/horde. Code identifier choice is open as D-001.
