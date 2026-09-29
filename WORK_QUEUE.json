@@ -523,7 +523,7 @@
       "order": 307,
       "type": "chore",
       "title": "Fetched SDL is 3.2.30, so platforms without a system SDL fall back to a 60 Hz redraw loop",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -533,6 +533,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed; ready for the Builder"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
