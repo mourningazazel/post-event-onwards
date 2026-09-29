@@ -22,6 +22,11 @@ using namespace peo::core;
 constexpr int kCell = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE; // 8 px glyphs
 constexpr int kScale = 2;
 constexpr int kHudRows = 1;
+/// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
+/// event arrives ("waitevent", SDL 3.4+). Older SDL parses that string as 0 and
+/// would spin, so there it gets a frame cap instead.
+constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
+constexpr const char* kFallbackIterateHz = "60";
 
 struct App {
     SDL_Window* window = nullptr;
@@ -125,6 +130,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
         SDL_Log("CreateWindowAndRenderer failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    const bool wait_event = SDL_GetVersion() >= kWaitEventMinVersion;
+    SDL_SetHint(SDL_HINT_MAIN_CALLBACK_RATE, wait_event ? "waitevent" : kFallbackIterateHz);
     return SDL_APP_CONTINUE;
 }
 
