@@ -5,8 +5,33 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Settled infrastructure decisions, now encoded in the build and tooling, live in
+Older decisions, including the settled infrastructure ones and N014-N015, live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-29 · D-013 · Buildup is a soak value on each tile, capped, fed by contact
+
+User decision: A. It replaces D-010's fade rule, which the house probe showed does nothing indoors:
+absorbing walls take about 6% of a room's scent a turn against a 1% fade, and the field settles in
+minutes, so it cannot remember days. Each tile holds a soak value from 0 to a ceiling. The player standing
+on it, or using the object on it, charges it by a share of the headroom left, so it never passes the
+ceiling; it leaks slowly. Soak never spreads: the Dead read it on that tile only, added to the human
+scent there. Object emitters are soak: a bed you slept in gives off its soak and fades over days, with
+no separate timer. Calibration (1 turn = 1 s): camping on one floor tile holds about 30% after 10 days;
+10 days of house life with a bed, table, sofa, bath and desk reach 75-82% on those tiles; camping in the
+bed reaches 95%; half-life about 5 days; furniture soaks about 37 times faster than floor. The ceiling
+leaves headroom for other humans. Why: dens and used objects should read as such, and a value per tile
+is nearly free. Consequence: walls keep absorbing; the far layer returns to a single decay, so D-008's
+IIR solve stands. PEO-038 builds soak.
+
+## 2026-09-29 · D-012 · Rot masks human scent
+
+User decision. The Dead and corpses give off rot, a second, hidden scent. It only masks human scent,
+1:1: a Dead's draw from a cell is max(0, human + soak - rot). Rot is not a field: it is a count of the
+Dead and corpses in each 6x6 section, eased toward count times a per-body amount (14 by default), and a
+Dead subtracts its section's rot, one extra operation per Dead. Why: a crowd outside a building should
+dull the pull of a faint trail, not chase it as one; a field of rot mixed into human scent broke
+hunting at every strength tried. Probe: about 10 us a turn for 5,000 Dead on 200x120; 4x4, 6x6 and 8x8
+give the same behaviour. Consequence: PEO-039 builds the rot layer beside PEO-009.
 
 ## 2026-09-29 · D-011 · Suite budget 1 s; the player moves at most 3 steps a second
 
@@ -17,7 +42,7 @@ readable. Consequence: the cap is a named tunable in the frontend (PEO-037); PEO
 
 ## 2026-09-29 · D-010 · Scent builds up where the player lingers and fades slower there
 
-User decision, amending D-007 and D-008. Pooled scent, at a den or a path walked often, fades more
+Superseded by D-013: the fade rule below is withdrawn; its goal stands. User decision, amending D-007 and D-008. Pooled scent, at a den or a path walked often, fades more
 slowly and pulls the Dead harder than a fresh trail. A cell's fade rate falls as the total of the
 sliding 3x3 box around it rises, to a nonzero minimum. Box totals are a reference map that neither
 spreads nor decays, refreshed on a turn schedule: every turn near the player, staggered further out.
@@ -87,39 +112,3 @@ D-002's `speculate/commit` patch survives — every nonlinearity lives in the re
 storage stays `float`, because quantising cells to integers 0–500 would recreate the plateau that
 froze the Dead; if long reach and fresh trails ever conflict, the sanctioned fix is two linear
 layers (fast/near, slow/far) summed at read time, not value-dependent decay.
-
-## 2026-09-28 · N015 · D-003 to D-006 answered; locks; books
-
-User decisions, verbatim in `docs/design/notes/N015-*.md`. D-003 A: every G01–G03
-recommendation accepted (walls are terrain, player is an ordinary creature, the Dead are the
-same kind at a compact tier, template + components, generation addresses, on-demand hidden
-contents, reference + delta instances, physical inventory, volume + weight + dimension
-capacity, stacks, per-part condition). D-004 B: persistent world; the dead player rises as a
-vision-tracking Dead with its stats at the start unless decapitated or brain-destroyed; new
-character 1–2 miles away. D-005: real physical stats, real-world skills; books generated in
-thousands with difficulty and read time, at most one point once, gates both ends. D-006: 1 m
-tiles, one storey per z, shared occupancy with trip, knock-out and trample (ADR-0013). Locks:
-tier bands by lock kind, appearance weighted by building, container and security markers.
-Consequence: `teaches` is now {skill, difficulty, read_time_min, gain_chance_pct, window};
-occupancy is a count per tile.
-
-## 2026-09-28 · N014 · The Dead's AI, content depth, skills 1–100, Mood and Sanity, drugs
-
-User direction, recorded verbatim in `docs/design/notes/N014-*.md` and worked into
-`scent-mobs.md` round 3, `survival-actions.md` §2.15–2.16, `content-model.md` §10–11,
-`world-catalog.md` §10, G04, ADR-0012 and `purposes.md`. Headlines: one weighted-draw movement
-rule with aggregate and company pull replaces the recruitment cascade; triggers steer by
-general direction and expire displaced; sound events are kind + dB; trips cascade and trample
-hurts; alerted ×1.5, following ×2; skills are 1–100 with percentages and failure outcomes;
-every item has a quality and a "broken" text; building census and category retail; Mood and
-Sanity are main mechanics; drugs and explosives exist; maps are rare and mark general
-locations; crows are text. Consequence: the registry skill scale changed to 1–100
-(`content/registry/skills.toml`, `actions.toml` use `unlock`/`difficulty`).
-
-## 2026-09-28 · The design corpus from the feature branches is the design of record
-
-The `content/survival-catalog` branch (GAMEPLAN, SYSTEMS, ADR-0001–0011, gameplay model,
-notes N001–N013, content model, survival actions, world catalogue, purposes, playtest harness,
-403 authored archetypes) is merged. ADRs stay the record of architecture decisions; this file
-stays the rolling log and points at them. `SYSTEMS.md` is the target map, reached one system at
-a time through the queue, not by a framework-first rewrite (architecture.md).

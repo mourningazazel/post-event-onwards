@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 38,
+  "next_id": 40,
   "items": [
     {
       "id": "PEO-003",
@@ -377,6 +377,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "PEO-007 constraint: compute D-010 fade rates (box totals) at the start of a turn from committed state, before the player's deposit is patched in, so speculate() sees the same rates commit() uses; the golden test must stay bit-exact. If a rate had to depend on this turn's deposit, commit would need to recompute every cell whose box includes the patched cells."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-013 (2026-09-29) supersedes D-010's fade rule: buildup moves to a per-tile soak value (PEO-038), so the far layer returns to a single decay and D-008's separable IIR solve stands. Drop the buildup acceptance from this item; the doorway scenario stays."
         }
       ],
       "references": [],
@@ -537,6 +542,46 @@
         "src/app/main.cpp"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-038",
+      "order": 327,
+      "type": "feature",
+      "title": "Soak: a capped per-tile scent memory charged by contact (D-013)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Walls: Ryan asked whether keeping 10% of wall-bound scent would help buildup. Probe: a 10% bounce raises indoor values only 2-10% (camp tile 1110 to 1130), and soak is fed by contact, not the field, so walls stay fully absorbing."
+        }
+      ],
+      "references": [
+        "docs/production/decisions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-039",
+      "order": 337,
+      "type": "feature",
+      "title": "Rot: section counts of the Dead mask human scent (D-012)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "docs/production/decisions.md"
+      ],
+      "depends_on": [
+        "PEO-009"
+      ]
     }
   ]
 }
