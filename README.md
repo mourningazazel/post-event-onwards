@@ -31,7 +31,7 @@ SDL3 is found from the system or fetched from source.
 |------|------|
 | `src/core/` | The simulation library. No SDL, deterministic, fully unit-tested. |
 | `src/app/` | SDL3 frontend: window, input, drawing. Thin by rule. |
-| `tests/` | doctest suite for `core` (< 500 ms) and content expectations/chains under `tests/content/`. |
+| `tests/` | doctest suite for `core` (< 1 s) and content expectations/chains under `tests/content/`. |
 | `content/` | All game data: registry, materials, substances, item archetypes, modifiers, world data. Schema in `content/README.md`. |
 | `tools/` | `verify.py` (the gate), `work_queue.py`, `validate_docs.py`, `content/lint.py`, `content/test.py`, git hooks. |
 | `docs/` | Read-by-task index in `docs/README.md`. Direction in `docs/production/`, decisions in `docs/adr/`, design in `docs/design/`. |

@@ -8,6 +8,13 @@ Format: date · title · decision · why · consequences.
 Settled infrastructure decisions, now encoded in the build and tooling, live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-09-29 · D-011 · Suite budget 1 s; the player moves at most 3 steps a second
+
+User decision. The headless suite's budget rises from 500 ms to 1 s (AGENTS.md, `docs/testing.md`):
+the golden and reach tests outgrew it. Movement input is capped at 3 steps a second; presses faster
+than that are dropped, not queued, so holding a key never builds up lag. Why: turn pacing should stay
+readable. Consequence: the cap is a named tunable in the frontend (PEO-037); PEO-033 enforces 1 s.
+
 ## 2026-09-29 · D-010 · Scent builds up where the player lingers and fades slower there
 
 User decision, amending D-007 and D-008. Pooled scent, at a den or a path walked often, fades more
@@ -116,16 +123,3 @@ notes N001–N013, content model, survival actions, world catalogue, purposes, p
 403 authored archetypes) is merged. ADRs stay the record of architecture decisions; this file
 stays the rolling log and points at them. `SYSTEMS.md` is the target map, reached one system at
 a time through the queue, not by a framework-first rewrite (architecture.md).
-
-## 2026-09-28 · D-002 · Turn-based, with the world computed while waiting
-
-User decision. The world advances only when the player acts (a step or a
-wait is a turn); it never runs on a clock. Modern twist: the idle time
-between turns is used to compute ahead. The player's action changes only a
-small neighbourhood, so the next turn is computed speculatively while
-waiting and patched on input. Why: readable tactical play with no waiting
-on the simulation, and the 5,000-Dead budget spent when the player is not
-looking. Consequence: `World::step(action)` is the only way time moves; a
-`speculate / commit` pair must produce bit-identical state to `step`
-(golden test); rendering reads the last committed turn, never a
-speculation buffer.

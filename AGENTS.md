@@ -27,7 +27,7 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 - `src/core` is the simulation: no SDL, I/O or globals; deterministic from
   a seed. Every mechanic lands here first, with a doctest under `tests/`.
 - `src/app` is the SDL3 frontend and stays thin; logic in it is a bug.
-- Unit tests stay headless; the suite runs in under 500 ms. What cannot be
+- Unit tests stay headless; the suite runs in under 1 s. What cannot be
   tested headlessly gets a `manual` step in its brief.
 - Performance is a feature: no allocation in per-tick loops; measure with
   `headless-release` before optimising.
