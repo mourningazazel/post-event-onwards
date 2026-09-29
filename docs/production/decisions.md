@@ -8,6 +8,17 @@ Format: date · title · decision · why · consequences.
 Settled infrastructure decisions, now encoded in the build and tooling, live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-09-29 · The Architect merges its own pull requests
+
+User decision. The Architect opens a pull request per unit of work, drives it green and merges it
+once CI passes; the user is no longer the merge gate and spends their attention on gameplay and
+direction instead. Why: waiting on a merge was the bottleneck. Consequence: the Architect's own
+verification is the only gate, so a check must never share a code path with the thing it checks —
+both defects caught that way this session, an unsatisfiable acceptance test and five silent
+truncation paths in the brief parser, would otherwise have reached `main`. Gameplay, abstraction,
+direction and big-rewrite calls still stop in `DECISIONS_NEEDED.md`. Merges are merge commits, as on
+`main` already.
+
 ## 2026-09-29 · D-009 · Briefs live in their own files
 
 User decision: A. A brief is now `docs/production/briefs/PEO-xxx.md`, exactly as a handoff is
@@ -123,11 +134,3 @@ type name.
 User decision. They behave like Dead; the word is banned everywhere for
 aesthetic reasons. Consequence: docs, UI strings, identifiers and comments
 say Dead/dead/horde. Code identifier choice is open as D-001.
-
-## 2026-09-28 · The user owns gameplay and direction decisions
-
-Agents never pick between gameplay, abstraction or direction options, nor
-start a large rewrite, without an answered entry in `DECISIONS_NEEDED.md`.
-Technical method is the agents' call. Why: the user wants to steer what the
-game is, not how each function is written. Consequence: an item waiting on a
-decision is `AwaitingUser` with the D-id in its note.

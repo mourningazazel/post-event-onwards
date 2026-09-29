@@ -115,6 +115,7 @@ def parse_brief(text: str, source: str) -> dict:
     """
     brief = empty_brief()
     field: str | None = None
+    section: str = ""
     goal: list[str] = []
     for line in text.split("\n"):
         if line.startswith("## "):
@@ -123,16 +124,24 @@ def parse_brief(text: str, source: str) -> dict:
             if field is None:
                 known = ", ".join(h for h, _ in BRIEF_SECTIONS)
                 sys.exit(f"error: {source}: unknown brief section '## {heading}'; expected one of: {known}")
+            section = heading
             continue
         if field is None:
             continue
         if field == "goal":
+            # The goal is prose: every line belongs to it, verbatim.
             goal.append(_unescape_goal_line(line))
         elif line.startswith("- "):
             brief[field].append(line[2:])
         elif line.startswith(CONTINUATION) and brief[field]:
             # Indented line: the rest of the entry above it, newline restored.
             brief[field][-1] += "\n" + line[len(CONTINUATION):]
+        elif line.strip():
+            # Not an entry, not a continuation, not blank: it would be dropped.
+            sys.exit(
+                f"error: {source}: unparseable line in section '## {section}': {line!r}; "
+                f"a list entry starts with '- ' and its continuations indent {len(CONTINUATION)} spaces"
+            )
     while goal and not goal[0].strip():
         goal.pop(0)
     while goal and not goal[-1].strip():
