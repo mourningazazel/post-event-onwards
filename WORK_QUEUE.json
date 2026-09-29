@@ -83,7 +83,7 @@
       "order": 70,
       "type": "feature",
       "title": "Compute the next turn while waiting for input",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -93,6 +93,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "briefed. Architect owns the golden-test design; Builder may ask for the linearity test to be written first."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
