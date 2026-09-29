@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 37,
+  "next_id": 38,
   "items": [
     {
       "id": "PEO-003",
@@ -437,6 +437,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "D-011: the budget is now 1 s, not 500 ms (AGENTS.md, docs/testing.md). Enforce 1 s; the brief's out-of-scope line about choosing the budget is settled."
         }
       ],
       "references": [],
@@ -490,6 +495,28 @@
       "notes": [],
       "references": [
         "cmake/FindOrFetchSDL3.cmake",
+        "src/app/main.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-037",
+      "order": 317,
+      "type": "feature",
+      "title": "Cap turn input at 3 per second so holding a key never builds up lag",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
         "src/app/main.cpp"
       ],
       "depends_on": []
