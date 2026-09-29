@@ -5,8 +5,15 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions, including the settled infrastructure ones and N014-N015, live in
+Older decisions, including the settled infrastructure ones, D-007 and N014-N015, live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-29 · D-014 · One turn is six seconds of game time
+
+User decision. Ten turns make a game minute and 14,400 a game day. Why: anything measured in game
+time (soak, reading, the ADR-0011 revisit gate) needs one conversion. Consequence: the live scent field
+keeps its per-turn values unchanged; soak is calibrated per turn to D-013's targets (charge about
+5.1e-6 of the headroom a turn on floor, 38.5 times that on furniture, leak time constant 7 days).
 
 ## 2026-09-29 · D-013 · Buildup is a soak value on each tile, capped, fed by contact
 
@@ -16,12 +23,12 @@ minutes, so it cannot remember days. Each tile holds a soak value from 0 to a ce
 on it, or using the object on it, charges it by a share of the headroom left, so it never passes the
 ceiling; it leaks slowly. Soak never spreads: the Dead read it on that tile only, added to the human
 scent there. Object emitters are soak: a bed you slept in gives off its soak and fades over days, with
-no separate timer. Calibration (1 turn = 1 s): camping on one floor tile holds about 30% after 10 days;
+no separate timer. Calibration (1 turn = 6 s, D-014): camping on one floor tile holds about 30% after 10 days;
 10 days of house life with a bed, table, sofa, bath and desk reach 75-82% on those tiles; camping in the
 bed reaches 95%; half-life about 5 days; furniture soaks about 37 times faster than floor. The ceiling
 leaves headroom for other humans. Why: dens and used objects should read as such, and a value per tile
 is nearly free. Consequence: walls keep absorbing; the far layer returns to a single decay, so D-008's
-IIR solve stands. PEO-038 builds soak.
+IIR solve stands. PEO-038 builds soak. Soak rates and rot per body are the balance sliders: new emitters and emission values are tuned against them rather than by re-deriving the field.
 
 ## 2026-09-29 · D-012 · Rot masks human scent
 
@@ -96,19 +103,3 @@ never has to model a path around one. Consequence: `ScentField::step` stops refl
 unconditional and only `in` tests the mask, dropping a branch from the inner loop. Mass is no longer
 conserved, so the two tests asserting conservation state the new contract instead. Reach shortens, so
 PEO-026's tuning and its measured test parameters must both be re-derived after this lands.
-
-## 2026-09-28 · D-007 · Scent carries far on a 0–500 scale; the Dead are drawn by a power law
-
-User decision. The player deposits at a nominal full strength of 500 rather than 1, the field
-spreads much further, and the Dead weight a candidate cell by its scent raised to a tunable
-exponent, so a stronger cell pulls disproportionately harder while a wide, flat far field still
-yields directional drift. Why: the ~8-cell reach in the PEO-001 playtest is the `floor` flush —
-past it every cell is exactly `0.0F`, `strongest_neighbour` finds nothing strictly greater, and
-distant Dead freeze for good; reach goes as `λ · ln(peak/floor)`, so a wide dynamic range over a
-tiny floor is what carries a gradient across the map. Consequence: `floor` drops by orders of
-magnitude and the 500 scale supplies the headroom (PEO-026); the field stays a linear operator so
-D-002's `speculate/commit` patch survives — every nonlinearity lives in the read path, as
-`pow(scent, k)` in the weighted draw, never `exp`, which saturates at these magnitudes (PEO-009);
-storage stays `float`, because quantising cells to integers 0–500 would recreate the plateau that
-froze the Dead; if long reach and fresh trails ever conflict, the sanctioned fix is two linear
-layers (fast/near, slow/far) summed at read time, not value-dependent decay.
