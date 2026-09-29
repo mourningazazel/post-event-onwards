@@ -520,10 +520,10 @@
       "order": 255,
       "type": "feature",
       "title": "Scent flows into walls and the map edge and is lost there",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -535,6 +535,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "a270d0d, 6218861. Corner pile-up gone: 20-turn corner deposit 8.14 -> 4.08 (open field 4.68). View bands too coarse to show it; details in report commit."
         }
       ],
       "references": [],
