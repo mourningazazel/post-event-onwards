@@ -550,10 +550,10 @@
       "order": 265,
       "type": "bug",
       "title": "The Dead do not converge within 3 s: scent spreads ~8 cells in 20 s, so distant Dead never move",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -585,6 +585,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting; re-deriving test numbers after PEO-029"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "All units landed, tests pass. GOAL NOT MET in game: with absorbing walls, steady-state reach is 29 cells; 28/40 Dead in peo 7 never move. Numbers in report commit; needs a decision."
         }
       ],
       "references": [],
