@@ -165,6 +165,38 @@ TEST_SUITE("world") {
         }
     }
 
+    TEST_CASE("a tiny stage is clamped to 3x3") {
+        // PEO-034: a 1x1 stage used to reach rng.range(1, -1) and spin load_stage.
+        World w(kSeed, {.initial_dead = 1, .stage_width = 1, .stage_height = 1});
+        CHECK(w.stage().spec.width == kMinStageSide);
+        CHECK(w.stage().spec.height == kMinStageSide);
+        constexpr int kTinyTurns = 5;
+        for (int i = 0; i < kTinyTurns; ++i) {
+            w.step(Action::wait()); // entry is the exit here, so each turn loads a stage
+        }
+        CHECK(w.stage().spec.width == kMinStageSide);
+    }
+
+    TEST_CASE("more Dead than floor spawns only what fits") {
+        constexpr int kSide = 6;
+        constexpr int kTooMany = 1000;
+        World w(kSeed, {.initial_dead = kTooMany, .stage_width = kSide, .stage_height = kSide});
+        const Grid<bool>& blocked = w.stage().blocked;
+        int open = 0;
+        for (int y = 0; y < kSide; ++y) {
+            for (int x = 0; x < kSide; ++x) {
+                open += !blocked.at(x, y) && Vec2i{x, y} != w.player() ? 1 : 0;
+            }
+        }
+        CHECK(w.horde().size() == static_cast<std::size_t>(open));
+        for (const Dead& d : w.horde()) {
+            CHECK_FALSE(blocked.at(d.pos));
+            CHECK(d.pos != w.player());
+        }
+        CHECK(
+            World(kSeed, {.initial_dead = -1, .stage_width = kSide, .stage_height = kSide}).horde().empty());
+    }
+
     TEST_CASE("reaching exit advances stage_index") {
         World w(kSeed, small_world(0));
         const std::vector<Vec2i> steps = path_to_exit(w);
