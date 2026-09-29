@@ -86,6 +86,9 @@ bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on 
 M1 (release, 200x120, 5000 Dead, best of 10): `speculate` 224–542 µs, `commit` 31–65 µs. In
 game at 80x45 the HUD read `spec:hit` on every turn, including ~46 keys/s.
 
+The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
+auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
+
 ## Boundaries that tests protect
 
 | Boundary | Test |
