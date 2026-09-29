@@ -48,4 +48,27 @@ TEST_SUITE("dead") {
         const std::size_t moved = step_horde(horde, f, walls);
         CHECK(moved == 1000);
     }
+
+    TEST_CASE("distant Dead close in") {
+        // The reach field of 'the scent front carries far' (34x11, source (4,5),
+        // 40 warm-up steps), then frozen. Measured: the unit at (19,5) closes all 15
+        // cells by call 29. It must start inside the front: on a flat zero field
+        // strongest_neighbour is empty and the unit would never move.
+        constexpr Vec2i kSource{4, 5};
+        constexpr Vec2i kStart{19, 5};
+        constexpr int kWarmupSteps = 40;
+        constexpr int kCalls = 50;
+        constexpr int kMinClosed = 10;
+        ScentField f(34, 11);
+        Grid<bool> walls(34, 11, false);
+        for (int i = 0; i < kWarmupSteps; ++i) {
+            f.deposit(kSource, kPlayerScent);
+            f.step();
+        }
+        std::vector<Dead> horde{{.pos = kStart}};
+        for (int i = 0; i < kCalls; ++i) {
+            step_horde(horde, f, walls);
+        }
+        CHECK(kStart.x - horde[0].pos.x >= kMinClosed);
+    }
 }

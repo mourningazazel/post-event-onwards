@@ -4,6 +4,18 @@
 
 using namespace peo::core;
 
+namespace {
+// Reach case (PEO-026). Measured, not estimated: after kReachSteps the value at
+// kReachFarX is 4.55e-4, 45x kReachThreshold, and the trail strictly decreases
+// past it. Do not scale this up to 80x45: ~200 ms per test under Debug+ASan.
+constexpr int kReachWidth = 34;
+constexpr int kReachHeight = 11;
+constexpr Vec2i kReachSource{4, 5};
+constexpr int kReachSteps = 40;
+constexpr int kReachFarX = 19;
+constexpr float kReachThreshold = 1e-5F;
+} // namespace
+
 TEST_SUITE("scent") {
     TEST_CASE("deposit then sample") {
         ScentField f(10, 10);
@@ -85,5 +97,18 @@ TEST_SUITE("scent") {
         f.deposit({1, 1}, 0.1F);
         f.step();
         CHECK(f.sample({1, 1}) == doctest::Approx(0.0));
+    }
+
+    TEST_CASE("the scent front carries far") {
+        ScentField f(kReachWidth, kReachHeight);
+        for (int i = 0; i < kReachSteps; ++i) { // a player standing still
+            f.deposit(kReachSource, kPlayerScent);
+            f.step();
+        }
+        CHECK(f.sample({kReachFarX, kReachSource.y}) > kReachThreshold);
+        for (int x = kReachSource.x + 1; x <= kReachFarX; ++x) {
+            CAPTURE(x);
+            CHECK(f.sample({x, kReachSource.y}) < f.sample({x - 1, kReachSource.y}));
+        }
     }
 }
