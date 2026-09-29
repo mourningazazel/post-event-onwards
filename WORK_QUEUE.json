@@ -480,10 +480,10 @@
       "order": 250,
       "type": "bug",
       "title": "Frontend busy-loops: release build uses ~78% of a CPU core at idle",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -505,6 +505,11 @@
           "at": "2026-09-28",
           "by": "builder",
           "text": "starting; brief predates PEO-002 (no kTickMs now)"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "Fix e2d6822. Release idle 0% CPU (was 99%); 20 presses -> turn 20 in 0.2 s. Tick-rate acceptance obsolete post-PEO-002."
         }
       ],
       "references": [],
