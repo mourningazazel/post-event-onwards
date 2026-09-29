@@ -5,15 +5,28 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions, including the settled infrastructure ones, D-007 and N014-N015, live in
+Older decisions (settled infrastructure, D-007, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
-## 2026-09-29 · D-014 · One turn is six seconds of game time
+## 2026-09-29 · D-015 · The world keeps a clock in seconds; actions take time
 
-User decision. Ten turns make a game minute and 14,400 a game day. Why: anything measured in game
-time (soak, reading, the ADR-0011 revisit gate) needs one conversion. Consequence: the live scent field
-keeps its per-turn values unchanged; soak is calibrated per turn to D-013's targets (charge about
-5.1e-6 of the headroom a turn on floor, 38.5 times that on furniture, leak time constant 7 days).
+User decision, amending D-002 and D-014. The world counts game seconds. Heavy systems (scent spread,
+the Dead) update on their own fixed cadence, every 6 s by default, whatever the player does. Each action
+has a duration in seconds (a walking step 6, a running step 3, a bicycle tile 3, a thrown or falling body
+a run of moves each with its own time) and lands between updates, so a runner moves twice per update
+and a walker once. The player's scent is logged per second on the tile occupied and applied at the next
+update. Rates (scent, soak, rot, Dead speed) are per second. Why: speed is a gradient, not a fixed count
+of ticks, and compute per update does not depend on how the player moves, so running never doubles
+scent or cost. Consequence: the world still waits for input (D-002); the next update is computed ahead
+while idle and the player's moves only patch around the tiles they touched (PEO-007's model). Dead
+speeds become seconds per step. PEO-040 reworks the clock; running is PEO-041.
+
+## 2026-09-29 · D-014 · A walking step is six seconds of game time
+
+User decision, amended by D-015: this is a walking step's duration, not the size of a turn. Ten
+walking steps make a game minute. The live scent field keeps its spread per game second. Soak is
+calibrated per second to D-013's targets: charge about 8.5e-7 of the headroom a second on floor, 37
+times that on furniture, leak time constant 7 days (604,800 s).
 
 ## 2026-09-29 · D-013 · Buildup is a soak value on each tile, capped, fed by contact
 
@@ -23,7 +36,7 @@ minutes, so it cannot remember days. Each tile holds a soak value from 0 to a ce
 on it, or using the object on it, charges it by a share of the headroom left, so it never passes the
 ceiling; it leaks slowly. Soak never spreads: the Dead read it on that tile only, added to the human
 scent there. Object emitters are soak: a bed you slept in gives off its soak and fades over days, with
-no separate timer. Calibration (1 turn = 6 s, D-014): camping on one floor tile holds about 30% after 10 days;
+no separate timer. Calibration (per game second, D-014): camping on one floor tile holds about 30% after 10 days;
 10 days of house life with a bed, table, sofa, bath and desk reach 75-82% on those tiles; camping in the
 bed reaches 95%; half-life about 5 days; furniture soaks about 37 times faster than floor. The ceiling
 leaves headroom for other humans. Why: dens and used objects should read as such, and a value per tile
@@ -46,17 +59,6 @@ User decision. The headless suite's budget rises from 500 ms to 1 s (AGENTS.md, 
 the golden and reach tests outgrew it. Movement input is capped at 3 steps a second; presses faster
 than that are dropped, not queued, so holding a key never builds up lag. Why: turn pacing should stay
 readable. Consequence: the cap is a named tunable in the frontend (PEO-037); PEO-033 enforces 1 s.
-
-## 2026-09-29 · D-010 · Scent builds up where the player lingers and fades slower there
-
-Superseded by D-013: the fade rule below is withdrawn; its goal stands. User decision, amending D-007 and D-008. Pooled scent, at a den or a path walked often, fades more
-slowly and pulls the Dead harder than a fresh trail. A cell's fade rate falls as the total of the
-sliding 3x3 box around it rises, to a nonzero minimum. Box totals are a reference map that neither
-spreads nor decays, refreshed on a turn schedule: every turn near the player, staggered further out.
-Why: dens and worn entryways should read as such to the Dead. Consequence: D-007's ban on
-value-dependent decay is lifted for this rule only. Fade rates are fixed between refreshes, so `step`
-stays linear and speculate/commit survives. A sliding box, not tiles, avoids seams that leave false
-peaks. It lives in PEO-030's far layer, whose single-decay IIR solve must be re-examined.
 
 ## 2026-09-29 · The Architect merges its own pull requests
 
