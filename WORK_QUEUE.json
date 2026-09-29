@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 28,
+  "next_id": 29,
   "items": [
     {
       "id": "PEO-002",
@@ -810,20 +810,20 @@
           "tests/core/test_scent.cpp"
         ],
         "units": [
-          "core: raise the deposit scale. kPlayerScent already exists at src/app/main.cpp:26 as 1.0F — change it to 500.0F and move it into core beside ScentParams so tests and any future depositor share one constant. Note the field step is linear, so deposit magnitude and floor are interchangeable (500.0F at floor 1e-6 is the same field shape as 1.0F at 2e-9); the 500 scale is chosen for the integer draw weights PEO-009 needs, and buys a constant ~28 cells of reach on top of the floor change.",
-          "core: retune the ScentParams defaults in scent.hpp. Start from diffusion 0.8, decay 0.01, floor 1e-6 — these were arrived at independently on branch claude/fervent-curie-iqonhg from the same root cause, and give sqrt((0.8/4)/0.01) = 4.47 cells per e-fold, about 90 cells of steady-state reach at a 500.0F deposit on an 80x45 map. Keep diffusion under 1.0 (the explicit scheme goes unstable at the limit; 0.8 means out = 0.8*here in the interior). Record the values you settle on in the report.",
-          "test: tests/core/test_scent.cpp — add 'the scent front crosses the map': open 80x45, deposit kPlayerScent at (8,22) every step for 200 steps, then CHECK sample({70,22}) > 0.0F and CHECK values strictly decrease along y=22 from x=9 to x=70. Do not stop at a bare '> 0.0F' check against a 1e-6 floor: that pins the exponential tail crossing zero, not a usable scent level, so the strict-decrease assertion is the one that matters.",
-          "test: tests/core/test_dead.cpp — add 'distant Dead close in': same field, one of the Dead starting at (60,22) must close at least 25 cells over 200 calls to step_horde. This is the real regression test for this bug — it asserts behaviour, not field values.",
-          "app: the scent view's bands are tuned for a 0..1 field and will render as one solid block at the new scale. Make the bands relative to the field maximum or log-spaced so the view survives retuning. Overlaps PEO-024 (new glyph for the strongest band): land the second of the two on top of the first.",
-          "docs: one line in docs/design/scent-mobs.md recording the 0-500 deposit scale and that reach goes as sqrt((diffusion/4)/decay) * ln(peak/floor)."
+          "core: kPlayerScent already exists at src/app/main.cpp:26 as 1.0F. Raise it to 500.0F and move it into core beside ScentParams so tests and any future depositor share one constant.",
+          "core: retune the ScentParams defaults to diffusion 0.5, decay 0.01, floor 1e-6. Use 0.5, NOT 0.8: the checkerboard mode's amplification is 1-2D, so 0.8 gives -0.6 and a sign-alternating ripple (5 direction reversals measured in the trail behind a moving player, which can pull a gradient-climber the wrong way), while 0.5 gives exactly 0 and a strictly monotone trail. See docs/design/scent-performance.md.",
+          "test: tests/core/test_scent.cpp — add 'the scent front carries far'. Grid 34x11, source (4,5), deposit kPlayerScent every step for 40 steps. CHECK sample({19,5}) > 1e-5F and CHECK values strictly decrease along y=5 from x=5 to x=19. These numbers are measured, not estimated: the value lands at 4.55e-04 (45x the threshold) and strict decrease actually holds to d=19. Do NOT scale this up to 80x45 with 75+ steps — measured at 200 ms per test under Debug+ASan, which would blow the suite budget on its own.",
+          "test: tests/core/test_dead.cpp — add 'distant Dead close in'. Same 34x11 field after the same 40-step warm-up; one of the Dead at (19,5) with the default speed must close at least 10 cells over 50 calls to step_horde. Measured: it closes all 15 by call 29. Never start one of the Dead outside the scent front — strongest_neighbour returns empty on a flat zero field and the unit never moves, so the test would pin 0 forever.",
+          "app: the scent view's bands are tuned for a 0..1 field and will render as one solid block at the new scale. Make the bands relative to the field maximum or log-spaced. Overlaps PEO-024: land the second of the two on top of the first.",
+          "docs: one line in docs/design/scent-mobs.md recording the 0-500 deposit scale, pointing at docs/design/scent-performance.md for the measurements."
         ],
         "acceptance": [
-          "on an open map the field is strictly positive and strictly decreasing out to at least 60 cells from the player: no flat zero region inside the map",
-          "in game (peo 7): standing still, the Dead close in from across the map, not only from within ~8 cells",
-          "both new tests pass and the whole suite stays under 500 ms — size the new cases deliberately: the briefed scent-reach case (200 steps over 80x45) is more cell-updates than the heaviest case in the suite today, so use the smallest field and step count that still demonstrates the reach",
+          "the two new tests pass, and together add under 25 ms to the headless suite (measured 21.6 ms for the pair under Debug+ASan)",
+          "in game (peo 7): standing still, the Dead begin closing from well beyond the old ~8 cells",
           "ScentField::step stays linear: no value-dependent decay and no pow/exp inside step. The floor flush remains the only nonlinearity, so PEO-007's step_linear + clamp_floor split survives.",
           "no magic numbers: the deposit and every retuned default is a named constant or a ScentParams field",
-          "the thousand-dead case is no slower than the PEO-027 baseline above"
+          "the thousand-dead case is no slower than the 0.000261 s baseline",
+          "this item does NOT make the Dead able to intercept a moving player — that is D-008. Scope here is reach for a stationary or slow player."
         ],
         "tests": [
           "tests/core/test_scent.cpp (new reach case)",
@@ -858,6 +858,57 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "Brief corrected: kPlayerScent already exists at src/app/main.cpp:26 as 1.0F, so the unit raises it rather than introducing it. Starting tuning values (diffusion 0.8, decay 0.01, floor 1e-6) are carried over from branch claude/fervent-curie-iqonhg, which reached the same numbers independently; that branch's pinning test asserted only sample > 0.0F against a 1e-6 floor, which passes on the tail crossing rather than a usable scent level, so the tests here assert a strictly decreasing gradient and actual Dead convergence instead."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "Re-briefed against measured data. Two corrections to my earlier brief: the acceptance test I wrote was unsatisfiable (at 200 steps the front reaches 45 cells, and I asserted at 62 — sample was exactly 0.0), and diffusion 0.8 is in the oscillatory regime. Verified replacements are in the units. Separately, D-008 now covers the finding that a moving player outruns their own scent entirely, which this item cannot fix."
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-028",
+      "order": 270,
+      "type": "bug",
+      "title": "Build sets no floating-point flags, so FMA contraction can break D-002 bit-identity",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-29",
+      "brief": {
+        "goal": "The simulation produces bit-identical float results between Debug and Release and across architectures, as D-002 requires.",
+        "context": [
+          "cmake/CompilerOptions.cmake",
+          "docs/production/decisions.md (D-002)",
+          "docs/design/scent-performance.md",
+          "src/core/src/scent.cpp"
+        ],
+        "units": [
+          "build: set -ffp-contract=off for the core target (and /fp:precise on MSVC). gcc and clang default to -ffp-contract=fast at -O2, so 'here * share' and '(here - out + in) * keep' in ScentField::step may fuse into an FMA in Release and not in Debug, and differ between x86-64 and aarch64.",
+          "test: pin the exact float bit patterns of a small ScentField after a fixed number of steps (reinterpret as uint32 and compare, not Approx). CI already builds g++-13, clang++-18 and release, so a divergence between those three will fail the test."
+        ],
+        "acceptance": [
+          "-ffp-contract=off (or the MSVC equivalent) is set for the core target",
+          "a test pins exact float bit patterns after a fixed number of steps and passes identically on g++-13, clang++-18 and the release preset",
+          "the numbers recorded in docs/design/scent-performance.md still hold"
+        ],
+        "tests": [
+          "tests/core/test_scent.cpp (new bit-identity case)"
+        ],
+        "manual": [],
+        "out_of_scope": [
+          "converting the field to fixed point — that would be part of D-008 if it is answered that way",
+          "any change to ScentField's algorithm"
+        ]
+      },
+      "notes": [
+        {
+          "at": "2026-09-29",
+          "by": "architect",
+          "text": "briefed"
         }
       ],
       "references": [],
