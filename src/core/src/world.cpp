@@ -20,6 +20,8 @@ constexpr int kRepatchRadius = 2;
 } // namespace
 
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
+    params_.stage_width = std::max(params_.stage_width, kMinStageSide);
+    params_.stage_height = std::max(params_.stage_height, kMinStageSide);
     load_stage(0);
 }
 
@@ -32,9 +34,18 @@ void World::load_stage(std::uint32_t index) {
     scent_ = ScentField(stage_.spec.width, stage_.spec.height, params_.scent);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
+    // Cap the spawn at the open cells a Dead may start on, so the placement loop
+    // below always terminates. The draws for those placed are unchanged.
+    int open = 0;
+    for (int y = 1; y < stage_.spec.height - 1; ++y) {
+        for (int x = 1; x < stage_.spec.width - 1; ++x) {
+            open += !stage_.blocked.at(x, y) && Vec2i{x, y} != player_ ? 1 : 0;
+        }
+    }
+    const int count = std::clamp(params_.initial_dead, 0, open);
     horde_.clear();
-    horde_.reserve(static_cast<std::size_t>(params_.initial_dead));
-    for (int i = 0; i < params_.initial_dead; ++i) {
+    horde_.reserve(static_cast<std::size_t>(count));
+    for (int i = 0; i < count; ++i) {
         Vec2i p;
         do {
             p = {rng_.range(1, stage_.spec.width - 2), rng_.range(1, stage_.spec.height - 2)};

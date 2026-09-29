@@ -12,7 +12,14 @@
 
 namespace peo::core {
 
-/// Tunables for a World. Defaults match the first playable loop.
+/// Smallest stage side: a border wall on each side of one open cell. World clamps
+/// smaller stage_width / stage_height up to it rather than failing.
+inline constexpr int kMinStageSide = 3;
+
+/// Tunables for a World. Defaults match the first playable loop. Preconditions,
+/// enforced by clamping in World (core has no exceptions): each stage side is at
+/// least kMinStageSide; at most one of the Dead per open cell other than the
+/// player's entry is spawned, and never fewer than zero.
 struct WorldParams {
     int initial_dead = 40;
     float player_scent = kPlayerScent;
