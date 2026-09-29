@@ -3,6 +3,8 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <bit>
+#include <cstdint>
 #include <cstdlib>
 #include <deque>
 #include <vector>
@@ -12,8 +14,29 @@ using namespace peo::core;
 namespace {
 
 constexpr Seed kSeed = 7;
-constexpr int kDeterminismTurns = 30;
+constexpr int kDeterminismTurns = 100;
 constexpr int kWaitTurns = 30;
+/// A World turn sweeps the whole scent field, so cost scales with stage area.
+/// A 24x16 stage is ~1/9 of the default 80x45 and keeps these cases in budget.
+constexpr int kTestStageWidth = 24;
+constexpr int kTestStageHeight = 16;
+constexpr int kTestDead = 20;
+
+WorldParams small_world(int dead = kTestDead) {
+    return {.initial_dead = dead, .stage_width = kTestStageWidth, .stage_height = kTestStageHeight};
+}
+
+/// Cells whose scent differs in any bit. Bit-exact on purpose: both worlds run
+/// the same binary in one process, so any difference at all is a real bug.
+std::size_t scent_mismatches(const ScentField& a, const ScentField& b) {
+    const Grid<float>& ca = a.cells();
+    const Grid<float>& cb = b.cells();
+    std::size_t differ = 0;
+    for (std::size_t i = 0; i < ca.size(); ++i) {
+        differ += std::bit_cast<std::uint32_t>(ca.data()[i]) != std::bit_cast<std::uint32_t>(cb.data()[i]);
+    }
+    return differ;
+}
 
 /// A fixed, varied action script: steps in all four directions plus waits.
 Action scripted_action(int i) {
@@ -69,19 +92,18 @@ std::vector<Vec2i> path_to_exit(const World& w) {
 } // namespace
 
 TEST_SUITE("world") {
-    TEST_CASE("same seed same world after 30 turns") {
-        World a(kSeed);
-        World b(kSeed);
-        // 30 turns, not the brief's 100: a scent step costs ~2.3 ms under the
-        // headless sanitizers, and 30 turns already exercise moves, walls and waits.
+    TEST_CASE("same seed same world after 100 turns") {
+        World a(kSeed, small_world());
+        World b(kSeed, small_world());
         for (int i = 0; i < kDeterminismTurns; ++i) {
             a.step(scripted_action(i));
             b.step(scripted_action(i));
         }
         CHECK(a.player() == b.player());
         CHECK(a.turn() == b.turn());
-        CHECK(static_cast<double>(a.scent().total()) ==
-              doctest::Approx(static_cast<double>(b.scent().total())));
+        REQUIRE(a.scent().cells().size() == b.scent().cells().size());
+        CHECK(a.scent().total() > 0.0F); // the field is not trivially empty
+        CHECK(scent_mismatches(a.scent(), b.scent()) == 0);
         REQUIRE(a.horde().size() == b.horde().size());
         for (std::size_t i = 0; i < a.horde().size(); ++i) {
             CHECK(a.horde()[i].pos == b.horde()[i].pos);
@@ -89,7 +111,7 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("step into wall consumes the turn but does not move") {
-        World w(kSeed);
+        World w(kSeed, small_world());
         // Walk west until blocked (the border is always a wall).
         while (!w.stage().blocked.at(w.player() + Vec2i{-1, 0})) {
             w.step(Action::step({-1, 0}));
@@ -105,9 +127,8 @@ TEST_SUITE("world") {
 
     TEST_CASE("wait advances the turn and the dead approach") {
         // Fast, lossless scent so the test is about World, not scent tuning (PEO-026).
-        const WorldParams params{.initial_dead = 200,
-                                 .player_scent = 1.0F,
-                                 .scent = {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F}};
+        WorldParams params = small_world();
+        params.scent = {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F};
         World w(kSeed, params);
         const long long before = horde_distance(w);
         const Vec2i where = w.player();
@@ -120,7 +141,7 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("reaching exit advances stage_index") {
-        World w(kSeed, {.initial_dead = 0});
+        World w(kSeed, small_world(0));
         const std::vector<Vec2i> steps = path_to_exit(w);
         REQUIRE_FALSE(steps.empty());
         for (const Vec2i d : steps) {
