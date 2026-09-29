@@ -556,7 +556,7 @@
       "order": 317,
       "type": "feature",
       "title": "Cap turn input at 3 per second so holding a key never builds up lag",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -566,6 +566,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
