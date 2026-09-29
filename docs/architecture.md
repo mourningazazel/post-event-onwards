@@ -70,10 +70,21 @@ profiler asks.
 ## Turn model (ADR-0012)
 
 Time moves only through `World::step(Action)`. Order within a turn: apply the player's action;
-scent step; the Dead step (moves, contests, trample); sound events resolve. While the player
-thinks, `speculate()` computes the next turn assuming Wait; on input, `commit()` patches the
-player's neighbourhood and must equal `step()` bit for bit. Core spawns no threads; the
-frontend owns the worker and draws only the committed world.
+scent step; the Dead step (moves, contests, trample); sound events resolve. Core spawns no
+threads; the frontend owns the worker and draws only the committed world.
+
+### Computing while waiting (PEO-007)
+
+While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
+the next turn assuming a Wait with no deposit, scent left after `ScentField::step_linear` and
+the Dead decided on a clamped copy. On input, `World::commit(Speculation&, Action)` applies the
+action, adds the player's deposit with `patch_deposit` (the cell and its four open neighbours),
+runs `clamp_floor`, and re-decides only the Dead within Chebyshev 2 of the player. A stale
+speculation falls back to `step()`. Exactness comes from order, not algebra: `step()` runs the
+same `step_linear` → `patch_deposit` → `clamp_floor` sequence, so float rounding matches bit for
+bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on the Builder's
+M1 (release, 200x120, 5000 Dead, best of 10): `speculate` 224–542 µs, `commit` 31–65 µs. In
+game at 80x45 the HUD read `spec:hit` on every turn, including ~46 keys/s.
 
 ## Boundaries that tests protect
 
@@ -83,7 +94,7 @@ frontend owns the worker and draws only the committed world.
 | Scent physics | `scent: mass is conserved ... while the front is interior`, `walls absorb scent` |
 | The Dead | `dead: the dead never enter walls` |
 | Scale | `dead: a thousand dead step` |
-| Turn model | `world: commit(speculate) == step` (PEO-007) |
+| Turn model | `world: commit(speculate()) is bit-identical to step()`, `scent: step_linear is linear` |
 | Content | `tools/content/lint.py`, `tools/content/test.py` (374 expectations, 109 chains) |
 | Swarm behaviour | the scenario table in scent-mobs round 3 (harness, queued) |
 
@@ -91,7 +102,7 @@ frontend owns the worker and draws only the committed world.
 
 - `World`: **built (PEO-002)** in `peo/core/world.hpp` + `src/core/src/world.cpp`, with
   `peo/core/action.hpp`. Owns stage, scent, horde, player; `step(Action)` is the single
-  entry point. Still planned: `speculate` / `commit` (PEO-007).
+  entry point; `speculate` / `commit` built (PEO-007).
 - `Content`: loads `content/` (registry, materials, items, modifiers) into runtime tables;
   the derivation rules in `tools/content/derive.py` are the executable spec to port.
 - `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for
