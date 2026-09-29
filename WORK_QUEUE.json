@@ -7,10 +7,10 @@
       "order": 20,
       "type": "feature",
       "title": "Introduce World as the turn-based step owner",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -22,6 +22,16 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "re-briefed for D-002 (turn-based) and D-001 (Dead). Supersedes the earlier real-time brief."
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "Report in commit '[PEO-002] report'. Manual pass; open: suite 0.57s, PEO-023 resolved, CPU 99%."
         }
       ],
       "references": [

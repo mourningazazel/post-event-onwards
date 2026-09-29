@@ -89,8 +89,9 @@ frontend owns the worker and draws only the committed world.
 
 ## Planned seams (not built)
 
-- `World`: owns stage, scent layers, horde, player; `step(Action)` is the single entry point
-  (PEO-002). `speculate` / `commit` (PEO-007).
+- `World`: **built (PEO-002)** in `peo/core/world.hpp` + `src/core/src/world.cpp`, with
+  `peo/core/action.hpp`. Owns stage, scent, horde, player; `step(Action)` is the single
+  entry point. Still planned: `speculate` / `commit` (PEO-007).
 - `Content`: loads `content/` (registry, materials, items, modifiers) into runtime tables;
   the derivation rules in `tools/content/derive.py` are the executable spec to port.
 - `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for

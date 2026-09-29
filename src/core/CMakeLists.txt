@@ -3,7 +3,8 @@
 add_library(peo_core STATIC
     src/scent.cpp
     src/stage.cpp
-    src/dead.cpp)
+    src/dead.cpp
+    src/world.cpp)
 add_library(peo::core ALIAS peo_core)
 
 target_include_directories(peo_core PUBLIC
