@@ -77,9 +77,12 @@ into `decisions.md` with the chosen option and reason, removes it from
 
 ## Handoff formats
 
-Both are stored on the queue item, so they survive session resets.
+Both survive session resets: the report is a note on the item, the brief is a
+file beside it.
 
-**Brief** (Architect → Builder), `brief` object on the item:
+**Brief** (Architect → Builder), `docs/production/briefs/<id>.md`, written
+with `work_queue.py brief <id> --file <json>` and read back by `show <id>`.
+Never hand-edit it; the tool owns the format:
 
 | Field | Content |
 |-------|---------|

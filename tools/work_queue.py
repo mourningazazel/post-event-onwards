@@ -14,6 +14,9 @@ Usage:
   python3 tools/work_queue.py set PEO-001 --status InProgress [--owner builder] [--note "..."] [--by builder]
   python3 tools/work_queue.py note PEO-001 --by builder --text "..."
   python3 tools/work_queue.py brief PEO-001 --file brief.json      (architect fills the brief)
+
+Briefs are not in the queue JSON: each lives in docs/production/briefs/<id>.md,
+written and read only through `brief` / `show` here.
   python3 tools/work_queue.py complete PEO-001 [--by architect] [--commit abc123]
   python3 tools/work_queue.py defer PEO-001 / promote PEO-001
 """
@@ -30,6 +33,7 @@ QUEUE = ROOT / "WORK_QUEUE.json"
 DEFERRED = ROOT / "DEFERRED_WORK.json"
 COMPLETED_DIR = ROOT / "docs" / "COMPLETED_WORK"
 HANDOFFS_DIR = ROOT / "docs" / "production" / "handoffs"
+BRIEFS_DIR = ROOT / "docs/production/briefs"
 
 SCHEMA_VERSION = 1
 ID_PREFIX = "PEO"
@@ -40,6 +44,16 @@ EFFORTS = ("S", "M", "L", "XL")
 OWNERS = ("architect", "builder", "user")
 ACTORS = ("architect", "builder", "user")
 BRIEF_FIELDS = ("goal", "context", "units", "acceptance", "tests", "manual", "out_of_scope")
+# Section heading in the brief file <-> field name. Order is the file order.
+BRIEF_SECTIONS = (
+    ("Goal", "goal"),
+    ("Context", "context"),
+    ("Units", "units"),
+    ("Acceptance", "acceptance"),
+    ("Tests", "tests"),
+    ("Manual", "manual"),
+    ("Out of scope", "out_of_scope"),
+)
 
 
 def today() -> str:
@@ -71,12 +85,59 @@ def empty_brief() -> dict:
     return {k: ([] if k != "goal" else "") for k in BRIEF_FIELDS}
 
 
+def brief_path(item_id: str) -> Path:
+    return BRIEFS_DIR / f"{item_id}.md"
+
+
+def read_brief(item_id: str) -> dict:
+    """Load docs/production/briefs/<id>.md into the 7-key brief dict.
+
+    Missing file or missing section means empty, so callers never special-case
+    a brief that has not been written yet.
+    """
+    brief = empty_brief()
+    path = brief_path(item_id)
+    if not path.exists():
+        return brief
+    heading_to_field = {h: f for h, f in BRIEF_SECTIONS}
+    field: str | None = None
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        if line.startswith("## "):
+            field = heading_to_field.get(line[3:].strip())
+            continue
+        if field is None or not line.strip():
+            continue
+        if field == "goal":
+            brief["goal"] = line
+        elif line.startswith("- "):
+            brief[field].append(line[2:])
+    return brief
+
+
+def write_brief(item_id: str, title: str, brief: dict) -> None:
+    """Write the brief file. One list entry per line, never wrapped."""
+    BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
+    out = [f"# {item_id} · {title}", ""]
+    for heading, field in BRIEF_SECTIONS:
+        value = brief.get(field) or ("" if field == "goal" else [])
+        if not value:
+            continue
+        out.append(f"## {heading}")
+        out.append("")
+        if field == "goal":
+            out.append(value)
+        else:
+            out.extend(f"- {entry}" for entry in value)
+        out.append("")
+    brief_path(item_id).write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8")
+
+
 def validate_item(item: dict, errors: list[str], seen: set[str]) -> None:
     iid = item.get("id", "<no id>")
     if iid in seen:
         errors.append(f"{iid}: duplicate id")
     seen.add(iid)
-    required = ("id", "order", "type", "title", "status", "severity", "effort", "owner", "brief", "notes", "references", "depends_on", "created")
+    required = ("id", "order", "type", "title", "status", "severity", "effort", "owner", "notes", "references", "depends_on", "created")
     for key in required:
         if key not in item:
             errors.append(f"{iid}: missing field '{key}'")
@@ -92,10 +153,7 @@ def validate_item(item: dict, errors: list[str], seen: set[str]) -> None:
         errors.append(f"{iid}: effort must be one of {EFFORTS}")
     if item.get("owner") not in OWNERS:
         errors.append(f"{iid}: owner must be one of {OWNERS}")
-    brief = item.get("brief", {})
-    for key in BRIEF_FIELDS:
-        if key not in brief:
-            errors.append(f"{iid}: brief missing '{key}'")
+    brief = read_brief(iid)
     if item.get("status") == "InProgress" and not brief.get("acceptance"):
         errors.append(f"{iid}: InProgress items need acceptance criteria in the brief")
     if item.get("status") == "Blocked":
@@ -122,6 +180,10 @@ def cmd_check(_: argparse.Namespace) -> int:
         for dep in item.get("depends_on", []):
             if dep not in ids:
                 errors.append(f"{item['id']}: depends on {dep} which is not in the active queue")
+    # Orphan brief files are noise, not breakage: report, never fail.
+    for path in sorted(BRIEFS_DIR.glob(f"{ID_PREFIX}-*.md")):
+        if path.stem not in ids:
+            print(f"queue note: orphan brief {path.relative_to(ROOT)} (no live item {path.stem})")
     for e in errors:
         print("QUEUE ERROR:", e)
     if not errors:
@@ -181,7 +243,7 @@ def cmd_next(args: argparse.Namespace) -> int:
 
 def cmd_show(args: argparse.Namespace) -> int:
     item = find(load(QUEUE), args.id)
-    print(json.dumps(item, indent=2, ensure_ascii=False))
+    print(json.dumps({**item, "brief": read_brief(args.id)}, indent=2, ensure_ascii=False))
     return 0
 
 
@@ -200,13 +262,12 @@ def cmd_add(args: argparse.Namespace) -> int:
         "effort": args.effort,
         "owner": args.owner,
         "created": today(),
-        "brief": empty_brief(),
         "notes": [],
         "references": args.ref or [],
         "depends_on": args.depends_on or [],
     }
     if args.goal:
-        item["brief"]["goal"] = args.goal
+        write_brief(iid, args.title, {**empty_brief(), "goal": args.goal})
     q["items"].append(item)
     save(QUEUE, q)
     print(iid)
@@ -249,9 +310,10 @@ def cmd_brief(args: argparse.Namespace) -> int:
     unknown = set(brief) - set(BRIEF_FIELDS)
     if unknown:
         sys.exit(f"error: unknown brief fields {sorted(unknown)}; allowed {BRIEF_FIELDS}")
-    item["brief"].update(brief)
-    save(QUEUE, q)
-    print(f"{args.id}: brief updated")
+    merged = read_brief(args.id)
+    merged.update(brief)
+    write_brief(args.id, item["title"], merged)
+    print(f"{args.id}: brief updated ({brief_path(args.id).relative_to(ROOT)})")
     return 0
 
 
@@ -267,8 +329,9 @@ def cmd_complete(args: argparse.Namespace) -> int:
         commit = f" · commit `{args.commit}`" if args.commit else ""
         f.write(f"## {item['id']} · {item['title']}\n\n")
         f.write(f"- type {item['type']} · severity {item['severity']} · effort {item['effort']} · closed by {args.by}{commit}\n")
-        if item["brief"].get("goal"):
-            f.write(f"- goal: {item['brief']['goal']}\n")
+        goal = read_brief(args.id).get("goal")
+        if goal:
+            f.write(f"- goal: {goal}\n")
         for n in item["notes"][-3:]:
             f.write(f"- {n['at']} {n['by']}: {n['text']}\n")
         f.write("\n")

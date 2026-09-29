@@ -20,6 +20,7 @@ Load what the task needs, nothing more. Rolling docs have word caps enforced by
 | Choosing a dependency | [LICENSING.md](LICENSING.md) |
 | Writing or running tests | [testing.md](testing.md) |
 | Picking up a Blocked item | `production/handoffs/<id>.md` (index in [production/handoffs/README.md](production/handoffs/README.md)) |
+| Reading or writing a queue item's brief | `production/briefs/<id>.md` (see [production/briefs/README.md](production/briefs/README.md)) |
 | Checking what shipped | `COMPLETED_WORK/YYYY-MM-DD.md` |
 | Recording, briefing or reviewing work | the skills in `../.agents/skills/` |
 
@@ -37,6 +38,7 @@ topic page → `AGENTS.md`. Within `design/`, a later "round" section wins over 
 | production/vision.md | 900 words |
 | production/decisions.md | 1500 words (archive old ones to `production/decisions-archive/`) |
 | production/DECISIONS_NEEDED.md | 800 words (answer some before adding more) |
-| WORK_QUEUE.json | 2500 content words (briefs live here) |
+| WORK_QUEUE.json | 2500 content words (metadata only; briefs are files) |
+| production/briefs/`<id>`.md | uncapped, like handoffs |
 | DEFERRED_WORK.json | 1500 content words |
 | any SKILL.md | 600 words |
