@@ -520,7 +520,7 @@
       "order": 255,
       "type": "feature",
       "title": "Scent flows into walls and the map edge and is lost there",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -530,6 +530,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-28",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [],
