@@ -31,7 +31,9 @@ constexpr int kScale = 2;
 constexpr int kHudRows = 1;
 /// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
 /// event arrives ("waitevent", SDL 3.4+). Older SDL parses that string as 0 and
-/// would spin, so there it gets a frame cap instead.
+/// would spin, so there it gets a frame cap instead. The SDL fetched from source
+/// (cmake/FindOrFetchSDL3.cmake) is 3.4, so the cap only applies when find_package
+/// picks up an older installed SDL.
 constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
 constexpr const char* kFallbackIterateHz = "60";
 
