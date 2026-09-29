@@ -73,6 +73,18 @@ Time moves only through `World::step(Action)`. Order within a turn: apply the pl
 scent step; the Dead step (moves, contests, trample); sound events resolve. Core spawns no
 threads; the frontend owns the worker and draws only the committed world.
 
+### The clock (PEO-040, D-015)
+
+The world counts game seconds (`World::seconds()`). Each `Action` carries a duration (`kStepSeconds`
+and `kWaitSeconds`, both 6). Scent and the Dead update on their own cadence, once every
+`WorldParams::update_period` (6 s), whatever the player does. An action applies at once, then
+its seconds are logged on the player's tile (`occupancy()`, merged per tile). At each period
+boundary one update runs: `step_linear`, `patch_deposit` per logged tile with
+`player_scent × seconds / period`, `clamp_floor`, the Dead (`cooldown_s`, `step_seconds`). A
+full period on one tile gives a factor of exactly 1, so 6 s steps replay the pre-clock world bit
+for bit (pinned hash test). Speculation is per update: an action that crosses no boundary leaves
+it valid, and `commit` re-decides the Dead near any logged tile. `turn()` still counts actions.
+
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
@@ -83,7 +95,7 @@ runs `clamp_floor`, and re-decides only the Dead within Chebyshev 2 of the playe
 speculation falls back to `step()`. Exactness comes from order, not algebra: `step()` runs the
 same `step_linear` → `patch_deposit` → `clamp_floor` sequence, so float rounding matches bit for
 bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on the Builder's
-M1 (release, 200x120, 5000 Dead, best of 10): `speculate` 224–542 µs, `commit` 31–65 µs. In
+M1 (release, 200x120, 5000 Dead, best of 10): `speculate` 224–542 µs, `commit` 31–65 µs (PEO-040, best of 200: 225 µs and 32 µs). In
 game at 80x45 the HUD read `spec:hit` on every turn, including ~46 keys/s.
 
 The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
