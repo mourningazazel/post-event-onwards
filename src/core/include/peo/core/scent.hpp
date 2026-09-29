@@ -7,14 +7,21 @@
 
 namespace peo::core {
 
+/// Scent a standing player deposits per turn. The field runs on a 0-500 scale
+/// (D-007) so a usable gradient reaches the map edge instead of flushing to zero;
+/// measurements in docs/design/scent-performance.md.
+inline constexpr float kPlayerScent = 500.0F;
+
 /// Tunables for one scent layer. Kept as a struct so stages can vary them.
 struct ScentParams {
     /// Fraction of each cell's scent that spreads to its 4 orthogonal neighbours per step.
-    float diffusion = 0.2F;
+    /// 0.5, not higher: the checkerboard mode is amplified by 1 - 2 * diffusion, so 0.5
+    /// damps it exactly and the trail stays monotone (0.8 ripples and misleads climbers).
+    float diffusion = 0.5F;
     /// Fraction of scent that evaporates each step, applied after diffusion.
-    float decay = 0.02F;
+    float decay = 0.01F;
     /// Scent below this is clamped to zero so the field stays sparse.
-    float floor = 0.001F;
+    float floor = 1e-6F;
 };
 
 /// A diffusing, decaying scalar field. The player (and anything else that
