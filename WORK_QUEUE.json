@@ -472,10 +472,10 @@
       "order": 287,
       "type": "bug",
       "title": "World accepts stage sizes and Dead counts that hang load_stage",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -487,6 +487,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "commits: 567c81d ae7db48. Clamp to 3x3; spawn clamp(n,0,open). Old vs new world.cpp bit-identical over 120 worlds. New tests 0.1 ms each; release+clang pass. No manual steps in brief."
         }
       ],
       "references": [
