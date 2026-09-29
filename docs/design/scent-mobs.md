@@ -71,7 +71,9 @@ of mobs, yet they barely win.
    - blocking by walls and closed doors: walls and the map edge absorb the share sent into
      them and pass none on, so scent never piles up against geometry (PEO-029)
    - deposits run on a 0-500 scale (`kPlayerScent`, D-007) with diffusion 0.5, decay 0.01,
-     floor 1e-6, so a gradient reaches the map edge; measurements in `scent-performance.md`
+     floor 1e-30. On a real 80x45 stage with absorbing walls a standing player's scent reaches
+     41 cells by turn 50 and the whole stage (77) by turn 300; at floor 1e-6 it stopped at 29
+     and distant Dead never moved. Measurements in `scent-performance.md`
    - several channels, e.g. 4 × u16 over 1024² = 8 MB
 
    This is the first GPU compute kernel, with a CPU reference implementation.
