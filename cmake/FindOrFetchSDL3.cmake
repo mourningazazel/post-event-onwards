@@ -1,6 +1,6 @@
 # Prefer an installed SDL3 (vcpkg, brew, distro package); otherwise build it from
 # source with FetchContent. The pinned tag is the only place the SDL version lives.
-set(PEO_SDL3_TAG "release-3.2.30" CACHE STRING "SDL3 git tag used when fetching from source")
+set(PEO_SDL3_TAG "release-3.4.16" CACHE STRING "SDL3 git tag used when fetching from source")
 
 find_package(SDL3 CONFIG QUIET)
 if(SDL3_FOUND)
