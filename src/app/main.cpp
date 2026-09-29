@@ -43,13 +43,14 @@ void draw(App& app) {
     const int h = stage.spec.height;
     std::string row(static_cast<std::size_t>(w), ' ');
 
-    // Map + optional scent heat.
+    // Map + optional scent heat. Bands are * + : . so no band is mistaken for
+    // the player's @, which is drawn last and always sits on top.
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             char c = stage.blocked.at(x, y) ? '#' : '.';
             if (app.show_scent && !stage.blocked.at(x, y)) {
                 const float s = world.scent().sample({x, y});
-                c = s > 0.5F ? '@' : s > 0.1F ? '+' : s > 0.01F ? ':' : '.';
+                c = s > 0.5F ? '*' : s > 0.1F ? '+' : s > 0.01F ? ':' : '.';
             }
             row[static_cast<std::size_t>(x)] = c;
         }
