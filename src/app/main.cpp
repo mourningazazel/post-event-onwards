@@ -136,8 +136,13 @@ struct App {
 };
 
 /// Spend one turn on `action`: commit the speculation if there is one, else step.
+/// A speculation is per update (D-015): an action that crosses no update boundary
+/// leaves it valid, so a new one is requested only when the update or stage moved
+/// on, or when none is ready (quiesce may have cancelled a queued request).
 void take_turn(App& app, Action action) {
     const bool hit = app.speculator->ready_now();
+    const Tick update_before = app.world->updates();
+    const std::uint32_t stage_before = app.world->stage_index();
     if (Speculation* spec = app.speculator->quiesce()) {
         app.world->commit(*spec, action);
     } else {
@@ -145,7 +150,10 @@ void take_turn(App& app, Action action) {
     }
     app.last_hit = hit;
     app.misses += hit ? 0U : 1U;
-    app.speculator->request();
+    const bool moved_on = app.world->updates() != update_before || app.world->stage_index() != stage_before;
+    if (moved_on || !app.speculator->ready_now()) {
+        app.speculator->request();
+    }
 }
 
 void draw(App& app) {
