@@ -11,6 +11,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#include <algorithm>
+#include <array>
 #include <cstdio>
 #include <optional>
 #include <string>
@@ -27,6 +29,24 @@ constexpr int kHudRows = 1;
 /// would spin, so there it gets a frame cap instead.
 constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
 constexpr const char* kFallbackIterateHz = "60";
+
+/// Scent view bands, log-spaced relative to the field's current maximum so the
+/// view reads the same at any deposit scale (0-500 today, D-007). Strongest first;
+/// none uses @, which is the player's glyph.
+struct ScentBand {
+    float fraction_of_max;
+    char glyph;
+};
+constexpr std::array<ScentBand, 3> kScentBands{{{1e-1F, '*'}, {1e-3F, '+'}, {1e-5F, ':'}}};
+
+char scent_glyph(float scent, float max_scent) {
+    for (const ScentBand& band : kScentBands) {
+        if (scent > 0.0F && scent >= band.fraction_of_max * max_scent) {
+            return band.glyph;
+        }
+    }
+    return '.';
+}
 
 struct App {
     SDL_Window* window = nullptr;
@@ -48,14 +68,14 @@ void draw(App& app) {
     const int h = stage.spec.height;
     std::string row(static_cast<std::size_t>(w), ' ');
 
-    // Map + optional scent heat. Bands are * + : . so no band is mistaken for
-    // the player's @, which is drawn last and always sits on top.
+    // Map + optional scent heat. The player's @ is drawn last and sits on top.
+    const Grid<float>& scent = world.scent().cells();
+    const float max_scent = app.show_scent ? *std::max_element(scent.begin(), scent.end()) : 0.0F;
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             char c = stage.blocked.at(x, y) ? '#' : '.';
             if (app.show_scent && !stage.blocked.at(x, y)) {
-                const float s = world.scent().sample({x, y});
-                c = s > 0.5F ? '*' : s > 0.1F ? '+' : s > 0.01F ? ':' : '.';
+                c = scent_glyph(scent.at(x, y), max_scent);
             }
             row[static_cast<std::size_t>(x)] = c;
         }
