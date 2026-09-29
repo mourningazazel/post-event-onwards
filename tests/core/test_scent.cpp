@@ -2,6 +2,10 @@
 
 #include <doctest/doctest.h>
 
+#include <array>
+#include <bit>
+#include <cstdint>
+
 using namespace peo::core;
 
 namespace {
@@ -109,6 +113,35 @@ TEST_SUITE("scent") {
         for (int x = kReachSource.x + 1; x <= kReachFarX; ++x) {
             CAPTURE(x);
             CHECK(f.sample({x, kReachSource.y}) < f.sample({x - 1, kReachSource.y}));
+        }
+    }
+
+    TEST_CASE("step is bit-identical across builds") {
+        // D-002: the same inputs give the same bits on every compiler, CPU and
+        // build type (PEO-028: -ffp-contract=off). Pinned exactly, not Approx: CI's
+        // g++-13, clang++-18 and release jobs all run this and must agree.
+        constexpr int kSize = 5;
+        constexpr int kSteps = 4;
+        constexpr std::array<std::uint32_t, kSize * kSize> kExpected{
+            0x3F341C9CU, 0x410789E4U, 0x41FC98B7U, 0x4034B7DAU, 0x3E702626U, 0x410789E4U, 0x427C98B8U,
+            0x435A6611U, 0x00000000U, 0x4034B7DAU, 0x42002CA8U, 0x43600BD0U, 0x44126439U, 0x435A6611U,
+            0x41FC98B8U, 0x410789E4U, 0x427D88DFU, 0x43600BD0U, 0x427C98B7U, 0x410789E4U, 0x3F341C9CU,
+            0x410789E4U, 0x42002CA8U, 0x410789E4U, 0x3F341C9CU,
+        };
+        ScentField f(kSize, kSize, {.diffusion = 0.5F, .decay = 0.01F, .floor = 1e-6F});
+        Grid<bool> walls(kSize, kSize, false);
+        walls.at(3, 1) = true;
+        for (int i = 0; i < kSteps; ++i) {
+            f.deposit({2, 2}, kPlayerScent);
+            f.step(&walls);
+        }
+        for (int y = 0; y < kSize; ++y) {
+            for (int x = 0; x < kSize; ++x) {
+                CAPTURE(x);
+                CAPTURE(y);
+                CHECK(std::bit_cast<std::uint32_t>(f.sample({x, y})) ==
+                      kExpected[static_cast<std::size_t>(y * kSize + x)]);
+            }
         }
     }
 }
