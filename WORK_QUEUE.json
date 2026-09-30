@@ -435,7 +435,7 @@
       "order": 297,
       "type": "chore",
       "title": "Town fixture: a cramped 200x120 test map with reach, climb and trail helpers",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -465,6 +465,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "unblocked: the review probes are in the repo at docs/design/probes/ (probe.cpp has make_town, bfs_dist, climb_all); brief repointed. Port with no corner cutting, so baselines may shift slightly from the review's 15-18%."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [
