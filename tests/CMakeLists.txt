@@ -12,7 +12,8 @@ add_executable(peo_core_tests
     core/test_stage.cpp
     core/test_dead.cpp
     core/test_world.cpp
-    core/test_town.cpp)
+    core/test_town.cpp
+    core/test_scent_wave.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 
 add_test(NAME core COMMAND peo_core_tests --no-intro)

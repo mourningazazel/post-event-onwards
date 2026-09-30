@@ -2,6 +2,7 @@
 # given a seed so tests and replays are reproducible.
 add_library(peo_core STATIC
     src/scent.cpp
+    src/scent_wave.cpp
     src/stage.cpp
     src/dead.cpp
     src/world.cpp)
