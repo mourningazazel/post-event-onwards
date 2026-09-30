@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 58,
+  "next_id": 59,
   "items": [
     {
       "id": "PEO-003",
@@ -595,13 +595,18 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
           "at": "2026-09-29",
           "by": "architect",
           "text": "Briefed from D-022 (N016). Ready after PEO-040 is accepted; the golden variant with fast Dead is the gate."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "Held (2026-09-30): D-031 replaces the burst of steps per update with slots over a 9 s cycle; Dead speed folds into PEO-058. Do not start."
         }
       ],
       "references": [
@@ -971,6 +976,28 @@
       ],
       "references": [
         "content/registry"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-058",
+      "order": 517,
+      "type": "design",
+      "title": "The Dead move in staggered slots over a 9 s cycle (D-031)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed; ready for the Builder. Ryan (2026-09-30): calm Dead never share tiles; only alerted Dead push past."
+        }
+      ],
+      "references": [
+        "docs/production/decisions.md"
       ],
       "depends_on": []
     }

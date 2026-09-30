@@ -5,8 +5,24 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-017, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-018, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-30 · D-031 · The Dead move in staggered slots over a 9 s cycle
+
+User decision, amending D-022 and refining ADR-0013. Every 9 game seconds the world polls which
+of the Dead can move and gives each mover a slot (a second within the cycle) from a hash of
+(seed, cycle, index), so who moves when differs every cycle. At its slot a unit re-checks its
+target and decides; the move lands one slot later. A tile a unit leaves stays blocked until then,
+so the next unit in line cannot step into it. A calm Dead whose chosen tile holds another Dead,
+or one about to leave it, does not move and does not pick another direction; only an alerted
+Dead pushes past, which is where ADR-0013's shared tiles, trips and trampling apply. Speed is
+slots per cycle: 9 / step_seconds, the integer part guaranteed and the fraction a hashed chance
+(D-022's rule, per cycle). Why: 9 s against the 6 s scent update keeps moves out of step with the
+player; the one-slot delay makes a crowd fan out and file through, and jams a one-wide hallway.
+Consequence: each Dead decides once per cycle, not once per update; replaces PEO-042's burst of
+steps at each update (held). Between updates the Dead read only the last update's scent, so they
+run live and exact; speculation keeps only the scent sweep. Calm Dead never share a tile. PEO-058.
 
 ## 2026-09-30 · D-030 · Every container has a purpose and three tags that add extras
 
@@ -112,11 +128,3 @@ when the player approaches. Soak (D-013) already remembers long stays, so indoor
 away need not be exact. Why: a 512x512 map with many floors would otherwise multiply tiles for
 nothing. Consequence: the reach radius is a setting; PEO-047, PEO-049; the opened tag is a
 generation output.
-
-## 2026-09-29 · D-018 · Sound kinds: human, mechanical, ambient, with an ambient noise floor
-
-User decision (N016), closing the open classification in scent-mobs.md. Ambient sound is shown as
-a descriptor when the player examines their surroundings (an action) and sets the area's ambient
-noise floor. The floor matters only for whether hearing Dead can hear the player: human sound
-against the floor, the inverse relation rot has to human scent (D-012). Consequence: PEO-010 keeps
-human and mechanical; PEO-045 adds ambient and the floor.
