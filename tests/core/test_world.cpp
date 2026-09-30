@@ -460,25 +460,40 @@ TEST_SUITE("world") {
     }
 
 #ifdef NDEBUG
-    // Perf sanity (PEO-007), release builds only: under Debug+ASan this one case
-    // would cost ~100 ms of the 500 ms suite. Reports, does not assert on time:
-    // shared CI runners are too noisy. Budgets: commit < 1 ms, speculate < 16 ms.
-    TEST_CASE("speculate and commit at 200x120 with 5000 Dead") {
-        constexpr int kPerfWidth = 200;
-        constexpr int kPerfHeight = 120;
-        constexpr int kPerfDead = 5000;
+    // Perf variants (PEO-007, PEO-043, D-021), release builds only: under
+    // Debug+ASan they would cost most of the suite. Report, do not assert on time:
+    // shared CI runners are too noisy. D-021 budget on the M1 Air: commit < 1 ms,
+    // speculated update < 100 ms. `tools/verify.py --perf` prints these lines.
+    void run_perf(int width, int height, int dead, int emitters_per_1000_tiles) {
         constexpr int kWarmTurns = 20;
         constexpr int kSamples = 10;
+        constexpr int kTilesPer = 1000;
         using Clock = std::chrono::steady_clock;
-        World w(kSeed, {.initial_dead = kPerfDead, .stage_width = kPerfWidth, .stage_height = kPerfHeight});
+        World w(kSeed, {.initial_dead = dead, .stage_width = width, .stage_height = height});
         for (int i = 0; i < kWarmTurns; ++i) {
             w.step(Action::wait());
         }
+        // Emitter tiles: fixed floor cells drawn once from kSeed (benchmark deposits only).
+        const Grid<bool>& blocked = w.stage().blocked;
+        const int count = width * height * emitters_per_1000_tiles / kTilesPer;
+        std::vector<Vec2i> emitters;
+        emitters.reserve(static_cast<std::size_t>(count));
+        Rng rng(kSeed);
+        while (static_cast<int>(emitters.size()) < count) {
+            const Vec2i c{rng.range(1, width - 2), rng.range(1, height - 2)};
+            if (!blocked.at(c)) {
+                emitters.push_back(c);
+            }
+        }
+        const float strength = WorldParams{}.player_scent;
         Speculation spec;
         w.speculate(spec); // size the buffers once
         double best_spec_us = 1e30;
         double best_commit_us = 1e30;
         for (int i = 0; i < kSamples; ++i) {
+            for (const Vec2i e : emitters) {
+                w.deposit(e, strength);
+            }
             const auto t0 = Clock::now();
             w.speculate(spec);
             const auto t1 = Clock::now();
@@ -488,9 +503,26 @@ TEST_SUITE("world") {
             best_commit_us =
                 std::min(best_commit_us, std::chrono::duration<double, std::micro>(t2 - t1).count());
         }
-        MESSAGE("speculate " << best_spec_us << " us, commit " << best_commit_us << " us (best of "
-                             << kSamples << ")");
+        MESSAGE("perf " << width << "x" << height << " dead=" << dead
+                        << " emitters=" << emitters_per_1000_tiles << " speculate=" << best_spec_us
+                        << " us commit=" << best_commit_us << " us");
         CHECK(w.turn() == static_cast<Tick>(kWarmTurns + kSamples));
+    }
+
+    TEST_CASE("perf: 200x120, 5000 Dead, no emitters") {
+        run_perf(200, 120, 5000, 0);
+    }
+    TEST_CASE("perf: 200x120, 5000 Dead, 6 emitters per 1000 tiles") {
+        run_perf(200, 120, 5000, 6);
+    }
+    TEST_CASE("perf: 512x512, 20000 Dead, 6 emitters per 1000 tiles") {
+        run_perf(512, 512, 20000, 6);
+    }
+    TEST_CASE("perf: 512x512, 50000 Dead, 6 emitters per 1000 tiles") {
+        run_perf(512, 512, 50000, 6);
+    }
+    TEST_CASE("perf: 512x512, 50000 Dead, 20 emitters per 1000 tiles") {
+        run_perf(512, 512, 50000, 20);
     }
 #endif
 }
