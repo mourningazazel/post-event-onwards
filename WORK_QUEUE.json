@@ -681,6 +681,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "waiting on D-033"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "CI went red at 1149 ms after PEO-030. Sanitizer build moved from -Og to -O1: suite ~0.3 s locally (was ~1.0 s). D-033 still open for when scenarios grow, but no longer urgent."
         }
       ],
       "references": [

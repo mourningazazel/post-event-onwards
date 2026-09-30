@@ -16,9 +16,10 @@ else()
         target_compile_options(peo_options INTERFACE -Werror)
     endif()
     if(PEO_ENABLE_SANITIZERS)
-        # -Og: the sanitizers slow unoptimised code several-fold, and the headless suite
-        # (this build) must stay under 1 s on CI (PEO-063); -Og keeps debugging usable.
-        target_compile_options(peo_options INTERFACE -Og -fsanitize=address,undefined -fno-omit-frame-pointer)
+        # -O1: the sanitizers slow unoptimised code several-fold, and the headless suite
+        # (this build) must stay under 1 s on CI (PEO-063, PEO-066). -O1 is the level the
+        # ASan docs recommend; -Og left the town scenarios at ~1.1 s, -O1 runs ~0.3 s.
+        target_compile_options(peo_options INTERFACE -O1 -fsanitize=address,undefined -fno-omit-frame-pointer)
         target_link_options(peo_options INTERFACE -fsanitize=address,undefined)
     endif()
 endif()
