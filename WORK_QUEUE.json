@@ -426,41 +426,6 @@
       ]
     },
     {
-      "id": "PEO-032",
-      "order": 276,
-      "type": "bug",
-      "title": "CI concurrency cancels per-commit runs on main, so breakage goes unseen",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Ready for the Builder (2026-09-29 review); brief unchanged."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: 3911ca2 (ci), d14c5a8 (empty second push). tests: verify.py --frontend --full passed. manual: main 3911ca2 run 36664110345 and d14c5a8 run 36664117526 pushed ~17 s apart, overlapped, both success; before the fix 445fd1a, 9642004 and c19e1ce were cancelled. claude/peo-032-ci-scratch: d14c5a8 run 36664128582 cancelled by d23bbb1 run 36664133819 (success); branch deleted. open: tested on main itself, not a scratch branch configured like main; the group is per run_id on main."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-035",
       "order": 297,
       "type": "chore",
