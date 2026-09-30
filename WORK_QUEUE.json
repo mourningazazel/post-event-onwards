@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 57,
+  "next_id": 58,
   "items": [
     {
       "id": "PEO-003",
@@ -900,6 +900,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "Split with PEO-050, so the two briefs do not overlap: PEO-053 owns generation (line records per compartment, per-compartment seeds, independent picks, fill until full with packed_dims from PEO-052, counts drawn in proportion to the rolled room area as PEO-054's fit rule assumes, aftermath sampled from the address, freeze on search). PEO-050 owns what happens after (read-through the seed, instantiate on take or change, D-026 put-back as its own entry, the unexamined mark, D-029 quality sampling, the hidden cap). Brief both once PEO-008 is briefed; they share its baked variant table."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-030 (N018): generation order per compartment is purpose, then main loot, then extras for the kind, ctx and detail tags, all from the compartment seed with the salts in PEO-057's brief; port tools/content/generate.py and pin C++ against its roll cases. The purpose name is stored on the compartment and shown once examined; D-026's unexamined mark applies to the compartment's name as well as its lines. Nested containers inherit ctx."
         }
       ],
       "references": [
@@ -926,12 +931,41 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "briefed. Take after PEO-052: its last unit moves 052's fit check to per compartment."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-030 (N018): each compartment will roll a purpose that picks its loot and names it once examined. Keep this item's single loot hook as briefed; PEO-057 converts every hook into a weighted purposes list and adds the three tags and may-appear tables."
         }
       ],
       "references": [
         "content/registry/features.toml"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-057",
+      "order": 490,
+      "type": "feature",
+      "title": "Container purposes and three tags with may-appear tables (D-030)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed. Take after PEO-054; it converts 054's loot hooks into purposes."
+        }
+      ],
+      "references": [
+        "docs/design/notes/N018-container-purposes-and-may-appear-tables.md"
+      ],
+      "depends_on": [
+        "PEO-054"
+      ]
     },
     {
       "id": "PEO-055",

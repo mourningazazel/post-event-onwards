@@ -5,8 +5,20 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-015, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-017, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-30 · D-030 · Every container has a purpose and three tags that add extras
+
+User decision (N018), refining D-027. A compartment's purpose is rolled from its seed before its
+contents: it picks the main loot table and names the compartment once examined ("cutlery drawer").
+Each container also carries three tags, each linked to "may randomly appear" tables that add rare,
+useful, dangerous or negative extras: kind (the purpose), context (building type and room: a
+maintenance cabinet holds paper and pens in an office, store supplies in a shop) and detail (one
+specific modifier: a persona's hobby, an aftermath trace, an authored beat). Nested containers
+inherit context. Why: contents stay organized and predictable, and rare finds can be placed
+precisely without new archetypes. Consequence: PEO-057 authors it; PEO-053 generates purpose,
+then main loot, then extras, all from the compartment seed.
 
 ## 2026-09-30 · D-029 · A stack's quality is a mean plus a spread
 
@@ -108,21 +120,3 @@ a descriptor when the player examines their surroundings (an action) and sets th
 noise floor. The floor matters only for whether hearing Dead can hear the player: human sound
 against the floor, the inverse relation rot has to human scent (D-012). Consequence: PEO-010 keeps
 human and mechanical; PEO-045 adds ambient and the floor.
-
-## 2026-09-29 · D-017 · Numeric physical stats; everything else descriptive, skills in five bands
-
-User decision (N016) closing G04 D4.5 and amending N014's percentages. Physical attributes are
-numbers. All else, skills included, is prose: a skill shows as one of five level descriptions
-tiered at 20 (1-20 up to 81-100). The sheet groups descriptors: appearance by trait (hair length,
-colour and style; physique for strength; conditions as the ailment), preferences that give mood
-boosts, and history as "who you are" (previous job, seeding skills and gear) and "where were you?"
-at the Event. Consequence: G04 updated; PEO-046; the success model keeps its internal percentages.
-
-## 2026-09-29 · D-016 · Character creation is fully random
-
-User decision (N016) closing G04 D4.3: B. Each run rolls the whole character: stats, starting
-items, background, physical makeup as flavour text with small telling details, and psychiatric,
-medical and physical conditions. Previous job shapes generation and starting skills (a cop starts
-with a gun and firearms skill); "where were you?" places the start near a fitting area (an office
-worker near the urban core), never exactly. Unlucky characters are intended. Consequence: PEO-046
-designs the generator behind PEO-008 and PEO-012.
