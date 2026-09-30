@@ -5,9 +5,13 @@ on:
     branches: [main, "claude/**"]
   pull_request:
 
+# Pull requests and claude/** branches: a newer push supersedes the older run.
+# main: every push gets its own result (PEO-032). The Builder pushes one unit at
+# a time, so a shared group would cancel all but the last run, and a queued run
+# is replaced even without cancel-in-progress; hence a group per run on main.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   docs:
