@@ -25,6 +25,64 @@ constexpr Tick kSpentUpdate = ~Tick{0};
 template <typename T> bool same_cells(const Grid<T>& a, const Grid<T>& b) noexcept {
     return a.width() == b.width() && a.height() == b.height() && std::equal(a.begin(), a.end(), b.begin());
 }
+
+bool same_moves(const std::vector<DeadMove>& a, const std::vector<DeadMove>& b) noexcept {
+    return a.size() == b.size() &&
+           std::equal(a.begin(), a.end(), b.begin(),
+                      [](const DeadMove& x, const DeadMove& y) { return x.unit == y.unit && x.to == y.to; });
+}
+
+/// Give every unit with a stronger neighbour its slots for cycle `cycle` (D-031),
+/// bucketed by second in ascending unit order.
+void poll(HordeState& d, const ScentField& scent, const Grid<bool>& blocked, std::uint64_t salt,
+          std::uint64_t cycle, Seconds len) {
+    d.slot_begin.assign(static_cast<std::size_t>(len) + 1, 0);
+    for (std::size_t i = 0; i < d.horde.size(); ++i) {
+        // Only a unit with somewhere better to go this cycle gets slots.
+        d.plans[i] = scent.strongest_neighbour(d.horde[i].pos, &blocked)
+                         ? plan_slots(salt, cycle, i, d.horde[i].step_seconds, len)
+                         : SlotPlan{};
+        for (Seconds j = 0; j < d.plans[i].count; ++j) {
+            ++d.slot_begin[slot_second(d.plans[i], j, len) + 1];
+        }
+    }
+    for (Seconds s = 0; s < len; ++s) {
+        d.slot_begin[s + 1] += d.slot_begin[s];
+    }
+    d.slot_units.resize(d.slot_begin[len]);
+    // Fill each bucket in ascending unit order; slot_begin[s] walks up to the
+    // bucket's end as it fills, and is walked back after.
+    for (std::size_t i = 0; i < d.horde.size(); ++i) {
+        for (Seconds j = 0; j < d.plans[i].count; ++j) {
+            d.slot_units[d.slot_begin[slot_second(d.plans[i], j, len)]++] = static_cast<std::uint32_t>(i);
+        }
+    }
+    for (Seconds s = len; s > 0; --s) {
+        d.slot_begin[s] = d.slot_begin[s - 1];
+    }
+    d.slot_begin[0] = 0;
+}
+
+/// A decided move: reserve its tile and mark the unit moving until it lands.
+void decided(HordeState& d, DeadMove m) {
+    d.reserved.at(m.to) = true;
+    d.moving[m.unit] = 1;
+    d.deciding.push_back(m);
+}
+
+/// Last second's moves land; this second's become next second's landings.
+void land(HordeState& d) {
+    for (const DeadMove& m : d.landing) {
+        Dead& unit = d.horde[m.unit];
+        --d.occupied.at(unit.pos);
+        unit.pos = m.to;
+        ++d.occupied.at(m.to);
+        d.reserved.at(m.to) = false;
+        d.moving[m.unit] = 0;
+    }
+    d.landing.clear();
+    std::swap(d.landing, d.deciding);
+}
 } // namespace
 
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
@@ -54,18 +112,19 @@ void World::load_stage(std::uint32_t index) {
         }
     }
     const int count = std::clamp(params_.initial_dead, 0, open);
-    horde_.clear();
-    horde_.reserve(static_cast<std::size_t>(count));
+    HordeState& d = dead_;
+    d.horde.clear();
+    d.horde.reserve(static_cast<std::size_t>(count));
     // One of the Dead per tile (D-031): an occupied draw is redrawn, so occupancy
     // starts valid. count <= open keeps the loop finite.
-    occupied_ = Grid<std::uint8_t>(stage_.spec.width, stage_.spec.height, 0);
+    d.occupied = Grid<std::uint8_t>(stage_.spec.width, stage_.spec.height, 0);
     for (int i = 0; i < count; ++i) {
         Vec2i p;
         do {
             p = {rng_.range(1, stage_.spec.width - 2), rng_.range(1, stage_.spec.height - 2)};
-        } while (stage_.blocked.at(p) || p == player_ || occupied_.at(p) != 0);
-        occupied_.at(p) = 1;
-        horde_.push_back(
+        } while (stage_.blocked.at(p) || p == player_ || d.occupied.at(p) != 0);
+        d.occupied.at(p) = 1;
+        d.horde.push_back(
             {.pos = p,
              .step_seconds = static_cast<std::uint16_t>(
                  static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
@@ -75,18 +134,18 @@ void World::load_stage(std::uint32_t index) {
     updates_ = 0;
     log_.clear();
 
-    reserved_ = Grid<bool>(stage_.spec.width, stage_.spec.height, false);
-    moving_.assign(horde_.size(), 0);
-    plans_.resize(horde_.size());
+    d.reserved = Grid<bool>(stage_.spec.width, stage_.spec.height, false);
+    d.moving.assign(d.horde.size(), 0);
+    d.plans.resize(d.horde.size());
     // At most one slot per unit per second of the cycle: reserve the bound once so
     // no poll allocates, however the hashes fall.
-    slot_units_.reserve(horde_.size() * params_.dead_cycle);
-    deciding_.clear();
-    landing_.clear();
-    deciding_.reserve(horde_.size());
-    landing_.reserve(horde_.size());
+    d.slot_units.reserve(d.horde.size() * params_.dead_cycle);
+    d.deciding.clear();
+    d.landing.clear();
+    d.deciding.reserve(d.horde.size());
+    d.landing.reserve(d.horde.size());
     stage_salt_ = stage_seed(seed_, index);
-    dead_second(0); // instant 0: the first poll and slot 0's decisions
+    dead_second(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
 }
 
 void World::apply_action(Action action) noexcept {
@@ -147,72 +206,56 @@ void World::finish_from(Speculation& spec) {
     ++updates_;
 }
 
-void World::poll(std::uint64_t cycle) {
-    const Seconds len = params_.dead_cycle;
-    slot_begin_.assign(static_cast<std::size_t>(len) + 1, 0);
-    for (std::size_t i = 0; i < horde_.size(); ++i) {
-        // Only a unit with somewhere better to go this cycle gets slots.
-        plans_[i] = scent_.strongest_neighbour(horde_[i].pos, &stage_.blocked)
-                        ? plan_slots(stage_salt_, cycle, i, horde_[i].step_seconds, len)
-                        : SlotPlan{};
-        for (Seconds j = 0; j < plans_[i].count; ++j) {
-            ++slot_begin_[slot_second(plans_[i], j, len) + 1];
-        }
-    }
-    for (Seconds s = 0; s < len; ++s) {
-        slot_begin_[s + 1] += slot_begin_[s];
-    }
-    slot_units_.resize(slot_begin_[len]);
-    // Fill each bucket in ascending unit order; slot_begin_[s] walks up to the
-    // bucket's end as it fills, and is walked back after.
-    for (std::size_t i = 0; i < horde_.size(); ++i) {
-        for (Seconds j = 0; j < plans_[i].count; ++j) {
-            slot_units_[slot_begin_[slot_second(plans_[i], j, len)]++] = static_cast<std::uint32_t>(i);
-        }
-    }
-    for (Seconds s = len; s > 0; --s) {
-        slot_begin_[s] = slot_begin_[s - 1];
-    }
-    slot_begin_[0] = 0;
-}
-
 // D-031's order within one second t: the slot's units decide first, so a unit
 // that decided at t-1 still stands on its old tile while they look; then the
 // moves decided at t-1 land. A vacated tile is therefore free only from t+1.
-void World::dead_second(Seconds t) {
+void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
     const Seconds len = params_.dead_cycle;
     if (t % len == 0) {
-        poll(t / len);
+        poll(d, scent_, stage_.blocked, stage_salt_, t / len, len);
+        if (record != nullptr) {
+            record->poll_at = t;
+            record->poll_begin = d.slot_begin; // copy-assign reuses capacity
+            record->poll_units = d.slot_units;
+        }
     }
     const Seconds s = t % len;
-    for (std::uint32_t k = slot_begin_[s]; k < slot_begin_[s + 1]; ++k) {
-        const std::uint32_t u = slot_units_[k];
-        if (moving_[u] != 0) {
+    for (std::uint32_t k = d.slot_begin[s]; k < d.slot_begin[s + 1]; ++k) {
+        const std::uint32_t u = d.slot_units[k];
+        if (d.moving[u] != 0) {
             continue;
         }
-        if (const auto to = decide_move(horde_[u], scent_, stage_.blocked, occupied_, reserved_)) {
-            reserved_.at(*to) = true;
-            moving_[u] = 1;
-            deciding_.push_back({.unit = u, .to = *to});
+        if (const auto to = decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved)) {
+            decided(d, {.unit = u, .to = *to});
         }
     }
-    for (const Move& m : landing_) {
-        Dead& unit = horde_[m.unit];
-        --occupied_.at(unit.pos);
-        unit.pos = m.to;
-        ++occupied_.at(m.to);
-        reserved_.at(m.to) = false;
-        moving_[m.unit] = 0;
+    if (record != nullptr) {
+        record->decided.insert(record->decided.end(), d.deciding.begin(), d.deciding.end());
+        record->decided_begin.push_back(static_cast<std::uint32_t>(record->decided.size()));
     }
-    landing_.clear();
-    std::swap(landing_, deciding_);
+    land(d);
 }
 
+void World::replay_second(Seconds t, const Speculation& spec) {
+    if (t == spec.poll_at) {
+        dead_.slot_begin = spec.poll_begin; // the poll's buckets, as it would have made them
+        dead_.slot_units = spec.poll_units;
+    }
+    const std::size_t i = t - spec.from - 1;
+    for (std::uint32_t k = spec.decided_begin[i]; k < spec.decided_begin[i + 1]; ++k) {
+        decided(dead_, spec.decided[k]);
+    }
+    land(dead_);
+}
 void World::advance(Seconds duration, Speculation* spec) {
     for (Seconds left = std::max<Seconds>(duration, 1); left > 0; --left) {
         log_seconds(1);
         ++seconds_;
-        dead_second(seconds_);
+        if (spec != nullptr && seconds_ > spec->from && seconds_ <= spec->to) {
+            replay_second(seconds_, *spec);
+        } else {
+            dead_second(dead_, seconds_, nullptr);
+        }
         if (seconds_ % params_.update_period == 0) {
             if (spec != nullptr) {
                 finish_from(*spec);
@@ -223,7 +266,6 @@ void World::advance(Seconds duration, Speculation* spec) {
         }
     }
 }
-
 void World::step(Action action) {
     apply_action(action);
     advance(action.seconds, nullptr);
@@ -241,10 +283,38 @@ void World::speculate(Speculation& out) const {
     out.update = updates_;
     out.stage_index = stage_index_;
     out.scent.step_linear(&stage_.blocked);
-}
 
+    // The Dead's seconds up to and including the boundary read only scent_, which
+    // cannot change before it, so they are fixed now. A second poll in the window
+    // (only when update_period > dead_cycle) is left to run live.
+    out.ahead = dead_;
+    // Bounds, reserved once so no speculate allocates when warm: one pending move
+    // per unit; a unit decides at most every other second (it is moving the next);
+    // one poll's slots, as HordeState's own bound.
+    const std::size_t units = dead_.horde.size();
+    out.ahead.deciding.reserve(units);
+    out.ahead.landing.reserve(units);
+    out.decided.reserve(units * ((params_.update_period + 1) / 2));
+    out.ahead.slot_units.reserve(units * params_.dead_cycle);
+    out.poll_units.reserve(units * params_.dead_cycle);
+    out.poll_begin.reserve(static_cast<std::size_t>(params_.dead_cycle) + 1);
+    out.decided_begin.reserve(static_cast<std::size_t>(params_.update_period) + 1);
+    out.from = seconds_;
+    out.poll_at = 0;
+    out.decided.clear();
+    out.decided_begin.assign(1, 0);
+    const Seconds boundary = (seconds_ / params_.update_period + 1) * params_.update_period;
+    Seconds t = seconds_ + 1;
+    for (; t <= boundary; ++t) {
+        if (t % params_.dead_cycle == 0 && out.poll_at != 0) {
+            break;
+        }
+        dead_second(out.ahead, t, &out);
+    }
+    out.to = t - 1;
+}
 void World::commit(Speculation& spec, Action action) {
-    if (spec.update != updates_ || spec.stage_index != stage_index_) {
+    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > seconds_) {
         step(action);
         return;
     }
@@ -254,12 +324,14 @@ void World::commit(Speculation& spec, Action action) {
 }
 
 bool World::equivalent(const World& a, const World& b) noexcept {
+    const HordeState& da = a.dead_;
+    const HordeState& db = b.dead_;
     if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.seconds_ != b.seconds_ ||
         a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
-        a.horde_.size() != b.horde_.size() || a.scent_.cells().size() != b.scent_.cells().size() ||
-        a.landing_.size() != b.landing_.size() || a.moving_ != b.moving_ || a.slot_begin_ != b.slot_begin_ ||
-        a.slot_units_ != b.slot_units_ || !same_cells(a.occupied_, b.occupied_) ||
-        !same_cells(a.reserved_, b.reserved_)) {
+        da.horde.size() != db.horde.size() || a.scent_.cells().size() != b.scent_.cells().size() ||
+        !same_moves(da.landing, db.landing) || !same_moves(da.deciding, db.deciding) ||
+        da.moving != db.moving || da.slot_begin != db.slot_begin || da.slot_units != db.slot_units ||
+        !same_cells(da.occupied, db.occupied) || !same_cells(da.reserved, db.reserved)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
@@ -267,13 +339,8 @@ bool World::equivalent(const World& a, const World& b) noexcept {
             return false;
         }
     }
-    for (std::size_t i = 0; i < a.landing_.size(); ++i) {
-        if (a.landing_[i].unit != b.landing_[i].unit || a.landing_[i].to != b.landing_[i].to) {
-            return false;
-        }
-    }
-    for (std::size_t i = 0; i < a.horde_.size(); ++i) {
-        if (a.horde_[i].pos != b.horde_[i].pos || a.horde_[i].step_seconds != b.horde_[i].step_seconds) {
+    for (std::size_t i = 0; i < da.horde.size(); ++i) {
+        if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_seconds != db.horde[i].step_seconds) {
             return false;
         }
     }
@@ -286,5 +353,4 @@ bool World::equivalent(const World& a, const World& b) noexcept {
     }
     return true;
 }
-
 } // namespace peo::core
