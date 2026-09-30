@@ -98,6 +98,35 @@ TEST_SUITE("scent") {
         CHECK_FALSE(f.strongest_neighbour(p).has_value()); // at the peak
     }
 
+    TEST_CASE("strongest neighbour never cuts a wall corner") {
+        // PEO-044: centre (1,1) on a 3x3 field, the strongest cell diagonal at (2,2).
+        // The orthogonal cells it passes are (2,1) and (1,2); both must be open.
+        constexpr Vec2i kCentre{1, 1};
+        constexpr Vec2i kDiagonal{2, 2};
+        constexpr Vec2i kEast{2, 1};
+        constexpr Vec2i kSouth{1, 2};
+        ScentField f(3, 3);
+        f.deposit(kCentre, 1.0F);
+        f.deposit(kDiagonal, 5.0F); // the orthogonal cells stay 0: weaker than the centre
+        Grid<bool> walls(3, 3, false);
+
+        SUBCASE("both orthogonal cells blocked: no move") {
+            walls.at(kEast) = true;
+            walls.at(kSouth) = true;
+            CHECK_FALSE(f.strongest_neighbour(kCentre, &walls).has_value());
+        }
+        SUBCASE("one orthogonal cell blocked: still no move") {
+            walls.at(kSouth) = true;
+            CHECK_FALSE(f.strongest_neighbour(kCentre, &walls).has_value());
+            walls.at(kSouth) = false;
+            walls.at(kEast) = true;
+            CHECK_FALSE(f.strongest_neighbour(kCentre, &walls).has_value());
+        }
+        SUBCASE("both open: the diagonal") {
+            CHECK(f.strongest_neighbour(kCentre, &walls) == kDiagonal);
+        }
+    }
+
     TEST_CASE("floor clamps tiny values to zero") {
         ScentField f(3, 3, {.diffusion = 0.0F, .decay = 0.9F, .floor = 0.05F});
         f.deposit({1, 1}, 0.1F);
