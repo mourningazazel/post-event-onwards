@@ -1,7 +1,7 @@
 #pragma once
 
 #include "peo/core/grid.hpp"
-#include "peo/core/scent.hpp"
+#include "peo/core/scent_wave.hpp"
 #include "peo/core/types.hpp"
 
 #include <cstddef>
@@ -46,7 +46,7 @@ struct SlotPlan {
 /// strongest_neighbour() picks it, but only if no other Dead stands there and no
 /// pending move has reserved it. A calm Dead never sidesteps to a weaker tile and
 /// never climbs over another: when its best tile is taken it stays put.
-[[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent,
+[[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentWave& scent,
                                                const Grid<bool>& blocked, const Grid<std::uint8_t>& occupied,
                                                const Grid<bool>& reserved) noexcept;
 

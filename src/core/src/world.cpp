@@ -34,7 +34,7 @@ bool same_moves(const std::vector<DeadMove>& a, const std::vector<DeadMove>& b) 
 
 /// Give every unit with a stronger neighbour its slots for cycle `cycle` (D-031),
 /// bucketed by second in ascending unit order.
-void poll(HordeState& d, const ScentField& scent, const Grid<bool>& blocked, std::uint64_t salt,
+void poll(HordeState& d, const ScentWave& scent, const Grid<bool>& blocked, std::uint64_t salt,
           std::uint64_t cycle, Seconds len) {
     d.slot_begin.assign(static_cast<std::size_t>(len) + 1, 0);
     for (std::size_t i = 0; i < d.horde.size(); ++i) {
@@ -100,7 +100,7 @@ void World::load_stage(std::uint32_t index) {
     spec.width = params_.stage_width;
     spec.height = params_.stage_height;
     stage_ = generate_stage(spec);
-    scent_ = ScentField(stage_.spec.width, stage_.spec.height, params_.scent);
+    scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
@@ -175,32 +175,36 @@ void World::log_seconds(Seconds s) {
     log_.push_back({.tile = player_, .seconds = s});
 }
 
-// Each logged tile gets player_scent * (seconds / period). A full period on one
-// tile makes the factor exactly 1.0F, so walking deposits exactly player_scent,
-// as before the clock existed.
-void World::deposit_log(ScentField& field) const noexcept {
-    const auto period = static_cast<float>(params_.update_period);
+// A tile held for the whole period deposits strength; one held for part of it
+// deposits as if the scent were that much older: strength less age_cost x the
+// share of the period it was empty, never more (a runner's tiles read a little
+// less than a walker's, D-015). Integer, so the port is exact.
+std::int32_t World::logged_strength(Seconds seconds) const noexcept {
+    const auto period = static_cast<std::int32_t>(params_.update_period);
+    const auto held = static_cast<std::int32_t>(std::min(seconds, params_.update_period));
+    return params_.scent.strength - params_.scent.age_cost * (period - held) / period;
+}
+
+void World::deposit_log(ScentWave& field) const noexcept {
     for (const Occupancy& o : log_) {
-        const float share = static_cast<float>(o.seconds) / period;
-        field.patch_deposit(o.tile, params_.player_scent * share, &stage_.blocked);
+        field.deposit(o.tile, logged_strength(o.seconds));
     }
 }
 
-// step() and commit() run the same float operations in the same order:
-// step_linear, patch_deposit per logged tile, clamp_floor. That is what makes
-// commit(speculate()) bit-identical to step(), not the algebra.
 void World::run_update() {
-    scent_.step_linear(&stage_.blocked);
     deposit_log(scent_);
-    scent_.clamp_floor();
+    scent_.update(stage_.blocked);
     log_.clear();
     ++updates_;
 }
 
+// The speculated update ran with no deposit; the logged tiles' deposits are added
+// after it, which ScentWave makes bit-identical to depositing first (PEO-030).
 void World::finish_from(Speculation& spec) {
-    deposit_log(spec.scent);
-    spec.scent.clamp_floor();
-    std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffer to reuse
+    for (const Occupancy& o : log_) {
+        spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.seconds), stage_.blocked);
+    }
+    std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffers to reuse
     spec.update = kSpentUpdate;
     log_.clear();
     ++updates_;
@@ -282,7 +286,7 @@ void World::speculate(Speculation& out) const {
     out.scent = scent_; // copy-assign reuses out's storage once it is the right size
     out.update = updates_;
     out.stage_index = stage_index_;
-    out.scent.step_linear(&stage_.blocked);
+    out.scent.update(stage_.blocked);
 
     // The Dead's seconds up to and including the boundary read only scent_, which
     // cannot change before it, so they are fixed now. A second poll in the window
@@ -314,7 +318,9 @@ void World::speculate(Speculation& out) const {
     out.to = t - 1;
 }
 void World::commit(Speculation& spec, Action action) {
-    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > seconds_) {
+    // patch_deposit is exact for one round per update; faster waves run live.
+    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > seconds_ ||
+        params_.scent.speed != 1) {
         step(action);
         return;
     }
@@ -328,10 +334,11 @@ bool World::equivalent(const World& a, const World& b) noexcept {
     const HordeState& db = b.dead_;
     if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.seconds_ != b.seconds_ ||
         a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
-        da.horde.size() != db.horde.size() || a.scent_.cells().size() != b.scent_.cells().size() ||
-        !same_moves(da.landing, db.landing) || !same_moves(da.deciding, db.deciding) ||
-        da.moving != db.moving || da.slot_begin != db.slot_begin || da.slot_units != db.slot_units ||
-        !same_cells(da.occupied, db.occupied) || !same_cells(da.reserved, db.reserved)) {
+        da.horde.size() != db.horde.size() || a.scent_.updates() != b.scent_.updates() ||
+        a.scent_.values() != b.scent_.values() || !same_moves(da.landing, db.landing) ||
+        !same_moves(da.deciding, db.deciding) || da.moving != db.moving || da.slot_begin != db.slot_begin ||
+        da.slot_units != db.slot_units || !same_cells(da.occupied, db.occupied) ||
+        !same_cells(da.reserved, db.reserved)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
@@ -341,13 +348,6 @@ bool World::equivalent(const World& a, const World& b) noexcept {
     }
     for (std::size_t i = 0; i < da.horde.size(); ++i) {
         if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_seconds != db.horde[i].step_seconds) {
-            return false;
-        }
-    }
-    const float* fa = a.scent_.cells().data();
-    const float* fb = b.scent_.cells().data();
-    for (std::size_t i = 0; i < a.scent_.cells().size(); ++i) {
-        if (std::bit_cast<std::uint32_t>(fa[i]) != std::bit_cast<std::uint32_t>(fb[i])) {
             return false;
         }
     }

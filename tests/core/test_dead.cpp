@@ -2,7 +2,9 @@
 
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <vector>
 
 using namespace peo::core;
@@ -17,7 +19,7 @@ struct Alone {
         : occupied(walls.width(), walls.height(), 0), reserved(walls.width(), walls.height(), false) {}
 
     /// One decision; moves the unit if it decided. Returns whether it moved.
-    bool step(Dead& unit, const ScentField& f, const Grid<bool>& walls) const {
+    bool step(Dead& unit, const ScentWave& f, const Grid<bool>& walls) const {
         if (const auto to = decide_move(unit, f, walls, occupied, reserved)) {
             unit.pos = *to;
             return true;
@@ -26,22 +28,36 @@ struct Alone {
     }
 };
 
+/// A standing source: `updates` deposits of full strength, each followed by an update.
+ScentWave standing(int width, int height, Vec2i source, const Grid<bool>& walls, int updates) {
+    ScentWave f(width, height);
+    for (int i = 0; i < updates; ++i) {
+        f.deposit(source, f.params().strength);
+        f.update(walls);
+    }
+    return f;
+}
+
+int chebyshev(Vec2i a, Vec2i b) {
+    return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
 } // namespace
 
 TEST_SUITE("dead") {
     TEST_CASE("the dead move toward scent") {
-        ScentField f(9, 9, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
-        Grid<bool> walls(9, 9, false);
-        f.deposit({7, 4}, 1.0F);
-        for (int i = 0; i < 6; ++i) {
-            f.step();
-        }
+        // On the geodesic field (PEO-030) a route is 8-connected, so each decision
+        // brings the unit one cell nearer the source.
+        constexpr Vec2i kSource{7, 4};
+        const Grid<bool> walls(9, 9, false);
+        const ScentWave f = standing(9, 9, kSource, walls, 6);
         const Alone alone(walls);
         Dead unit{.pos = {1, 4}};
-        CHECK(alone.step(unit, f, walls));
-        CHECK(unit.pos == Vec2i{2, 4});
-        CHECK(alone.step(unit, f, walls));
-        CHECK(unit.pos == Vec2i{3, 4});
+        for (int i = 0; i < 2; ++i) {
+            const int before = chebyshev(unit.pos, kSource);
+            CHECK(alone.step(unit, f, walls));
+            CHECK(chebyshev(unit.pos, kSource) == before - 1);
+        }
     }
 
     TEST_CASE("the dead go round a wall corner, never through it") {
@@ -54,15 +70,11 @@ TEST_SUITE("dead") {
         constexpr int kWarmup = 30;
         constexpr int kDecisions = 20;
         constexpr Vec2i kSource{5, 3};
-        ScentField f(kSide, kSide, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
         Grid<bool> walls(kSide, kSide, false);
         for (int y = 0; y <= kArmEnd; ++y) {
             walls.at(kWallX, y) = true;
         }
-        for (int i = 0; i < kWarmup; ++i) {
-            f.deposit(kSource, 1.0F);
-            f.step(&walls);
-        }
+        const ScentWave f = standing(kSide, kSide, kSource, walls, kWarmup);
         REQUIRE(f.sample({3, 3}) > f.sample({2, 3})); // the corner cut would pull harder
         const Alone alone(walls);
         Dead unit{.pos = {2, 2}};
@@ -88,9 +100,11 @@ TEST_SUITE("dead") {
         constexpr Vec2i kFrom{3, 3};
         constexpr Vec2i kBest{4, 3};
         constexpr Vec2i kWeaker{2, 3};
-        ScentField f(kSide, kSide);
-        f.deposit(kBest, 2.0F);
-        f.deposit(kWeaker, 1.0F);
+        constexpr std::int32_t kStrong = 20;
+        constexpr std::int32_t kWeak = 10;
+        ScentWave f(kSide, kSide);
+        f.deposit(kBest, kStrong);
+        f.deposit(kWeaker, kWeak);
         const Grid<bool> walls(kSide, kSide, false);
         Grid<std::uint8_t> occupied(kSide, kSide, 0);
         Grid<bool> reserved(kSide, kSide, false);
@@ -105,10 +119,10 @@ TEST_SUITE("dead") {
     }
 
     TEST_CASE("the dead never enter walls") {
-        ScentField f(5, 5, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
+        ScentWave f(5, 5);
         Grid<bool> walls(5, 5, false);
         walls.at(2, 2) = true;
-        f.deposit({2, 2}, 1.0F); // scent inside a wall cell: nothing should walk in
+        f.deposit({2, 2}, f.params().strength); // scent inside a wall cell: nothing should walk in
         const Alone alone(walls);
         Dead unit{.pos = {1, 2}};
         CHECK_FALSE(alone.step(unit, f, walls));
@@ -116,9 +130,8 @@ TEST_SUITE("dead") {
     }
 
     // The warm-up only has to lay a gradient the horde can climb: the Dead start
-    // within 12 cells (Manhattan) of the source, and with no decay and no floor
-    // nothing is flushed, so the front arrives well inside this many ticks. Keep it
-    // short: this loop, not the Dead, dominated the whole headless suite (PEO-027).
+    // within 12 cells of the source, and the front moves a cell per update, so it
+    // arrives well inside this many updates.
     constexpr int kHordeWarmupTicks = 20;
 
     TEST_CASE("a thousand dead decide without touching each other") {
@@ -130,12 +143,8 @@ TEST_SUITE("dead") {
         constexpr int kRows = 40;
         constexpr Vec2i kSource{32, 32};
         constexpr Vec2i kCorner{36, 12};
-        ScentField f(kSide, kSide, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
-        Grid<bool> walls(kSide, kSide, false);
-        for (int i = 0; i < kHordeWarmupTicks; ++i) { // a player standing still
-            f.deposit(kSource, 1.0F);
-            f.step();
-        }
+        const Grid<bool> walls(kSide, kSide, false);
+        const ScentWave f = standing(kSide, kSide, kSource, walls, kHordeWarmupTicks);
         std::vector<Dead> horde;
         Grid<std::uint8_t> occupied(kSide, kSide, 0);
         for (int y = 0; y < kRows; ++y) {
@@ -161,22 +170,16 @@ TEST_SUITE("dead") {
     }
 
     TEST_CASE("distant Dead close in") {
-        // The reach field of 'the scent front carries far' (34x11, source (4,5),
-        // 40 warm-up steps), then frozen. Each call is one decision for a lone unit
-        // (D-031); at least 10 of the 15 cells must close in 50. It must start inside
-        // the front: on a flat zero field strongest_neighbour is empty and the unit
-        // would never move.
+        // A standing source at (4,5) on a 34x11 map, 40 updates, then frozen: the
+        // unit at (19,5) is inside the reach and each call is one decision, so it
+        // closes at least 10 of the 15 cells in 50 calls.
         constexpr Vec2i kSource{4, 5};
         constexpr Vec2i kStart{19, 5};
         constexpr int kWarmupSteps = 40;
         constexpr int kCalls = 50;
         constexpr int kMinClosed = 10;
-        ScentField f(34, 11);
-        Grid<bool> walls(34, 11, false);
-        for (int i = 0; i < kWarmupSteps; ++i) {
-            f.deposit(kSource, kPlayerScent);
-            f.step();
-        }
+        const Grid<bool> walls(34, 11, false);
+        const ScentWave f = standing(34, 11, kSource, walls, kWarmupSteps);
         const Alone alone(walls);
         Dead unit{.pos = kStart};
         for (int i = 0; i < kCalls; ++i) {

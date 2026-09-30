@@ -20,7 +20,7 @@ SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, 
             .count = std::min(count, dead_cycle)};
 }
 
-std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent, const Grid<bool>& blocked,
+std::optional<Vec2i> decide_move(const Dead& unit, const ScentWave& scent, const Grid<bool>& blocked,
                                  const Grid<std::uint8_t>& occupied, const Grid<bool>& reserved) noexcept {
     const std::optional<Vec2i> best = scent.strongest_neighbour(unit.pos, &blocked);
     if (!best || occupied.at(*best) != 0 || reserved.at(*best)) {

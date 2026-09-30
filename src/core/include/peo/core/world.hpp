@@ -3,7 +3,7 @@
 #include "peo/core/action.hpp"
 #include "peo/core/dead.hpp"
 #include "peo/core/rng.hpp"
-#include "peo/core/scent.hpp"
+#include "peo/core/scent_wave.hpp"
 #include "peo/core/stage.hpp"
 #include "peo/core/types.hpp"
 
@@ -22,14 +22,13 @@ inline constexpr int kMinStageSide = 3;
 /// player's entry is spawned, and never fewer than zero.
 struct WorldParams {
     int initial_dead = 40;
-    float player_scent = kPlayerScent;
-    ScentParams scent{};
+    /// The geodesic scent field (D-024): a walking step deposits scent.strength.
+    WaveParams scent{};
     /// Stage size in cells. Every turn sweeps the whole scent field, so a turn
     /// costs O(width * height); tests use a small stage to stay in budget.
     int stage_width = StageSpec{}.width;
     int stage_height = StageSpec{}.height;
-    /// Game seconds between scent updates (D-015). ScentParams and player_scent are
-    /// per update, so the defaults need no retune.
+    /// Game seconds between scent updates (D-015). WaveParams are per update.
     Seconds update_period = kUpdatePeriodSeconds;
     /// Game seconds in one cycle of the Dead's slots (D-031).
     Seconds dead_cycle = kDeadCycleSeconds;
@@ -70,9 +69,9 @@ struct HordeState {
     std::vector<DeadMove> landing;
 };
 
-/// The next update computed ahead (PEO-007, D-015, PEO-060). The scent: the
-/// whole-field sweep, post-step_linear and unclamped, so commit() only patches the
-/// logged deposits in and clamps. The Dead: between updates they read only the
+/// The next update computed ahead (PEO-007, D-015, PEO-060). The scent: the wave's
+/// update with no deposit, so commit() only patches the logged deposits in
+/// (ScentWave::patch_deposit, PEO-030). The Dead: between updates they read only the
 /// last update's scent, never the player, so their seconds up to and including the
 /// next boundary are fixed once an update commits; speculate() runs them ahead and
 /// records each second's decisions and any poll, and commit() replays them. Valid
@@ -81,7 +80,7 @@ struct HordeState {
 /// Reusable: speculate(out) and commit() recycle its buffers, so a frontend that
 /// keeps one Speculation allocates nothing per update.
 struct Speculation {
-    ScentField scent{1, 1};
+    ScentWave scent{1, 1};
     Tick update = 0;
     std::uint32_t stage_index = 0;
     /// The Dead's seconds (from, to] are recorded: second t's decisions are
@@ -130,17 +129,17 @@ public:
     /// speculation (other update or stage) falls back to step().
     void commit(Speculation& spec, Action action);
 
-    /// Add `amount` of scent at `at` now, outside the clock. A test hook for
+    /// Add `strength` of scent at `at` now, outside the clock. A test hook for
     /// benchmark emitters (PEO-043); not a game mechanic. It changes the field a
     /// speculation was built from without making it stale, so speculate after it.
-    void deposit(Vec2i at, float amount) noexcept { scent_.deposit(at, amount); }
+    void deposit(Vec2i at, std::int32_t strength) noexcept { scent_.deposit(at, strength); }
 
     /// Same stage, turn, clock, occupancy log, player, horde, scent bits and the
     /// Dead's pending moves, reservations and slots. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
-    [[nodiscard]] const ScentField& scent() const noexcept { return scent_; }
+    [[nodiscard]] const ScentWave& scent() const noexcept { return scent_; }
     [[nodiscard]] const std::vector<Dead>& horde() const noexcept { return dead_.horde; }
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
     /// Actions taken on this stage (the HUD's turn counter).
@@ -168,7 +167,9 @@ private:
     /// then the same landings as live.
     void replay_second(Seconds t, const Speculation& spec);
     void log_seconds(Seconds s);
-    void deposit_log(ScentField& field) const noexcept;
+    /// Scent a tile logged for `seconds` of the period deposits (D-015).
+    [[nodiscard]] std::int32_t logged_strength(Seconds seconds) const noexcept;
+    void deposit_log(ScentWave& field) const noexcept;
     void run_update();
     void finish_from(Speculation& spec);
     void finish_turn();
@@ -177,7 +178,7 @@ private:
     WorldParams params_;
     std::uint32_t stage_index_ = 0;
     Stage stage_;
-    ScentField scent_{1, 1};
+    ScentWave scent_{1, 1};
     HordeState dead_;
     /// Mixed into the slot hashes: the stage's own seed.
     std::uint64_t stage_salt_ = 0;

@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <array>
 #include <condition_variable>
+#include <cstdint>
 #include <cstdio>
 #include <mutex>
 #include <optional>
@@ -45,7 +46,7 @@ constexpr Uint64 kNsPerSecond = 1'000'000'000;
 constexpr Uint64 kMinTurnIntervalNs = kNsPerSecond / kMaxTurnsPerSecond;
 
 /// Scent view bands, log-spaced relative to the field's current maximum so the
-/// view reads the same at any deposit scale (0-500 today, D-007). Strongest first;
+/// view reads the same at any deposit scale (the geodesic field's samples, D-024). Strongest first;
 /// none uses @, which is the player's glyph.
 struct ScentBand {
     float fraction_of_max;
@@ -53,9 +54,9 @@ struct ScentBand {
 };
 constexpr std::array<ScentBand, 3> kScentBands{{{1e-1F, '*'}, {1e-3F, '+'}, {1e-5F, ':'}}};
 
-char scent_glyph(float scent, float max_scent) {
+char scent_glyph(std::int32_t scent, std::int32_t max_scent) {
     for (const ScentBand& band : kScentBands) {
-        if (scent > 0.0F && scent >= band.fraction_of_max * max_scent) {
+        if (scent > 0 && static_cast<float>(scent) >= band.fraction_of_max * static_cast<float>(max_scent)) {
             return band.glyph;
         }
     }
@@ -170,13 +171,18 @@ void draw(App& app) {
     std::string row(static_cast<std::size_t>(w), ' ');
 
     // Map + optional scent heat. The player's @ is drawn last and sits on top.
-    const Grid<float>& scent = world.scent().cells();
-    const float max_scent = app.show_scent ? *std::max_element(scent.begin(), scent.end()) : 0.0F;
+    const ScentWave& scent = world.scent();
+    std::int32_t max_scent = 0;
+    for (int y = 0; app.show_scent && y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            max_scent = std::max(max_scent, scent.sample({x, y}));
+        }
+    }
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             char c = stage.blocked.at(x, y) ? '#' : '.';
             if (app.show_scent && !stage.blocked.at(x, y)) {
-                c = scent_glyph(scent.at(x, y), max_scent);
+                c = scent_glyph(scent.sample({x, y}), max_scent);
             }
             row[static_cast<std::size_t>(x)] = c;
         }

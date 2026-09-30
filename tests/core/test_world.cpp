@@ -34,19 +34,28 @@ WorldParams small_world(int dead = kTestDead) {
     return {.initial_dead = dead, .stage_width = kTestStageWidth, .stage_height = kTestStageHeight};
 }
 
-/// Cells whose scent differs in any bit. Bit-exact on purpose: both worlds run
-/// the same binary in one process, so any difference at all is a real bug.
-std::size_t scent_mismatches(const ScentField& a, const ScentField& b) {
-    const Grid<float>& ca = a.cells();
-    const Grid<float>& cb = b.cells();
-    std::size_t differ = 0;
-    for (std::size_t i = 0; i < ca.size(); ++i) {
-        differ += std::bit_cast<std::uint32_t>(ca.data()[i]) != std::bit_cast<std::uint32_t>(cb.data()[i]);
+/// Cells whose scent differs, and a differing age line counts as one more. The
+/// field is integer (D-024), so equal means equal.
+std::size_t scent_mismatches(const ScentWave& a, const ScentWave& b) {
+    std::size_t differ = a.updates() != b.updates() ? 1U : 0U;
+    for (std::size_t i = 0; i < a.values().size(); ++i) {
+        differ += a.values()[i] != b.values()[i] ? 1U : 0U;
     }
     return differ;
 }
 
-/// FNV-1a over the player, the Dead's positions and the scent bits.
+/// Sum of the field's samples over the stage.
+long long scent_total(const World& w) {
+    long long sum = 0;
+    for (int y = 0; y < w.stage().spec.height; ++y) {
+        for (int x = 0; x < w.stage().spec.width; ++x) {
+            sum += w.scent().sample({x, y});
+        }
+    }
+    return sum;
+}
+
+/// FNV-1a over the player, the Dead's positions and the scent values.
 struct Fnv1a {
     std::uint64_t h = 0xCBF29CE484222325ULL;
     void add(std::uint64_t v) {
@@ -65,8 +74,9 @@ std::uint64_t world_hash(const World& w) {
         f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.x)));
         f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.y)));
     }
-    for (const float v : w.scent().cells()) {
-        f.add(std::bit_cast<std::uint32_t>(v));
+    f.add(w.scent().updates());
+    for (const std::int32_t v : w.scent().values()) {
+        f.add(static_cast<std::uint32_t>(v));
     }
     return f.h;
 }
@@ -134,8 +144,8 @@ TEST_SUITE("world") {
         }
         CHECK(a.player() == b.player());
         CHECK(a.turn() == b.turn());
-        REQUIRE(a.scent().cells().size() == b.scent().cells().size());
-        CHECK(a.scent().total() > 0.0F); // the field is not trivially empty
+        REQUIRE(a.scent().values().size() == b.scent().values().size());
+        CHECK(scent_total(a) > 0); // the field is not trivially empty
         CHECK(scent_mismatches(a.scent(), b.scent()) == 0);
         REQUIRE(a.horde().size() == b.horde().size());
         for (std::size_t i = 0; i < a.horde().size(); ++i) {
@@ -148,8 +158,10 @@ TEST_SUITE("world") {
         // bit for bit. PEO-058 (D-031) re-pinned it on purpose: the Dead now move in
         // hashed slots every second, never share a tile and no longer carry a
         // cooldown, so their paths and the hashed state changed.
+        // PEO-030 (D-024) re-pinned it again on purpose: the scent is now the integer
+        // geodesic field, so every sample, and the Dead's routes, changed.
         constexpr int kRandomActions = 100; // before and after the walk to the exit
-        constexpr std::uint64_t kPinnedHash = 0x5D937B3ACB1DA565ULL;
+        constexpr std::uint64_t kPinnedHash = 0x4B5B9E9B2BE5F1E7ULL;
         World w(kSeed, small_world());
         Rng pick(kSeed);
         const auto random_actions = [&] {
@@ -183,10 +195,7 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("wait advances the turn and the dead approach") {
-        // Fast, lossless scent so the test is about World, not scent tuning (PEO-026).
-        WorldParams params = small_world();
-        params.scent = {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F};
-        World w(kSeed, params);
+        World w(kSeed, small_world());
         const long long before = horde_distance(w);
         const Vec2i where = w.player();
         for (int i = 0; i < kWaitTurns; ++i) {
@@ -314,9 +323,10 @@ TEST_SUITE("world") {
         CHECK(transitions > 0); // the sequences really do cross stages
     }
 
-    TEST_CASE("two 3 s steps share one update's scent") {
-        // D-015: each tile gets player_scent * seconds / period; two half-period
-        // steps deposit half each, one walking step's worth in total.
+    TEST_CASE("two 3 s steps each deposit a little less than a walking step") {
+        // D-015 on the geodesic field (PEO-030): a tile held for part of the period
+        // deposits as if the scent were that much older, strength less age_cost x the
+        // empty share, never more than a walking step's strength.
         constexpr Seconds kHalf = kUpdatePeriodSeconds / 2;
         const WorldParams params = small_world(0);
         World w(kSeed, params);
@@ -330,7 +340,7 @@ TEST_SUITE("world") {
             }
         }
         REQUIRE(dir != Vec2i{});
-        ScentField expected = w.scent();
+        ScentWave expected = w.scent();
 
         w.step(Action::step(dir, kHalf));
         CHECK(w.updates() == 0);
@@ -342,18 +352,18 @@ TEST_SUITE("world") {
         CHECK(w.updates() == 1);
         CHECK(w.occupancy().empty());
 
-        const float half = params.player_scent * 0.5F;
-        CHECK(half + half == params.player_scent); // one walking step's worth in total
-        expected.step_linear(&blocked);
-        expected.patch_deposit(start + dir, half, &blocked);
-        expected.patch_deposit(start, half, &blocked);
-        expected.clamp_floor();
+        const std::int32_t part = params.scent.strength - params.scent.age_cost / 2;
+        CHECK(part < params.scent.strength); // a partly held tile never deposits more
+        expected.deposit(start + dir, part);
+        expected.deposit(start, part);
+        expected.update(blocked);
         CHECK(scent_mismatches(w.scent(), expected) == 0);
     }
 
     TEST_CASE("a runner moves two cells per update") {
         // D-015 / PEO-041: a running step takes kRunStepSeconds, so two fit in one
-        // update. Scent follows time: each cell gets half a walking step's deposit.
+        // update. Scent follows time: each cell deposits as a tile held half the
+        // period, a little less than a walking step's strength (PEO-030).
         constexpr int kRunSteps = 4;
         constexpr int kStepsPerUpdate = static_cast<int>(kUpdatePeriodSeconds / kRunStepSeconds);
         static_assert(kStepsPerUpdate == 2);
@@ -382,8 +392,8 @@ TEST_SUITE("world") {
         World walker = runner;
         const Grid<bool>& blocked = runner.stage().blocked;
         const Vec2i start = runner.player();
-        ScentField expected = runner.scent();
-        const float half = params.player_scent * 0.5F;
+        ScentWave expected = runner.scent();
+        const std::int32_t part = params.scent.strength - params.scent.age_cost / 2;
 
         for (int i = 1; i <= kRunSteps; ++i) {
             runner.step(Action::step(dir, kRunStepSeconds));
@@ -394,17 +404,16 @@ TEST_SUITE("world") {
                 REQUIRE(runner.occupancy().size() == 1);
                 CHECK(runner.occupancy()[0].seconds == kRunStepSeconds);
             } else {
-                // The update just ran on this cell and the one before, half each.
-                expected.step_linear(&blocked);
-                expected.patch_deposit(at - dir, half, &blocked);
-                expected.patch_deposit(at, half, &blocked);
-                expected.clamp_floor();
+                // The update just ran on this cell and the one before, half a period each.
+                expected.deposit(at - dir, part);
+                expected.deposit(at, part);
+                expected.update(blocked);
             }
         }
         CHECK(runner.player() == start + Vec2i{dir.x * kRunSteps, dir.y * kRunSteps});
         CHECK(runner.updates() == 2);
         CHECK(scent_mismatches(runner.scent(), expected) == 0);
-        CHECK(half + half == params.player_scent); // per second, a runner deposits as a walker
+        CHECK(part < params.scent.strength); // a runner never deposits more than a walker
 
         // A walker spends the same 12 s on two cells: the same seconds, so the Dead
         // (who move in slots per second, D-031) get no more moves against a runner.
@@ -438,7 +447,7 @@ TEST_SUITE("world") {
         constexpr Seconds kShort = kUpdatePeriodSeconds / 2;
         World w(kSeed, small_world());
         World seconds(kSeed, small_world());
-        const ScentField scent_before = w.scent();
+        const ScentWave scent_before = w.scent();
         w.step(Action::wait(kShort));
         for (Seconds s = 0; s < kShort; ++s) {
             seconds.step(Action::wait(1));
@@ -629,7 +638,7 @@ TEST_SUITE("world") {
                 emitters.push_back(c);
             }
         }
-        const float strength = WorldParams{}.player_scent;
+        const std::int32_t strength = WorldParams{}.scent.strength;
         Speculation spec;
         w.speculate(spec); // size the buffers once
         double best_spec_us = 1e30;
