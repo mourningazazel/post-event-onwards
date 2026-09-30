@@ -93,7 +93,7 @@ fields.lot_m = "range"
 fields.tags = "list<str>"
 
 [schema.building]
-required = ["desc", "footprint_m", "floors", "rooms"]
+required = ["desc", "footprint_m", "floors", "rooms", "context"]
 fields.desc = "str"
 fields.footprint_m = "any"               # [[w_min, w_max], [d_min, d_max]]
 fields.floors = "range"
@@ -102,6 +102,7 @@ fields.walls = "ref:material"
 fields.exterior = "ref:material"
 fields.roof = "ref:material"
 fields.rooms = "list<table>"             # { room, count = [min,max], floor = ground|upper|basement|any }
+fields.context = "str"                   # ctx.* tag: what its containers' extras draw on (D-030)
 fields.occupants = "list<table>"         # { profile, count = [min,max], when = [...] }
 fields.outdoor = "list<str>"             # outdoor_set ids
 fields.loot_priority = "enum:low|medium|high|very_high"
@@ -115,6 +116,7 @@ fields.desc = "str"
 fields.size_m2 = "range"
 fields.objects = "list<table>"           # { item, count = [min,max], chance_pct?, contains = [loot|item ids] }
 fields.loose = "list<str>"               # loot/item ids scattered on floors/surfaces
+fields.context = "str"                   # ctx.* tag overriding the building's (D-030)
 fields.floor = "enum:ground|upper|basement|any"
 fields.tags = "list<str>"
 
@@ -146,3 +148,31 @@ fields.pick = "int"
 fields.chance_pct = "int"
 fields.entries = "list<table>"
 fields.desc = "str"
+
+# ---- container purposes and may-appear tables (D-030, PEO-057) ----
+[schema.purpose]
+required = ["name", "loot", "desc"]
+fields.name = "str"                      # shown once examined: "cutlery drawer"
+fields.loot = "ref:loot"                 # the main table
+fields.desc = "str"
+
+[schema.detail]
+required = ["name", "loot", "why"]
+fields.name = "str"
+fields.loot = "ref:loot"                 # the blend table: evidence of the detail
+fields.why = "str"
+
+[schema.detail_loot]
+required = ["match", "loot", "why"]
+fields.match = "table"                   # { detail, kind }: this blend table for that kind
+fields.loot = "ref:loot"
+fields.why = "str"
+
+[schema.extras]
+required = ["match", "chance_pct", "rolls", "entries", "why"]
+fields.match = "table"                   # { kind?, ctx? }: every key given must equal the tag
+fields.chance_pct = "int"                # chance the table fires at all for a container
+fields.rolls = "range"
+fields.entries = "list<table>"           # as loot entries
+fields.why = "str"
+

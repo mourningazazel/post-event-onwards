@@ -25,6 +25,7 @@
 #   regardless of the neighbourhood roll (N007); power always follows the neighbourhood roll.
 
 [building.ranch_house]
+context = "ctx.home"
 desc = "A single-storey detached house, long and low under a shallow gable roof, typically 2-4 bedrooms with an attached garage; the commonest American post-war house."
 footprint_m = [[13, 25], [8, 14]]
 floors = [1, 1]
@@ -63,6 +64,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.colonial_house]
+context = "ctx.home"
 desc = "A two-storey detached house with a symmetrical front, living spaces downstairs and bedrooms upstairs, often with a full basement."
 footprint_m = [[10, 16], [8, 12]]
 floors = [2, 2]
@@ -102,6 +104,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.bungalow]
+context = "ctx.home"
 desc = "A small one-and-a-half-storey house with a deep front porch and a low roof; pre-war urban and small-town streets. A detached single garage out back is common."
 footprint_m = [[8, 12], [10, 15]]
 floors = [1, 2]
@@ -137,6 +140,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.split_level]
+context = "ctx.home"
 desc = "A 1960s-70s house staggered over three half-levels: living and kitchen at entry level, bedrooms half a flight up, a den and garage half a flight down."
 footprint_m = [[11, 18], [8, 12]]
 floors = [2, 3]
@@ -174,6 +178,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.mcmansion]
+context = "ctx.home"
 desc = "A large two-storey new-build house with a three-car garage, 4-6 bedrooms, open-plan kitchen and a finished basement; brick front and siding elsewhere."
 footprint_m = [[18, 30], [12, 20]]
 floors = [2, 2]
@@ -212,6 +217,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.townhouse]
+context = "ctx.home"
 desc = "One unit of a row of narrow two-to-three-storey attached houses sharing side walls, often with a tuck-under garage; suburban and newer urban infill."
 footprint_m = [[6, 8], [12, 18]]
 floors = [2, 3]
@@ -248,6 +254,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.attached"]
 
 [building.rowhouse]
+context = "ctx.home"
 desc = "An old brick terraced house in an unbroken city row: narrow, deep, two or three storeys, a front stoop, a cellar and a small back yard onto an alley."
 footprint_m = [[4, 7], [10, 18]]
 floors = [2, 3]
@@ -281,6 +288,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.attached"]
 
 [building.duplex]
+context = "ctx.home"
 desc = "A two-family house: two mirror-image units side by side (or one above the other), each with its own entrance, kitchen and bedrooms."
 footprint_m = [[14, 20], [9, 13]]
 floors = [1, 2]
@@ -315,6 +323,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.multi_unit"]
 
 [building.walkup_apartment]
+context = "ctx.home"
 desc = "A three-to-five-storey brick apartment block with a shared stair and no elevator, 2-4 flats per floor, a basement laundry and boiler room."
 footprint_m = [[15, 30], [12, 25]]
 floors = [3, 5]
@@ -350,6 +359,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.multi_unit"]
 
 [building.highrise_apartment]
+context = "ctx.home"
 desc = "A concrete residential tower of 8-40 storeys, 6-12 flats per floor off a central elevator core, with a staffed lobby, basement plant and tenant storage cages."
 footprint_m = [[25, 50], [20, 40]]
 floors = [8, 40]
@@ -391,6 +401,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.multi_unit", "cat.building.highrise"]
 
 [building.mobile_home]
+context = "ctx.home"
 desc = "A factory-built single- or double-wide home on a steel chassis, skirted and blocked up on piers: thin walls, a metal roof, a propane tank alongside."
 footprint_m = [[4, 8], [14, 24]]
 floors = [1, 1]
@@ -424,6 +435,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.residential", "cat.building.house"]
 
 [building.farmhouse]
+context = "ctx.home"
 desc = "A two-storey clapboard farmhouse with a mudroom, a big kitchen, a root cellar and outbuildings, on its own well and septic far from neighbours."
 footprint_m = [[10, 16], [9, 14]]
 floors = [2, 2]
@@ -464,6 +476,7 @@ utilities = { power = "grid", water = "well" }
 tags = ["cat.building.residential", "cat.building.house", "cat.building.farm"]
 
 [building.cabin]
+context = "ctx.home"
 desc = "A small wooden cabin in the woods or by a lake, often a weekend or hunting place: one main room with a wood stove, a loft, a well and a woodpile."
 footprint_m = [[6, 10], [6, 12]]
 floors = [1, 1]

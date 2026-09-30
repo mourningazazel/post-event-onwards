@@ -115,6 +115,18 @@ open = true
 rule = "material family, auto-derived from composition (mat.metal, mat.wood, mat.textile, mat.polymer, mat.glass, mat.paper, mat.stone, mat.organic, mat.rubber, mat.ceramic)"
 desc = "Material-family queries (fire, reactions, crafting)."
 
+[namespace.kind]
+open = false
+desc = "A container's purpose (D-030): kind.<purpose id>. Members are the purpose records."
+
+[namespace.ctx]
+open = false
+desc = "A container's context (D-030): the building's, or its room's; nested containers inherit it."
+
+[namespace.detail]
+open = false
+desc = "A container's rare detail (D-030): detail.<detail id>. Members are the detail records."
+
 [namespace.use]
 open = false
 desc = "Functional intent (UI hints, crafting queries)."
@@ -367,3 +379,28 @@ desc = "Thighs."
 desc = "Shins/calves (bitten by crawlers)."
 [tag."body.feet"]
 desc = "Feet."
+
+# ---- ctx.* (D-030, PEO-057) ----
+[tag."ctx.home"]
+desc = "Houses, apartments, and what people keep in them (self storage too)."
+[tag."ctx.office"]
+desc = "Offices and banks."
+[tag."ctx.retail"]
+desc = "Shops, stores and the truck stop."
+[tag."ctx.food_service"]
+desc = "Restaurants, bars, cafes."
+[tag."ctx.medical"]
+desc = "Hospitals and clinics."
+[tag."ctx.institutional"]
+desc = "Schools, churches, libraries, police and fire stations, civic buildings."
+[tag."ctx.industrial"]
+desc = "Warehouses, factories, yards, utilities, parking."
+[tag."ctx.farm"]
+desc = "Barns and farm buildings."
+[tag."ctx.lodging"]
+desc = "Motels and hotels."
+[tag."ctx.vehicle"]
+desc = "Inside a vehicle."
+[tag."ctx.person"]
+desc = "On a person: pockets and carried bags."
+

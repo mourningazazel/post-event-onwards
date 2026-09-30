@@ -8,6 +8,7 @@
 # and water rolls (N007); they are placed by the generator, not by setting weights.
 
 [building.warehouse]
+context = "ctx.industrial"
 desc = "A distribution warehouse: a tilt-up concrete box of pallet racking and floor stacks, a row of dock doors, a small office and break room; many run around the clock."
 footprint_m = [[50, 200], [30, 120]]
 floors = [1, 1]
@@ -37,6 +38,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.industrial"]
 
 [building.factory]
+context = "ctx.industrial"
 desc = "A manufacturing plant: production floors of machines and conveyors, a machine shop, raw-stock and finished-goods storage, docks, a boiler house and offices; shift work."
 footprint_m = [[60, 200], [40, 150]]
 floors = [1, 2]
@@ -74,6 +76,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.industrial"]
 
 [building.auto_repair_garage]
+context = "ctx.industrial"
 desc = "An auto repair shop: two to six service bays with lifts, air tools and a parts room, a greasy customer counter, a waiting room with old magazines."
 footprint_m = [[15, 30], [12, 25]]
 floors = [1, 1]
@@ -101,6 +104,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.industrial", "cat.building.automotive"]
 
 [building.lumber_yard]
+context = "ctx.industrial"
 desc = "A lumber yard: open sheds and yard stacks of dimensional lumber, plywood, block and bagged concrete, a contractor sales counter and a forklift-served loading area."
 footprint_m = [[30, 80], [20, 50]]
 floors = [1, 1]
@@ -129,6 +133,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.industrial", "cat.building.construction"]
 
 [building.junkyard]
+context = "ctx.industrial"
 desc = "A scrap and salvage yard behind corrugated fencing: acres of stripped and stacked cars, scrap piles, a crusher, and a cluttered office shack with a parts counter."
 footprint_m = [[8, 20], [8, 15]]
 floors = [1, 1]
@@ -153,6 +158,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.industrial", "cat.building.salvage"]
 
 [building.truck_stop]
+context = "ctx.retail"
 desc = "An interstate truck stop: diesel islands, a big travel store and trucker's lounge, a restaurant, showers and laundry, a truck service bay and acres of idling rigs."
 footprint_m = [[30, 60], [20, 40]]
 floors = [1, 1]
@@ -192,6 +198,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.fuel", "cat.building.food"]
 
 [building.barn]
+context = "ctx.farm"
 desc = "A timber-framed or pole barn: stalls and pens, a hayloft, feed bins, tack and tool corners, a tractor bay; on the farm's well."
 footprint_m = [[12, 30], [18, 40]]
 floors = [1, 2]
@@ -215,6 +222,7 @@ utilities = { power = "grid", water = "well" }
 tags = ["cat.building.farm"]
 
 [building.power_substation]
+context = "ctx.industrial"
 desc = "A fenced electrical substation: transformers, switchgear and bus bars on gravel inside a chain-link fence, with a small block control house; unmanned."
 footprint_m = [[30, 80], [30, 80]]
 floors = [1, 1]
@@ -234,6 +242,7 @@ utilities = { power = "grid", water = "none" }
 tags = ["cat.building.utility", "cat.building.power"]
 
 [building.water_treatment]
+context = "ctx.industrial"
 desc = "A water treatment plant: settling and filter basins, a pump house, chemical storage (chlorine, coagulants), a lab and control room; staffed around the clock."
 footprint_m = [[40, 150], [30, 100]]
 floors = [1, 2]
@@ -261,6 +270,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.utility", "cat.building.water"]
 
 [building.water_tower]
+context = "ctx.industrial"
 desc = "An elevated water tank on steel legs or a single pedestal, with a caged ladder to a catwalk and a valve house at its foot; a landmark visible for miles."
 footprint_m = [[8, 20], [8, 20]]
 floors = [1, 1]

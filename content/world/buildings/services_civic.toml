@@ -9,6 +9,7 @@
 # profile exists.
 
 [building.office_lowrise]
+context = "ctx.office"
 desc = "A one-to-four-storey office building: cubicle floors, private offices, meeting rooms and a kitchenette per floor; also stands in for city halls, courthouses and small professional offices."
 footprint_m = [[20, 60], [15, 40]]
 floors = [1, 4]
@@ -42,6 +43,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.office"]
 
 [building.office_tower]
+context = "ctx.office"
 desc = "A steel-and-glass office tower of 12-60 storeys: an atrium lobby with security desk, elevator banks, open-plan floors, basement plant and a loading dock."
 footprint_m = [[30, 60], [30, 60]]
 floors = [12, 60]
@@ -83,6 +85,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.office", "cat.building.highrise"]
 
 [building.bank]
+context = "ctx.office"
 desc = "A bank branch: a teller line behind glass, private offices, a vault room with safe-deposit boxes, a drive-through lane and an ATM vestibule."
 footprint_m = [[15, 30], [15, 30]]
 floors = [1, 2]
@@ -115,6 +118,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.office", "cat.building.bank"]
 
 [building.post_office]
+context = "ctx.institutional"
 desc = "A post office: a public lobby with PO boxes and a service counter, a sorting floor of mail bins and parcel cages, and a dock for the delivery trucks."
 footprint_m = [[20, 50], [20, 40]]
 floors = [1, 1]
@@ -146,6 +150,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.civic"]
 
 [building.police_station]
+context = "ctx.institutional"
 desc = "A police station: a front desk behind glass, a squad room, interview rooms, holding cells, a locker room, a secured armory and a sally-port garage."
 footprint_m = [[25, 60], [20, 40]]
 floors = [1, 3]
@@ -181,6 +186,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.civic", "cat.building.institutional", "cat.building.emergency"]
 
 [building.fire_station]
+context = "ctx.institutional"
 desc = "A fire station: a tall apparatus bay of engines and an ambulance, a turnout-gear rack, a kitchen and day room, bunk rooms, a workshop and hose tower."
 footprint_m = [[20, 40], [20, 35]]
 floors = [1, 2]
@@ -209,6 +215,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.civic", "cat.building.institutional", "cat.building.emergency"]
 
 [building.hospital]
+context = "ctx.medical"
 desc = "A community hospital of 2-10 storeys: an emergency department with ambulance bay, wards of patient rooms, a hospital pharmacy, kitchens, laundry and basement plant with backup generators."
 footprint_m = [[50, 150], [40, 100]]
 floors = [2, 10]
@@ -260,6 +267,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.institutional", "cat.building.medical"]
 
 [building.medical_clinic]
+context = "ctx.medical"
 desc = "An outpatient medical clinic or urgent care: a waiting room and reception, a corridor of exam rooms, a supply room and staff offices."
 footprint_m = [[20, 40], [15, 30]]
 floors = [1, 2]
@@ -293,6 +301,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.institutional", "cat.building.medical"]
 
 [building.school]
+context = "ctx.institutional"
 desc = "A public school, elementary to high school: corridors of classrooms, a gymnasium, a cafeteria with kitchen, a library, the nurse's office, admin offices and a boiler room."
 footprint_m = [[60, 150], [40, 100]]
 floors = [1, 3]
@@ -340,6 +349,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.institutional", "cat.building.school"]
 
 [building.library]
+context = "ctx.institutional"
 desc = "A public library: tall stacks, reading tables and public computers, a children's corner, a circulation desk and meeting rooms; local maps, atlases and manuals."
 footprint_m = [[20, 60], [20, 40]]
 floors = [1, 2]
@@ -372,6 +382,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.civic", "cat.building.institutional"]
 
 [building.church]
+context = "ctx.institutional"
 desc = "A church: a nave of pews under a high roof, a pastor's office, Sunday-school rooms, and a fellowship hall with a kitchen and food-pantry shelves in the basement."
 footprint_m = [[15, 40], [25, 50]]
 floors = [1, 2]
@@ -403,6 +414,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.institutional", "cat.building.church"]
 
 [building.motel]
+context = "ctx.lodging"
 desc = "A roadside motel: one or two storeys of rooms opening straight onto the parking lot along an exterior walkway, an office with the room keys, an ice machine and a laundry."
 footprint_m = [[30, 80], [10, 15]]
 floors = [1, 2]
@@ -433,6 +445,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.lodging"]
 
 [building.hotel]
+context = "ctx.lodging"
 desc = "A full-service hotel of 4-25 storeys: a lobby and front desk, restaurant and bar, meeting rooms, a fitness room, corridors of guest rooms, back-of-house laundry and kitchens."
 footprint_m = [[30, 70], [20, 40]]
 floors = [4, 25]
@@ -476,6 +489,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.lodging", "cat.building.highrise"]
 
 [building.parking_garage]
+context = "ctx.industrial"
 desc = "A multi-storey concrete parking structure: open decks of parked cars linked by ramps and stair towers, a pay booth at the entrance. Each deck is filled with the parking_lot outdoor set."
 footprint_m = [[40, 80], [30, 60]]
 floors = [2, 8]
@@ -500,6 +514,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.transport"]
 
 [building.self_storage]
+context = "ctx.home"
 desc = "A self-storage facility: rows of roll-up-door units behind a keypad gate, an office selling boxes and locks; each unit a padlocked time capsule of someone's belongings."
 footprint_m = [[40, 120], [20, 60]]
 floors = [1, 3]

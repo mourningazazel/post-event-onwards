@@ -135,6 +135,12 @@ class Lint:
             fams = self.db["schema"]["material"]["fields"]["family"][5:].split("|")
             if rest not in fams:
                 self.err(where, f"tag '{tag}': unknown material family")
+        elif ns == "kind":
+            if self.db.get("purpose", rest) is None:
+                self.err(where, f"tag '{tag}': no purpose '{rest}'")
+        elif ns == "detail":
+            if self.db.get("detail", rest) is None:
+                self.err(where, f"tag '{tag}': no detail '{rest}'")
         elif ns == "cat":
             if self.db.get("tag", "cat." + rest.split(".")[0]) is None:
                 self.err(where, f"tag '{tag}': cat family 'cat.{rest.split('.')[0]}' is not registered")
@@ -404,7 +410,7 @@ class Lint:
     # ---------------------------------------------------------------- brands & world
     def lint_refs(self) -> None:
         for rtype in ("company", "brand", "store_chain", "setting", "building", "room", "loot",
-                      "outdoor_set", "profile"):
+                      "outdoor_set", "profile", "purpose", "detail", "detail_loot", "extras"):
             schema = self.db.get("schema", rtype)
             for rid, rec in self.db[rtype].items():
                 w = f"{self.db.where(rtype, rid)} {rtype}.{rid}"
@@ -448,8 +454,10 @@ class Lint:
             for c in rec.get("loose", []):
                 self.item_or_loot(w, c)
             self.lint_room_fit(w, rec)
+            self.check_context(w, rec)
         for bid, rec in self.db["building"].items():
             w = f"{self.db.where('building', bid)} building.{bid}"
+            self.check_context(w, rec)
             for r in rec.get("rooms", []):
                 if self.db.get("room", r.get("room", "")) is None:
                     self.err(w, f"unknown room '{r.get('room')}'")
@@ -480,6 +488,16 @@ class Lint:
                         self.item_or_loot(w, ref)
             for ref in rec.get("pockets", []) + [c[0] for c in rec.get("carried", []) if c[0] != "none"]:
                 self.item_or_loot(w, ref)
+
+    def check_context(self, w: str, rec: dict) -> None:
+        """A building's context, or a room's override, is a registered ctx.* tag (D-030)."""
+        ctx = rec.get("context")
+        if ctx is None:
+            return  # required on buildings by the schema; optional on rooms
+        if not isinstance(ctx, str) or not ctx.startswith("ctx."):
+            self.err(w, f"context '{ctx}' is not a ctx.* tag")
+        else:
+            self.check_tag(w, ctx)
 
     def floor_m2(self, iid: str) -> float:
         """Floor an object covers: the two horizontal dimensions when it blocks or is fixed

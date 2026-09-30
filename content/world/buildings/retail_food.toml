@@ -8,6 +8,7 @@
 # as a chance_pct. Night stockers and cleaners keep big stores from ever being truly empty.
 
 [building.supermarket]
+context = "ctx.retail"
 desc = "A full-line grocery store: a single-storey block building with long aisles, refrigerated cases, a deli-bakery, often an in-store pharmacy, and a rear receiving dock."
 footprint_m = [[45, 90], [40, 70]]
 floors = [1, 1]
@@ -51,6 +52,7 @@ store_chains = ["grovely_market"]
 tags = ["cat.building.retail", "cat.building.grocery"]
 
 [building.convenience_store]
+context = "ctx.retail"
 desc = "A small corner store or mini-mart: a few aisles of snacks and staples, drinks coolers with a walk-in behind, lottery and tobacco behind the counter; often open all night."
 footprint_m = [[12, 25], [10, 20]]
 floors = [1, 1]
@@ -82,6 +84,7 @@ store_chains = ["lanternway"]
 tags = ["cat.building.retail", "cat.building.grocery"]
 
 [building.pharmacy]
+context = "ctx.retail"
 desc = "A chain drugstore: aisles of over-the-counter medicine, first aid, toiletries and snacks, with the prescription counter and its locked stock at the back."
 footprint_m = [[25, 40], [25, 40]]
 floors = [1, 1]
@@ -115,6 +118,7 @@ store_chains = ["pennant_pharmacy"]
 tags = ["cat.building.retail", "cat.building.medical"]
 
 [building.hardware_store]
+context = "ctx.retail"
 desc = "A hardware store or home centre: aisles of hand and power tools, fasteners, plumbing, electrical, paint, fuel and propane, with a lumber and garden corner."
 footprint_m = [[30, 60], [25, 50]]
 floors = [1, 1]
@@ -147,6 +151,7 @@ store_chains = ["burlows_hardware"]
 tags = ["cat.building.retail", "cat.building.hardware"]
 
 [building.big_box_store]
+context = "ctx.retail"
 desc = "A warehouse-sized supercenter under one roof: groceries, pharmacy, hardware, clothing, electronics, sporting goods with a locked firearms counter, and an auto service bay."
 footprint_m = [[90, 180], [70, 130]]
 floors = [1, 1]
@@ -194,6 +199,7 @@ store_chains = ["maxfield"]
 tags = ["cat.building.retail", "cat.building.grocery", "cat.building.big_box"]
 
 [building.gun_store]
+context = "ctx.retail"
 desc = "A gun shop: long glass counters of handguns, racked long guns behind, ammunition shelves, a barred storefront and a gunsmith's bench at the back."
 footprint_m = [[10, 25], [15, 30]]
 floors = [1, 1]
@@ -222,6 +228,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.weapons"]
 
 [building.sporting_goods]
+context = "ctx.retail"
 desc = "A sporting goods store: camping, hunting and fishing gear, team sports, exercise equipment and outdoor clothing, sometimes with a firearms and ammunition counter."
 footprint_m = [[30, 60], [30, 50]]
 floors = [1, 1]
@@ -251,6 +258,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.outdoors"]
 
 [building.clothing_store]
+context = "ctx.retail"
 desc = "A clothing store or thrift shop: racks and tables of clothes, shoes and outerwear, fitting rooms and a back stockroom of boxed inventory."
 footprint_m = [[10, 40], [15, 40]]
 floors = [1, 2]
@@ -279,6 +287,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.clothing"]
 
 [building.auto_parts_store]
+context = "ctx.retail"
 desc = "An auto parts store: shelves of oil, fluids, filters, batteries, wipers and tools, with a parts counter backed by rows of boxed parts."
 footprint_m = [[20, 35], [20, 35]]
 floors = [1, 1]
@@ -305,6 +314,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.automotive"]
 
 [building.liquor_store]
+context = "ctx.retail"
 desc = "A package liquor store: shelves and cases of spirits, wine and beer, a beer cooler, a cash counter behind glass; high-proof alcohol is fuel, antiseptic and trade."
 footprint_m = [[10, 25], [12, 25]]
 floors = [1, 1]
@@ -330,6 +340,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.liquor"]
 
 [building.bookstore]
+context = "ctx.retail"
 desc = "A bookstore, new or used: tall shelves of books and maps, a reading corner, often a small cafe counter. A quiet source of manuals, atlases and local maps."
 footprint_m = [[10, 40], [15, 40]]
 floors = [1, 2]
@@ -358,6 +369,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.books"]
 
 [building.fast_food]
+context = "ctx.food_service"
 desc = "A fast-food restaurant with a drive-thru: fryers and grills behind the counter, a walk-in cooler and freezer, a dining room of fixed booths."
 footprint_m = [[15, 25], [12, 20]]
 floors = [1, 1]
@@ -391,6 +403,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.food"]
 
 [building.diner]
+context = "ctx.food_service"
 desc = "A diner: a long counter with stools, booths along the windows, a short-order grill in view; open early, sometimes around the clock."
 footprint_m = [[12, 25], [10, 20]]
 floors = [1, 1]
@@ -425,6 +438,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.food"]
 
 [building.bar]
+context = "ctx.food_service"
 desc = "A neighbourhood bar or tavern: a long bar with taps and bottle shelves, tables and booths, a pool table, a small grill kitchen and a keg cellar."
 footprint_m = [[8, 20], [15, 30]]
 floors = [1, 1]
@@ -460,6 +474,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.food", "cat.building.nightlife"]
 
 [building.coffee_shop]
+context = "ctx.food_service"
 desc = "A coffee shop: an espresso counter, pastry case, a few tables and laptop-lined window seats; busiest in the morning."
 footprint_m = [[8, 15], [10, 20]]
 floors = [1, 1]
@@ -489,6 +504,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.food"]
 
 [building.gas_station]
+context = "ctx.retail"
 desc = "A filling station: a canopy over fuel pumps fed by underground tanks, a convenience store with drinks coolers, a propane exchange cage; older stations keep a service bay."
 footprint_m = [[12, 25], [10, 20]]
 floors = [1, 1]
@@ -521,6 +537,7 @@ store_chains = ["orrins"]
 tags = ["cat.building.retail", "cat.building.fuel"]
 
 [building.laundromat]
+context = "ctx.retail"
 desc = "A self-service laundromat: banks of coin washers and big dryers, folding tables, a soap vending machine and an attendant's counter."
 footprint_m = [[10, 20], [15, 30]]
 floors = [1, 1]
@@ -548,6 +565,7 @@ utilities = { power = "grid", water = "mains" }
 tags = ["cat.building.retail", "cat.building.service"]
 
 [building.strip_mall]
+context = "ctx.retail"
 desc = "A one-storey strip of 4-12 small shop units under one flat roof facing a parking lot: nail salon, takeout, dollar store, phone shop, tax office, laundromat, vacant units."
 footprint_m = [[60, 200], [18, 30]]
 floors = [1, 1]

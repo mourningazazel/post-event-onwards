@@ -18,6 +18,7 @@ RECORD_TYPES = {
     "scent", "action", "shape", "skill", "schema", "material", "substance", "item",
     "modifier", "detail_table", "company", "brand", "store_chain", "setting",
     "building", "room", "loot", "outdoor_set", "profile",
+    "purpose", "detail", "detail_loot", "extras",
 }
 # Record types that are single merged tables rather than id -> record maps.
 MERGED_TYPES = {"dominance", "meta", "status", "default"}
