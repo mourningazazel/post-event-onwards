@@ -503,7 +503,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -515,6 +515,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-024 answered: A. Rebriefed as the town fixture PEO-030 is accepted against; the study became the acceptance test (pathfinding review section 7)."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "blocked: probe.cpp and the review are only in the cloud session (/mnt/project-files). Commit the probe to the repo to port make_town, or OK a fresh town (baseline may differ)."
         }
       ],
       "references": [
