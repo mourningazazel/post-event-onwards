@@ -28,7 +28,8 @@ speculated update under 100 ms on the M1 Air.
 M1 Air (Asahi Linux, GCC 16), on mains power, pinned to a performance core (`taskset -c 6`),
 2026-09-30; the median of three runs. Every variant is inside the budget: the worst commit uses 42%
 of 1 ms, the worst speculate 3% of 100 ms. Unpinned, the first variant can land on an efficiency
-core and read ~536 us / 52 us; the rest match. On battery: not yet measured.
+core and read ~536 us / 52 us; the rest match. On battery (same day, pinned, median of three)
+every figure is within 1% of mains power.
 
 ## The latency is the problem
 
