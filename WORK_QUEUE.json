@@ -435,10 +435,10 @@
       "order": 297,
       "type": "chore",
       "title": "Town fixture: a cramped 200x120 test map with reach, climb and trail helpers",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -470,6 +470,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "commits: 51889f1 (town_fixture.hpp) 6494caf (test_town.cpp, CMake). tests: verify.py --frontend --full passed; debug suite 0.64 s summed. baseline: source (139,64), 300 updates, reached 14.5%, climb 15.4%, stretch 1.00, frozen 15752 (review 15-18%). open: (1) five offices on seed 11 had a front door over a partition, reachable only by cutting a corner; the door is carved one cell along, no extra draw, so all open cells are reachable. (2) The exact-geodesic climb check runs in release only: 5 s under ASan vs 61 ms at -O3. (3) The office corridor has rooms off its sides, not one room at its end; the corridor test checks walls broken only by doorways into rooms."
         }
       ],
       "references": [
