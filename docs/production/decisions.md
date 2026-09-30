@@ -21,7 +21,8 @@ slots per cycle: 9 / step_seconds, the integer part guaranteed and the fraction 
 (D-022's rule, per cycle). Why: 9 s against the 6 s scent update keeps moves out of step with the
 player; the one-slot delay makes a crowd fan out and file through, and jams a one-wide hallway.
 Consequence: each Dead decides once per cycle, not once per update; replaces PEO-042's burst of
-steps at each update (held); commit's repatch follows occupancy changes in slot order. PEO-058.
+steps at each update (held). Between updates the Dead read only the last update's scent, so they
+run live and exact; speculation keeps only the scent sweep. Calm Dead never share a tile. PEO-058.
 
 ## 2026-09-30 · D-030 · Every container has a purpose and three tags that add extras
 
