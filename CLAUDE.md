@@ -23,7 +23,7 @@ matching section of `docs/roles.md` before touching anything.
 Canonical skill text lives in `.agents/skills/<name>/SKILL.md`. The files in
 `.claude/skills/` are wrappers that point there; edit the canonical file.
 Available: `/work`, `/bug`, `/plan`, `/start-work`, `/review`, `/handoff`,
-`/burndown`, `/status`, `/decisions`.
+`/burndown`, `/status`, `/decisions`, `/cpp-core`, `/perf`.
 
 ## Working style
 
