@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 64,
+  "next_id": 66,
   "items": [
     {
       "id": "PEO-003",
@@ -426,62 +426,6 @@
         "docs/design/scent-performance.md",
         "src/core/src/scent.cpp"
       ],
-      "depends_on": [
-        "PEO-035"
-      ]
-    },
-    {
-      "id": "PEO-035",
-      "order": 297,
-      "type": "chore",
-      "title": "Town fixture: a cramped 200x120 test map with reach, climb and trail helpers",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024. If D-024 A is taken, this becomes the town fixture and acceptance test for the geodesic field (pathfinding review section 7), not a study. The owner's corridor reasoning is in N016."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Rebriefed as the town fixture PEO-030 is accepted against; the study became the acceptance test (pathfinding review section 7)."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "blocked: probe.cpp and the review are only in the cloud session (/mnt/project-files). Commit the probe to the repo to port make_town, or OK a fresh town (baseline may differ)."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "Still needed: commit probe.cpp (make_town, bfs_dist, climb_all) to the repo, or OK a fresh town map (baseline may differ). Unblocks PEO-030."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "unblocked: the review probes are in the repo at docs/design/probes/ (probe.cpp has make_town, bfs_dist, climb_all); brief repointed. Port with no corner cutting, so baselines may shift slightly from the review's 15-18%."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "commits: 51889f1 (town_fixture.hpp) 6494caf (test_town.cpp, CMake). tests: verify.py --frontend --full passed; debug suite 0.64 s summed. baseline: source (139,64), 300 updates, reached 14.5%, climb 15.4%, stretch 1.00, frozen 15752 (review 15-18%). open: (1) five offices on seed 11 had a front door over a partition, reachable only by cutting a corner; the door is carved one cell along, no extra draw, so all open cells are reachable. (2) The exact-geodesic climb check runs in release only: 5 s under ASan vs 61 ms at -O3. (3) The office corridor has rooms off its sides, not one room at its end; the corridor test checks walls broken only by doorways into rooms."
-        }
-      ],
-      "references": [
-        "docs/design/scent-performance.md",
-        "src/core/src/scent.cpp",
-        "src/core/src/dead.cpp"
-      ],
       "depends_on": []
     },
     {
@@ -742,56 +686,8 @@
         "docs/design/gameplay-model/G03-items-and-belongings.md"
       ],
       "depends_on": [
-        "PEO-008",
-        "PEO-054"
+        "PEO-008"
       ]
-    },
-    {
-      "id": "PEO-054",
-      "order": 487,
-      "type": "feature",
-      "title": "Compartments feature and cabinet runs; home room programs fit their tiles",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Take after PEO-052: its last unit moves 052's fit check to per compartment."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-030 (N018): each compartment will roll a purpose that picks its loot and names it once examined. Keep this item's single loot hook as briefed; PEO-057 converts every hook into a weighted purposes list and adds the three tags and may-appear tables."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "Still needed: answers to the two questions in docs/production/handoffs/PEO-054.md (loot per compartment; room fit rule). Unblocks PEO-057."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "unblocked: answers in the handoff. Q1 B (roll once per object, spread by fit; interim until PEO-057's purposes). Q2 C on the footprint (horizontal area, upright and rests_on properties). No user decision changed."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "resuming with the Architect's answers (Q1 B, Q2 C)"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "commits: 7722acf 68df544 (earlier: search_seconds, compartments lint) 3bd48be (Q1 B) 94edb45 (8 items' compartments) 60f6845 (kitchen runs) 523c823 (floor-area room fit, upright, rests_on) 6293e38 (docs). tests: verify.py --frontend --full passed; lint 0 errors 0 warnings with room fit on; test.py 410 expectations, fit and room probes fail as meant. acceptance: kitchen places no kitchen_cabinet (base runs 3-8, wall runs 2-6, pantry 0-1, sink base). open: (1) garage raised to [18, 94] m2: the rule stacks all five chance vehicles (43 m2), so sized-for-one cannot pass; a one-vehicle slot (room object naming a vehicle table) would allow ~60, but objects naming loot is new generation semantics, your call. (2) contains and per-compartment overrides are exclusive on one object. (3) Handoff removed."
-        }
-      ],
-      "references": [
-        "content/registry/features.toml"
-      ],
-      "depends_on": []
     },
     {
       "id": "PEO-057",
@@ -823,9 +719,7 @@
       "references": [
         "docs/design/notes/N018-container-purposes-and-may-appear-tables.md"
       ],
-      "depends_on": [
-        "PEO-054"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-059",
@@ -844,10 +738,10 @@
       "depends_on": []
     },
     {
-      "id": "PEO-063",
+      "id": "PEO-064",
       "order": 537,
-      "type": "chore",
-      "title": "Headless suite at 85% of its 1 s budget under sanitizers; CI runs slower",
+      "type": "feature",
+      "title": "Room object slot that places one item from a list (garage: one vehicle); garage back to ~60 m2",
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
@@ -855,7 +749,34 @@
       "created": "2026-09-30",
       "notes": [],
       "references": [
-        "tools/suite_budget.py"
+        "content/world/rooms/home.toml"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-065",
+      "order": 547,
+      "type": "feature",
+      "title": "Movement input: fast taps are not lost (D-032)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "waiting on D-032"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-032 C answered by Ryan; briefed. Up to 3 taps waiting."
+        }
+      ],
+      "references": [
+        "src/app/main.cpp"
       ],
       "depends_on": []
     }

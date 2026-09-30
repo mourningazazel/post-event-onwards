@@ -5,8 +5,17 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-018, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-019, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-30 · D-032 · Quick taps are kept; a held key stays capped
+
+User decision (C), amending D-011. Each distinct press of a direction key is kept, up to 3 waiting
+(one second's worth at 3 steps a second), and played out at the cap. A held key's auto-repeat stays
+capped at 3 a second, is never queued, and stops the moment the key is released. Why: playtesting
+lost quick taps under D-011's drop rule; a bounded tap queue keeps them without letting a hold build
+lag. Ryan will judge the feel in the next playtest. Consequence: PEO-065; the queue depth is a
+tunable.
 
 ## 2026-09-30 · D-031 · The Dead move in staggered slots over a 9 s cycle
 
@@ -117,14 +126,3 @@ expansion: inner walls build scent up instead of absorbing it, since there is no
 into; outdoor walls and the map edge still absorb. Why: scent must reach the room at the end of a
 1x8 corridor, and long turning corridors exist only indoors. Consequence: the solver is D-024;
 PEO-048; PEO-030 and PEO-035 are rebriefed after D-024.
-
-## 2026-09-29 · D-019 · Scent is simulated only near the player; sealed buildings are skipped
-
-User decision (N016). Detailed dispersion, z-level routes included, runs only within a radius of
-the player; beyond it the aggregates (round 3; PEO-039's sections) stand in. A downward tile with a
-route below is one more neighbour for scent; scent never travels in the air. A sealed building is
-never simulated. Generation tags a building opened (broken window, open door); it joins the field
-when the player approaches. Soak (D-013) already remembers long stays, so indoor dispersion far
-away need not be exact. Why: a 512x512 map with many floors would otherwise multiply tiles for
-nothing. Consequence: the reach radius is a setting; PEO-047, PEO-049; the opened tag is a
-generation output.
