@@ -438,7 +438,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
@@ -460,6 +460,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "Still needed: commit probe.cpp (make_town, bfs_dist, climb_all) to the repo, or OK a fresh town map (baseline may differ). Unblocks PEO-030."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "unblocked: the review probes are in the repo at docs/design/probes/ (probe.cpp has make_town, bfs_dist, climb_all); brief repointed. Port with no corner cutting, so baselines may shift slightly from the review's 15-18%."
         }
       ],
       "references": [
