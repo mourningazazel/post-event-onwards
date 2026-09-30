@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 66,
+  "next_id": 69,
   "items": [
     {
       "id": "PEO-003",
@@ -807,6 +807,54 @@
       ],
       "references": [
         "src/app/main.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-066",
+      "order": 557,
+      "type": "bug",
+      "title": "Stage wall density and Dead slot chance use float; FMA contraction can break M1 vs x86 bit identity",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "src/core/src/stage.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-067",
+      "order": 567,
+      "type": "chore",
+      "title": "Run the existing .clang-tidy in verify --full and CI; clear current findings",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        ".clang-tidy"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-068",
+      "order": 577,
+      "type": "chore",
+      "title": "Lint and type-check tools/ with ruff and mypy",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "tools/"
       ],
       "depends_on": []
     }
