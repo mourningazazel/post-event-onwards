@@ -8,6 +8,98 @@ open = true
 rule = "catalogue category, dotted hierarchy, e.g. cat.food.canned, cat.tool.hand, cat.clothing.top"
 desc = "Loot tables, UI grouping, generation queries."
 
+# ---- cat.* families (PEO-056): the namespace stays open below the family ----
+[tag."cat.ammo"]
+desc = "Cartridges and shells, by calibre."
+[tag."cat.appliance"]
+desc = "Household and commercial appliances: fridges, stoves, washers."
+[tag."cat.automotive"]
+desc = "Car parts, fluids and tools for vehicles."
+[tag."cat.bag"]
+desc = "Bags, packs and cases carried by hand or on the back."
+[tag."cat.battery"]
+desc = "Cells and batteries, disposable and rechargeable."
+[tag."cat.building"]
+desc = "Building categories (labels on building records, not on items)."
+[tag."cat.camping"]
+desc = "Camping and outdoor gear: stoves, tents, sleeping bags."
+[tag."cat.clothing"]
+desc = "Things worn: tops, bottoms, footwear, outerwear, headwear."
+[tag."cat.construction"]
+desc = "Building materials and site gear: lumber, block, sheet goods."
+[tag."cat.container"]
+desc = "Things made to hold other things: bottles, cans, tubs, boxes."
+[tag."cat.debris"]
+desc = "Breakage and wreckage left in the world: shards, rubble."
+[tag."cat.drink"]
+desc = "Packaged drinks: water, soda."
+[tag."cat.electrical"]
+desc = "Electrical supplies: cords, wire, fittings."
+[tag."cat.electronics"]
+desc = "Powered devices: phones, radios, computers, lights with electronics."
+[tag."cat.farm"]
+desc = "Farm supplies and equipment."
+[tag."cat.fastener"]
+desc = "Things that join: nails, screws, tape, glue, cord, thread."
+[tag."cat.fire"]
+desc = "Fire starting: matches, lighters, ferro rods, tinder."
+[tag."cat.fixture"]
+desc = "Built-in fixtures: cabinets, plumbing, heating."
+[tag."cat.food"]
+desc = "Things eaten: canned, dry, fresh, frozen."
+[tag."cat.fuel"]
+desc = "Fuels and their containers."
+[tag."cat.furniture"]
+desc = "Movable furniture: seating, tables, beds, storage."
+[tag."cat.garden"]
+desc = "Yard and garden tools, supplies and structures."
+[tag."cat.hardware"]
+desc = "Small hardware: fittings, hinges, locks."
+[tag."cat.hauler"]
+desc = "Wheeled carriers: wheelbarrows, hand trucks."
+[tag."cat.household"]
+desc = "Household supplies: cleaners, bags, foil, paint."
+[tag."cat.hygiene"]
+desc = "Personal hygiene and toiletries."
+[tag."cat.kitchen"]
+desc = "Kitchen tools and cookware."
+[tag."cat.light"]
+desc = "Light sources: flashlights, lanterns, candles."
+[tag."cat.magazine"]
+desc = "Detachable firearm magazines, by pattern."
+[tag."cat.medical"]
+desc = "Medical supplies, drugs and equipment."
+[tag."cat.office"]
+desc = "Office and school supplies."
+[tag."cat.optics"]
+desc = "Binoculars, scopes and other optics."
+[tag."cat.paper"]
+desc = "Paper goods, books and printed matter."
+[tag."cat.part"]
+desc = "Parts and stock salvaged or sold for repair and making."
+[tag."cat.personal"]
+desc = "Personal effects: keys, wallets, phones' accessories, keepsakes."
+[tag."cat.power"]
+desc = "Power sources: generators, solar panels, chargers."
+[tag."cat.safety"]
+desc = "Safety equipment: extinguishers and the like."
+[tag."cat.setting"]
+desc = "Setting categories (labels on setting records, not on items)."
+[tag."cat.signal"]
+desc = "Signalling: whistles, flares, radios' kin."
+[tag."cat.sports"]
+desc = "Sporting goods."
+[tag."cat.street"]
+desc = "Street furniture and roadside objects."
+[tag."cat.textile"]
+desc = "Household textiles: bedding, towels, cloth."
+[tag."cat.tool"]
+desc = "Hand and power tools."
+[tag."cat.vehicle"]
+desc = "Vehicles."
+[tag."cat.weapon"]
+desc = "Weapons, firearms and their accessories."
+
 [namespace.brand]
 open = true
 rule = "must name a brand in content/brands"
