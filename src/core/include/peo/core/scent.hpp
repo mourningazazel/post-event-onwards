@@ -66,7 +66,9 @@ public:
     [[nodiscard]] int height() const noexcept { return front_.height(); }
 
     /// The neighbouring cell (8-connected) with the strongest scent that is
-    /// strictly stronger than `from`. Empty when nothing pulls harder.
+    /// strictly stronger than `from`. Empty when nothing pulls harder. With
+    /// `blocked`, a diagonal counts only when both orthogonal cells beside it are
+    /// open: no cutting a wall corner.
     [[nodiscard]] std::optional<Vec2i>
     strongest_neighbour(Vec2i from, const Grid<bool>* blocked = nullptr) const noexcept;
 

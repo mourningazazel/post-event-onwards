@@ -1,6 +1,8 @@
 #include "peo/core/scent.hpp"
 
 #include <algorithm>
+#include <array>
+#include <iterator>
 #include <numeric>
 #include <utility>
 
@@ -96,12 +98,31 @@ void ScentField::sweep(const Grid<bool>* blocked, bool clamp) noexcept {
     std::swap(front_, back_);
 }
 
+// kNeighbours8 alternates orthogonal and diagonal (N, NE, E, SE, S, SW, W, NW), so
+// diagonal 2k+1 lies between orthogonals k and k+1 of kNeighbours4.
+static_assert(kNeighbours8[1] == kNeighbours4[0] + kNeighbours4[1]);
+static_assert(kNeighbours8[3] == kNeighbours4[1] + kNeighbours4[2]);
+static_assert(kNeighbours8[5] == kNeighbours4[2] + kNeighbours4[3]);
+static_assert(kNeighbours8[7] == kNeighbours4[3] + kNeighbours4[0]);
+
 std::optional<Vec2i> ScentField::strongest_neighbour(Vec2i from, const Grid<bool>* blocked) const noexcept {
+    constexpr std::size_t kOrthogonals = 4;
     float best = sample(from);
     std::optional<Vec2i> result;
-    for (const Vec2i d : kNeighbours8) {
-        const Vec2i n = from + d;
-        if (!front_.in_bounds(n) || (blocked && blocked->at(n))) {
+    // Off the map counts as blocked, like a wall. The four orthogonal flags are
+    // read once; each diagonal reuses the two beside it (PEO-044: a diagonal needs
+    // both open, so nothing slips through a wall corner). With both in bounds the
+    // diagonal is too, so only its own wall bit is left to read.
+    std::array<bool, kOrthogonals> open{};
+    for (std::size_t k = 0; k < kOrthogonals; ++k) {
+        const Vec2i c = from + kNeighbours4[k];
+        open[k] = front_.in_bounds(c) && !(blocked && blocked->at(c));
+    }
+    for (std::size_t i = 0; i < std::size(kNeighbours8); ++i) {
+        const Vec2i n = from + kNeighbours8[i];
+        const std::size_t k = i / 2;
+        if (i % 2 == 0 ? !open[k]
+                       : !(open[k] && open[(k + 1) % kOrthogonals]) || (blocked && blocked->at(n))) {
             continue;
         }
         const float v = front_.at(n);
