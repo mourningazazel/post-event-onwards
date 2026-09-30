@@ -42,6 +42,11 @@ The same ladder applies to places: a city (identified) → its buildings (identi
   on a safe) just trigger generation earlier.
 - **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
 
+A compartment's **purpose** is decided by its seed before its contents and revealed when it is
+examined ("cutlery drawer", "junk drawer"); its kind and context add rare may-appear finds, and a rare
+**detail** tag (a smoker, a hobby, a struggle) blends its own items into the contents, so the
+evidence is there to find (D-030, PEO-057).
+
 ### D2.2 — Do instances copy their template, or reference it?
 
 - **A. Copy:** each item stores all its properties.

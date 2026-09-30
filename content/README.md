@@ -88,17 +88,58 @@ each searched on its own. An item has `compartments` or `features.container`, ne
 [item.kitchen_base_run]
 # ...
 compartments = [
-  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
-  { name = "second drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
-  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, purposes = [
+    { purpose = "cutlery_drawer", w = 30 }, { purpose = "junk_drawer", w = 25 } ] },
+  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, purposes = [
+    { purpose = "dish_cupboard", w = 25 }, { purpose = "cookware_cupboard", w = 25 } ] },
 ]
 ```
 
 `name` is what the search menu shows; `lock` takes the lock feature's params. A room object
-overrides a compartment's default loot with `loot = { "top drawer" = "junk_drawer" }`, or gives
-the whole item one table with `contains`, rolled once and spread over the compartments by fit
-(never both on one object). `upright = true` marks an item whose longest side is its height;
-`rests_on = "<item>"` marks one that lies on another (a mattress on its bed frame).
+overrides a compartment's purposes with `purposes = { "cupboard" = [{ purpose = "maintenance_cabinet",
+w = 1 }] }`, or gives the whole item one table with `contains`, rolled once and spread over the
+compartments by fit (never both on one object). `upright = true` marks an item whose longest side is
+its height; `rests_on = "<item>"` marks one that lies on another (a mattress on its bed frame).
+
+## Purposes, details and extras (D-030, `content/world/`)
+
+A compartment rolls one of its weighted **purposes** from its seed. The purpose picks the main loot
+table and names the compartment once examined:
+
+```toml
+[purpose.junk_drawer]
+name = "junk drawer"
+loot = "kitchen_drawer"
+desc = "Everything that had nowhere else to go."
+```
+
+Every container carries three tags: **kind** (`kind.<purpose>`), **context** (`ctx.<x>`, the
+building's `context`, a room's override, inherited by nested containers and pockets) and, rarely,
+**detail** (`detail.<id>`, authored on a room or object entry). Kind and context match
+**may-appear tables** that add rare, useful, dangerous or negative extras after the main fill:
+
+```toml
+[extras.maintenance_office]
+match = { kind = "kind.maintenance_cabinet", ctx = "ctx.office" }
+chance_pct = 60
+rolls = [1, 3]
+entries = [ { item = "paper_ream", w = 4, count = [1, 2] }, { item = "pen", w = 3, count = [2, 10] } ]
+why = "An office's maintenance cabinet also holds office supplies (N018)."
+```
+
+A **detail** has no extras: its own table of evidence is blended into the main fill, one pick from
+each in turn, so the container clearly shows it. A `[detail_loot.x]` with `match = { detail, kind }`
+swaps the blend table for one kind of container:
+
+```toml
+[detail.smoker]
+name = "smoker"
+loot = "smoker_evidence"
+why = "Someone here smoked: packs, lighters and matches turn up everywhere."
+```
+
+`tools/content/generate.py` is the reference roller and the spec the engine ports (PEO-053): its
+docstring lists every hash salt.
 
 ## Modifier record (additive or modifying details, applied by generation)
 
