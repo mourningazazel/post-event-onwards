@@ -4,6 +4,8 @@
 #include "peo/core/scent.hpp"
 #include "peo/core/types.hpp"
 
+#include <cstdint>
+#include <optional>
 #include <vector>
 
 namespace peo::core {
@@ -19,6 +21,14 @@ struct Dead {
     /// update in PEO-040, so anything under the update period acts as one period.
     std::uint16_t step_seconds = kUpdatePeriodSeconds;
 };
+
+/// Where a calm one of the Dead steps next (D-031): its strongest neighbour, as
+/// strongest_neighbour() picks it, but only if no other Dead stands there and no
+/// pending move has reserved it. A calm Dead never sidesteps to a weaker tile and
+/// never climbs over another: when its best tile is taken it stays put.
+[[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent,
+                                               const Grid<bool>& blocked, const Grid<std::uint8_t>& occupied,
+                                               const Grid<bool>& reserved) noexcept;
 
 /// One update of `period` seconds for one of the Dead: if cooling down, spend up to
 /// `period` of it and stay put; else move one cell up the scent gradient and start

@@ -4,6 +4,15 @@
 
 namespace peo::core {
 
+std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent, const Grid<bool>& blocked,
+                                 const Grid<std::uint8_t>& occupied, const Grid<bool>& reserved) noexcept {
+    const std::optional<Vec2i> best = scent.strongest_neighbour(unit.pos, &blocked);
+    if (!best || occupied.at(*best) != 0 || reserved.at(*best)) {
+        return std::nullopt;
+    }
+    return best;
+}
+
 bool step_dead(Dead& unit, const ScentField& scent, const Grid<bool>& blocked, Seconds period) noexcept {
     if (unit.cooldown_s > 0) {
         unit.cooldown_s -= static_cast<std::uint16_t>(std::min<Seconds>(unit.cooldown_s, period));

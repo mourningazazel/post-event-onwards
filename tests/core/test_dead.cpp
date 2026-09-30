@@ -2,6 +2,8 @@
 
 #include <doctest/doctest.h>
 
+#include <cstdint>
+
 using namespace peo::core;
 
 TEST_SUITE("dead") {
@@ -57,6 +59,29 @@ TEST_SUITE("dead") {
             }
         }
         CHECK(horde[0].pos.x > kWallX); // it did come round
+    }
+
+    TEST_CASE("decide_move takes the best tile or stays put") {
+        // D-031: the strongest neighbour, (4,3), holds more than the weaker free one,
+        // (2,3). Taken or reserved, the unit stays; it never falls back to (2,3).
+        constexpr int kSide = 7;
+        constexpr Vec2i kFrom{3, 3};
+        constexpr Vec2i kBest{4, 3};
+        constexpr Vec2i kWeaker{2, 3};
+        ScentField f(kSide, kSide);
+        f.deposit(kBest, 2.0F);
+        f.deposit(kWeaker, 1.0F);
+        const Grid<bool> walls(kSide, kSide, false);
+        Grid<std::uint8_t> occupied(kSide, kSide, 0);
+        Grid<bool> reserved(kSide, kSide, false);
+        const Dead unit{.pos = kFrom};
+
+        CHECK(decide_move(unit, f, walls, occupied, reserved) == kBest);
+        occupied.at(kBest) = 1;
+        CHECK_FALSE(decide_move(unit, f, walls, occupied, reserved).has_value());
+        occupied.at(kBest) = 0;
+        reserved.at(kBest) = true;
+        CHECK_FALSE(decide_move(unit, f, walls, occupied, reserved).has_value());
     }
 
     TEST_CASE("the dead never enter walls") {
