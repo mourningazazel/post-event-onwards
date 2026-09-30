@@ -23,7 +23,8 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 
 - `python3 tools/bootstrap.py` once per checkout (installs git hooks).
 - `python3 tools/verify.py` before every commit (docs caps, clang-format,
-  headless build, tests); `--frontend` on a machine with a display.
+  headless build, tests); `--frontend` on a machine with a display;
+  `--full` before pushing to main.
 - `src/core` is the simulation: no SDL, I/O or globals; deterministic from
   a seed. Every mechanic lands here first, with a doctest under `tests/`.
 - `src/app` is the SDL3 frontend and stays thin; logic in it is a bug.

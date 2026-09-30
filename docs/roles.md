@@ -45,7 +45,7 @@ Owns:
   unless they block the unit.
 
 Loop (`/start-work`): `git fetch origin main` → `work_queue.py next --owner
-builder` → `set InProgress` → one unit → `verify.py --frontend` → commit
+builder` → `set InProgress` → one unit → `verify.py --frontend --full` → commit
 explicit paths `[PEO-xxx] …` → push → repeat units → report note → `set
 Validation --owner architect`.
 

@@ -12,7 +12,10 @@
 | Manual in-game | Builder only | brief's `manual` steps | n/a |
 
 `python3 tools/verify.py` runs the first four in order and stops at the first
-failure. It is the gate before every commit.
+failure. It is the gate before every commit. `--full` adds the two CI jobs a
+Debug build cannot stand in for (`headless-release`, and clang with ASan/UBSan)
+and runs before a push to main; a stage that cannot run locally is reported as
+skipped, never as passed.
 
 ## Writing a test
 

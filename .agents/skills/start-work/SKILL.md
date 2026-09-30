@@ -16,7 +16,8 @@ Work the queue, earliest actionable item first, until told to stop.
    commit the queue file `[PEO-xxx] start`.
 5. For each unit, in order:
    - implement in the named layer only;
-   - `python3 tools/verify.py --frontend` (the whole thing, every time);
+   - `python3 tools/verify.py --frontend --full` (the whole thing, every
+     time; `--full` because each unit is pushed to main);
    - `git add <explicit paths>`; `git commit -m "[PEO-xxx] <unit summary>"`;
    - `git push origin main` (retry with fetch + ff-merge on rejection).
 6. Run every `brief.manual` step in the real game. Note results verbatim.
