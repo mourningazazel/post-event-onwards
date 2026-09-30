@@ -573,9 +573,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed; ready for the Builder. Default chosen: R toggles run, starts walking, persists across stages."
+        }
+      ],
       "references": [
         "docs/production/decisions.md"
       ],
