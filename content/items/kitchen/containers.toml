@@ -423,3 +423,33 @@ girth_mm = 30
 
 [item.water_filter_pitcher.capabilities]
 filter = 4                         # derived = false; carbon block only: no purify, pathogens pass
+
+[item.storage_bin]
+name = "storage tote"
+tags = ["cat.container.bin", "from.garage", "from.bedroom", "from.living", "use.container"]
+shape = "container"
+dims_mm = [600, 400, 350]
+mass_g = 2400
+desc = "A 60-litre polypropylene tote with a snap-down lid, the kind stacked in attics and storage units."
+glyph = "item.tub"
+why = "Where a household keeps what it is not using: clothes, toys, keepsakes; stacks, carries two-handed."
+brand_cats = ["household"]
+value_class = "common"
+
+[item.storage_bin.composition.body]
+material = "polypropylene"
+share = 85
+[item.storage_bin.composition.lid]
+material = "polypropylene"
+share = 15
+
+[item.storage_bin.features.container]
+capacity_ml = 60000
+max_dim_mm = 580
+opening_mm = 560
+closable = true
+compat = ["granular", "solid"]
+[item.storage_bin.features.lid]
+kind = "snap"
+reclosable = true
+

@@ -3,21 +3,6 @@
 # separate archetypes.
 
 # ============================================================== variant modifiers
-[modifier.safe_gun]
-kind = "variant"
-applies_to = { items = ["safe"] }
-name_part = { slot = "variant", text = "gun", order = 20 }
-desc = "a tall gun safe, bolted into the corner of a closet or basement"
-weight = 3
-ops = [
-  { path = "dims_mm", op = "set", value = [1500, 710, 560] },
-  { path = "mass_g", op = "set", value = 250000 },
-  { path = "features.container.capacity_ml", op = "set", value = 350000 },
-  { path = "features.container.max_dim_mm", op = "set", value = 1300 },
-  { path = "blocks_sight", op = "set", value = true },
-  { path = "blocks", op = "set", value = "full" },
-]
-
 [modifier.flashlight_d_cell]
 kind = "variant"
 applies_to = { items = ["flashlight"] }

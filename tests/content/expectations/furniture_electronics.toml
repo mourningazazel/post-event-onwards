@@ -127,15 +127,13 @@ op = "=="
 value = "dent"
 
 [[expect]]
-item = "safe"
-mods = ["safe_gun"]
+item = "gun_safe"
 path = "name"
 op = "=="
 value = "gun safe"
 
 [[expect]]
-item = "safe"
-mods = ["safe_gun"]
+item = "gun_safe"
 path = "mass_g"
 op = ">="
 value = 200000

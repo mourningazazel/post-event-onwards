@@ -142,6 +142,12 @@ salvage = { item = "lumber_2x4", count = 3, set = { dims_mm = [1219, 89, 38] , m
 material = "mild_steel"
 share = 4
 
+# One stacked load: the 1219 x 1016 deck, stacked about 1500 mm high.
+[item.pallet.features.container]
+capacity_ml = 1800000
+max_dim_mm = 1500
+compat = ["solid", "granular"]
+
 [item.tarp]
 name = "tarp"
 tags = ["cat.construction.tarp", "from.garage", "from.construction", "from.outdoors", "from.farm", "use.shelter"]

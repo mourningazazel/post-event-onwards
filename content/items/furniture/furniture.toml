@@ -136,6 +136,11 @@ share = 5
 [item.church_pew.features.seat]
 comfort = 3
 sleepable = true
+# The book rack on the back of the pew: hymnals and a pencil or two.
+[item.church_pew.features.container]
+capacity_ml = 12000
+max_dim_mm = 300
+compat = ["solid"]
 
 [item.school_desk]
 name = "school desk"
@@ -291,6 +296,11 @@ area_mm2 = 1665000
 workbench = true
 [item.workbench.features.anchor]
 max_load_g = 150000
+# Drawers and the lower shelf; the shelf runs the bench's length.
+[item.workbench.features.container]
+capacity_ml = 150000
+max_dim_mm = 1650
+compat = ["solid"]
 
 # ---------------------------------------------------------------- storage
 [item.bookshelf]
@@ -495,7 +505,6 @@ blocks = "partial"
 desc = "A squat steel home safe with a dial, bolted to the floor through its base."
 glyph = "obj.safe"
 why = "Concentrated valuables (cash, documents, sometimes guns and ammo); only an expert opens it quietly."
-modifiers = ["safe_gun"]
 value_class = "valuable"
 
 [item.safe.composition.body]
@@ -521,6 +530,46 @@ pickable = false
 combination = true
 
 [item.safe.reactions.impact]
+low = "none"
+medium = "none"
+high = "dent"
+
+[item.gun_safe]
+name = "gun safe"
+tags = ["cat.furniture.secure", "from.living", "from.bedroom", "from.garage", "from.police", "from.retail"]
+shape = "complex"
+dims_mm = [1500, 700, 550]
+mass_g = 250000
+blocks = "full"
+blocks_sight = true
+desc = "A tall steel gun safe with a spoked handle and a dial, bolted into a closet or basement corner."
+glyph = "obj.safe"
+why = "Where long guns and ammunition live in homes, gun shops and armories; almost impossible to force quietly."
+value_class = "valuable"
+
+[item.gun_safe.composition.body]
+material = "mild_steel"
+share = 80
+[item.gun_safe.composition.fire_lining]
+material = "gypsum_board"
+share = 15
+[item.gun_safe.composition.dial]
+material = "brass"
+share = 5
+
+[item.gun_safe.features.container]
+capacity_ml = 350000
+max_dim_mm = 1400
+closable = true
+sealable = true
+compat = ["solid"]
+[item.gun_safe.features.lock]
+tier = 15
+keyed = false
+pickable = false
+combination = true
+
+[item.gun_safe.reactions.impact]
 low = "none"
 medium = "none"
 high = "dent"
