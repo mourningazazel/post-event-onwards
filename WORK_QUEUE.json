@@ -384,7 +384,7 @@
       "order": 270,
       "type": "feature",
       "title": "Geodesic scent field: integer, propagating, min-plus commit patch (D-024)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -419,6 +419,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "Blocked by dependency PEO-035, not in progress: nothing actionable for the Builder."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
