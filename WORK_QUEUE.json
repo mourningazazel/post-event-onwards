@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 70,
+  "next_id": 75,
   "items": [
     {
       "id": "PEO-003",
@@ -738,6 +738,98 @@
       "notes": [],
       "references": [
         "tools/"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-070",
+      "order": 587,
+      "type": "perf",
+      "title": "peo_bench: per-axis sweeps (horde, active area, stage), steady-state sampling, --ceiling; perf lines report steady state",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "docs/design/performance-targets.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-071",
+      "order": 597,
+      "type": "perf",
+      "title": "Run peo_bench on the M1 Air and record the per-axis costs and ceilings",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "Hand to the Builder once PEO-070 lands (kept on architect so the Builder's ready list stays accurate)."
+        }
+      ],
+      "references": [
+        "docs/design/performance-targets.md"
+      ],
+      "depends_on": [
+        "PEO-070"
+      ]
+    },
+    {
+      "id": "PEO-072",
+      "order": 607,
+      "type": "perf",
+      "title": "Run peo_bench on one real PC per tier (low, medium, high) and check the estimates",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "user",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "docs/design/performance-targets.md"
+      ],
+      "depends_on": [
+        "PEO-070"
+      ]
+    },
+    {
+      "id": "PEO-073",
+      "order": 617,
+      "type": "design",
+      "title": "Auto-config: calibrate horde and active-area costs per machine, set both continuously, adapt the window live (D-034)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "docs/design/performance-targets.md"
+      ],
+      "depends_on": [
+        "PEO-070"
+      ]
+    },
+    {
+      "id": "PEO-074",
+      "order": 627,
+      "type": "research",
+      "title": "Perf levers: commit swaps the speculated horde, speculate copies only dirty cells, standing emitters as a static layer, parallel Dead decisions (ADR-0012)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "docs/design/performance-targets.md"
       ],
       "depends_on": []
     }

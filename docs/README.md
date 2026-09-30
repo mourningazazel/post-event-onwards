@@ -12,6 +12,7 @@ Load what the task needs, nothing more. Rolling docs have word caps enforced by
 | Adding or changing a system | [architecture.md](architecture.md), then the target map in [SYSTEMS.md](SYSTEMS.md) and the stack in [GAMEPLAN.md](GAMEPLAN.md) |
 | Touching an accepted architecture decision | [adr/](adr/README.md) (never edit; supersede) |
 | Working on the Dead, scent, sound, crowds | [design/scent-mobs.md](design/scent-mobs.md) (round 3 wins over earlier sections) |
+| Measuring performance, horde and map ceilings per machine | [design/performance-targets.md](design/performance-targets.md), [design/scent-performance.md](design/scent-performance.md) |
 | Working on world generation, the clock, buildings | [design/world-generation.md](design/world-generation.md), [design/world-catalog.md](design/world-catalog.md) |
 | Authoring or loading content | [content/README.md](../content/README.md), [design/content-model.md](design/content-model.md), [design/survival-actions.md](design/survival-actions.md) |
 | Deciding how a gameplay concept is represented | [design/gameplay-model/](design/gameplay-model/README.md) |
