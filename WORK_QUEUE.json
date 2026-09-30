@@ -595,7 +595,7 @@
       "order": 357,
       "type": "feature",
       "title": "Running: a step that takes 3 seconds (D-015)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -605,6 +605,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "briefed; ready for the Builder. Default chosen: R toggles run, starts walking, persists across stages."
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [
