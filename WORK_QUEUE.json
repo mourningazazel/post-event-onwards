@@ -832,6 +832,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-026 (owner's rule): a line is one kind; an item taken out instantiates with details; put back it lists beside the nameless quantity, not merged; unexamined entries are marked visually. D-027 B: search per compartment, time from volume, menus fast to traverse. The item review's model is implied -> line -> thing; lines are arrays, things are entities."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "Scope split with PEO-053 recorded on PEO-053: 050 is read-through, instantiate, put-back, quality sampling and the cap; 053 is generation."
         }
       ],
       "references": [
@@ -866,9 +871,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed. Content and tooling only, all headless."
+        }
+      ],
       "references": [
         "tools/content/lint.py"
       ],
@@ -884,7 +895,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "Split with PEO-050, so the two briefs do not overlap: PEO-053 owns generation (line records per compartment, per-compartment seeds, independent picks, fill until full with packed_dims from PEO-052, counts drawn in proportion to the rolled room area as PEO-054's fit rule assumes, aftermath sampled from the address, freeze on search). PEO-050 owns what happens after (read-through the seed, instantiate on take or change, D-026 put-back as its own entry, the unexamined mark, D-029 quality sampling, the hidden cap). Brief both once PEO-008 is briefed; they share its baked variant table."
+        }
+      ],
       "references": [
         "docs/design/gameplay-model/G02-templates-generation-detail.md",
         "docs/design/gameplay-model/G03-items-and-belongings.md"
@@ -902,9 +919,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed. Take after PEO-052: its last unit moves 052's fit check to per compartment."
+        }
+      ],
       "references": [
         "content/registry/features.toml"
       ],
@@ -918,9 +941,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed. Independent of 052 and 054."
+        }
+      ],
       "references": [
         "tools/content/derive.py"
       ],
@@ -934,9 +963,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed. Independent of 052 and 054."
+        }
+      ],
       "references": [
         "content/registry"
       ],
