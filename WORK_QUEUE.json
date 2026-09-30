@@ -665,43 +665,6 @@
         "content/world/rooms/home.toml"
       ],
       "depends_on": []
-    },
-    {
-      "id": "PEO-065",
-      "order": 547,
-      "type": "feature",
-      "title": "Movement input: fast taps are not lost (D-032)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "waiting on D-032"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-032 C answered by Ryan; briefed. Up to 3 taps waiting."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "commits: fec85c1 (core TurnInput + tests) 325ddec (app: offer/drain, wake timer, N/Esc clear) 3277d8a (docs). tests: verify.py --frontend --full passed; 6 turn_input cases on synthetic times. manual (peo 7, wtype, HUD shots): 5 taps in one burst -> turn 0 to 4; hold Right 2 s (single wtype -P/-s 2000/-p) -> 4 to 10, still 10 2 s after release; Up, Left, Up tapped fast -> 11 at once, 13 by 0.8 s, first move Up then Left and Up (the last two landed between shots, so their order is from the unit test); idle CPU over 5 s with an empty queue 0.0%. feel, for Ryan: taps now all land and play out at a steady 3/s; a hold starts at once and stops dead on release. open: none."
-        }
-      ],
-      "references": [
-        "src/app/main.cpp"
-      ],
-      "depends_on": []
     }
   ]
 }
