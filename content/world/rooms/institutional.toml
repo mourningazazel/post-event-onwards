@@ -10,7 +10,7 @@ size_m2 = [50, 90]
 floor = "any"
 tags = ["from.school"]
 objects = [
-  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "maintenance_cabinet", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
+  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "junk_drawer", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
   { item = "school_desk", count = [18, 32] },
   { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
   { item = "metal_locker", count = [1, 1], contains = ["classroom_supplies"] },
@@ -103,7 +103,7 @@ floor = "ground"
 tags = ["from.medical"]
 loose = ["medical_floor"]
 objects = [
-  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "maintenance_cabinet", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
+  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "junk_drawer", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
   { item = "hospital_bed", count = [1, 6] },
   { item = "metal_shelving", count = [2, 6], contains = ["hospital_supplies"] },
   { item = "kitchen_cabinet", count = [2, 6], contains = ["hospital_supplies"] },

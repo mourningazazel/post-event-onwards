@@ -438,20 +438,35 @@ def _loot_expected(db: Db, loot_id: str, memo: dict, seen: tuple) -> tuple[float
     rec = db.get("loot", loot_id)
     if rec is None:
         raise ResolveError(f"unknown loot '{loot_id}'")
+    memo[loot_id] = _table_expected(db, rec, memo, seen + (loot_id,))
+    return memo[loot_id]
+
+
+def _table_expected(db: Db, rec: dict, memo: dict, seen: tuple) -> tuple[float, float]:
+    """Mean (volume, mass) of one roll of a loot-shaped record (loot or extras)."""
     entries = rec.get("entries", [])
     total_w = sum(e.get("w", 1) for e in entries) or 1
     per_roll_vol = per_roll_mass = 0.0
     for e in entries:
         if "loot" in e:
-            vol, mass = _loot_expected(db, e["loot"], memo, seen + (loot_id,))
+            vol, mass = _loot_expected(db, e["loot"], memo, seen)
         else:
             vol, mass = item_expected(db, entry_item(db, e), e)
         share = e.get("w", 1) / total_w * _range_mean(e.get("count"), 1)
         per_roll_vol += share * vol
         per_roll_mass += share * mass
     rolls = _range_mean(rec.get("rolls"), 1) * (1 - rec.get("empty_chance_pct", 0) / 100)
-    memo[loot_id] = (rolls * per_roll_vol, rolls * per_roll_mass)
-    return memo[loot_id]
+    return rolls * per_roll_vol, rolls * per_roll_mass
+
+
+def extras_expected(db: Db, extras_id: str) -> tuple[int, int]:
+    """Mean (volume_ml, mass_g) an extras table adds: its chance of firing times its fill."""
+    rec = db.get("extras", extras_id)
+    if rec is None:
+        raise ResolveError(f"unknown extras '{extras_id}'")
+    vol, mass = _table_expected(db, rec, {}, ())
+    chance = rec.get("chance_pct", 0) / 100
+    return rnd(vol * chance), rnd(mass * chance)
 
 
 def loot_expected(db: Db, loot_id: str) -> tuple[int, int]:

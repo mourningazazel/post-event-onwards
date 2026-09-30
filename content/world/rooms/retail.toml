@@ -172,7 +172,7 @@ size_m2 = [20, 400]
 floor = "ground"
 tags = ["from.retail"]
 objects = [
-  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "maintenance_cabinet", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
+  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "junk_drawer", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
   { item = "metal_shelving", count = [3, 20], contains = ["warehouse_shelf"] },
   { item = "pallet", count = [0, 6], contains = ["warehouse_pallet"] },
   { item = "hand_truck", count = [1, 2] },

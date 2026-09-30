@@ -6,7 +6,7 @@ size_m2 = [60, 1500]
 floor = "any"
 tags = ["from.office"]
 objects = [
-  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "maintenance_cabinet", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
+  { item = "kitchen_cabinet", count = [1, 1], purposes = { "drawer" = [{ purpose = "junk_drawer", w = 1 }], "cupboard" = [{ purpose = "maintenance_cabinet", w = 1 }] } },
   { item = "desk", count = [6, 60], contains = ["office_desk"] },
   { item = "office_chair", count = [6, 60] },
   { item = "desktop_pc", count = [4, 50] },

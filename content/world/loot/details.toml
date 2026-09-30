@@ -1,0 +1,135 @@
+# Detail blend tables (D-030, PEO-057): evidence of a container's detail, blended into
+# its main fill.
+
+[loot.smoker_evidence]
+desc = "Evidence of the smoker detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "cigarettes", w = 10, count = [1, 3] },
+  { item = "lighter", w = 6, count = [1, 2] },
+  { item = "matchbook", w = 5, count = [1, 3] },
+]
+
+[loot.gun_owner_evidence]
+desc = "Evidence of the gun owner detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "ammo_9mm", w = 8, count = [10, 50] },
+  { item = "ammo_38spl", w = 4, count = [6, 50] },
+  { item = "ammo_12ga", w = 3, count = [5, 25] },
+  { item = "magazine_pistol", w = 3, count = [1, 2] },
+]
+
+[loot.hobby_woodworking_evidence]
+desc = "Evidence of the woodworker detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "chisel", w = 6, count = [1, 3] },
+  { item = "wood_glue", w = 5, count = [1, 1] },
+  { item = "tape_measure", w = 4, count = [1, 1] },
+  { item = "screwdriver", w = 4, count = [1, 2] },
+  { item = "whetstone", w = 2, count = [1, 1] },
+  { item = "utility_knife", w = 3, count = [1, 1] },
+]
+
+[loot.hobby_gardening_evidence]
+desc = "Evidence of the gardener detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "pruning_shears", w = 6, count = [1, 1] },
+  { item = "work_gloves", w = 5, count = [1, 2] },
+  { item = "bucket", w = 2, count = [1, 1] },
+]
+
+[loot.hobby_hunting_evidence]
+desc = "Evidence of the hunter detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "hunting_knife", w = 6, count = [1, 1] },
+  { item = "binoculars", w = 4, count = [1, 1] },
+  { item = "ammo_308", w = 4, count = [5, 20] },
+  { item = "compass", w = 3, count = [1, 1] },
+  { item = "headlamp", w = 2, count = [1, 1] },
+]
+
+[loot.hobby_sewing_evidence]
+desc = "Evidence of the sewer detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "sewing_kit", w = 8, count = [1, 2] },
+]
+
+[loot.hobby_cooking_evidence]
+desc = "Evidence of the cook detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "rolling_pin", w = 4, count = [1, 1] },
+  { item = "kitchen_knife", w = 5, count = [1, 3] },
+  { item = "cleaver", w = 3, count = [1, 1] },
+  { item = "baking_sheet", w = 3, count = [1, 2] },
+  { item = "bag_of_flour", w = 3, count = [1, 1] },
+  { item = "honey_jar", w = 2, count = [1, 1] },
+]
+
+[loot.trace_struggle_evidence]
+desc = "Evidence of the struggle detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "glass_shards", w = 6, count = [1, 3] },
+  { item = "pepper_spray", w = 3, count = [1, 1] },
+  { item = "kitchen_knife", w = 2, count = [1, 1] },
+  { item = "bandage_box", w = 2, count = [1, 1] },
+]
+
+[loot.trace_looted_evidence]
+desc = "Evidence of the looted detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "glass_shards", w = 3, count = [1, 2] },
+  { item = "zip_bags", w = 4, count = [1, 3], mods = ["opened"] },
+  { item = "survivor_note", w = 2, count = [1, 1] },
+]
+
+[loot.child_evidence]
+desc = "Evidence of the child detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "stuffed_toy", w = 6, count = [1, 2] },
+  { item = "baby_formula", w = 3, count = [1, 1] },
+  { item = "glow_stick", w = 3, count = [1, 4] },
+  { item = "snack_bar", w = 3, count = [1, 3] },
+]
+
+[loot.elderly_evidence]
+desc = "Evidence of the elderly detail."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "eyeglasses", w = 5, count = [1, 2] },
+  { item = "painkillers", w = 5, count = [1, 2] },
+  { item = "book", w = 3, count = [1, 2] },
+  { item = "antiseptic_bottle", w = 2, count = [1, 1] },
+]
+
+[loot.woodworking_garage_evidence]
+desc = "Evidence of woodworking on a garage hardware shelf."
+rolls = [1, 1]
+empty_chance_pct = 0
+entries = [
+  { item = "handsaw", w = 4, count = [1, 1] },
+  { item = "claw_hammer", w = 4, count = [1, 1] },
+  { item = "chisel", w = 5, count = [1, 3] },
+  { item = "wood_glue", w = 4, count = [1, 2] },
+  { item = "cordless_drill", w = 2, count = [1, 1] },
+  { item = "tape_measure", w = 3, count = [1, 1] },
+]

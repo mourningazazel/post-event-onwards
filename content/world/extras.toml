@@ -1,0 +1,362 @@
+# May-randomly-appear tables (D-030, PEO-057): rare, useful, dangerous or negative extras,
+# matched on a container's kind and context tags, rolled after its main fill.
+
+[extras.cutlery_drawer_finds]
+match = { kind = "kind.cutlery_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "whetstone", w = 1, count = [1, 1] },
+]
+why = "A sharpening stone."
+
+[extras.utensil_drawer_finds]
+match = { kind = "kind.utensil_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "candle", w = 1, count = [1, 2] },
+]
+why = "A candle for a power cut."
+
+[extras.junk_drawer_finds]
+match = { kind = "kind.junk_drawer" }
+chance_pct = 15
+rolls = [1, 1]
+entries = [
+  { item = "lockpick_set", w = 1, count = [1, 1] },
+  { item = "cash", w = 3, count = [1, 1] },
+  { item = "house_key", w = 3, count = [1, 2] },
+]
+why = "Keys, cash, even a pick set."
+
+[extras.junk_drawer_danger]
+match = { kind = "kind.junk_drawer" }
+chance_pct = 2
+rolls = [1, 1]
+entries = [
+  { item = "pistol", w = 1, count = [1, 1] },
+]
+why = "A loaded pistol pushed to the back of the junk drawer."
+
+[extras.wrap_drawer_finds]
+match = { kind = "kind.wrap_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "duct_tape", w = 1, count = [1, 1] },
+]
+why = "Tape among the wraps."
+
+[extras.towel_drawer_finds]
+match = { kind = "kind.towel_drawer" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "cash", w = 1, count = [1, 1] },
+]
+why = "Money folded into a towel."
+
+[extras.dish_cupboard_finds]
+match = { kind = "kind.dish_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "cash", w = 1, count = [1, 1] },
+]
+why = "Savings under the plates."
+
+[extras.glass_cupboard_finds]
+match = { kind = "kind.glass_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "vacuum_flask", w = 1, count = [1, 1] },
+]
+why = "A good flask."
+
+[extras.glass_cupboard_danger]
+match = { kind = "kind.glass_cupboard" }
+chance_pct = 10
+rolls = [1, 1]
+entries = [
+  { item = "glass_shards", w = 1, count = [1, 3] },
+]
+why = "A glass broke on the shelf; the pieces are still there."
+
+[extras.cookware_cupboard_finds]
+match = { kind = "kind.cookware_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "fire_extinguisher", w = 1, count = [1, 1] },
+]
+why = "A small extinguisher by the pans."
+
+[extras.storage_cupboard_finds]
+match = { kind = "kind.storage_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "water_filter_pitcher", w = 1, count = [1, 1] },
+]
+why = "A water filter jug."
+
+[extras.baking_cupboard_finds]
+match = { kind = "kind.baking_cupboard" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "honey_jar", w = 1, count = [1, 2] },
+]
+why = "Honey that never spoils."
+
+[extras.pantry_shelf_finds]
+match = { kind = "kind.pantry_shelf" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "bottled_water", w = 1, count = [6, 12] },
+]
+why = "A case of water at the back."
+
+[extras.pantry_shelf_spoiled]
+match = { kind = "kind.pantry_shelf" }
+chance_pct = 10
+rolls = [1, 1]
+entries = [
+  { item = "meat_package", w = 1, count = [1, 1], mods = ["spoiled"] },
+]
+why = "Something forgotten and spoiled; it stinks."
+
+[extras.under_sink_finds]
+match = { kind = "kind.under_sink" }
+chance_pct = 10
+rolls = [1, 1]
+entries = [
+  { item = "pipe_wrench", w = 1, count = [1, 1] },
+]
+why = "The wrench left after the last leak."
+
+[extras.under_sink_danger]
+match = { kind = "kind.under_sink" }
+chance_pct = 15
+rolls = [1, 1]
+entries = [
+  { item = "bleach_jug", w = 1, count = [1, 1], mods = ["opened"] },
+]
+why = "An opened bleach jug: fumes, and it spills."
+
+[extras.medicine_cabinet_finds]
+match = { kind = "kind.medicine_cabinet" }
+chance_pct = 10
+rolls = [1, 1]
+entries = [
+  { item = "antibiotics", w = 2, count = [1, 1] },
+  { item = "suture_kit", w = 1, count = [1, 1] },
+]
+why = "Antibiotics, even a suture kit."
+
+[extras.toiletries_cupboard_finds]
+match = { kind = "kind.toiletries_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "first_aid_kit", w = 1, count = [1, 1] },
+]
+why = "A first aid kit behind the rolls."
+
+[extras.cleaning_cupboard_finds]
+match = { kind = "kind.cleaning_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "dust_mask", w = 1, count = [1, 2] },
+]
+why = "Masks."
+
+[extras.linen_cupboard_finds]
+match = { kind = "kind.linen_cupboard" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "sleeping_bag", w = 1, count = [1, 1] },
+]
+why = "A sleeping bag with the spare sheets."
+
+[extras.shirt_drawer_finds]
+match = { kind = "kind.shirt_drawer" }
+chance_pct = 5
+rolls = [1, 1]
+entries = [
+  { item = "jewelry", w = 1, count = [1, 2] },
+]
+why = "Jewellery under shirts."
+
+[extras.trouser_drawer_finds]
+match = { kind = "kind.trouser_drawer" }
+chance_pct = 5
+rolls = [1, 1]
+entries = [
+  { item = "wallet", w = 1, count = [1, 1] },
+]
+why = "A spare wallet."
+
+[extras.underwear_drawer_finds]
+match = { kind = "kind.underwear_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "cash", w = 2, count = [1, 1] },
+  { item = "jewelry", w = 1, count = [1, 1] },
+]
+why = "The classic hiding place."
+
+[extras.sleepwear_drawer_finds]
+match = { kind = "kind.sleepwear_drawer" }
+chance_pct = 5
+rolls = [1, 1]
+entries = [
+  { item = "book", w = 1, count = [1, 1] },
+]
+why = "A book."
+
+[extras.clothes_drawer_finds]
+match = { kind = "kind.clothes_drawer" }
+chance_pct = 5
+rolls = [1, 1]
+entries = [
+  { item = "wristwatch", w = 1, count = [1, 1] },
+]
+why = "A watch."
+
+[extras.nightstand_drawer_finds]
+match = { kind = "kind.nightstand_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "flashlight", w = 2, count = [1, 1] },
+  { item = "power_bank", w = 1, count = [1, 1] },
+]
+why = "A torch and a charged battery."
+
+[extras.stationery_drawer_finds]
+match = { kind = "kind.stationery_drawer" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "utility_knife", w = 1, count = [1, 1] },
+]
+why = "A box cutter."
+
+[extras.papers_drawer_finds]
+match = { kind = "kind.papers_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "city_map", w = 2, count = [1, 1] },
+  { item = "road_atlas", w = 1, count = [1, 1] },
+]
+why = "Maps worth taking."
+
+[extras.personal_drawer_finds]
+match = { kind = "kind.personal_drawer" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "car_key", w = 2, count = [1, 1] },
+  { item = "cash", w = 1, count = [1, 1] },
+]
+why = "Spare keys and cash."
+
+[extras.car_shelf_finds]
+match = { kind = "kind.car_shelf" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "tire_iron", w = 1, count = [1, 1] },
+]
+why = "A tyre iron."
+
+[extras.paint_shelf_finds]
+match = { kind = "kind.paint_shelf" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "dust_mask", w = 1, count = [1, 2] },
+]
+why = "Masks for the fumes."
+
+[extras.garden_shelf_finds]
+match = { kind = "kind.garden_shelf" }
+chance_pct = 6
+rolls = [1, 1]
+entries = [
+  { item = "garden_gnome", w = 1, count = [1, 1] },
+]
+why = "A gnome, retired."
+
+[extras.hardware_shelf_finds]
+match = { kind = "kind.hardware_shelf" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "bolt_cutters", w = 1, count = [1, 1] },
+]
+why = "Bolt cutters."
+
+[extras.camping_shelf_finds]
+match = { kind = "kind.camping_shelf" }
+chance_pct = 8
+rolls = [1, 1]
+entries = [
+  { item = "water_pump_filter", w = 1, count = [1, 1] },
+  { item = "ferro_rod", w = 1, count = [1, 1] },
+]
+why = "A water filter and a fire steel."
+
+[extras.maintenance_office]
+match = { kind = "kind.maintenance_cabinet", ctx = "ctx.office" }
+chance_pct = 60
+rolls = [1, 3]
+entries = [
+  { item = "paper_ream", w = 4, count = [1, 2] },
+  { item = "pen", w = 3, count = [2, 10] },
+  { item = "marker", w = 2, count = [1, 4] },
+  { item = "toilet_paper", w = 3, count = [4, 12] },
+]
+why = "An office's maintenance cabinet also holds office supplies (N018)."
+
+[extras.maintenance_retail]
+match = { kind = "kind.maintenance_cabinet", ctx = "ctx.retail" }
+chance_pct = 60
+rolls = [1, 3]
+entries = [
+  { item = "trash_bags", w = 3, count = [1, 2] },
+  { item = "paper_towels", w = 3, count = [1, 4] },
+  { item = "duct_tape", w = 2, count = [1, 2] },
+  { item = "zip_ties", w = 2, count = [1, 2] },
+]
+why = "A shop's maintenance cabinet holds store supplies (N018)."
+
+[extras.maintenance_medical]
+match = { kind = "kind.maintenance_cabinet", ctx = "ctx.medical" }
+chance_pct = 60
+rolls = [1, 2]
+entries = [
+  { item = "latex_gloves", w = 3, count = [1, 2] },
+  { item = "bleach_jug", w = 2, count = [1, 1] },
+]
+why = "Gloves and disinfectant in a clinic."
+
+[extras.maintenance_any]
+match = { kind = "kind.maintenance_cabinet" }
+chance_pct = 40
+rolls = [1, 2]
+entries = [
+  { item = "bucket", w = 3, count = [1, 1] },
+  { item = "work_gloves", w = 3, count = [1, 2] },
+  { item = "flashlight", w = 2, count = [1, 1] },
+  { item = "extension_cord", w = 2, count = [1, 1] },
+]
+why = "Any building's maintenance cabinet."

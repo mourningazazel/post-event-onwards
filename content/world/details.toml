@@ -1,0 +1,63 @@
+# Container details (D-030, PEO-057): a rare, authored modifier blended into the main fill,
+# one pick from each table in turn. Each implies the tag detail.<id>. Fishing and gaming have
+# no evidence items yet, so no records.
+
+[detail.smoker]
+name = "smoker"
+loot = "smoker_evidence"
+why = "Someone here smoked: packs, lighters and matches turn up everywhere."
+
+[detail.gun_owner]
+name = "gun owner"
+loot = "gun_owner_evidence"
+why = "Ammunition and spare magazines tucked away."
+
+[detail."hobby.woodworking"]
+name = "woodworker"
+loot = "hobby_woodworking_evidence"
+why = "Chisels and glue where cutlery should be."
+
+[detail."hobby.gardening"]
+name = "gardener"
+loot = "hobby_gardening_evidence"
+why = "Shears and gloves kept close to hand."
+
+[detail."hobby.hunting"]
+name = "hunter"
+loot = "hobby_hunting_evidence"
+why = "Knife, optics and rifle rounds."
+
+[detail."hobby.sewing"]
+name = "sewer"
+loot = "hobby_sewing_evidence"
+why = "Sewing kits in every drawer."
+
+[detail."hobby.cooking"]
+name = "cook"
+loot = "hobby_cooking_evidence"
+why = "Serious knives, flour and sheets everywhere."
+
+[detail."trace.struggle"]
+name = "struggle"
+loot = "trace_struggle_evidence"
+why = "Broken glass, a spray and a knife where they should not be."
+
+[detail."trace.looted"]
+name = "looted"
+loot = "trace_looted_evidence"
+why = "Someone went through this already: torn bags, broken glass, a note."
+
+[detail.child]
+name = "child"
+loot = "child_evidence"
+why = "A child's things among the adults'."
+
+[detail.elderly]
+name = "elderly"
+loot = "elderly_evidence"
+why = "Glasses, pills and a book by every chair."
+
+[detail_loot.woodworking_garage]
+match = { detail = "detail.hobby.woodworking", kind = "kind.hardware_shelf" }
+loot = "woodworking_garage_evidence"
+why = "A garage shelf shows woodworking with saws and hammers; a drawer only has room for chisels."

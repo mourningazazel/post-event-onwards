@@ -332,6 +332,31 @@ def run_room_probe(db: Db) -> list[str]:
     return [] if hits else [f"room probe: no 'room fit' error for room.{ROOM_PROBE}"]
 
 
+# Extras tables lint must refuse (PEO-057): an unregistered context, and a detail key
+# (a detail blends into the main fill; it has no may-appear table).
+EXTRAS_PROBES = {
+    "unregistered ctx": ({"kind": "kind.junk_drawer", "ctx": "ctx.moon_base"}, "ctx.moon_base"),
+    "detail key": ({"kind": "kind.junk_drawer", "detail": "detail.smoker"}, "key 'detail'"),
+}
+
+
+def run_extras_probes(db: Db) -> list[str]:
+    errors = []
+    for label, (match, expect) in EXTRAS_PROBES.items():
+        db["extras"]["probe"] = {"match": match, "chance_pct": 10, "rolls": [1, 1],
+                                 "entries": [{"item": "cash", "w": 1, "count": [1, 1]}], "why": "probe"}
+        try:
+            lint = Lint(db)
+            lint.lint_d030()
+        finally:
+            del db["extras"]["probe"]
+        hits = [e for e in lint.errors if "extras.probe" in e and expect in e]
+        print(f"extras probe: {label} -> {len(hits)} error(s)")
+        if not hits:
+            errors.append(f"extras probe: {label} was not refused")
+    return errors
+
+
 def run_chains(ctx: Ctx) -> list[str]:
     db = ctx.db
     errors = []
@@ -413,7 +438,8 @@ def main() -> int:
     if db.errors:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
-    errors = run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
+    errors = (run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
+              + run_extras_probes(db))
     return fail_if(errors, "content tests")
 
 

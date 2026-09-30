@@ -11,10 +11,13 @@ import re
 import sys
 
 from common import Db, load
-from derive import (ResolveError, entry_item, item_expected, loot_expected, loot_items, mass_estimate, packed_dims,
-                    resolve_item, rnd)
+from derive import (ResolveError, entry_item, extras_expected, item_expected, loot_expected, loot_items,
+                    mass_estimate, packed_dims, resolve_item, rnd)
 
 REQ_RE = re.compile(r"^([a-z_]+)>=(\d+)$")
+# Purposes with no may-appear table of their own, and why (D-030 wants one per kind or a reason).
+KINDS_WITHOUT_EXTRAS: dict[str, str] = {}
+EXTRAS_MATCH_KEYS = {"kind": "kind", "ctx": "ctx"}
 # cat families that label records other than items (buildings, settings): registered, but
 # never queried against items (PEO-056).
 CAT_LABEL_FAMILIES = ("building", "setting")
@@ -372,11 +375,119 @@ class Lint:
             if rec is None:
                 self.err(w, f"purposes: unknown purpose '{pid}'")
                 continue
-            self.check_box(f"{w} purpose {pid}", comp, self.purpose_fill(pid))
+            self.check_box(f"{w} purpose {pid}", comp, self.purpose_fill(pid), extras=self.kind_extras(pid))
 
     def purpose_fill(self, pid: str) -> list[str]:
-        """What a purpose puts in a compartment on average: its main table."""
+        """What a purpose puts in a compartment on average: its main table (the kind's
+        extras are added to the volume by check_box's extras argument)."""
         return [self.db.get("purpose", pid)["loot"]]
+
+    def kind_extras(self, pid: str) -> list[str]:
+        """Extras a kind.<pid> container can meet at once: the tables matching its kind in
+        any context, plus those of the one context that adds the most (a container has
+        exactly one context)."""
+        tables = [(xid, rec.get("match") or {}) for xid, rec in self.db["extras"].items()
+                  if (rec.get("match") or {}).get("kind") == f"kind.{pid}"]
+        any_ctx = [xid for xid, m in tables if "ctx" not in m]
+        by_ctx: dict[str, list[str]] = {}
+        for xid, m in tables:
+            if "ctx" in m:
+                by_ctx.setdefault(m["ctx"], []).append(xid)
+
+        def volume(ids: list[str]) -> int:
+            return sum(extras_expected(self.db, x)[0] for x in ids)
+
+        worst = max(by_ctx.values(), key=volume, default=[])
+        return any_ctx + worst
+
+    def lint_d030(self) -> None:
+        """Purposes, details, detail_loot and extras (D-030, PEO-057)."""
+        for xid, rec in self.db["extras"].items():
+            w = f"{self.db.where('extras', xid)} extras.{xid}"
+            match = rec.get("match") or {}
+            if not match:
+                self.err(w, "match: needs kind or ctx")
+            for k, v in match.items():
+                if k not in EXTRAS_MATCH_KEYS:
+                    self.err(w, f"match: key '{k}' is not kind or ctx (a detail blends, it has no extras)")
+                elif not isinstance(v, str) or not v.startswith(EXTRAS_MATCH_KEYS[k] + "."):
+                    self.err(w, f"match: {k} must be a {EXTRAS_MATCH_KEYS[k]}.* tag, got {v!r}")
+                else:
+                    self.check_tag(w, v)
+            if not 0 < rec.get("chance_pct", 0) <= 100:
+                self.err(w, "chance_pct must be 1..100")
+            for i, e in enumerate(rec.get("entries", [])):
+                ref = e.get("item") or e.get("loot")
+                if not ref:
+                    self.err(w, f"entry {i}: needs item or loot")
+                else:
+                    self.item_or_loot(w, ref)
+                for m in e.get("mods", []):
+                    if self.db.get("modifier", m) is None:
+                        self.err(w, f"entry {i}: unknown modifier '{m}'")
+        seen: set[tuple[str, str]] = set()
+        for lid, rec in self.db["detail_loot"].items():
+            w = f"{self.db.where('detail_loot', lid)} detail_loot.{lid}"
+            match = rec.get("match") or {}
+            if set(match) != {"detail", "kind"}:
+                self.err(w, "match: needs exactly detail and kind")
+                continue
+            for k in ("detail", "kind"):
+                self.check_tag(w, match[k])
+            key = (match["detail"], match["kind"])
+            if key in seen:
+                self.err(w, f"a second detail_loot for {key[0]} on {key[1]}")
+            seen.add(key)
+            kind = match["kind"].split(".", 1)[1]
+            self.check_blend(w, rec.get("loot", ""), self.kind_compartments(kind))
+        every = [c for comps in self.all_compartments().values() for c in comps]
+        for did, rec in self.db["detail"].items():
+            self.check_blend(f"{self.db.where('detail', did)} detail.{did}", rec.get("loot", ""), every)
+        for pid in self.db["purpose"]:
+            if not self.kind_extras(pid) and pid not in KINDS_WITHOUT_EXTRAS:
+                self.err(f"{self.db.where('purpose', pid)} purpose.{pid}",
+                         "no extras table matches this kind; add one or list it in KINDS_WITHOUT_EXTRAS")
+
+    def all_compartments(self) -> dict[str, list[dict]]:
+        """item id -> compartments, for items that have them."""
+        out: dict[str, list[dict]] = {}
+        for iid in self.db["item"]:
+            try:
+                comps = resolve_item(self.db, iid).get("compartments")
+            except ResolveError:
+                continue
+            if comps:
+                out[iid] = comps
+        return out
+
+    def kind_compartments(self, pid: str) -> list[dict]:
+        """Compartments that can roll purpose pid, by default or by a room override."""
+        comps = self.all_compartments()
+        out = [c for cs in comps.values() for c in cs
+               if any(e.get("purpose") == pid for e in c.get("purposes", []))]
+        for rec in self.db["room"].values():
+            for fx in rec.get("objects", []):
+                for name, plist in (fx.get("purposes") or {}).items():
+                    if any(e.get("purpose") == pid for e in plist):
+                        out += [c for c in comps.get(fx.get("item", ""), []) if c.get("name") == name]
+        return out
+
+    def check_blend(self, w: str, loot_id: str, comps: list[dict]) -> None:
+        """A blend table exists and at least one of its items fits one of `comps`."""
+        if self.db.get("loot", loot_id) is None:
+            self.err(w, f"loot: unknown loot '{loot_id}'")
+            return
+        if not comps:
+            self.err(w, "no compartment it could be blended into")
+            return
+        for _, e in loot_items(self.db, loot_id):
+            try:
+                longest = packed_dims(self.db, entry_item(self.db, e))[0]
+            except ResolveError:
+                continue
+            if any(longest <= c.get("max_dim_mm", longest) for c in comps):
+                return
+        self.err(w, f"loot {loot_id}: no item fits any compartment it is authored for")
 
     # ---------------------------------------------------------------- modifiers
     def lint_modifiers(self) -> None:
@@ -601,8 +712,9 @@ class Lint:
             return
         self.check_box(where, box, fx["contains"])
 
-    def check_box(self, where: str, box: dict, contents: list[str]) -> None:
-        """Mean fill of `contents` (loot or item ids) against one container or compartment."""
+    def check_box(self, where: str, box: dict, contents: list[str], extras: list[str] = ()) -> None:
+        """Mean fill of `contents` (loot or item ids), plus the expected volume and mass
+        of any `extras` tables, against one container or compartment."""
         if any(self.db.get("loot", c) is None and self.db.get("item", c) is None for c in contents):
             return  # reported by item_or_loot
         vol = mass = 0
@@ -615,6 +727,9 @@ class Lint:
                 elif self.db.get("item", c) is not None:
                     v, m = (rnd(x) for x in item_expected(self.db, resolve_item(self.db, c)))
                     entries.append(("", {"item": c}))
+                vol, mass = vol + v, mass + m
+            for xid in extras:
+                v, m = extras_expected(self.db, xid)
                 vol, mass = vol + v, mass + m
         except ResolveError as ex:
             self.err(where, f"cannot size contents: {ex}")
@@ -720,6 +835,7 @@ class Lint:
         self.lint_modifiers()
         self.lint_refs()
         self.lint_cat_queries()
+        self.lint_d030()
         self.lint_reachable()
 
 
