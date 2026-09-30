@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 59,
+  "next_id": 60,
   "items": [
     {
       "id": "PEO-003",
@@ -430,10 +430,10 @@
       "order": 275,
       "type": "chore",
       "title": "verify.py cannot catch what CI catches: no release build, no clang",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -450,6 +450,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "commits: 445fd1a 9642004 (units 1+2 share 445fd1a: skip is the clang stage's guard). tests: verify.py --frontend --full passed, Arch aarch64, GCC 16.1 + clang 22.1. manual: --full at 69fa874 exits 1 on the clang -Wdouble-promotion break; at 0695dc7 exits 0. Fake clang that cannot link -fsanitize: stage SKIPPED with reason, summary 'did NOT run', exit 0. perf: default verify median ~1.63 s old and new. open: GCC 13's -O3 break does not reproduce with GCC 16, so 1 of 2 breaks locally; docker access for the user would allow a CI-image mirror. clang 22 doctest noise demoted via -Wno-error= locally only (PEO-059). AGENTS.md fit without a trade (448/450). Also updated testing.md and /start-work skill. Details in the report commit."
         }
       ],
       "references": [],
@@ -1003,6 +1008,22 @@
       ],
       "references": [
         "docs/production/decisions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-059",
+      "order": 527,
+      "type": "bug",
+      "title": "tests fail to build under clang 22/libstdc++ 16 (doctest __COUNTER__, <ciso646>)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-29",
+      "notes": [],
+      "references": [
+        "tools/verify.py"
       ],
       "depends_on": []
     }
