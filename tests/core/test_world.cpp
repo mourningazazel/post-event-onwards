@@ -264,8 +264,10 @@ TEST_SUITE("world") {
         // sequences, biased east so runs cross stage exits; walls make some steps into
         // waits. Durations are 1, 3, 6 or 12 s, so some actions cross no update
         // boundary, some one and some two, and the Dead's slots fall at every offset;
-        // like the frontend, B re-speculates only when the update or stage moved on,
-        // so one speculation serves several short actions.
+        // B re-speculates either like the frontend, only when the update or stage
+        // moved on, so one speculation serves several short actions, or after every
+        // action, so recorded windows of the Dead's seconds also start mid-update
+        // (PEO-060). A and B are compared after every action.
         constexpr int kSequences = 200;
         constexpr int kTurns = 8;
         constexpr int kGoldenWidth = 6;
@@ -277,32 +279,36 @@ TEST_SUITE("world") {
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
-        for (int seq = 0; seq < kSequences; ++seq) {
-            const Seed seed = static_cast<Seed>(seq) + 1;
-            Rng pick(seed);
-            World a(seed, params);
-            World b(seed, params);
-            Speculation spec; // reused every turn, as the frontend does
-            b.speculate(spec);
-            for (int t = 0; t < kTurns; ++t) {
-                const Seconds secs = kDurations[pick.range(0, 3)];
-                Action act = Action::wait(secs);
-                if (pick.range(1, kWaitOneIn) != 1) {
-                    act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
-                                                         : Action::step(kNeighbours4[pick.range(0, 3)], secs);
-                }
-                const std::uint32_t stage_before = a.stage_index();
-                const Tick update_before = b.updates();
-                a.step(act);
-                b.commit(spec, act);
-                if (b.updates() != update_before || b.stage_index() != stage_before) {
-                    b.speculate(spec);
-                }
-                transitions += a.stage_index() != stage_before ? 1 : 0;
-                // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
-                // the sanitizers cost more than the turn itself.
-                if (!World::equivalent(a, b)) {
-                    FAIL("diverged at sequence " << seq << " turn " << t);
+        for (const bool every_action : {false, true}) {
+            for (int seq = 0; seq < kSequences; ++seq) {
+                const Seed seed = static_cast<Seed>(seq) + 1;
+                Rng pick(seed);
+                World a(seed, params);
+                World b(seed, params);
+                Speculation spec; // reused every turn, as the frontend does
+                b.speculate(spec);
+                for (int t = 0; t < kTurns; ++t) {
+                    const Seconds secs = kDurations[pick.range(0, 3)];
+                    Action act = Action::wait(secs);
+                    if (pick.range(1, kWaitOneIn) != 1) {
+                        act = pick.range(1, kEastOneIn) != 1
+                                  ? Action::step({1, 0}, secs)
+                                  : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+                    }
+                    const std::uint32_t stage_before = a.stage_index();
+                    const Tick update_before = b.updates();
+                    a.step(act);
+                    b.commit(spec, act);
+                    if (every_action || b.updates() != update_before || b.stage_index() != stage_before) {
+                        b.speculate(spec);
+                    }
+                    transitions += a.stage_index() != stage_before ? 1 : 0;
+                    // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
+                    // the sanitizers cost more than the turn itself.
+                    if (!World::equivalent(a, b)) {
+                        FAIL("diverged at sequence " << seq << " turn " << t << " every_action "
+                                                     << every_action);
+                    }
                 }
             }
         }
@@ -563,6 +569,28 @@ TEST_SUITE("world") {
         CHECK(std::abs(mean_slots(kSlow) - 0.5) < kTolerance);
     }
 
+    TEST_CASE("a speculation kept across a stage change falls back live") {
+        // PEO-060: B speculates once and never again. Its recorded seconds serve the
+        // first update; after that, and after the walk to the exit loads stage 1, the
+        // speculation is stale and every second runs live. B matches A throughout.
+        constexpr int kAfterExit = 10;
+        World a(kSeed, small_world());
+        World b(kSeed, small_world());
+        Speculation spec = b.speculate();
+        const auto both = [&](Action act) {
+            a.step(act);
+            b.commit(spec, act);
+            REQUIRE(World::equivalent(a, b));
+        };
+        for (const Vec2i d : path_to_exit(a)) {
+            both(Action::step(d));
+        }
+        REQUIRE(a.stage_index() == 1);
+        for (int i = 0; i < kAfterExit; ++i) {
+            both(Action::wait(i % 2 == 0 ? 1 : kUpdatePeriodSeconds));
+        }
+    }
+
     TEST_CASE("a stale speculation falls back to step") {
         World a(kSeed, small_world());
         World b(kSeed, small_world());
@@ -579,6 +607,8 @@ TEST_SUITE("world") {
     // Debug+ASan they would cost most of the suite. Report, do not assert on time:
     // shared CI runners are too noisy. D-021 budget on the M1 Air: commit < 1 ms,
     // speculated update < 100 ms. `tools/verify.py --perf` prints these lines.
+    // Each sample speculates, then commits a 6 s wait: commit's time includes the
+    // Dead's seconds replayed from the speculation (PEO-060), speculate's their run-ahead.
     void run_perf(int width, int height, int dead, int emitters_per_1000_tiles) {
         constexpr int kWarmTurns = 20;
         constexpr int kSamples = 10;
