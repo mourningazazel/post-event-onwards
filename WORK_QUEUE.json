@@ -751,7 +751,7 @@
       "order": 487,
       "type": "feature",
       "title": "Compartments feature and cabinet runs; home room programs fit their tiles",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
@@ -776,6 +776,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "unblocked: answers in the handoff. Q1 B (roll once per object, spread by fit; interim until PEO-057's purposes). Q2 C on the footprint (horizontal area, upright and rests_on properties). No user decision changed."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "resuming with the Architect's answers (Q1 B, Q2 C)"
         }
       ],
       "references": [
