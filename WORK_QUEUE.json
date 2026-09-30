@@ -679,10 +679,10 @@
       "order": 387,
       "type": "bug",
       "title": "The Dead cut corners: strongest_neighbour allows a diagonal past two walls",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
