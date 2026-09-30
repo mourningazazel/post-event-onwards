@@ -591,38 +591,6 @@
       ]
     },
     {
-      "id": "PEO-041",
-      "order": 357,
-      "type": "feature",
-      "title": "Running: a step that takes 3 seconds (D-015)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed; ready for the Builder. Default chosen: R toggles run, starts walking, persists across stages."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "see report commit"
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-042",
       "order": 367,
       "type": "design",
