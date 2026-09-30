@@ -100,6 +100,8 @@ game at 80x45 the HUD read `spec:hit` on every turn, including ~46 keys/s.
 
 The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
 auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
+R toggles running (steps of `kRunStepSeconds`, 3 s, D-015); the cap limits key presses, not game
+time, so a runner covers two cells per update.
 
 ## Boundaries that tests protect
 
