@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 63,
+  "next_id": 64,
   "items": [
     {
       "id": "PEO-003",
@@ -789,98 +789,18 @@
       "depends_on": []
     },
     {
-      "id": "PEO-060",
+      "id": "PEO-063",
       "order": 537,
-      "type": "perf",
-      "title": "Speculate the Dead's seconds to the next update: 512x512 with 50k Dead back under 1 ms commit (D-021, D-031)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: c16f0f3 (core: HordeState, run-ahead, replay, fallback) 073211f (tests) f0f9108 (docs). tests: verify.py --frontend --full passed; golden in two modes (frontend re-speculation, and after every action), compared after every action; stage-change case falls back live; mutations (replay without the recorded poll, or decisions) fail golden; pinned hash unchanged; 0 allocations over 1000 mixed actions (commit and speculate). perf (M1 Air, -O3, cpu 6, 6 s step, 300 samples): 512x512/50k commit 269-280 us (was 1369 median, 1432 max), speculate 1.2-2.5 ms; 200x120/5k commit 25-32 us (was 28/165/227 min/med/max), speculate 98-298 us (was 85-103: the Dead's work moved onto the worker). verify.py --perf pinned: 200x120/5000/0 spec 95 commit 25; /6 spec 101 commit 31; 512/20k/6 spec 1236 commit 318; 512/50k/6 spec 1292 commit 321; 512/50k/20 spec 1421 commit 407 (us, best of 10). manual: peo 7, 12 mixed keys incl. run toggles: HUD turn 10 walk spec:hit. open: 200x120 speculate is higher than PEO-058's by design (still far under 100 ms)."
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-061",
-      "order": 547,
       "type": "chore",
-      "title": "soak_rate: bedding without a seat counts as sleep contact (D-013, D-028)",
-      "status": "Validation",
+      "title": "Headless suite at 85% of its 1 s budget under sanitizers; CI runs slower",
+      "status": "Pending",
       "severity": "S3",
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: first two [PEO-061] commits after start (tools rule, pinned expectations). tests: verify.py --frontend --full passed; test.py 407 expectations. values: sleeping_bag 22 portable, bedsheet 22 portable, mattress 40, t_shirt 7, towel 7, sofa 28. open: blanket and pillow do not exist as items, so no expectations for them; the tag rule covers them if added with cat.textile.bedding. Bedding tags used: cat.textile.bedding, cat.camping.sleeping_bag."
-        }
-      ],
+      "notes": [],
       "references": [
-        "tools/content/derive.py"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-062",
-      "order": 557,
-      "type": "bug",
-      "title": "HUD line overflows an 80-column window: key hints cut off",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: the [PEO-062] app commit (two HUD lines, kHudRows 2). tests: verify.py --frontend --full passed. manual: peo 7, Right, r, Right, screenshot at default size (2560x1504): line 1 'stage 0 turn 2 run dead 40 spec:hit (miss 0)', line 2 '[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next'; [n] visible, both lines end well inside the window. open: none."
-        }
-      ],
-      "references": [
-        "src/app/main.cpp"
+        "tools/suite_budget.py"
       ],
       "depends_on": []
     }
