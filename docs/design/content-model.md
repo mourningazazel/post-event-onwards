@@ -118,6 +118,9 @@ Capabilities are **derived** from the layers above; examples:
 - `pry` = rigidity × length
 - `dig` = shape (blade or scoop) × rigidity
 - `reach` = length
+- `soak_rate` = contact (surface, seat, bed) × absorbency (soft share, else main material) + an
+  absorber bonus, 1 to 45 × the floor (D-013); PEO-038 charges an object at soak_rate × the floor rate
+- `soak_portable` = loose, draggable by one person, and made to hold scent: its soak travels with it (D-028)
 
 Proposed starting vocabulary:
 
