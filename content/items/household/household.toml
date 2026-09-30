@@ -120,3 +120,28 @@ value_class = "junk"
 [item.dryer_lint.composition.fibre]
 material = "cotton"
 share = 100
+
+[item.sewing_kit]
+name = "sewing kit"
+tags = ["cat.fastener.thread", "from.bedroom", "from.living", "from.bathroom"]
+shape = "small"
+dims_mm = [150, 100, 40]
+mass_g = 120
+desc = "A small plastic case of thread spools, needles, pins and a thimble."
+glyph = "item.sewing_kit"
+why = "The only thread in the world: stitches cloth and leather (fastener stitch, sew 4)."
+value_class = "common"
+
+[item.sewing_kit.composition.case]
+material = "polypropylene"
+share = 55
+[item.sewing_kit.composition.thread]
+material = "polyester"
+share = 30
+[item.sewing_kit.composition.needles]
+material = "mild_steel"
+share = 15
+
+[item.sewing_kit.capabilities]
+sew = 4
+

@@ -196,6 +196,8 @@ entries = [
   { item = "headlamp", w = 2, count = [2, 6] },
   { item = "padlock", w = 2, count = [4, 12] },
   { item = "bucket", w = 2, count = [4, 12] },
+  { item = "steel_wool", w = 2, count = [2, 10] },
+  { item = "tin_snips", w = 2, count = [1, 4] },
 ]
 
 [loot.hardware_shelf_fasteners]
@@ -263,6 +265,7 @@ empty_chance_pct = 1
 entries = [
   { item = "pistol", w = 12, count = [2, 8] },
   { item = "revolver", w = 4, count = [1, 4] },
+  { item = "ammo_38spl", w = 3, count = [50, 200] },
   { item = "shotgun", w = 10, count = [2, 6] },
   { item = "hunting_rifle", w = 10, count = [2, 6] },
   { item = "semi_auto_rifle", w = 7, count = [1, 4] },
@@ -314,6 +317,8 @@ entries = [
   { item = "compound_bow", w = 1, count = [1, 3] },
   { item = "arrows", w = 1, count = [6, 24] },
   { item = "air_horn", w = 1, count = [2, 6] },
+  { item = "solar_charger", w = 1, count = [1, 3] },
+  { item = "motorcycle_helmet", w = 1, count = [1, 3] },
 ]
 
 [loot.auto_parts_stock]

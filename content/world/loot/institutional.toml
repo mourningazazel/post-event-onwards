@@ -27,6 +27,7 @@ entries = [
   { item = "laptop", w = 3, count = [1, 1] },
   { item = "city_map", w = 1, count = [1, 1] },
   { item = "photo", w = 2, count = [1, 2] },
+  { item = "ruler", w = 3, count = [2, 10] },
 ]
 
 # Extra (not in world-catalog §7): a school gym's equipment closet.
@@ -135,6 +136,7 @@ entries = [
   { item = "police_baton", w = 4, count = [2, 10] },
   { item = "pepper_spray", w = 4, count = [2, 12] },
   { item = "stun_gun", w = 4, count = [1, 6] },
+  { item = "stun_gun_cartridge", w = 3, count = [2, 12] },
   { item = "zip_ties", w = 3, count = [2, 10] },
   { item = "flashlight", w = 3, count = [2, 8] },
   { item = "walkie_talkie", w = 3, count = [2, 8] },
@@ -239,6 +241,7 @@ entries = [
   { item = "police_baton", w = 4, count = [2, 10] },
   { item = "pepper_spray", w = 4, count = [2, 12] },
   { item = "stun_gun", w = 4, count = [1, 6] },
+  { item = "stun_gun_cartridge", w = 3, count = [2, 12] },
   { item = "zip_ties", w = 3, count = [2, 10] },
   { item = "flashlight", w = 3, count = [2, 8] },
   { item = "walkie_talkie", w = 3, count = [2, 8] },

@@ -78,6 +78,7 @@ objects = [
   { item = "rain_barrel", count = [1, 2], chance_pct = 6 },
   { item = "bicycle", count = [1, 2], chance_pct = 12 },
   { item = "cooler", count = [1, 1], chance_pct = 8 },
+  { item = "shed_object", count = [1, 1], chance_pct = 25 },
 ]
 
 [outdoor_set.downtown_street]
@@ -189,6 +190,7 @@ objects = [
   { item = "pickup_truck", count = [1, 3], chance_pct = 60 },
   { item = "work_light_12v", count = [1, 2], chance_pct = 20 },
   { item = "hard_hat", count = [1, 2], chance_pct = 15 },
+  { item = "brick", count = [50, 500], chance_pct = 35 },
 ]
 
 [outdoor_set.highway_corridor]
@@ -212,6 +214,7 @@ objects = [
   { item = "road_flare", count = [1, 6], chance_pct = 15 },
   { item = "traffic_cone", count = [2, 10], chance_pct = 15 },
   { item = "struggle_debris", count = [1, 2], chance_pct = 10 },
+  { item = "semi_trailer", count = [1, 3], chance_pct = 40 },
 ]
 
 [outdoor_set.park_grounds]
