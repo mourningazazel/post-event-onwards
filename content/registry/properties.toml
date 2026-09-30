@@ -228,3 +228,8 @@ readers = ["skills", "M21 knowledge"]
 type = "bool"
 desc = "Blocks line of sight (tall furniture, vehicles, walls)."
 readers = ["FOV"]
+
+[property.compartments]
+type = "list<table>"
+desc = "Drawers, shelves and cupboards of furniture and fixtures, each searched on its own (D-027): { name (shown in the search menu), capacity_ml, max_mass_g?, max_dim_mm?, closable?, lock? (lock feature params), loot? (default loot id) }. An item has this or features.container, never both."
+readers = ["generation", "M10 access", "search"]

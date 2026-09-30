@@ -15,6 +15,10 @@ from derive import (ResolveError, entry_item, item_expected, loot_expected, loot
                     resolve_item, rnd)
 
 REQ_RE = re.compile(r"^([a-z_]+)>=(\d+)$")
+# Keys a compartment may carry (PEO-054) and their types; lock is checked against feature.lock.
+COMPARTMENT_KEYS = {"name": "str", "capacity_ml": "int", "max_mass_g": "int", "max_dim_mm": "int",
+                    "closable": "bool", "lock": "table", "loot": "str"}
+COMPARTMENT_REQUIRED = ("name", "capacity_ml")
 
 
 class Lint:
@@ -211,6 +215,7 @@ class Lint:
                 self.err(w, "needs a cat.* tag (loot tables, UI)")
             self.lint_composition(w, item)
             self.lint_features(w, item)
+            self.lint_compartments(w, item)
             for cap in (item.get("capabilities") or {}):
                 if self.db.get("capability", cap) is None:
                     self.err(w, f"unknown capability '{cap}'")
@@ -281,6 +286,41 @@ class Lint:
                 for s in params.get("fuel", []):
                     if self.db.get("substance", s) is None:
                         self.err(w, f"fuel_tank: unknown substance '{s}'")
+
+    def lint_compartments(self, w: str, item: dict) -> None:
+        comps = item.get("compartments")
+        if comps is None:
+            return
+        if "container" in (item.get("features") or {}):
+            self.err(w, "has both compartments and features.container; use one")
+        names = [c.get("name") for c in comps]
+        for n in sorted({n for n in names if names.count(n) > 1}):
+            self.err(w, f"compartment name '{n}' is not unique")
+        lock_def = self.db.get("feature", "lock")
+        for i, c in enumerate(comps):
+            cw = f"{w} compartment {c.get('name', i)}"
+            for req in COMPARTMENT_REQUIRED:
+                if req not in c:
+                    self.err(cw, f"missing '{req}'")
+            for k, v in c.items():
+                if k not in COMPARTMENT_KEYS:
+                    self.err(cw, f"unknown key '{k}'")
+                else:
+                    self.check_type(cw, k, v, COMPARTMENT_KEYS[k])
+            lock = c.get("lock")
+            if isinstance(lock, dict):
+                for req in lock_def.get("required", []):
+                    if req not in lock:
+                        self.err(cw, f"lock: missing '{req}'")
+                for k, v in lock.items():
+                    if k not in lock_def["params"]:
+                        self.err(cw, f"lock: unknown param '{k}'")
+                    else:
+                        self.check_type(f"{cw} lock", k, v, lock_def["params"][k])
+            if "loot" in c and self.db.get("loot", c["loot"]) is None:
+                self.err(cw, f"loot: unknown loot '{c['loot']}'")
+            elif "loot" in c:
+                self.check_box(cw, c, [c["loot"]])
 
     # ---------------------------------------------------------------- modifiers
     def lint_modifiers(self) -> None:
@@ -373,8 +413,7 @@ class Lint:
                 self.item_or_loot(w, fx.get("item", ""))
                 for c in fx.get("contains", []):
                     self.item_or_loot(w, c)
-                if fx.get("contains"):
-                    self.lint_fit(w, fx)
+                self.lint_fit(w, fx)
             for c in rec.get("loose", []):
                 self.item_or_loot(w, c)
         for bid, rec in self.db["building"].items():
@@ -413,34 +452,60 @@ class Lint:
     def lint_fit(self, w: str, fx: dict) -> None:
         """A room object's contents must fit it (PEO-052): the mean fill by volume and mass,
         and every entry's packed longest side. Worst case may overflow: generation fills
-        until full (PEO-053), so capacity is the ceiling, not the table."""
+        until full (PEO-053), so capacity is the ceiling, not the table. An item with
+        compartments is checked per compartment against its loot, the room's override
+        (loot = { name = id }) first (PEO-054)."""
         oid = fx.get("item", "")
         try:
             obj = resolve_item(self.db, oid)
         except ResolveError:
             return  # reported by item_or_loot
-        box = (obj.get("features") or {}).get("container")
         where = f"{w} object {oid}"
+        comps = obj.get("compartments")
+        override = fx.get("loot")
+        if comps is not None:
+            if fx.get("contains"):
+                self.err(where, f"contains on an item with compartments; use loot = {{ <compartment> = <loot> }}")
+            by_name = {c.get("name"): c for c in comps}
+            for name, ref in (override or {}).items():
+                if name not in by_name:
+                    self.err(where, f"loot: {oid} has no compartment '{name}'")
+                else:
+                    self.item_or_loot(where, ref)
+            for c in comps:
+                ref = (override or {}).get(c.get("name")) or c.get("loot")
+                if ref and ref != c.get("loot"):  # defaults are checked on the item
+                    self.check_box(f"{where} compartment {c.get('name')}", c, [ref])
+            return
+        if override is not None:
+            self.err(where, f"loot override on {oid}, which has no compartments; use contains")
+        if not fx.get("contains"):
+            return
+        box = (obj.get("features") or {}).get("container")
         if box is None:
             self.err(where, f"contains {fx['contains']} but {oid} has no container feature")
             return
+        self.check_box(where, box, fx["contains"])
+
+    def check_box(self, where: str, box: dict, contents: list[str]) -> None:
+        """Mean fill of `contents` (loot or item ids) against one container or compartment."""
+        if any(self.db.get("loot", c) is None and self.db.get("item", c) is None for c in contents):
+            return  # reported by item_or_loot
         vol = mass = 0
         entries: list[tuple[str, dict]] = []
         try:
-            for c in fx["contains"]:
+            for c in contents:
                 if self.db.get("loot", c) is not None:
                     v, m = loot_expected(self.db, c)
                     entries += loot_items(self.db, c)
                 elif self.db.get("item", c) is not None:
                     v, m = (rnd(x) for x in item_expected(self.db, resolve_item(self.db, c)))
                     entries.append(("", {"item": c}))
-                else:
-                    return  # reported by item_or_loot
                 vol, mass = vol + v, mass + m
         except ResolveError as ex:
             self.err(where, f"cannot size contents: {ex}")
             return
-        tables = ", ".join(fx["contains"])
+        tables = ", ".join(contents)
         if vol > box["capacity_ml"]:
             self.err(where, f"{tables}: expected {vol} ml exceeds capacity_ml {box['capacity_ml']}")
         if "max_mass_g" in box and mass > box["max_mass_g"]:
