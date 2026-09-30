@@ -28,9 +28,11 @@ struct WorldParams {
     /// costs O(width * height); tests use a small stage to stay in budget.
     int stage_width = StageSpec{}.width;
     int stage_height = StageSpec{}.height;
-    /// Game seconds between updates of scent and the Dead (D-015). ScentParams and
-    /// player_scent are per update, so the defaults need no retune.
+    /// Game seconds between scent updates (D-015). ScentParams and player_scent are
+    /// per update, so the defaults need no retune.
     Seconds update_period = kUpdatePeriodSeconds;
+    /// Game seconds in one cycle of the Dead's slots (D-031).
+    Seconds dead_cycle = kDeadCycleSeconds;
 };
 
 /// Game seconds the player spent on one tile since the last update. The log of
@@ -40,19 +42,16 @@ struct Occupancy {
     Seconds seconds = 0;
 };
 
-/// The next update computed ahead, with no player deposit (PEO-007, D-015). The
-/// scent is post-step_linear and unclamped so commit() can patch the logged
-/// deposits in; `before` keeps the pre-update horde so the few Dead near a logged
-/// tile can be re-decided. Valid for the update and stage it was made on, across
-/// any number of actions that cross no update boundary.
-/// Reusable: speculate(out) and commit() recycle its buffers, so a frontend that
+/// The next scent update computed ahead (PEO-007, D-015): the whole-field sweep,
+/// post-step_linear and unclamped, so commit() only patches the logged deposits in
+/// and clamps. The Dead are not in it: between updates they read only the last
+/// update's scent, never the player, so commit() runs their seconds live, exactly as
+/// step() does (D-031). Valid for the update and stage it was made on, across any
+/// number of actions that cross no update boundary.
+/// Reusable: speculate(out) and commit() recycle its buffer, so a frontend that
 /// keeps one Speculation allocates nothing per update.
 struct Speculation {
     ScentField scent{1, 1};
-    /// Scratch: `scent` after clamp_floor, which the Dead decide on.
-    ScentField clamped{1, 1};
-    std::vector<Dead> horde;
-    std::vector<Dead> before;
     Tick update = 0;
     std::uint32_t stage_index = 0;
 };
@@ -70,12 +69,13 @@ public:
     void load_stage(std::uint32_t index);
 
     /// Spend one action: apply it at once (the player is on the new tile for its
-    /// whole duration), then run the clock forward by its seconds, logging them on
-    /// the player's tile and running an update at each update_period boundary.
+    /// whole duration), then run the clock forward second by second: the Dead in
+    /// that second's slot decide, last second's moves land, and at each
+    /// update_period boundary the scent updates with the logged seconds (D-031).
     void step(Action action);
 
-    /// Compute the next update with no player deposit. Pure: safe to run on
-    /// another thread while nothing mutates this World.
+    /// Compute the next scent update's sweep. Pure: safe to run on another thread
+    /// while nothing mutates this World.
     [[nodiscard]] Speculation speculate() const;
     /// As speculate(), into `out`, reusing its buffers.
     void speculate(Speculation& out) const;
@@ -92,7 +92,8 @@ public:
     /// speculation was built from without making it stale, so speculate after it.
     void deposit(Vec2i at, float amount) noexcept { scent_.deposit(at, amount); }
 
-    /// Same stage, turn, clock, occupancy log, player, horde and scent bits. For tests.
+    /// Same stage, turn, clock, occupancy log, player, horde, scent bits and the
+    /// Dead's pending moves, reservations and slots. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
@@ -103,17 +104,29 @@ public:
     [[nodiscard]] Tick turn() const noexcept { return turn_; }
     /// Game seconds elapsed on this stage.
     [[nodiscard]] Seconds seconds() const noexcept { return seconds_; }
-    /// Updates of scent and the Dead run on this stage.
+    /// Scent updates run on this stage.
     [[nodiscard]] Tick updates() const noexcept { return updates_; }
     /// Seconds per tile since the last update, in first-visit order.
     [[nodiscard]] const std::vector<Occupancy>& occupancy() const noexcept { return log_; }
     [[nodiscard]] std::uint32_t stage_index() const noexcept { return stage_index_; }
 
 private:
+    /// A move one of the Dead decided: it lands one second later (D-031).
+    struct Move {
+        std::uint32_t unit = 0;
+        Vec2i to{};
+    };
+
     void apply_action(Action action) noexcept;
-    /// Run the clock forward `duration` seconds. At the first boundary, finish the
-    /// update from `spec` if given; any other boundary runs run_update().
+    /// Run the clock forward `duration` seconds, one second at a time. At the first
+    /// update boundary, finish the update from `spec` if given; any other boundary
+    /// runs run_update().
     void advance(Seconds duration, Speculation* spec);
+    /// The Dead's part of one second: the poll at a cycle start, the slot's
+    /// decisions, then last second's landings.
+    void dead_second(Seconds t);
+    /// Give every unit with a stronger neighbour its slots for cycle `cycle`.
+    void poll(std::uint64_t cycle);
     void log_seconds(Seconds s);
     void deposit_log(ScentField& field) const noexcept;
     void run_update();
@@ -128,6 +141,21 @@ private:
     std::vector<Dead> horde_;
     /// Dead per tile (D-031): at most 1 for calm Dead.
     Grid<std::uint8_t> occupied_{1, 1};
+    /// Tiles a decided move will land on next second.
+    Grid<bool> reserved_{1, 1};
+    /// Per unit: 1 while it has a move pending (it skips its slots until it lands).
+    std::vector<std::uint8_t> moving_;
+    /// This cycle's slots bucketed by second: the units in second s are
+    /// slot_units_[slot_begin_[s], slot_begin_[s + 1]), in ascending index.
+    std::vector<std::uint32_t> slot_begin_;
+    std::vector<std::uint32_t> slot_units_;
+    /// Scratch for poll(): each unit's plan this cycle.
+    std::vector<SlotPlan> plans_;
+    /// Moves decided this second, and those decided last second, which land now.
+    std::vector<Move> deciding_;
+    std::vector<Move> landing_;
+    /// Mixed into the slot hashes: the stage's own seed.
+    std::uint64_t stage_salt_ = 0;
     Vec2i player_{};
     Rng rng_{1};
     Tick turn_ = 0;

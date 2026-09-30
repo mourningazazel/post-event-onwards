@@ -46,7 +46,7 @@ std::size_t scent_mismatches(const ScentField& a, const ScentField& b) {
     return differ;
 }
 
-/// FNV-1a over the state that must not drift when the clock changes (PEO-040).
+/// FNV-1a over the player, the Dead's positions and the scent bits.
 struct Fnv1a {
     std::uint64_t h = 0xCBF29CE484222325ULL;
     void add(std::uint64_t v) {
@@ -56,11 +56,6 @@ struct Fnv1a {
     }
 };
 
-/// Cooldown in updates, the unit it had before PEO-040 moved the Dead to seconds.
-std::uint64_t cooldown_updates(const Dead& d) {
-    return d.cooldown_s / kUpdatePeriodSeconds;
-}
-
 std::uint64_t world_hash(const World& w) {
     Fnv1a f;
     f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.player().x)));
@@ -69,7 +64,6 @@ std::uint64_t world_hash(const World& w) {
     for (const Dead& d : w.horde()) {
         f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.x)));
         f.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.y)));
-        f.add(cooldown_updates(d));
     }
     for (const float v : w.scent().cells()) {
         f.add(std::bit_cast<std::uint32_t>(v));
@@ -150,10 +144,12 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("the pre-clock world is pinned") {
-        // PEO-040: recorded on main before the world clock existed. Default 6 s
-        // steps and waits must reproduce it bit for bit after the rework.
+        // PEO-040 recorded this before the world clock existed and the clock kept it
+        // bit for bit. PEO-058 (D-031) re-pinned it on purpose: the Dead now move in
+        // hashed slots every second, never share a tile and no longer carry a
+        // cooldown, so their paths and the hashed state changed.
         constexpr int kRandomActions = 100; // before and after the walk to the exit
-        constexpr std::uint64_t kPinnedHash = 0xB2A3557FBD9AD93EULL;
+        constexpr std::uint64_t kPinnedHash = 0x5D937B3ACB1DA565ULL;
         World w(kSeed, small_world());
         Rng pick(kSeed);
         const auto random_actions = [&] {
@@ -264,11 +260,12 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("commit(speculate()) is bit-identical to step()") {
-        // PEO-007 golden test, extended for D-015. Random seeds and action sequences,
-        // biased east so runs cross stage exits; walls make some steps into waits.
-        // Durations are 3, 6 or 12 s, so some actions cross no update boundary, some
-        // one and some two; like the frontend, B re-speculates only when the update
-        // or stage moved on, so one speculation serves several short actions.
+        // PEO-007 golden test, extended for D-015 and D-031. Random seeds and action
+        // sequences, biased east so runs cross stage exits; walls make some steps into
+        // waits. Durations are 1, 3, 6 or 12 s, so some actions cross no update
+        // boundary, some one and some two, and the Dead's slots fall at every offset;
+        // like the frontend, B re-speculates only when the update or stage moved on,
+        // so one speculation serves several short actions.
         constexpr int kSequences = 200;
         constexpr int kTurns = 8;
         constexpr int kGoldenWidth = 6;
@@ -276,7 +273,7 @@ TEST_SUITE("world") {
         constexpr int kGoldenDead = 16; // fills the 6x6 interior (capped at open cells)
         constexpr int kWaitOneIn = 5;
         constexpr int kEastOneIn = 3; // two in three steps go east
-        constexpr Seconds kDurations[] = {3, 6, 12};
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
@@ -288,7 +285,7 @@ TEST_SUITE("world") {
             Speculation spec; // reused every turn, as the frontend does
             b.speculate(spec);
             for (int t = 0; t < kTurns; ++t) {
-                const Seconds secs = kDurations[pick.range(0, 2)];
+                const Seconds secs = kDurations[pick.range(0, 3)];
                 Action act = Action::wait(secs);
                 if (pick.range(1, kWaitOneIn) != 1) {
                     act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
@@ -404,8 +401,8 @@ TEST_SUITE("world") {
         CHECK(scent_mismatches(runner.scent(), expected) == 0);
         CHECK(half + half == params.player_scent); // per second, a runner deposits as a walker
 
-        // A walker spends the same 12 s on two cells: the same updates, so the Dead
-        // (who move per update) get no more moves against a runner.
+        // A walker spends the same 12 s on two cells: the same seconds, so the Dead
+        // (who move in slots per second, D-031) get no more moves against a runner.
         walker.step(Action::step(dir));
         walker.step(Action::step(dir));
         CHECK(walker.seconds() == runner.seconds());
@@ -422,30 +419,148 @@ TEST_SUITE("world") {
         twice.step(Action::wait());
         CHECK(once.updates() == 2);
         CHECK(once.seconds() == kTwoPeriods);
-        // The Dead got two chances to move: the same as two 6 s waits.
+        // The Dead lived the same twelve seconds: the same as two 6 s waits.
         REQUIRE(once.horde().size() == twice.horde().size());
         for (std::size_t i = 0; i < once.horde().size(); ++i) {
             CHECK(once.horde()[i].pos == twice.horde()[i].pos);
-            CHECK(once.horde()[i].cooldown_s == twice.horde()[i].cooldown_s);
         }
         CHECK(scent_mismatches(once.scent(), twice.scent()) == 0);
     }
 
-    TEST_CASE("an action that does not reach a boundary changes no scent and no Dead") {
+    TEST_CASE("an action that does not reach a boundary changes no scent") {
+        // The scent moves only at updates; the Dead live every second (D-031), so a
+        // 3 s wait leaves them exactly where three 1 s waits do.
         constexpr Seconds kShort = kUpdatePeriodSeconds / 2;
         World w(kSeed, small_world());
+        World seconds(kSeed, small_world());
         const ScentField scent_before = w.scent();
-        const std::vector<Dead> horde_before = w.horde();
         w.step(Action::wait(kShort));
+        for (Seconds s = 0; s < kShort; ++s) {
+            seconds.step(Action::wait(1));
+        }
         CHECK(w.updates() == 0);
         CHECK(w.seconds() == kShort);
         CHECK(w.turn() == 1);
         CHECK(scent_mismatches(w.scent(), scent_before) == 0);
-        REQUIRE(w.horde().size() == horde_before.size());
-        for (std::size_t i = 0; i < horde_before.size(); ++i) {
-            CHECK(w.horde()[i].pos == horde_before[i].pos);
-            CHECK(w.horde()[i].cooldown_s == horde_before[i].cooldown_s);
+        REQUIRE(w.horde().size() == seconds.horde().size());
+        for (std::size_t i = 0; i < w.horde().size(); ++i) {
+            CHECK(w.horde()[i].pos == seconds.horde()[i].pos);
         }
+    }
+
+    TEST_CASE("calm Dead never share a tile") {
+        // D-031: 300 one-second waits on the small stage and on a crowded 6x6 one
+        // (16 Dead in 16 open cells, so every move is into a just-vacated tile).
+        constexpr int kSeconds = 300;
+        constexpr int kCrowdSide = 6;
+        constexpr int kCrowdDead = 16;
+        const WorldParams worlds[] = {
+            small_world(),
+            {.initial_dead = kCrowdDead, .stage_width = kCrowdSide, .stage_height = kCrowdSide},
+        };
+        for (const WorldParams& params : worlds) {
+            World w(kSeed, params);
+            Grid<std::uint8_t> count(w.stage().spec.width, w.stage().spec.height, 0);
+            int shared = 0;
+            for (int t = 0; t < kSeconds; ++t) {
+                w.step(Action::wait(1));
+                count.fill(0);
+                for (const Dead& d : w.horde()) {
+                    shared += ++count.at(d.pos) > 1 ? 1 : 0;
+                }
+            }
+            CHECK(shared == 0);
+        }
+    }
+
+    TEST_CASE("a vacated tile waits a second") {
+        // D-031: a unit deciding at t still sees one that decided at t-1 on its old
+        // tile, so a tile left at t can be landed on at t+2 at the earliest. Five
+        // seeds on the small stage give dozens of follow-ups, some at exactly 2 s.
+        constexpr int kSeconds = 300;
+        constexpr Seed kSeeds = 5;
+        constexpr int kMinGap = 2;
+        constexpr int kNever = -1000;
+        int follow_ups = 0;
+        int at_min_gap = 0;
+        for (Seed seed = kSeed; seed < kSeed + kSeeds; ++seed) {
+            World w(seed, small_world());
+            Grid<int> left_at(kTestStageWidth, kTestStageHeight, kNever);
+            Grid<int> left_by(kTestStageWidth, kTestStageHeight, -1);
+            for (int t = 1; t <= kSeconds && w.stage_index() == 0; ++t) {
+                const std::vector<Dead> before = w.horde();
+                w.step(Action::wait(1));
+                if (w.stage_index() != 0) {
+                    break; // a new stage: positions no longer compare
+                }
+                for (std::size_t i = 0; i < before.size(); ++i) {
+                    const Vec2i from = before[i].pos;
+                    const Vec2i to = w.horde()[i].pos;
+                    if (from == to) {
+                        continue;
+                    }
+                    if (left_by.at(to) >= 0 && left_by.at(to) != static_cast<int>(i)) {
+                        ++follow_ups;
+                        at_min_gap += t - left_at.at(to) == kMinGap ? 1 : 0;
+                        CHECK(t - left_at.at(to) >= kMinGap);
+                    }
+                    left_at.at(from) = t;
+                    left_by.at(from) = static_cast<int>(i);
+                }
+            }
+        }
+        CHECK(follow_ups > 0);
+        CHECK(at_min_gap > 0); // the rule is exercised at its edge, not just far from it
+    }
+
+    TEST_CASE("slots differ each cycle") {
+        // D-031: a unit's first slot is a hash of (salt, cycle, index), so it
+        // wanders over the whole cycle, and the same inputs repeat it exactly.
+        constexpr int kCycles = 100;
+        constexpr std::uint64_t kSalt = 7;
+        constexpr std::size_t kUnit = 3;
+        std::vector<bool> seen(kDeadCycleSeconds, false);
+        std::vector<Seconds> first;
+        for (int c = 0; c < kCycles; ++c) {
+            const SlotPlan plan = plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit,
+                                             kUpdatePeriodSeconds, kDeadCycleSeconds);
+            REQUIRE(plan.count > 0);
+            first.push_back(slot_second(plan, 0, kDeadCycleSeconds));
+            seen[first.back()] = true;
+        }
+        for (Seconds s = 0; s < kDeadCycleSeconds; ++s) {
+            CAPTURE(s);
+            CHECK(seen[s]);
+        }
+        for (int c = 0; c < kCycles; ++c) {
+            const SlotPlan again = plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit,
+                                              kUpdatePeriodSeconds, kDeadCycleSeconds);
+            CHECK(slot_second(again, 0, kDeadCycleSeconds) == first[static_cast<std::size_t>(c)]);
+        }
+    }
+
+    TEST_CASE("speed is slots per cycle") {
+        // D-031: dead_cycle / step_seconds slots, the whole part every cycle and the
+        // fraction as a hashed chance.
+        constexpr int kCycles = 1000;
+        constexpr double kTolerance = 0.05;
+        constexpr std::uint64_t kSalt = 11;
+        constexpr std::size_t kUnit = 5;
+        const auto mean_slots = [&](Seconds step) {
+            double sum = 0.0;
+            for (int c = 0; c < kCycles; ++c) {
+                sum += plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, step, kDeadCycleSeconds).count;
+            }
+            return sum / kCycles;
+        };
+        constexpr Seconds kFast = 3;
+        constexpr Seconds kSlow = 18;
+        for (int c = 0; c < kCycles; ++c) {
+            CHECK(plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, kFast, kDeadCycleSeconds).count ==
+                  3);
+        }
+        CHECK(std::abs(mean_slots(kUpdatePeriodSeconds) - 1.5) < kTolerance);
+        CHECK(std::abs(mean_slots(kSlow) - 0.5) < kTolerance);
     }
 
     TEST_CASE("a stale speculation falls back to step") {

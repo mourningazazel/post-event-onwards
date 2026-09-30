@@ -15,9 +15,6 @@ constexpr Seed kHordeSeedSalt = 0xABCDULL;
 /// seconds as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
 constexpr int kMaxDeadSpeed = 3;
-/// The deposit patch touches the player's cell and its 4 neighbours; one of the Dead
-/// reads the 3x3 around itself. So only Dead within 2 (Chebyshev) can see a change.
-constexpr int kRepatchRadius = 2;
 /// Cap on the occupancy log's up-front reservation. At most update_period distinct
 /// tiles fit in one update (each action spends at least a second on one tile).
 constexpr Seconds kMaxLogReserve = 64;
@@ -25,9 +22,8 @@ constexpr Seconds kMaxLogReserve = 64;
 /// A spent speculation's update number: never equal to a live World's.
 constexpr Tick kSpentUpdate = ~Tick{0};
 
-bool near(Vec2i a, Vec2i b) noexcept {
-    const Vec2i d = a - b;
-    return std::max(std::abs(d.x), std::abs(d.y)) <= kRepatchRadius;
+template <typename T> bool same_cells(const Grid<T>& a, const Grid<T>& b) noexcept {
+    return a.width() == b.width() && a.height() == b.height() && std::equal(a.begin(), a.end(), b.begin());
 }
 } // namespace
 
@@ -35,6 +31,7 @@ World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_width = std::max(params_.stage_width, kMinStageSide);
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
     params_.update_period = std::max<Seconds>(params_.update_period, 1);
+    params_.dead_cycle = std::max<Seconds>(params_.dead_cycle, 1);
     log_.reserve(std::min(params_.update_period, kMaxLogReserve));
     load_stage(0);
 }
@@ -70,7 +67,6 @@ void World::load_stage(std::uint32_t index) {
         occupied_.at(p) = 1;
         horde_.push_back(
             {.pos = p,
-             .cooldown_s = 0,
              .step_seconds = static_cast<std::uint16_t>(
                  static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
@@ -78,6 +74,19 @@ void World::load_stage(std::uint32_t index) {
     seconds_ = 0;
     updates_ = 0;
     log_.clear();
+
+    reserved_ = Grid<bool>(stage_.spec.width, stage_.spec.height, false);
+    moving_.assign(horde_.size(), 0);
+    plans_.resize(horde_.size());
+    // At most one slot per unit per second of the cycle: reserve the bound once so
+    // no poll allocates, however the hashes fall.
+    slot_units_.reserve(horde_.size() * params_.dead_cycle);
+    deciding_.clear();
+    landing_.clear();
+    deciding_.reserve(horde_.size());
+    landing_.reserve(horde_.size());
+    stage_salt_ = stage_seed(seed_, index);
+    dead_second(0); // instant 0: the first poll and slot 0's decisions
 }
 
 void World::apply_action(Action action) noexcept {
@@ -109,7 +118,7 @@ void World::log_seconds(Seconds s) {
 
 // Each logged tile gets player_scent * (seconds / period). A full period on one
 // tile makes the factor exactly 1.0F, so walking deposits exactly player_scent,
-// as before the clock existed; that is what keeps default play bit-identical.
+// as before the clock existed.
 void World::deposit_log(ScentField& field) const noexcept {
     const auto period = static_cast<float>(params_.update_period);
     for (const Occupancy& o : log_) {
@@ -118,14 +127,13 @@ void World::deposit_log(ScentField& field) const noexcept {
     }
 }
 
-// step(), speculate() and commit() run the same float operations in the same
-// order: step_linear, patch_deposit per logged tile, clamp_floor. That is what
-// makes commit(speculate()) bit-identical to step(), not the algebra.
+// step() and commit() run the same float operations in the same order:
+// step_linear, patch_deposit per logged tile, clamp_floor. That is what makes
+// commit(speculate()) bit-identical to step(), not the algebra.
 void World::run_update() {
     scent_.step_linear(&stage_.blocked);
     deposit_log(scent_);
     scent_.clamp_floor();
-    step_horde(horde_, scent_, stage_.blocked, params_.update_period);
     log_.clear();
     ++updates_;
 }
@@ -133,42 +141,79 @@ void World::run_update() {
 void World::finish_from(Speculation& spec) {
     deposit_log(spec.scent);
     spec.scent.clamp_floor();
-    // Box around every logged tile, widened by the re-decide radius: one cheap test
-    // per unit, and only units inside it scan the log (thousands of Dead, a few tiles).
-    Vec2i lo = log_.front().tile;
-    Vec2i hi = lo;
-    for (const Occupancy& o : log_) {
-        lo = {std::min(lo.x, o.tile.x), std::min(lo.y, o.tile.y)};
-        hi = {std::max(hi.x, o.tile.x), std::max(hi.y, o.tile.y)};
-    }
-    lo = lo - Vec2i{kRepatchRadius, kRepatchRadius};
-    hi = hi + Vec2i{kRepatchRadius, kRepatchRadius};
-    for (std::size_t i = 0; i < spec.before.size(); ++i) {
-        const Vec2i at = spec.before[i].pos;
-        if (at.x < lo.x || at.x > hi.x || at.y < lo.y || at.y > hi.y) {
-            continue;
-        }
-        if (std::any_of(log_.begin(), log_.end(), [&](const Occupancy& o) { return near(at, o.tile); })) {
-            Dead unit = spec.before[i];
-            step_dead(unit, spec.scent, stage_.blocked, params_.update_period);
-            spec.horde[i] = unit;
-        }
-    }
-    std::swap(scent_, spec.scent); // swap, not move: spec keeps buffers to reuse
-    std::swap(horde_, spec.horde);
+    std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffer to reuse
     spec.update = kSpentUpdate;
     log_.clear();
     ++updates_;
 }
 
+void World::poll(std::uint64_t cycle) {
+    const Seconds len = params_.dead_cycle;
+    slot_begin_.assign(static_cast<std::size_t>(len) + 1, 0);
+    for (std::size_t i = 0; i < horde_.size(); ++i) {
+        // Only a unit with somewhere better to go this cycle gets slots.
+        plans_[i] = scent_.strongest_neighbour(horde_[i].pos, &stage_.blocked)
+                        ? plan_slots(stage_salt_, cycle, i, horde_[i].step_seconds, len)
+                        : SlotPlan{};
+        for (Seconds j = 0; j < plans_[i].count; ++j) {
+            ++slot_begin_[slot_second(plans_[i], j, len) + 1];
+        }
+    }
+    for (Seconds s = 0; s < len; ++s) {
+        slot_begin_[s + 1] += slot_begin_[s];
+    }
+    slot_units_.resize(slot_begin_[len]);
+    // Fill each bucket in ascending unit order; slot_begin_[s] walks up to the
+    // bucket's end as it fills, and is walked back after.
+    for (std::size_t i = 0; i < horde_.size(); ++i) {
+        for (Seconds j = 0; j < plans_[i].count; ++j) {
+            slot_units_[slot_begin_[slot_second(plans_[i], j, len)]++] = static_cast<std::uint32_t>(i);
+        }
+    }
+    for (Seconds s = len; s > 0; --s) {
+        slot_begin_[s] = slot_begin_[s - 1];
+    }
+    slot_begin_[0] = 0;
+}
+
+// D-031's order within one second t: the slot's units decide first, so a unit
+// that decided at t-1 still stands on its old tile while they look; then the
+// moves decided at t-1 land. A vacated tile is therefore free only from t+1.
+void World::dead_second(Seconds t) {
+    const Seconds len = params_.dead_cycle;
+    if (t % len == 0) {
+        poll(t / len);
+    }
+    const Seconds s = t % len;
+    for (std::uint32_t k = slot_begin_[s]; k < slot_begin_[s + 1]; ++k) {
+        const std::uint32_t u = slot_units_[k];
+        if (moving_[u] != 0) {
+            continue;
+        }
+        if (const auto to = decide_move(horde_[u], scent_, stage_.blocked, occupied_, reserved_)) {
+            reserved_.at(*to) = true;
+            moving_[u] = 1;
+            deciding_.push_back({.unit = u, .to = *to});
+        }
+    }
+    for (const Move& m : landing_) {
+        Dead& unit = horde_[m.unit];
+        --occupied_.at(unit.pos);
+        unit.pos = m.to;
+        ++occupied_.at(m.to);
+        reserved_.at(m.to) = false;
+        moving_[m.unit] = 0;
+    }
+    landing_.clear();
+    std::swap(landing_, deciding_);
+}
+
 void World::advance(Seconds duration, Speculation* spec) {
-    const Seconds period = params_.update_period;
-    for (Seconds left = std::max<Seconds>(duration, 1); left > 0;) {
-        const Seconds chunk = std::min(left, period - seconds_ % period);
-        log_seconds(chunk);
-        seconds_ += chunk;
-        left -= chunk;
-        if (seconds_ % period == 0) {
+    for (Seconds left = std::max<Seconds>(duration, 1); left > 0; --left) {
+        log_seconds(1);
+        ++seconds_;
+        dead_second(seconds_);
+        if (seconds_ % params_.update_period == 0) {
             if (spec != nullptr) {
                 finish_from(*spec);
                 spec = nullptr;
@@ -193,20 +238,13 @@ Speculation World::speculate() const {
 
 void World::speculate(Speculation& out) const {
     out.scent = scent_; // copy-assign reuses out's storage once it is the right size
-    out.horde = horde_;
-    out.before = horde_;
     out.update = updates_;
     out.stage_index = stage_index_;
     out.scent.step_linear(&stage_.blocked);
-    // The Dead decide on the clamped field, as they will after commit; only the
-    // cells the deposit patches touch can differ, and commit re-decides those.
-    out.clamped = out.scent;
-    out.clamped.clamp_floor();
-    step_horde(out.horde, out.clamped, stage_.blocked, params_.update_period);
 }
 
 void World::commit(Speculation& spec, Action action) {
-    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.horde.size() != horde_.size()) {
+    if (spec.update != updates_ || spec.stage_index != stage_index_) {
         step(action);
         return;
     }
@@ -218,7 +256,10 @@ void World::commit(Speculation& spec, Action action) {
 bool World::equivalent(const World& a, const World& b) noexcept {
     if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.seconds_ != b.seconds_ ||
         a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
-        a.horde_.size() != b.horde_.size() || a.scent_.cells().size() != b.scent_.cells().size()) {
+        a.horde_.size() != b.horde_.size() || a.scent_.cells().size() != b.scent_.cells().size() ||
+        a.landing_.size() != b.landing_.size() || a.moving_ != b.moving_ || a.slot_begin_ != b.slot_begin_ ||
+        a.slot_units_ != b.slot_units_ || !same_cells(a.occupied_, b.occupied_) ||
+        !same_cells(a.reserved_, b.reserved_)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
@@ -226,10 +267,13 @@ bool World::equivalent(const World& a, const World& b) noexcept {
             return false;
         }
     }
+    for (std::size_t i = 0; i < a.landing_.size(); ++i) {
+        if (a.landing_[i].unit != b.landing_[i].unit || a.landing_[i].to != b.landing_[i].to) {
+            return false;
+        }
+    }
     for (std::size_t i = 0; i < a.horde_.size(); ++i) {
-        const Dead& x = a.horde_[i];
-        const Dead& y = b.horde_[i];
-        if (x.pos != y.pos || x.cooldown_s != y.cooldown_s || x.step_seconds != y.step_seconds) {
+        if (a.horde_[i].pos != b.horde_[i].pos || a.horde_[i].step_seconds != b.horde_[i].step_seconds) {
             return false;
         }
     }

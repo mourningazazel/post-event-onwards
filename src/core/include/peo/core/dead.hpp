@@ -4,23 +4,43 @@
 #include "peo/core/scent.hpp"
 #include "peo/core/types.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
-#include <vector>
 
 namespace peo::core {
+
+/// Game seconds in one cycle of the Dead's moves (D-031). Nine against the 6 s
+/// scent update keeps the moves out of step with the field they climb.
+inline constexpr Seconds kDeadCycleSeconds = 9;
 
 /// One of the Dead: a walking corpse that cannot see but never stops smelling.
 /// Deliberately tiny (struct-of-arrays comes later if the profiler asks for
 /// it); thousands of these should step per turn. A large group is a horde.
 struct Dead {
     Vec2i pos{};
-    /// Game seconds until this unit may move again (D-015).
-    std::uint16_t cooldown_s = 0;
-    /// Game seconds a step takes this unit: slow vs fast Dead. At most one step per
-    /// update in PEO-040, so anything under the update period acts as one period.
+    /// Game seconds a step takes this unit: slow vs fast Dead. Speed is slots per
+    /// cycle, dead_cycle / step_seconds (D-031).
     std::uint16_t step_seconds = kUpdatePeriodSeconds;
 };
+
+/// One unit's moves in one cycle (D-031): `count` slots, evenly spaced from `offset`.
+struct SlotPlan {
+    Seconds offset = 0;
+    Seconds count = 0;
+};
+
+/// Slots for unit `index` in cycle `cycle`: floor(dead_cycle / step_seconds) of them,
+/// one more with a chance equal to the fraction left over, at most dead_cycle. The
+/// offset and the chance are hashes of (salt, cycle, index), never a shared stream,
+/// so who moves when changes every cycle and does not depend on any other draw.
+[[nodiscard]] SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index,
+                                  Seconds step_seconds, Seconds dead_cycle) noexcept;
+
+/// The second within the cycle of slot `j` of `plan`, in [0, dead_cycle).
+[[nodiscard]] constexpr Seconds slot_second(SlotPlan plan, Seconds j, Seconds dead_cycle) noexcept {
+    return (plan.offset + j * dead_cycle / plan.count) % dead_cycle;
+}
 
 /// Where a calm one of the Dead steps next (D-031): its strongest neighbour, as
 /// strongest_neighbour() picks it, but only if no other Dead stands there and no
@@ -29,16 +49,5 @@ struct Dead {
 [[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent,
                                                const Grid<bool>& blocked, const Grid<std::uint8_t>& occupied,
                                                const Grid<bool>& reserved) noexcept;
-
-/// One update of `period` seconds for one of the Dead: if cooling down, spend up to
-/// `period` of it and stay put; else move one cell up the scent gradient and start
-/// a step_seconds cooldown. Reads only the scent within one cell of its position.
-/// Returns whether it moved.
-bool step_dead(Dead& unit, const ScentField& scent, const Grid<bool>& blocked, Seconds period) noexcept;
-
-/// Moves every one of the Dead one cell up the scent gradient. Those that
-/// smell nothing stronger stay put. Returns how many moved.
-std::size_t step_horde(std::vector<Dead>& horde, const ScentField& scent, const Grid<bool>& blocked,
-                       Seconds period) noexcept;
 
 } // namespace peo::core

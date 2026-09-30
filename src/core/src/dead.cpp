@@ -1,8 +1,24 @@
 #include "peo/core/dead.hpp"
 
+#include "peo/core/rng.hpp"
+
 #include <algorithm>
 
 namespace peo::core {
+
+SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, Seconds step_seconds,
+                    Seconds dead_cycle) noexcept {
+    // Two words per unit, so the offset and the chance are independent draws.
+    const auto key = static_cast<std::uint64_t>(index) * 2;
+    const Seconds step = std::max<Seconds>(step_seconds, 1);
+    Seconds count = dead_cycle / step;
+    const float fraction = static_cast<float>(dead_cycle % step) / static_cast<float>(step);
+    if (hash_unit(salt, cycle, key + 1) < fraction) {
+        ++count;
+    }
+    return {.offset = static_cast<Seconds>(hash_u64(salt, cycle, key) % dead_cycle),
+            .count = std::min(count, dead_cycle)};
+}
 
 std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent, const Grid<bool>& blocked,
                                  const Grid<std::uint8_t>& occupied, const Grid<bool>& reserved) noexcept {
@@ -11,28 +27,6 @@ std::optional<Vec2i> decide_move(const Dead& unit, const ScentField& scent, cons
         return std::nullopt;
     }
     return best;
-}
-
-bool step_dead(Dead& unit, const ScentField& scent, const Grid<bool>& blocked, Seconds period) noexcept {
-    if (unit.cooldown_s > 0) {
-        unit.cooldown_s -= static_cast<std::uint16_t>(std::min<Seconds>(unit.cooldown_s, period));
-        return false;
-    }
-    if (const auto next = scent.strongest_neighbour(unit.pos, &blocked)) {
-        unit.pos = *next;
-        unit.cooldown_s = unit.step_seconds;
-        return true;
-    }
-    return false;
-}
-
-std::size_t step_horde(std::vector<Dead>& horde, const ScentField& scent, const Grid<bool>& blocked,
-                       Seconds period) noexcept {
-    std::size_t moved = 0;
-    for (Dead& unit : horde) {
-        moved += step_dead(unit, scent, blocked, period) ? 1U : 0U;
-    }
-    return moved;
 }
 
 } // namespace peo::core

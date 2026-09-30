@@ -3,25 +3,45 @@
 #include <doctest/doctest.h>
 
 #include <cstdint>
+#include <vector>
 
 using namespace peo::core;
 
+namespace {
+
+/// A lone unit on an otherwise empty map: nothing occupies or reserves its tiles.
+struct Alone {
+    Grid<std::uint8_t> occupied;
+    Grid<bool> reserved;
+    explicit Alone(const Grid<bool>& walls)
+        : occupied(walls.width(), walls.height(), 0), reserved(walls.width(), walls.height(), false) {}
+
+    /// One decision; moves the unit if it decided. Returns whether it moved.
+    bool step(Dead& unit, const ScentField& f, const Grid<bool>& walls) const {
+        if (const auto to = decide_move(unit, f, walls, occupied, reserved)) {
+            unit.pos = *to;
+            return true;
+        }
+        return false;
+    }
+};
+
+} // namespace
+
 TEST_SUITE("dead") {
-    TEST_CASE("the dead move toward scent and respect cooldown") {
+    TEST_CASE("the dead move toward scent") {
         ScentField f(9, 9, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
         Grid<bool> walls(9, 9, false);
         f.deposit({7, 4}, 1.0F);
         for (int i = 0; i < 6; ++i) {
             f.step();
         }
-        // One step per update: after moving it waits out one update, then moves again.
-        std::vector<Dead> horde{{.pos = {1, 4}, .cooldown_s = 0, .step_seconds = kUpdatePeriodSeconds}};
-
-        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 1);
-        CHECK(horde[0].pos == Vec2i{2, 4});
-        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 0); // cooling down
-        CHECK(step_horde(horde, f, walls, kUpdatePeriodSeconds) == 1);
-        CHECK(horde[0].pos == Vec2i{3, 4});
+        const Alone alone(walls);
+        Dead unit{.pos = {1, 4}};
+        CHECK(alone.step(unit, f, walls));
+        CHECK(unit.pos == Vec2i{2, 4});
+        CHECK(alone.step(unit, f, walls));
+        CHECK(unit.pos == Vec2i{3, 4});
     }
 
     TEST_CASE("the dead go round a wall corner, never through it") {
@@ -32,7 +52,7 @@ TEST_SUITE("dead") {
         constexpr int kArmEnd = 2;
         constexpr int kWallX = 3;
         constexpr int kWarmup = 30;
-        constexpr int kUpdates = 20;
+        constexpr int kDecisions = 20;
         constexpr Vec2i kSource{5, 3};
         ScentField f(kSide, kSide, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
         Grid<bool> walls(kSide, kSide, false);
@@ -43,22 +63,22 @@ TEST_SUITE("dead") {
             f.deposit(kSource, 1.0F);
             f.step(&walls);
         }
-        const Vec2i start{2, 2};
         REQUIRE(f.sample({3, 3}) > f.sample({2, 3})); // the corner cut would pull harder
-        std::vector<Dead> horde{{.pos = start}};
-        for (int i = 0; i < kUpdates; ++i) {
-            const Vec2i before = horde[0].pos;
-            step_horde(horde, f, walls, kUpdatePeriodSeconds);
-            const Vec2i d = horde[0].pos - before;
+        const Alone alone(walls);
+        Dead unit{.pos = {2, 2}};
+        for (int i = 0; i < kDecisions; ++i) {
+            const Vec2i before = unit.pos;
+            alone.step(unit, f, walls);
+            const Vec2i d = unit.pos - before;
             if (d.x != 0 && d.y != 0) { // a diagonal: both cells beside it are open
                 CHECK_FALSE(walls.at(before + Vec2i{d.x, 0}));
                 CHECK_FALSE(walls.at(before + Vec2i{0, d.y}));
             }
             if (i == 0) {
-                CHECK(horde[0].pos == Vec2i{2, 3});
+                CHECK(unit.pos == Vec2i{2, 3});
             }
         }
-        CHECK(horde[0].pos.x > kWallX); // it did come round
+        CHECK(unit.pos.x > kWallX); // it did come round
     }
 
     TEST_CASE("decide_move takes the best tile or stays put") {
@@ -89,34 +109,63 @@ TEST_SUITE("dead") {
         Grid<bool> walls(5, 5, false);
         walls.at(2, 2) = true;
         f.deposit({2, 2}, 1.0F); // scent inside a wall cell: nothing should walk in
-        std::vector<Dead> horde{{.pos = {1, 2}}};
-        step_horde(horde, f, walls, kUpdatePeriodSeconds);
-        CHECK(horde[0].pos == Vec2i{1, 2});
+        const Alone alone(walls);
+        Dead unit{.pos = {1, 2}};
+        CHECK_FALSE(alone.step(unit, f, walls));
+        CHECK(unit.pos == Vec2i{1, 2});
     }
 
     // The warm-up only has to lay a gradient the horde can climb: the Dead start
-    // 12 cells (Manhattan) from the source, and with no decay and no floor nothing
-    // is flushed, so the front arrives well inside this many ticks. Keep it short —
-    // this loop, not step_horde, dominated the whole headless suite (PEO-027).
+    // within 12 cells (Manhattan) of the source, and with no decay and no floor
+    // nothing is flushed, so the front arrives well inside this many ticks. Keep it
+    // short: this loop, not the Dead, dominated the whole headless suite (PEO-027).
     constexpr int kHordeWarmupTicks = 20;
 
-    TEST_CASE("a thousand dead step without touching each other") {
-        ScentField f(64, 64, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
-        Grid<bool> walls(64, 64, false);
+    TEST_CASE("a thousand dead decide without touching each other") {
+        // Scale, and D-031's rule at scale: 1000 of the Dead on distinct tiles all
+        // decide in one second; no decision lands on another's tile or on a tile
+        // someone already reserved.
+        constexpr int kSide = 64;
+        constexpr int kBlock = 25; // a 25x40 block of the Dead just east of the source
+        constexpr int kRows = 40;
+        constexpr Vec2i kSource{32, 32};
+        constexpr Vec2i kCorner{36, 12};
+        ScentField f(kSide, kSide, {.diffusion = 0.4F, .decay = 0.0F, .floor = 0.0F});
+        Grid<bool> walls(kSide, kSide, false);
         for (int i = 0; i < kHordeWarmupTicks; ++i) { // a player standing still
-            f.deposit({32, 32}, 1.0F);
+            f.deposit(kSource, 1.0F);
             f.step();
         }
-        std::vector<Dead> horde(1000, Dead{.pos = {26, 26}});
-        const std::size_t moved = step_horde(horde, f, walls, kUpdatePeriodSeconds);
-        CHECK(moved == 1000);
+        std::vector<Dead> horde;
+        Grid<std::uint8_t> occupied(kSide, kSide, 0);
+        for (int y = 0; y < kRows; ++y) {
+            for (int x = 0; x < kBlock; ++x) {
+                horde.push_back({.pos = kCorner + Vec2i{x, y}});
+                occupied.at(horde.back().pos) = 1;
+            }
+        }
+        REQUIRE(horde.size() == 1000);
+        Grid<bool> reserved(kSide, kSide, false);
+        std::size_t decided = 0;
+        for (const Dead& unit : horde) {
+            if (const auto to = decide_move(unit, f, walls, occupied, reserved)) {
+                CHECK(occupied.at(*to) == 0);
+                CHECK_FALSE(reserved.at(*to));
+                reserved.at(*to) = true;
+                ++decided;
+            }
+        }
+        // The column facing the source has free tiles ahead; the packed rest cannot move.
+        CHECK(decided > 0);
+        CHECK(decided < horde.size());
     }
 
     TEST_CASE("distant Dead close in") {
         // The reach field of 'the scent front carries far' (34x11, source (4,5),
-        // 40 warm-up steps), then frozen. Measured: the unit at (19,5) closes all 15
-        // cells by call 29. It must start inside the front: on a flat zero field
-        // strongest_neighbour is empty and the unit would never move.
+        // 40 warm-up steps), then frozen. Each call is one decision for a lone unit
+        // (D-031); at least 10 of the 15 cells must close in 50. It must start inside
+        // the front: on a flat zero field strongest_neighbour is empty and the unit
+        // would never move.
         constexpr Vec2i kSource{4, 5};
         constexpr Vec2i kStart{19, 5};
         constexpr int kWarmupSteps = 40;
@@ -128,10 +177,11 @@ TEST_SUITE("dead") {
             f.deposit(kSource, kPlayerScent);
             f.step();
         }
-        std::vector<Dead> horde{{.pos = kStart}};
+        const Alone alone(walls);
+        Dead unit{.pos = kStart};
         for (int i = 0; i < kCalls; ++i) {
-            step_horde(horde, f, walls, kUpdatePeriodSeconds);
+            alone.step(unit, f, walls);
         }
-        CHECK(kStart.x - horde[0].pos.x >= kMinClosed);
+        CHECK(kStart.x - unit.pos.x >= kMinClosed);
     }
 }
