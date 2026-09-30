@@ -414,6 +414,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-024 answered: A. Rebriefed as the geodesic field; D-008's two layers and the IIR far layer are superseded. Build after PEO-035."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "Blocked by dependency PEO-035, not in progress: nothing actionable for the Builder."
         }
       ],
       "references": [
@@ -450,6 +455,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "blocked: probe.cpp and the review are only in the cloud session (/mnt/project-files). Commit the probe to the repo to port make_town, or OK a fresh town (baseline may differ)."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "Still needed: commit probe.cpp (make_town, bfs_dist, climb_all) to the repo, or OK a fresh town map (baseline may differ). Unblocks PEO-030."
         }
       ],
       "references": [
@@ -741,6 +751,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-030 (N018): each compartment will roll a purpose that picks its loot and names it once examined. Keep this item's single loot hook as briefed; PEO-057 converts every hook into a weighted purposes list and adds the three tags and may-appear tables."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "Still needed: answers to the two questions in docs/production/handoffs/PEO-054.md (loot per compartment; room fit rule). Unblocks PEO-057."
         }
       ],
       "references": [
@@ -768,6 +783,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "rebriefed per N018 follow-up: a detail tag blends its own table into the main fill, one pick each in turn, instead of adding extras."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "Blocked by dependency PEO-054, not in progress: nothing actionable for the Builder."
         }
       ],
       "references": [
