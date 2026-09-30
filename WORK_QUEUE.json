@@ -975,10 +975,10 @@
       "order": 497,
       "type": "chore",
       "title": "Derived soak_rate per archetype in derive.py (D-013, D-028)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-30",
       "notes": [
         {
