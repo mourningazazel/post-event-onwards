@@ -373,6 +373,10 @@ glyph = "obj.cabinet"
 why = "The kitchen's loot container (kitchen_cabinet_contents, under_sink); counter as a work surface."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "drawer", capacity_ml = 20000, max_dim_mm = 500, closable = true },
+  { name = "cupboard", capacity_ml = 230000, max_dim_mm = 550, closable = true },
+]
 
 [item.kitchen_cabinet.composition.carcass]
 material = "particleboard"
@@ -384,11 +388,6 @@ share = 25
 material = "mild_steel"
 share = 5
 
-[item.kitchen_cabinet.features.container]
-capacity_ml = 250000
-max_dim_mm = 550
-closable = true
-compat = ["solid"]
 [item.kitchen_cabinet.features.surface]
 area_mm2 = 540000
 workbench = false

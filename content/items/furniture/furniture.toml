@@ -244,6 +244,12 @@ glyph = "obj.desk"
 why = "Office loot container (desk_drawer); work surface; heavy enough to hold a door."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "centre drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true },
+  { name = "pedestal top drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
+  { name = "pedestal middle drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
+  { name = "pedestal file drawer", capacity_ml = 24000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
+]
 
 [item.desk.composition.top]
 material = "particleboard"
@@ -258,16 +264,6 @@ share = 5
 [item.desk.features.surface]
 area_mm2 = 1125000
 workbench = false
-[item.desk.features.container]
-capacity_ml = 60000
-max_dim_mm = 400
-closable = true
-compat = ["solid"]
-[item.desk.features.lock]
-tier = 2
-keyed = true
-pickable = true
-
 [item.workbench]
 name = "workbench"
 tags = ["cat.furniture.table", "from.garage", "from.industrial", "from.construction", "use.barricade"]
@@ -317,6 +313,13 @@ glyph = "obj.bookshelf"
 why = "Tall sight-blocking barricade; holds books and manuals (N012); five shelves pry off as boards."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "top shelf", capacity_ml = 60000, max_dim_mm = 400, closable = false },
+  { name = "second shelf", capacity_ml = 60000, max_dim_mm = 400, closable = false },
+  { name = "middle shelf", capacity_ml = 60000, max_dim_mm = 400, closable = false },
+  { name = "fourth shelf", capacity_ml = 60000, max_dim_mm = 400, closable = false },
+  { name = "bottom shelf", capacity_ml = 60000, max_dim_mm = 400, closable = false },
+]
 
 [item.bookshelf.composition.shelves]
 material = "softwood"
@@ -332,12 +335,6 @@ share = 8
 material = "mild_steel"
 share = 2
 
-[item.bookshelf.features.container]
-capacity_ml = 300000
-max_dim_mm = 400
-closable = false
-compat = ["solid"]
-
 [item.dresser]
 name = "dresser"
 tags = ["cat.furniture.storage", "from.bedroom", "use.barricade"]
@@ -351,6 +348,14 @@ glyph = "obj.dresser"
 why = "Clothes loot container (dresser_clothes); a classic door barricade; drawers pull out to lighten it."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "top left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "top right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "middle left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "middle right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "bottom left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "bottom right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+]
 
 [item.dresser.composition.carcass]
 material = "hardwood"
@@ -362,11 +367,6 @@ share = 25
 material = "brass"
 share = 5
 
-[item.dresser.features.container]
-capacity_ml = 180000
-max_dim_mm = 700
-closable = true
-compat = ["solid"]
 [item.dresser.features.surface]
 area_mm2 = 750000
 workbench = false
@@ -383,6 +383,10 @@ glyph = "obj.nightstand"
 why = "Bedside loot container (nightstand_drawer: flashlights, pills, sometimes a handgun)."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "drawer", capacity_ml = 12000, max_dim_mm = 450, closable = true },
+  { name = "cupboard", capacity_ml = 28000, max_dim_mm = 450, closable = true },
+]
 
 [item.nightstand.composition.carcass]
 material = "particleboard"
@@ -391,11 +395,6 @@ share = 95
 material = "brass"
 share = 5
 
-[item.nightstand.features.container]
-capacity_ml = 40000
-max_dim_mm = 450
-closable = true
-compat = ["solid"]
 [item.nightstand.features.surface]
 area_mm2 = 200000
 workbench = false
@@ -413,6 +412,10 @@ glyph = "obj.wardrobe"
 why = "Tallest sight blocker in a home; big clothes container; a place to hide something (or someone)."
 details = ["furniture_finish"]
 value_class = "common"
+compartments = [
+  { name = "hanging rail", capacity_ml = 700000, max_dim_mm = 1500, closable = true },
+  { name = "shelf", capacity_ml = 200000, max_dim_mm = 900, closable = true },
+]
 
 [item.wardrobe.composition.carcass]
 material = "particleboard"
@@ -423,12 +426,6 @@ share = 7
 [item.wardrobe.composition.handles]
 material = "brass"
 share = 3
-
-[item.wardrobe.features.container]
-capacity_ml = 900000
-max_dim_mm = 1500
-closable = true
-compat = ["solid"]
 
 [item.filing_cabinet]
 name = "filing cabinet"
@@ -444,6 +441,12 @@ desc = "A four-drawer steel filing cabinet with a push-button lock at the top."
 glyph = "obj.filing_cabinet"
 why = "Heavy steel barricade (heavier still when full of paper); lockable office container; paper for fuel."
 value_class = "junk"
+compartments = [
+  { name = "top drawer", capacity_ml = 55000, max_dim_mm = 600, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
+  { name = "second drawer", capacity_ml = 55000, max_dim_mm = 600, closable = true },
+  { name = "third drawer", capacity_ml = 55000, max_dim_mm = 600, closable = true },
+  { name = "bottom drawer", capacity_ml = 55000, max_dim_mm = 600, closable = true },
+]
 
 [item.filing_cabinet.composition.body]
 material = "mild_steel"
@@ -451,16 +454,6 @@ share = 95
 [item.filing_cabinet.composition.lock]
 material = "brass"
 share = 5
-
-[item.filing_cabinet.features.container]
-capacity_ml = 220000
-max_dim_mm = 600
-closable = true
-compat = ["solid"]
-[item.filing_cabinet.features.lock]
-tier = 2
-keyed = true
-pickable = true
 
 [item.metal_locker]
 name = "metal locker"
@@ -588,6 +581,13 @@ desc = "A five-tier boltless steel shelving unit, the kind in every garage and s
 glyph = "obj.shelving"
 why = "Stockroom/garage loot container; climbable to reach high windows; steel angle posts salvage."
 value_class = "junk"
+compartments = [
+  { name = "top shelf", capacity_ml = 140000, max_dim_mm = 900, closable = false },
+  { name = "second shelf", capacity_ml = 140000, max_dim_mm = 900, closable = false },
+  { name = "middle shelf", capacity_ml = 140000, max_dim_mm = 900, closable = false },
+  { name = "fourth shelf", capacity_ml = 140000, max_dim_mm = 900, closable = false },
+  { name = "bottom shelf", capacity_ml = 140000, max_dim_mm = 900, closable = false },
+]
 
 [item.metal_shelving.composition.frame]
 material = "mild_steel"
@@ -597,11 +597,6 @@ salvage = { item = "scrap_metal", count = 4, set = { dims_mm = [1830, 40, 40], m
 material = "particleboard"
 share = 30
 
-[item.metal_shelving.features.container]
-capacity_ml = 700000
-max_dim_mm = 900
-closable = false
-compat = ["solid"]
 [item.metal_shelving.features.climbable]
 difficulty = 2
 height_mm = 1830

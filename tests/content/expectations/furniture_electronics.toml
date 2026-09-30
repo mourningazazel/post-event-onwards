@@ -79,9 +79,10 @@ value = 1
 
 [[expect]]
 item = "filing_cabinet"
-path = "features.lock.tier"
+path = "compartment.top drawer.lock"
 op = "=="
-value = 2
+value = { tier = 2, keyed = true, pickable = true }
+why = "one lock for all four drawers: the top one carries it (PEO-054)"
 
 [[expect]]
 item = "metal_locker"
@@ -416,3 +417,12 @@ item = "television"
 path = "impact.medium"
 op = "=="
 value = "shatter"
+
+# ---- compartments (PEO-054, D-027) ----
+[[expect]]
+item = "dresser"
+path = "compartment_count"
+op = "=="
+value = 6
+why = "six drawers, each searched on its own"
+
