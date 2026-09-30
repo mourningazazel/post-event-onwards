@@ -14,6 +14,8 @@ enum class ActionKind : std::uint8_t {
 /// A walking step and a wait each take six game seconds (D-014, D-015).
 inline constexpr Seconds kStepSeconds = 6;
 inline constexpr Seconds kWaitSeconds = 6;
+/// A running step takes half a walking step: two cells per update (D-015).
+inline constexpr Seconds kRunStepSeconds = 3;
 
 struct Action {
     ActionKind kind = ActionKind::Wait;
