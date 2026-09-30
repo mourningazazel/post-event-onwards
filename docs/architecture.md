@@ -114,8 +114,11 @@ turn allocates nothing. Measured on the Builder's M1 (release, one 6 s step, 300
 PEO-030): 200x120 with 5000 Dead, `commit` 0–1 µs, `speculate` 28–277 µs; 512x512 with 50,000,
 `commit` 0–3 µs, `speculate` 0.1–1.5 ms.
 
-The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
-auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
+Turn keys go through `TurnInput` (`turn_input.hpp`, D-032, amending D-011): a distinct press
+waits in a queue of up to 3 and the queue plays out no faster than 3 turns a second; a held key's
+auto-repeat is taken only when the cap allows and nothing waits, so it never builds lag and stops
+the moment the key is released. While taps wait, one SDL timer wakes the loop at the next due time;
+with none waiting nothing wakes it. Depth and rate are tunables in `TurnInputParams`.
 R toggles running (steps of `kRunStepSeconds`, 3 s, D-015); the cap limits key presses, not game
 time, so a runner covers two cells per update.
 
