@@ -620,28 +620,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-044",
-      "order": 387,
-      "type": "bug",
-      "title": "The Dead cut corners: strongest_neighbour allows a diagonal past two walls",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Found in the 2026-09-29 full review (scent.cpp:99-114). Small and independent; take it any time."
-        }
-      ],
-      "references": [
-        "src/core/src/scent.cpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-045",
       "order": 397,
       "type": "feature",
