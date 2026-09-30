@@ -1,0 +1,10 @@
+# Pinned rolls of tools/content/generate.py (D-030, PEO-057): the spec PEO-053 ports must
+# reproduce these exactly. A change here is a deliberate change to generation.
+
+[[roll]]
+item = "kitchen_base_run"
+compartment = "top drawer"
+seed = 7
+ctx = "ctx.home"
+purpose = "junk_drawer"
+lines = [["cutlery", 1, "main"], ["cutlery", 1, "main"], ["cutlery", 1, "main"], ["lighter", 2, "main"]]

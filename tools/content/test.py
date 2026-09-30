@@ -12,6 +12,11 @@ tests/content/expectations/*.toml:
       item paths soak_rate (int, x the floor) and soak_portable (bool): D-013, D-028
       item paths compartment_count, and compartment.<name>.<key> (PEO-054)
 
+tests/content/rolls/*.toml:
+    [[roll]] item, compartment, seed, ctx, detail?, purpose, lines = [[item, count, source], ...]
+      pinned rolls of generate.roll_container (D-030, PEO-057); run_rolls adds determinism,
+      prefix stability, context-only extras and the detail blend over 200 seeds.
+
 Inline: the container fit rule of lint.py fails a too-small kitchen base run (PEO-052), and
 the room fit rule fails a too-small kitchen (PEO-054).
 
@@ -35,6 +40,7 @@ from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilitie
                     energy_class, impact_outcome, lock_resistance, loot_expected, main_material,
                     mass_estimate, packed_dims, resolve_item, rigidity, search_seconds, soak_portable,
                     soak_rate, throw_range_tiles, total_mass)
+from generate import roll_container
 from lint import Lint
 
 REQ_OPS = {
@@ -357,6 +363,89 @@ def run_extras_probes(db: Db) -> list[str]:
     return errors
 
 
+# ---------------------------------------------------------------- rolls (D-030, PEO-057)
+ROLL_SEEDS = range(1, 201)
+SMOKER = "detail.smoker"
+SMOKER_ITEMS = {"cigarettes", "lighter", "matchbook"}
+SMOKER_EVIDENCE_LINES = 4
+MIN_BLEND_SHARE = 0.40
+PREFIX_TURNS = 6
+
+
+def compartment(db: Db, item: str, name: str, purposes: list[dict] | None = None) -> dict:
+    comp = dict(next(c for c in resolve_item(db, item)["compartments"] if c["name"] == name))
+    if purposes is not None:
+        comp["purposes"] = purposes
+    return comp
+
+
+def fill(r: dict) -> list[tuple]:
+    """Main and detail lines, as comparable tuples (extras left out)."""
+    return [(l["item"], l["count"], l["source"]) for l in r["lines"] if l["source"] != "extras"]
+
+
+def run_rolls(db: Db) -> list[str]:
+    errors: list[str] = []
+    n = 0
+
+    def check(ok: bool, what: str) -> None:
+        nonlocal n
+        n += 1
+        if not ok:
+            errors.append(f"rolls: {what}")
+
+    drawer = compartment(db, "kitchen_base_run", "top drawer")
+    junk = compartment(db, "kitchen_base_run", "top drawer", [{"purpose": "junk_drawer", "w": 1}])
+    maint = compartment(db, "kitchen_cabinet", "cupboard", [{"purpose": "maintenance_cabinet", "w": 1}])
+
+    for f, data in load_tests("rolls"):
+        for case in data.get("roll", []):
+            comp = compartment(db, case["item"], case["compartment"])
+            r = roll_container(db, case["seed"], comp, case["ctx"], case.get("detail"))
+            got = [[l["item"], l["count"], l["source"]] for l in r["lines"]]
+            check(r["purpose"] == case["purpose"] and got == case["lines"],
+                  f"{f.name}: seed {case['seed']} rolled {r['purpose']} {got}")
+
+    names = {db.get("purpose", e["purpose"])["name"] for e in drawer["purposes"]}
+    seen_names = set()
+    for s in ROLL_SEEDS:
+        a = roll_container(db, s, drawer, "ctx.home")
+        check(a == roll_container(db, s, drawer, "ctx.home"), f"seed {s} is not deterministic")
+        check(a["name"] in names, f"seed {s} named its drawer {a['name']!r}")
+        seen_names.add(a["name"])
+        for detail in (None, SMOKER):
+            longer = fill(roll_container(db, s, junk, "ctx.home", detail, turns=PREFIX_TURNS))
+            for k in range(1, PREFIX_TURNS):
+                shorter = fill(roll_container(db, s, junk, "ctx.home", detail, turns=k))
+                check(longer[:len(shorter)] == shorter, f"seed {s} detail {detail} turns {k} is not a prefix")
+    check(len(seen_names) > 1, "a kitchen drawer always rolled the same purpose")
+
+    extras_differ = 0
+    for s in ROLL_SEEDS:
+        office = roll_container(db, s, maint, "ctx.office")
+        retail = roll_container(db, s, maint, "ctx.retail")
+        check(office["purpose"] == retail["purpose"] and fill(office) == fill(retail),
+              f"seed {s}: context changed the main fill")
+        extras_differ += office["lines"] != retail["lines"]
+    check(extras_differ > 0, "context never changed a maintenance cabinet's extras")
+
+    blend = total = 0
+    for s in ROLL_SEEDS:
+        plain = fill(roll_container(db, s, junk, "ctx.home", turns=PREFIX_TURNS))
+        smoked = roll_container(db, s, junk, "ctx.home", SMOKER)
+        lines = fill(smoked)
+        mains = [l for l in lines if l[2] == "main"]
+        check(mains == plain[:len(mains)], f"seed {s}: the smoker's main lines are not the plain roll's first picks")
+        check(any(l[0] in SMOKER_ITEMS for l in lines[:SMOKER_EVIDENCE_LINES]),
+              f"seed {s}: no smoker item in the first {SMOKER_EVIDENCE_LINES} lines")
+        blend += sum(l[2] == "detail" for l in lines)
+        total += len(lines)
+    check(total > 0 and blend / total >= MIN_BLEND_SHARE,
+          f"the smoker's blend is {blend}/{total} of its fill, under {MIN_BLEND_SHARE:.0%}")
+    print(f"rolls: {n} checked, {len(errors)} failed (smoker blend {blend}/{total})")
+    return errors
+
+
 def run_chains(ctx: Ctx) -> list[str]:
     db = ctx.db
     errors = []
@@ -439,7 +528,7 @@ def main() -> int:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
     errors = (run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
-              + run_extras_probes(db))
+              + run_extras_probes(db) + run_rolls(db))
     return fail_if(errors, "content tests")
 
 
