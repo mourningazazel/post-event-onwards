@@ -842,22 +842,6 @@
         "tools/verify.py"
       ],
       "depends_on": []
-    },
-    {
-      "id": "PEO-063",
-      "order": 537,
-      "type": "chore",
-      "title": "Headless suite at 85% of its 1 s budget under sanitizers; CI runs slower",
-      "status": "Pending",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [],
-      "references": [
-        "tools/suite_budget.py"
-      ],
-      "depends_on": []
     }
   ]
 }
