@@ -12,7 +12,8 @@ tests/content/expectations/*.toml:
       item paths soak_rate (int, x the floor) and soak_portable (bool): D-013, D-028
       item paths compartment_count, and compartment.<name>.<key> (PEO-054)
 
-Inline: the container fit rule of lint.py fails a too-small kitchen cabinet (PEO-052).
+Inline: the container fit rule of lint.py fails a too-small kitchen base run (PEO-052), and
+the room fit rule fails a too-small kitchen (PEO-054).
 
 tests/content/chains/*.toml:
     [chain.<id>] title, source
@@ -312,6 +313,25 @@ def run_fit_probe(db: Db) -> list[str]:
     return [] if hits else [f"fit probe: no '{FIT_PROBE_EXPECT} ... exceeds capacity_ml' error"]
 
 
+# A kitchen shrunk to 1 m2 must fail the room fit rule (PEO-054).
+ROOM_PROBE = "kitchen"
+ROOM_PROBE_SIZE_M2 = [1, 1]
+
+
+def run_room_probe(db: Db) -> list[str]:
+    rec = db.get("room", ROOM_PROBE)
+    saved = rec["size_m2"]
+    rec["size_m2"] = ROOM_PROBE_SIZE_M2
+    try:
+        lint = Lint(db)
+        lint.lint_world()
+    finally:
+        rec["size_m2"] = saved
+    hits = [e for e in lint.errors if f"room.{ROOM_PROBE}:" in e and "room fit:" in e]
+    print(f"room probe: {ROOM_PROBE} at {ROOM_PROBE_SIZE_M2} m2 -> {len(hits)} room fit error(s)")
+    return [] if hits else [f"room probe: no 'room fit' error for room.{ROOM_PROBE}"]
+
+
 def run_chains(ctx: Ctx) -> list[str]:
     db = ctx.db
     errors = []
@@ -393,7 +413,7 @@ def main() -> int:
     if db.errors:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
-    errors = run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db)
+    errors = run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
     return fail_if(errors, "content tests")
 
 

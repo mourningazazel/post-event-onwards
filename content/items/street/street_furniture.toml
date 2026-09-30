@@ -267,6 +267,7 @@ name = "vending machine"
 tags = ["cat.street.vending", "from.street", "from.office", "from.school", "from.gas_station", "use.barricade", "hazard.sharp_debris"]
 shape = "complex"
 dims_mm = [1830, 990, 890]
+upright = true
 mass_g = 280000
 fixed = true
 blocks = "full"

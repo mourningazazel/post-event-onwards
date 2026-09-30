@@ -233,3 +233,13 @@ readers = ["FOV"]
 type = "list<table>"
 desc = "Drawers, shelves and cupboards of furniture and fixtures, each searched on its own (D-027): { name (shown in the search menu), capacity_ml, max_mass_g?, max_dim_mm?, closable?, lock? (lock feature params), loot? (default loot id) }. An item has this or features.container, never both."
 readers = ["generation", "M10 access", "search"]
+
+[property.upright]
+type = "bool"
+desc = "Stands on its short side: its longest dimension is its height, so its floor footprint is the other two (a bookshelf, a pantry, a wardrobe). Room fit reads it (PEO-054)."
+readers = ["room fit lint", "generation"]
+
+[property.rests_on]
+type = "ref:item"
+desc = "Lies on another item and covers no floor of its own when that item is in the same room (a mattress on a bed frame). Room fit reads it (PEO-054)."
+readers = ["room fit lint", "generation"]

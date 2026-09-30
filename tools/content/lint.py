@@ -30,6 +30,11 @@ REACHABLE_BY_GENERATOR = {
 COMPARTMENT_KEYS = {"name": "str", "capacity_ml": "int", "max_mass_g": "int", "max_dim_mm": "int",
                     "closable": "bool", "lock": "table", "loot": "str"}
 COMPARTMENT_REQUIRED = ("name", "capacity_ml")
+# Room fit (PEO-054, Q2 C): furniture may cover at most this share of a room's floor, so
+# people can walk between it. The generator draws counts in proportion to the rolled
+# area, so both ends of the size range must fit.
+ROOM_FILL_MAX = 0.6
+MM2_PER_M2 = 1_000_000
 
 
 def combined_box(comps: list[dict]) -> dict:
@@ -442,6 +447,7 @@ class Lint:
                 self.lint_fit(w, fx)
             for c in rec.get("loose", []):
                 self.item_or_loot(w, c)
+            self.lint_room_fit(w, rec)
         for bid, rec in self.db["building"].items():
             w = f"{self.db.where('building', bid)} building.{bid}"
             for r in rec.get("rooms", []):
@@ -474,6 +480,47 @@ class Lint:
                         self.item_or_loot(w, ref)
             for ref in rec.get("pockets", []) + [c[0] for c in rec.get("carried", []) if c[0] != "none"]:
                 self.item_or_loot(w, ref)
+
+    def floor_m2(self, iid: str) -> float:
+        """Floor an object covers: the two horizontal dimensions when it blocks or is fixed
+        (for an upright item, the two after its height); blocks = "none" covers none."""
+        try:
+            it = resolve_item(self.db, iid)
+        except ResolveError:
+            return 0.0
+        if it.get("blocks") == "none" or not (it.get("blocks") in ("partial", "full") or it.get("fixed")):
+            return 0.0
+        d = sorted(it.get("dims_mm") or [0, 0, 0], reverse=True)
+        return (d[1] * d[2] if it.get("upright") else d[0] * d[1]) / MM2_PER_M2
+
+    def room_floor(self, rec: dict) -> tuple[float, float]:
+        """(m2 at the minimum counts of objects always placed, m2 at every maximum). An
+        object resting on another item placed in the same room covers no floor."""
+        placed = {fx.get("item") for fx in rec.get("objects", [])}
+        lo = hi = 0.0
+        for fx in rec.get("objects", []):
+            try:
+                it = resolve_item(self.db, fx.get("item", ""))
+            except ResolveError:
+                continue
+            if it.get("rests_on") in placed:
+                continue
+            area = self.floor_m2(fx["item"])
+            count = fx.get("count", [1, 1])
+            if "chance_pct" not in fx:
+                lo += count[0] * area
+            hi += count[-1] * area
+        return lo, hi
+
+    def lint_room_fit(self, w: str, rec: dict) -> None:
+        size = rec.get("size_m2")
+        if not size:
+            return
+        lo, hi = self.room_floor(rec)
+        if lo > ROOM_FILL_MAX * size[0]:
+            self.err(w, f"room fit: {lo:.1f} m2 of furniture at minimum counts, over {ROOM_FILL_MAX} x {size[0]} m2")
+        if hi > ROOM_FILL_MAX * size[-1]:
+            self.err(w, f"room fit: {hi:.1f} m2 of furniture at maximum counts, over {ROOM_FILL_MAX} x {size[-1]} m2")
 
     def lint_fit(self, w: str, fx: dict) -> None:
         """A room object's contents must fit it (PEO-052): the mean fill by volume and mass,

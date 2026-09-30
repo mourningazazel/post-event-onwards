@@ -5,6 +5,7 @@ name = "refrigerator"
 tags = ["cat.appliance.kitchen", "from.kitchen", "use.salvage", "use.barricade"]
 shape = "complex"
 dims_mm = [1700, 760, 700]
+upright = true
 mass_g = 90000
 blocks = "full"
 blocks_sight = true

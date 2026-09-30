@@ -147,7 +147,9 @@ objects = [
 
 [room.garage]
 desc = "An attached or detached garage: shelves of fluids and gear, workbench, mower, bikes, maybe a car."
-size_m2 = [18, 60]
+# Room fit (PEO-054) counts every chance object at its maximum at once, so all five vehicle
+# lines stack (43 m2); 94 m2 is what that needs. A one-vehicle slot would let this be ~60.
+size_m2 = [18, 94]
 floor = "ground"
 tags = ["from.garage"]
 loose = ["garage_floor"]
