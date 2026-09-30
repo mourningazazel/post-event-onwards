@@ -802,28 +802,6 @@
       ]
     },
     {
-      "id": "PEO-056",
-      "order": 507,
-      "type": "chore",
-      "title": "Register the cat.* vocabulary; place or drop the twelve orphan archetypes",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Independent of 052 and 054."
-        }
-      ],
-      "references": [
-        "content/registry"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-059",
       "order": 527,
       "type": "bug",
