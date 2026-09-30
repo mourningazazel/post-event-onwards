@@ -13,9 +13,9 @@ objects = [
   { item = "refrigerator", count = [1, 1], contains = ["fridge_contents", "freezer_contents"] },
   { item = "stove_range", count = [1, 1] },
   { item = "microwave", count = [1, 1], chance_pct = 90 },
-  { item = "kitchen_base_run", count = [3, 8], loot = { "top drawer" = "kitchen_drawer", "second drawer" = "kitchen_drawer" } },
+  { item = "kitchen_base_run", count = [3, 8] },
   { item = "kitchen_wall_run", count = [2, 6] },
-  { item = "kitchen_pantry", count = [0, 1], loot = { "top shelf" = "pantry_shelf", "second shelf" = "pantry_shelf", "third shelf" = "pantry_shelf", "bottom shelf" = "pantry_shelf" } },
+  { item = "kitchen_pantry", count = [0, 1] },
   { item = "kitchen_sink_base", count = [1, 1] },
   { item = "sink", count = [1, 1] },
   { item = "dining_table", count = [1, 1], chance_pct = 35 },
@@ -62,8 +62,8 @@ tags = ["from.bedroom"]
 objects = [
   { item = "bed_frame", count = [1, 1] },
   { item = "mattress", count = [1, 1] },
-  { item = "nightstand", count = [1, 2], contains = ["nightstand_drawer"] },
-  { item = "dresser", count = [1, 2], contains = ["dresser_clothes"] },
+  { item = "nightstand", count = [1, 2] },
+  { item = "dresser", count = [1, 2] },
   { item = "wardrobe", count = [1, 1], chance_pct = 15, contains = ["closet_clothes"] },
   { item = "alarm_clock", count = [1, 1], chance_pct = 60 },
   { item = "television", count = [1, 1], chance_pct = 45 },
@@ -80,7 +80,7 @@ tags = ["from.bedroom"]
 objects = [
   { item = "bed_frame", count = [1, 1] },
   { item = "mattress", count = [1, 1] },
-  { item = "dresser", count = [1, 1], contains = ["dresser_clothes"] },
+  { item = "dresser", count = [1, 1] },
   { item = "storage_bin", count = [1, 2], contains = ["kids_room_stuff"] },
   { item = "nightstand", count = [1, 1], chance_pct = 60, contains = ["kids_room_stuff"] },
   { item = "desk", count = [1, 1], chance_pct = 40, contains = ["kids_room_stuff"] },
@@ -98,7 +98,7 @@ objects = [
   { item = "toilet", count = [1, 1] },
   { item = "sink", count = [1, 2], contains = ["medicine_cabinet"] },
   { item = "bathtub", count = [1, 1], chance_pct = 80 },
-  { item = "kitchen_cabinet", count = [1, 1], chance_pct = 85, contains = ["bathroom_cabinet"] },
+  { item = "kitchen_cabinet", count = [1, 1], chance_pct = 85, purposes = { "drawer" = [{ purpose = "medicine_cabinet", w = 60 }, { purpose = "toiletries_cupboard", w = 40 }], "cupboard" = [{ purpose = "toiletries_cupboard", w = 40 }, { purpose = "cleaning_cupboard", w = 35 }, { purpose = "linen_cupboard", w = 25 }] } },
 ]
 
 [room.closet]
@@ -136,7 +136,7 @@ size_m2 = [8, 16]
 floor = "any"
 tags = ["from.office"]
 objects = [
-  { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
+  { item = "desk", count = [1, 1] },
   { item = "office_chair", count = [1, 1] },
   { item = "desktop_pc", count = [1, 1], chance_pct = 45 },
   { item = "laptop", count = [1, 1], chance_pct = 50 },
@@ -154,7 +154,7 @@ floor = "ground"
 tags = ["from.garage"]
 loose = ["garage_floor"]
 objects = [
-  { item = "metal_shelving", count = [1, 4], contains = ["garage_shelf"] },
+  { item = "metal_shelving", count = [1, 4], purposes = { "top shelf" = [{ purpose = "car_shelf", w = 25 }, { purpose = "paint_shelf", w = 10 }, { purpose = "garden_shelf", w = 20 }, { purpose = "hardware_shelf", w = 30 }, { purpose = "camping_shelf", w = 15 }], "second shelf" = [{ purpose = "car_shelf", w = 25 }, { purpose = "paint_shelf", w = 10 }, { purpose = "garden_shelf", w = 20 }, { purpose = "hardware_shelf", w = 30 }, { purpose = "camping_shelf", w = 15 }], "middle shelf" = [{ purpose = "car_shelf", w = 25 }, { purpose = "paint_shelf", w = 10 }, { purpose = "garden_shelf", w = 20 }, { purpose = "hardware_shelf", w = 30 }, { purpose = "camping_shelf", w = 15 }], "fourth shelf" = [{ purpose = "car_shelf", w = 25 }, { purpose = "paint_shelf", w = 10 }, { purpose = "garden_shelf", w = 20 }, { purpose = "hardware_shelf", w = 30 }, { purpose = "camping_shelf", w = 15 }], "bottom shelf" = [{ purpose = "car_shelf", w = 25 }, { purpose = "paint_shelf", w = 10 }, { purpose = "garden_shelf", w = 20 }, { purpose = "hardware_shelf", w = 30 }, { purpose = "camping_shelf", w = 15 }] } },
   { item = "workbench", count = [1, 1], chance_pct = 55, contains = ["workbench_tools"] },
   { item = "car_sedan", count = [1, 1], chance_pct = 25 },
   { item = "suv", count = [1, 1], chance_pct = 20 },

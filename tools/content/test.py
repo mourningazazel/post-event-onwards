@@ -287,11 +287,11 @@ def check_loot_expectation(ctx: Ctx, fname: str, e: dict) -> list[str]:
     return [] if REQ_OPS[e["op"]](v, e["value"]) else [f"{where}: got {v!r}  ({e.get('why', '')})"]
 
 
-# A kitchen base run shrunk to 1 L must fail the fit rule, naming its cupboard's table
-# (PEO-052; the kitchen places runs, not kitchen_cabinet, since PEO-054).
+# A kitchen base run shrunk to 1 L must fail the fit rule, naming its cupboard's dish
+# table (PEO-052; runs since PEO-054; purposes since PEO-057).
 FIT_PROBE_ITEM = "kitchen_base_run"
 FIT_PROBE_CAPACITY_ML = 1000
-FIT_PROBE_EXPECT = "kitchen_cabinet_contents: expected"
+FIT_PROBE_EXPECT = "dish_cupboard_items: expected"
 
 
 def run_fit_probe(db: Db) -> list[str]:

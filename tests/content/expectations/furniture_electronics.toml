@@ -428,14 +428,14 @@ why = "six drawers, each searched on its own"
 
 [[expect]]
 item = "kitchen_base_run"
-path = "compartment.top drawer.loot"
+path = "compartment.top drawer.purposes"
 op = "=="
-value = "kitchen_drawer"
-why = "a base run's drawers carry the kitchen drawer table by default"
+value = [{ purpose = "cutlery_drawer", w = 30 }, { purpose = "utensil_drawer", w = 20 }, { purpose = "junk_drawer", w = 25 }, { purpose = "wrap_drawer", w = 15 }, { purpose = "towel_drawer", w = 10 }]
+why = "a base run's drawers roll a kitchen drawer purpose (D-030); the junk drawer is today's kitchen_drawer"
 
 [[expect]]
 item = "kitchen_base_run"
-path = "compartment.second drawer.loot"
+path = "compartment.second drawer.purposes"
 op = "=="
-value = "kitchen_drawer"
-why = "a base run's drawers carry the kitchen drawer table by default"
+value = [{ purpose = "cutlery_drawer", w = 30 }, { purpose = "utensil_drawer", w = 20 }, { purpose = "junk_drawer", w = 25 }, { purpose = "wrap_drawer", w = 15 }, { purpose = "towel_drawer", w = 10 }]
+why = "a base run's drawers roll a kitchen drawer purpose (D-030)"

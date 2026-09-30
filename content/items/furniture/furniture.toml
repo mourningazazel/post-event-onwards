@@ -245,10 +245,10 @@ why = "Office loot container (desk_drawer); work surface; heavy enough to hold a
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "centre drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true },
-  { name = "pedestal top drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
-  { name = "pedestal middle drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
-  { name = "pedestal file drawer", capacity_ml = 24000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true } },
+  { name = "centre drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, purposes = [{ purpose = "stationery_drawer", w = 45 }, { purpose = "papers_drawer", w = 30 }, { purpose = "personal_drawer", w = 25 }] },
+  { name = "pedestal top drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true }, purposes = [{ purpose = "stationery_drawer", w = 45 }, { purpose = "papers_drawer", w = 30 }, { purpose = "personal_drawer", w = 25 }] },
+  { name = "pedestal middle drawer", capacity_ml = 12000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true }, purposes = [{ purpose = "stationery_drawer", w = 45 }, { purpose = "papers_drawer", w = 30 }, { purpose = "personal_drawer", w = 25 }] },
+  { name = "pedestal file drawer", capacity_ml = 24000, max_dim_mm = 400, closable = true, lock = { tier = 2, keyed = true, pickable = true }, purposes = [{ purpose = "stationery_drawer", w = 45 }, { purpose = "papers_drawer", w = 30 }, { purpose = "personal_drawer", w = 25 }] },
 ]
 
 [item.desk.composition.top]
@@ -350,12 +350,12 @@ why = "Clothes loot container (dresser_clothes); a classic door barricade; drawe
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "top left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
-  { name = "top right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
-  { name = "middle left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
-  { name = "middle right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
-  { name = "bottom left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
-  { name = "bottom right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true },
+  { name = "top left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
+  { name = "top right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
+  { name = "middle left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
+  { name = "middle right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
+  { name = "bottom left drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
+  { name = "bottom right drawer", capacity_ml = 30000, max_dim_mm = 700, closable = true, purposes = [{ purpose = "shirt_drawer", w = 25 }, { purpose = "trouser_drawer", w = 25 }, { purpose = "underwear_drawer", w = 20 }, { purpose = "sleepwear_drawer", w = 10 }, { purpose = "clothes_drawer", w = 20 }] },
 ]
 
 [item.dresser.composition.carcass]
@@ -385,8 +385,8 @@ why = "Bedside loot container (nightstand_drawer: flashlights, pills, sometimes 
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "drawer", capacity_ml = 12000, max_dim_mm = 450, closable = true },
-  { name = "cupboard", capacity_ml = 28000, max_dim_mm = 450, closable = true },
+  { name = "drawer", capacity_ml = 12000, max_dim_mm = 450, closable = true, purposes = [{ purpose = "nightstand_drawer", w = 1 }] },
+  { name = "cupboard", capacity_ml = 28000, max_dim_mm = 450, closable = true, purposes = [{ purpose = "nightstand_drawer", w = 1 }] },
 ]
 
 [item.nightstand.composition.carcass]

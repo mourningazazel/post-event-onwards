@@ -376,8 +376,8 @@ why = "The kitchen's loot container (kitchen_cabinet_contents, under_sink); coun
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "drawer", capacity_ml = 20000, max_dim_mm = 500, closable = true },
-  { name = "cupboard", capacity_ml = 230000, max_dim_mm = 550, closable = true },
+  { name = "drawer", capacity_ml = 20000, max_dim_mm = 500, closable = true, purposes = [{ purpose = "cutlery_drawer", w = 30 }, { purpose = "utensil_drawer", w = 20 }, { purpose = "junk_drawer", w = 25 }, { purpose = "wrap_drawer", w = 15 }, { purpose = "towel_drawer", w = 10 }] },
+  { name = "cupboard", capacity_ml = 230000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "dish_cupboard", w = 25 }, { purpose = "glass_cupboard", w = 20 }, { purpose = "cookware_cupboard", w = 25 }, { purpose = "storage_cupboard", w = 15 }, { purpose = "baking_cupboard", w = 15 }] },
 ]
 
 [item.kitchen_cabinet.composition.carcass]
@@ -409,9 +409,9 @@ why = "A kitchen wall tile's loot: drawers of utensils and a cupboard of cookwar
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
-  { name = "second drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
-  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, purposes = [{ purpose = "cutlery_drawer", w = 30 }, { purpose = "utensil_drawer", w = 20 }, { purpose = "junk_drawer", w = 25 }, { purpose = "wrap_drawer", w = 15 }, { purpose = "towel_drawer", w = 10 }] },
+  { name = "second drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, purposes = [{ purpose = "cutlery_drawer", w = 30 }, { purpose = "utensil_drawer", w = 20 }, { purpose = "junk_drawer", w = 25 }, { purpose = "wrap_drawer", w = 15 }, { purpose = "towel_drawer", w = 10 }] },
+  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "dish_cupboard", w = 25 }, { purpose = "glass_cupboard", w = 20 }, { purpose = "cookware_cupboard", w = 25 }, { purpose = "storage_cupboard", w = 15 }, { purpose = "baking_cupboard", w = 15 }] },
 ]
 
 [item.kitchen_base_run.composition.carcass]
@@ -443,8 +443,8 @@ why = "Dishes and glasses above the counter; hangs over a base run, so it takes 
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "lower shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, loot = "kitchen_cabinet_contents" },
-  { name = "upper shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "lower shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, purposes = [{ purpose = "dish_cupboard", w = 40 }, { purpose = "glass_cupboard", w = 40 }, { purpose = "storage_cupboard", w = 20 }] },
+  { name = "upper shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, purposes = [{ purpose = "dish_cupboard", w = 40 }, { purpose = "glass_cupboard", w = 40 }, { purpose = "storage_cupboard", w = 20 }] },
 ]
 
 [item.kitchen_wall_run.composition.carcass]
@@ -473,10 +473,10 @@ why = "Where a kitchen keeps its dry goods: four shelves searched one by one (D-
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "top shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
-  { name = "second shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
-  { name = "third shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
-  { name = "bottom shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "top shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "pantry_shelf", w = 1 }] },
+  { name = "second shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "pantry_shelf", w = 1 }] },
+  { name = "third shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "pantry_shelf", w = 1 }] },
+  { name = "bottom shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "pantry_shelf", w = 1 }] },
 ]
 
 [item.kitchen_pantry.composition.carcass]
@@ -504,7 +504,7 @@ why = "Cleaning chemicals, bags and a bucket under the sink (under_sink); the pi
 details = ["furniture_finish"]
 value_class = "common"
 compartments = [
-  { name = "cupboard", capacity_ml = 120000, max_dim_mm = 550, closable = true, loot = "under_sink" },
+  { name = "cupboard", capacity_ml = 120000, max_dim_mm = 550, closable = true, purposes = [{ purpose = "under_sink", w = 1 }] },
 ]
 
 [item.kitchen_sink_base.composition.carcass]

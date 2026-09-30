@@ -1,0 +1,158 @@
+# Container purposes (D-030, PEO-057). A compartment rolls one of its weighted purposes
+# from its seed; the purpose picks the main loot and names the compartment once examined.
+# Each implies the tag kind.<id>.
+
+[purpose.cutlery_drawer]
+name = "cutlery drawer"
+loot = "cutlery_drawer_items"
+desc = "Knives, forks and spoons in a divided tray."
+
+[purpose.utensil_drawer]
+name = "utensil drawer"
+loot = "utensil_drawer_items"
+desc = "Openers, a rolling pin, the odd knife."
+
+[purpose.junk_drawer]
+name = "junk drawer"
+loot = "kitchen_drawer"
+desc = "Everything that had nowhere else to go."
+
+[purpose.wrap_drawer]
+name = "wrap and bag drawer"
+loot = "wrap_drawer_items"
+desc = "Foil, bags and a spare tub."
+
+[purpose.towel_drawer]
+name = "towel drawer"
+loot = "towel_drawer_items"
+desc = "Folded towels and a roll of paper ones."
+
+[purpose.dish_cupboard]
+name = "dish cupboard"
+loot = "dish_cupboard_items"
+desc = "Stacks of plates and a few mugs."
+
+[purpose.glass_cupboard]
+name = "glass and mug cupboard"
+loot = "glass_cupboard_items"
+desc = "Mugs, bottles and a flask."
+
+[purpose.cookware_cupboard]
+name = "pot and pan cupboard"
+loot = "cookware_cupboard_items"
+desc = "Pots, pans and a kettle, nested."
+
+[purpose.storage_cupboard]
+name = "food storage cupboard"
+loot = "storage_cupboard_items"
+desc = "Tubs and lids that never match."
+
+[purpose.baking_cupboard]
+name = "baking cupboard"
+loot = "baking_cupboard_items"
+desc = "Flour, sugar, sheets and a rolling pin."
+
+[purpose.pantry_shelf]
+name = "pantry shelf"
+loot = "pantry_shelf"
+desc = "Dry goods and cans."
+
+[purpose.under_sink]
+name = "under-sink cupboard"
+loot = "under_sink"
+desc = "Cleaning things around the pipes."
+
+[purpose.medicine_cabinet]
+name = "medicine cabinet"
+loot = "medicine_cabinet_items"
+desc = "Pills, dressings and a razor."
+
+[purpose.toiletries_cupboard]
+name = "toiletries cupboard"
+loot = "toiletries_cupboard_items"
+desc = "Paper, soap and bottles."
+
+[purpose.cleaning_cupboard]
+name = "cleaning cupboard"
+loot = "cleaning_cupboard_items"
+desc = "Bleach, gloves, a bucket."
+
+[purpose.linen_cupboard]
+name = "linen cupboard"
+loot = "linen_cupboard_items"
+desc = "Towels and sheets, folded."
+
+[purpose.shirt_drawer]
+name = "shirt drawer"
+loot = "shirt_drawer_items"
+desc = "Tops, folded."
+
+[purpose.trouser_drawer]
+name = "trouser drawer"
+loot = "trouser_drawer_items"
+desc = "Jeans, shorts and skirts."
+
+[purpose.underwear_drawer]
+name = "underwear drawer"
+loot = "underwear_drawer_items"
+desc = "Underwear and socks, in pairs or not."
+
+[purpose.sleepwear_drawer]
+name = "pyjama drawer"
+loot = "sleepwear_drawer_items"
+desc = "Pyjamas and old shirts."
+
+[purpose.clothes_drawer]
+name = "clothes drawer"
+loot = "dresser_clothes"
+desc = "A bit of everything."
+
+[purpose.nightstand_drawer]
+name = "nightstand drawer"
+loot = "nightstand_drawer"
+desc = "What someone kept within reach of bed."
+
+[purpose.stationery_drawer]
+name = "stationery drawer"
+loot = "stationery_drawer_items"
+desc = "Pens, tape, batteries."
+
+[purpose.papers_drawer]
+name = "papers drawer"
+loot = "papers_drawer_items"
+desc = "Notebooks, paper and maps."
+
+[purpose.personal_drawer]
+name = "personal drawer"
+loot = "personal_drawer_items"
+desc = "Keys, photos, cash, a phone."
+
+[purpose.car_shelf]
+name = "car shelf"
+loot = "car_shelf_items"
+desc = "Oil, coolant and the jack."
+
+[purpose.paint_shelf]
+name = "paint shelf"
+loot = "paint_shelf_items"
+desc = "Spray cans, a tarp, gloves."
+
+[purpose.garden_shelf]
+name = "garden shelf"
+loot = "garden_shelf_items"
+desc = "Gloves, shears, charcoal."
+
+[purpose.hardware_shelf]
+name = "hardware shelf"
+loot = "hardware_shelf_items"
+desc = "Screws, nails, tape and cord."
+
+[purpose.camping_shelf]
+name = "camping shelf"
+loot = "camping_shelf_items"
+desc = "The tent, bags and the camp stove."
+
+[purpose.maintenance_cabinet]
+name = "maintenance cabinet"
+loot = "maintenance_cabinet_items"
+desc = "Supplies for keeping a building running."

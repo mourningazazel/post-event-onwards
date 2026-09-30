@@ -28,7 +28,7 @@ REACHABLE_BY_GENERATOR = {
 }
 # Keys a compartment may carry (PEO-054) and their types; lock is checked against feature.lock.
 COMPARTMENT_KEYS = {"name": "str", "capacity_ml": "int", "max_mass_g": "int", "max_dim_mm": "int",
-                    "closable": "bool", "lock": "table", "loot": "str"}
+                    "closable": "bool", "lock": "table", "purposes": "list<table>"}
 COMPARTMENT_REQUIRED = ("name", "capacity_ml")
 # Room fit (PEO-054, Q2 C): furniture may cover at most this share of a room's floor, so
 # people can walk between it. The generator draws counts in proportion to the rolled
@@ -354,10 +354,29 @@ class Lint:
                         self.err(cw, f"lock: unknown param '{k}'")
                     else:
                         self.check_type(f"{cw} lock", k, v, lock_def["params"][k])
-            if "loot" in c and self.db.get("loot", c["loot"]) is None:
-                self.err(cw, f"loot: unknown loot '{c['loot']}'")
-            elif "loot" in c:
-                self.check_box(cw, c, [c["loot"]])
+            if "purposes" in c:
+                self.lint_purposes(cw, c, c["purposes"])
+
+    def lint_purposes(self, w: str, comp: dict, purposes) -> None:
+        """A weighted list of purposes (D-030): each names a purpose, with a positive
+        weight, and each purpose's fill fits the compartment on its own."""
+        if not isinstance(purposes, list) or not purposes:
+            self.err(w, "purposes: expected a non-empty list of { purpose, w }")
+            return
+        for e in purposes:
+            pid = e.get("purpose") if isinstance(e, dict) else None
+            if not isinstance(e, dict) or set(e) != {"purpose", "w"} or not isinstance(e.get("w"), int) or e["w"] <= 0:
+                self.err(w, f"purposes: entry {e!r} must be {{ purpose, w > 0 }}")
+                continue
+            rec = self.db.get("purpose", pid)
+            if rec is None:
+                self.err(w, f"purposes: unknown purpose '{pid}'")
+                continue
+            self.check_box(f"{w} purpose {pid}", comp, self.purpose_fill(pid))
+
+    def purpose_fill(self, pid: str) -> list[str]:
+        """What a purpose puts in a compartment on average: its main table."""
+        return [self.db.get("purpose", pid)["loot"]]
 
     # ---------------------------------------------------------------- modifiers
     def lint_modifiers(self) -> None:
@@ -555,7 +574,9 @@ class Lint:
             return  # reported by item_or_loot
         where = f"{w} object {oid}"
         comps = obj.get("compartments")
-        override = fx.get("loot")
+        if "loot" in fx:
+            self.err(where, "loot overrides are purposes now: purposes = { <compartment> = [{ purpose, w }] }")
+        override = fx.get("purposes")
         if comps is not None:
             if fx.get("contains"):
                 if override is not None:
@@ -564,18 +585,14 @@ class Lint:
                 self.check_box(where, combined_box(comps), fx["contains"])
                 return
             by_name = {c.get("name"): c for c in comps}
-            for name, ref in (override or {}).items():
+            for name, plist in (override or {}).items():
                 if name not in by_name:
-                    self.err(where, f"loot: {oid} has no compartment '{name}'")
-                else:
-                    self.item_or_loot(where, ref)
-            for c in comps:
-                ref = (override or {}).get(c.get("name")) or c.get("loot")
-                if ref and ref != c.get("loot"):  # defaults are checked on the item
-                    self.check_box(f"{where} compartment {c.get('name')}", c, [ref])
+                    self.err(where, f"purposes: {oid} has no compartment '{name}'")
+                else:  # defaults are checked on the item
+                    self.lint_purposes(f"{where} compartment {name}", by_name[name], plist)
             return
         if override is not None:
-            self.err(where, f"loot override on {oid}, which has no compartments; use contains")
+            self.err(where, f"purposes override on {oid}, which has no compartments; use contains")
         if not fx.get("contains"):
             return
         box = (obj.get("features") or {}).get("container")
