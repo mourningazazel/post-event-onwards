@@ -4,8 +4,11 @@
 tests/content/expectations/*.toml:
     [[expect]]  item, path, op (== != >= <= > < in has), value, why
       path forms: cap.<capability> | impact.<low|medium|high> | throw_range | name
-                  | mass_est | <dotted path into the resolved item>
+                  | mass_est | packed_dims | packed_long | <dotted path into the resolved item>
       optional: mods = [modifier ids applied before checking]
+    [[expect]]  loot (instead of item), path = loot_volume_ml | loot_mass_g, op, value, why
+
+Inline: the container fit rule of lint.py fails a too-small kitchen cabinet (PEO-052).
 
 tests/content/chains/*.toml:
     [chain.<id>] title, source
@@ -24,8 +27,9 @@ import sys
 
 from common import Db, fail_if, load, load_tests
 from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilities, display_name,
-                    energy_class, impact_outcome, lock_resistance, main_material, mass_estimate,
-                    resolve_item, rigidity, throw_range_tiles, total_mass)
+                    energy_class, impact_outcome, lock_resistance, loot_expected, main_material,
+                    mass_estimate, packed_dims, resolve_item, rigidity, throw_range_tiles, total_mass)
+from lint import Lint
 
 REQ_OPS = {
     "==": lambda a, b: a == b, "!=": lambda a, b: a != b, ">=": lambda a, b: a >= b,
@@ -210,6 +214,9 @@ def run_expectations(ctx: Ctx) -> list[str]:
     for f, data in load_tests("expectations"):
         for e in data.get("expect", []):
             n += 1
+            if "loot" in e:
+                errors += check_loot_expectation(ctx, f.name, e)
+                continue
             where = f"{f.name}: {e['item']} {e['path']} {e['op']} {e['value']!r}"
             try:
                 it = ctx.item(e["item"])
@@ -229,12 +236,50 @@ def run_expectations(ctx: Ctx) -> list[str]:
                 v = display_name(ctx.db, it)
             elif p == "mass_est":
                 v = mass_estimate(ctx.db, it)
+            elif p == "packed_dims":
+                v = packed_dims(ctx.db, it)
+            elif p == "packed_long":
+                v = packed_dims(ctx.db, it)[0]
             else:
                 v = get_path(it, p)
             if v is None or not REQ_OPS[e["op"]](v, e["value"]):
                 errors.append(f"{where}: got {v!r}  ({e.get('why', '')})")
     print(f"expectations: {n} checked, {len(errors)} failed")
     return errors
+
+
+LOOT_PATHS = {"loot_volume_ml": 0, "loot_mass_g": 1}
+
+
+def check_loot_expectation(ctx: Ctx, fname: str, e: dict) -> list[str]:
+    where = f"{fname}: loot {e['loot']} {e['path']} {e['op']} {e['value']!r}"
+    if e["path"] not in LOOT_PATHS:
+        return [f"{where}: unknown loot path"]
+    try:
+        v = loot_expected(ctx.db, e["loot"])[LOOT_PATHS[e["path"]]]
+    except ResolveError as ex:
+        return [f"{where}: {ex}"]
+    return [] if REQ_OPS[e["op"]](v, e["value"]) else [f"{where}: got {v!r}  ({e.get('why', '')})"]
+
+
+# A kitchen cabinet shrunk to 1 L must fail the fit rule, naming its table (PEO-052).
+FIT_PROBE_ITEM = "kitchen_cabinet"
+FIT_PROBE_CAPACITY_ML = 1000
+FIT_PROBE_EXPECT = "kitchen_cabinet_contents: expected"
+
+
+def run_fit_probe(db: Db) -> list[str]:
+    box = db.get("item", FIT_PROBE_ITEM)["features"]["container"]
+    saved = box["capacity_ml"]
+    box["capacity_ml"] = FIT_PROBE_CAPACITY_ML
+    try:
+        lint = Lint(db)
+        lint.lint_world()
+    finally:
+        box["capacity_ml"] = saved
+    hits = [e for e in lint.errors if FIT_PROBE_EXPECT in e and "exceeds capacity_ml" in e]
+    print(f"fit probe: {FIT_PROBE_ITEM} at {FIT_PROBE_CAPACITY_ML} ml -> {len(hits)} fit error(s)")
+    return [] if hits else [f"fit probe: no '{FIT_PROBE_EXPECT} ... exceeds capacity_ml' error"]
 
 
 def run_chains(ctx: Ctx) -> list[str]:
@@ -318,7 +363,7 @@ def main() -> int:
     if db.errors:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
-    errors = run_expectations(ctx) + run_chains(ctx)
+    errors = run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db)
     return fail_if(errors, "content tests")
 
 

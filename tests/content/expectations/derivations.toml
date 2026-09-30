@@ -262,3 +262,46 @@ path = "mass_g"
 op = ">="
 value = 20000
 why = "heavy enough to barricade with"
+
+# ---- packing and loot fit (G03 D3.1, PEO-052) ----
+[[expect]]
+item = "jeans"
+path = "packed_long"
+op = "<="
+value = 525
+why = "fabric folds: 1050 x 450 x 8 -> 450 x 263 x 32"
+
+[[expect]]
+item = "bedsheet"
+path = "packed_long"
+op = "=="
+value = 325
+why = "2600 x 2300 x 2 folds five times to 325 x 288 x 128"
+
+[[expect]]
+item = "nylon_rope"
+path = "packed_dims"
+op = "=="
+value = [350, 350, 10]
+why = "cord coils: ceil(sqrt(15240 x 10 x 0.8)) = 350, girth 10"
+
+[[expect]]
+item = "shotgun"
+path = "packed_dims"
+op = "=="
+value = [1200, 190, 60]
+why = "rigid: dims_mm unchanged"
+
+[[expect]]
+loot = "kitchen_drawer"
+path = "loot_volume_ml"
+op = ">="
+value = 1080
+why = "about 1.2 L measured by the item-system review; within 10%"
+
+[[expect]]
+loot = "kitchen_drawer"
+path = "loot_volume_ml"
+op = "<="
+value = 1320
+why = "about 1.2 L measured by the item-system review; within 10%"

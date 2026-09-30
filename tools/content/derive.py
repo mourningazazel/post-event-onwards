@@ -21,6 +21,12 @@ WIELD_MAX_G = 12000    # heaviest thing that can be swung/levered as a tool or w
 PART_ROLES_EDGE = ("blade", "edge", "head", "bit")
 PART_ROLES_POINT = ("point", "tip", "blade", "head")
 PART_ROLES_STRIKE = ("head", "striking_face", "face", "body")
+# Packing (G03 D3.1, PEO-052): what an item measures once put away, not laid flat.
+FOLDING_SHAPES = ("fabric", "bag")
+FOLD_TARGET_MM = 450   # fabric and bags fold until the longest side fits a drawer or shelf depth
+COIL_SHAPES = ("cord",)
+COIL_MIN_MM = 150      # a coil is never smaller across than a hand wraps it
+COIL_PACKING = 0.8     # coiled cord leaves gaps: it fills about 80% of the square it lies in
 
 
 class ResolveError(Exception):
@@ -348,3 +354,99 @@ def flammability_rank(db: Db, item_or_sub: dict, is_substance: bool = False) -> 
     if is_substance:
         return FLAMMABILITY_RANK.get(item_or_sub.get("flammability", "none"), 0)
     return FLAMMABILITY_RANK.get(main_material(db, item_or_sub).get("flammability", "none"), 0)
+
+
+# ---------------------------------------------------------------- packing and loot fit
+def packed_dims(db: Db, item: dict) -> list[int]:
+    """Dimensions once put away, longest first (G03 D3.1). Rigid shapes are unchanged.
+    Fabric and bags fold: halve the longest side and double the smallest until the longest
+    is at most FOLD_TARGET_MM. Cord coils into a square of side sqrt(length x girth x
+    COIL_PACKING), the girth (second dimension) thick."""
+    dims = sorted(item.get("dims_mm") or [0, 0, 0], reverse=True)
+    shape = item.get("shape", "")
+    if shape in FOLDING_SHAPES:
+        # A fold must shorten the longest side; thick things (a stuffed bag) stop early
+        # instead of cycling between two shapes.
+        while dims[0] > FOLD_TARGET_MM and dims[2] * 2 < dims[0]:
+            dims = sorted([rnd(dims[0] / 2), dims[1], dims[2] * 2], reverse=True)
+    elif shape in COIL_SHAPES:
+        girth = dims[1]
+        side = max(COIL_MIN_MM, math.ceil(math.sqrt(dims[0] * girth * COIL_PACKING)))
+        dims = sorted([side, side, girth], reverse=True)
+    return dims
+
+
+def _range_mean(v, default: float) -> float:
+    if v is None:
+        return default
+    if isinstance(v, list):
+        return (v[0] + v[-1]) / 2
+    return float(v)
+
+
+def entry_item(db: Db, entry: dict) -> dict:
+    """The item a loot entry yields, with the entry's modifiers applied."""
+    it = resolve_item(db, entry["item"])
+    for m in entry.get("mods", []):
+        it = apply_modifier(db, it, m)
+    return it
+
+
+def item_expected(db: Db, item: dict, entry: dict | None = None) -> tuple[float, float]:
+    """One item's packed volume (ml) and mass (g), with a liquid or granular fill at its
+    mean fill (the entry's substance first, else the item's contents preset)."""
+    d = packed_dims(db, item)
+    vol = d[0] * d[1] * d[2] / 1000
+    mass = float(item.get("mass_g") or mass_estimate(db, item) or 0)
+    fill = entry if entry and "substance" in entry else (item.get("contents") or {})
+    sub = db.get("substance", fill.get("substance", "")) if fill.get("substance") else None
+    cap = ((item.get("features") or {}).get("container") or {}).get("capacity_ml", 0)
+    if sub and cap:
+        ml = cap * _range_mean(fill.get("fill_pct"), 100) / 100
+        mass += ml * sub.get("density_mg_ml", 1000) / 1000
+    return vol, mass
+
+
+def _loot_expected(db: Db, loot_id: str, memo: dict, seen: tuple) -> tuple[float, float]:
+    if loot_id in memo:
+        return memo[loot_id]
+    if loot_id in seen:
+        raise ResolveError(f"loot cycle: {' -> '.join(seen + (loot_id,))}")
+    rec = db.get("loot", loot_id)
+    if rec is None:
+        raise ResolveError(f"unknown loot '{loot_id}'")
+    entries = rec.get("entries", [])
+    total_w = sum(e.get("w", 1) for e in entries) or 1
+    per_roll_vol = per_roll_mass = 0.0
+    for e in entries:
+        if "loot" in e:
+            vol, mass = _loot_expected(db, e["loot"], memo, seen + (loot_id,))
+        else:
+            vol, mass = item_expected(db, entry_item(db, e), e)
+        share = e.get("w", 1) / total_w * _range_mean(e.get("count"), 1)
+        per_roll_vol += share * vol
+        per_roll_mass += share * mass
+    rolls = _range_mean(rec.get("rolls"), 1) * (1 - rec.get("empty_chance_pct", 0) / 100)
+    memo[loot_id] = (rolls * per_roll_vol, rolls * per_roll_mass)
+    return memo[loot_id]
+
+
+def loot_expected(db: Db, loot_id: str) -> tuple[int, int]:
+    """Mean (volume_ml, mass_g) one roll of a loot table puts into its container: over
+    rolls, the empty chance, entry weights and count ranges, recursing into nested loot.
+    Volumes are packed (packed_dims)."""
+    vol, mass = _loot_expected(db, loot_id, {}, ())
+    return rnd(vol), rnd(mass)
+
+
+def loot_items(db: Db, loot_id: str, seen: tuple = ()) -> list[tuple[str, dict]]:
+    """Every (loot id, entry) that yields an item, through nested loot."""
+    if loot_id in seen:
+        return []
+    out = []
+    for e in (db.get("loot", loot_id) or {}).get("entries", []):
+        if "loot" in e:
+            out += loot_items(db, e["loot"], seen + (loot_id,))
+        elif "item" in e:
+            out.append((loot_id, e))
+    return out

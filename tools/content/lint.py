@@ -11,7 +11,8 @@ import re
 import sys
 
 from common import Db, load
-from derive import ResolveError, mass_estimate, resolve_item
+from derive import (ResolveError, entry_item, item_expected, loot_expected, loot_items, mass_estimate, packed_dims,
+                    resolve_item, rnd)
 
 REQ_RE = re.compile(r"^([a-z_]+)>=(\d+)$")
 
@@ -372,6 +373,8 @@ class Lint:
                 self.item_or_loot(w, fx.get("item", ""))
                 for c in fx.get("contains", []):
                     self.item_or_loot(w, c)
+                if fx.get("contains"):
+                    self.lint_fit(w, fx)
             for c in rec.get("loose", []):
                 self.item_or_loot(w, c)
         for bid, rec in self.db["building"].items():
@@ -406,6 +409,51 @@ class Lint:
                         self.item_or_loot(w, ref)
             for ref in rec.get("pockets", []) + [c[0] for c in rec.get("carried", []) if c[0] != "none"]:
                 self.item_or_loot(w, ref)
+
+    def lint_fit(self, w: str, fx: dict) -> None:
+        """A room object's contents must fit it (PEO-052): the mean fill by volume and mass,
+        and every entry's packed longest side. Worst case may overflow: generation fills
+        until full (PEO-053), so capacity is the ceiling, not the table."""
+        oid = fx.get("item", "")
+        try:
+            obj = resolve_item(self.db, oid)
+        except ResolveError:
+            return  # reported by item_or_loot
+        box = (obj.get("features") or {}).get("container")
+        where = f"{w} object {oid}"
+        if box is None:
+            self.err(where, f"contains {fx['contains']} but {oid} has no container feature")
+            return
+        vol = mass = 0
+        entries: list[tuple[str, dict]] = []
+        try:
+            for c in fx["contains"]:
+                if self.db.get("loot", c) is not None:
+                    v, m = loot_expected(self.db, c)
+                    entries += loot_items(self.db, c)
+                elif self.db.get("item", c) is not None:
+                    v, m = (rnd(x) for x in item_expected(self.db, resolve_item(self.db, c)))
+                    entries.append(("", {"item": c}))
+                else:
+                    return  # reported by item_or_loot
+                vol, mass = vol + v, mass + m
+        except ResolveError as ex:
+            self.err(where, f"cannot size contents: {ex}")
+            return
+        tables = ", ".join(fx["contains"])
+        if vol > box["capacity_ml"]:
+            self.err(where, f"{tables}: expected {vol} ml exceeds capacity_ml {box['capacity_ml']}")
+        if "max_mass_g" in box and mass > box["max_mass_g"]:
+            self.err(where, f"{tables}: expected {mass} g exceeds max_mass_g {box['max_mass_g']}")
+        if "max_dim_mm" in box:
+            for lid, e in entries:
+                try:
+                    longest = packed_dims(self.db, entry_item(self.db, e))[0]
+                except ResolveError:
+                    continue
+                if longest > box["max_dim_mm"]:
+                    src = f"loot {lid}" if lid else "contains"
+                    self.err(where, f"{src}: {e['item']} packs to {longest} mm, over max_dim_mm {box['max_dim_mm']}")
 
     def run(self) -> None:
         self.lint_registry()
