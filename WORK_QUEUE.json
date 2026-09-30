@@ -566,43 +566,6 @@
       ]
     },
     {
-      "id": "PEO-040",
-      "order": 347,
-      "type": "design",
-      "title": "World clock: one-second ticks; actions carry durations (D-015)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Ryan (2026-09-29): no per-second stepping. The clock counts seconds; scent and the Dead update on a fixed cadence (default 6 s) and player actions land between updates, so compute per update does not depend on player speed. The title's 'one-second ticks' means the clock's unit."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed; ready for the Builder"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits 44673d9..21d9ba3; CI 36639093582 green. Pinned pre-clock hash passes; golden 3/6/12 s passes (mutation-checked); 0 allocs over 1000 actions; perf best-of-200 spec 224.5 vs 223.4 us, commit 32.2 vs 31.7 us. Manual: 30-key run pixel-identical to pre-clock build."
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-041",
       "order": 357,
       "type": "feature",
@@ -610,15 +573,19 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed; ready for the Builder. Default chosen: R toggles run, starts walking, persists across stages."
+        }
+      ],
       "references": [
         "docs/production/decisions.md"
       ],
-      "depends_on": [
-        "PEO-040"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-042",
@@ -642,9 +609,7 @@
         "src/core/src/dead.cpp",
         "src/core/src/world.cpp"
       ],
-      "depends_on": [
-        "PEO-040"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-043",
@@ -667,9 +632,7 @@
         "docs/production/vision.md",
         "docs/design/scent-performance.md"
       ],
-      "depends_on": [
-        "PEO-040"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-044",
