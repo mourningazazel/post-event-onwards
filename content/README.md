@@ -113,3 +113,13 @@ entries = [
 
 `python3 tools/content/lint.py` checks schema and vocabulary; `python3 tools/content/test.py` runs
 the expectations and chain feasibility tests in `tests/content/`.
+
+**Contents must fit their container (PEO-052).** A room object with `contains` needs a `container`
+feature. The table's mean fill (`derive.loot_expected`: over rolls, the empty chance, weights and
+counts, through nested loot) must not exceed `capacity_ml`, nor `max_mass_g` when set, and no
+entry's packed longest side may exceed `max_dim_mm`. Worst-case rolls may overflow: generation fills
+until full, so capacity is the ceiling, not the table. Sizes are **packed** (`derive.packed_dims`):
+rigid shapes keep `dims_mm`; `fabric` and `bag` fold (halve the longest side, double the smallest)
+until the longest is at most 450 mm; `cord` coils into a square of side sqrt(length x girth x 0.8),
+at least 150 mm. Long rigid things (tools with handles, lumber, long guns) go in a room's `loose`
+list or a gun safe, never in a shelf or drawer table; do not raise `max_dim_mm` to make them fit.
