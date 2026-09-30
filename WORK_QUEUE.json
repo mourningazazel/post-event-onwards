@@ -987,9 +987,15 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed; ready for the Builder. Ryan (2026-09-30): calm Dead never share tiles; only alerted Dead push past."
+        }
+      ],
       "references": [
         "docs/production/decisions.md"
       ],
