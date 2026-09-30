@@ -392,6 +392,128 @@ share = 5
 area_mm2 = 540000
 workbench = false
 
+[item.kitchen_base_run]
+name = "base cabinet"
+tags = ["cat.fixture.cabinet", "from.kitchen"]
+shape = "complex"
+dims_mm = [1000, 870, 600]
+mass_g = 45000
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A one-metre run of base cabinet: two drawers over a cupboard, under a laminate countertop."
+glyph = "obj.cabinet"
+why = "A kitchen wall tile's loot: drawers of utensils and a cupboard of cookware (D-027); counter work surface."
+details = ["furniture_finish"]
+value_class = "common"
+compartments = [
+  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
+  { name = "second drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
+  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+]
+
+[item.kitchen_base_run.composition.carcass]
+material = "particleboard"
+share = 70
+[item.kitchen_base_run.composition.doors]
+material = "particleboard"
+share = 25
+[item.kitchen_base_run.composition.hinges]
+material = "mild_steel"
+share = 5
+
+[item.kitchen_base_run.features.surface]
+area_mm2 = 600000
+workbench = false
+
+[item.kitchen_wall_run]
+name = "wall cupboard"
+tags = ["cat.fixture.cabinet", "from.kitchen"]
+shape = "complex"
+dims_mm = [1000, 700, 350]
+mass_g = 18000
+fixed = true
+blocks = "none"
+blocks_sight = false
+desc = "A one-metre wall cupboard hung above the counter, two shelves behind a pair of doors."
+glyph = "obj.cabinet"
+why = "Dishes and glasses above the counter; hangs over a base run, so it takes no floor."
+details = ["furniture_finish"]
+value_class = "common"
+compartments = [
+  { name = "lower shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "upper shelf", capacity_ml = 90000, max_dim_mm = 900, closable = true, loot = "kitchen_cabinet_contents" },
+]
+
+[item.kitchen_wall_run.composition.carcass]
+material = "particleboard"
+share = 70
+[item.kitchen_wall_run.composition.doors]
+material = "particleboard"
+share = 25
+[item.kitchen_wall_run.composition.hinges]
+material = "mild_steel"
+share = 5
+
+[item.kitchen_pantry]
+name = "pantry cupboard"
+tags = ["cat.fixture.cabinet", "from.kitchen"]
+shape = "complex"
+dims_mm = [2100, 600, 600]
+mass_g = 60000
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "A tall pantry cupboard, four deep shelves behind one door."
+glyph = "obj.cabinet"
+why = "Where a kitchen keeps its dry goods: four shelves searched one by one (D-027)."
+details = ["furniture_finish"]
+value_class = "common"
+compartments = [
+  { name = "top shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "second shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "third shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+  { name = "bottom shelf", capacity_ml = 70000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+]
+
+[item.kitchen_pantry.composition.carcass]
+material = "particleboard"
+share = 70
+[item.kitchen_pantry.composition.doors]
+material = "particleboard"
+share = 25
+[item.kitchen_pantry.composition.hinges]
+material = "mild_steel"
+share = 5
+
+[item.kitchen_sink_base]
+name = "sink cabinet"
+tags = ["cat.fixture.cabinet", "from.kitchen"]
+shape = "complex"
+dims_mm = [900, 870, 600]
+mass_g = 40000
+fixed = true
+blocks = "full"
+blocks_sight = false
+desc = "The cupboard under the kitchen sink, around the drain trap and the supply valves."
+glyph = "obj.cabinet"
+why = "Cleaning chemicals, bags and a bucket under the sink (under_sink); the pipes behind them."
+details = ["furniture_finish"]
+value_class = "common"
+compartments = [
+  { name = "cupboard", capacity_ml = 120000, max_dim_mm = 550, closable = true, loot = "under_sink" },
+]
+
+[item.kitchen_sink_base.composition.carcass]
+material = "particleboard"
+share = 70
+[item.kitchen_sink_base.composition.doors]
+material = "particleboard"
+share = 25
+[item.kitchen_sink_base.composition.hinges]
+material = "mild_steel"
+share = 5
+
 # ---------------------------------------------------------------- heat
 [item.fireplace]
 name = "fireplace"

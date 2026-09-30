@@ -426,3 +426,16 @@ op = "=="
 value = 6
 why = "six drawers, each searched on its own"
 
+[[expect]]
+item = "kitchen_base_run"
+path = "compartment.top drawer.loot"
+op = "=="
+value = "kitchen_drawer"
+why = "a base run's drawers carry the kitchen drawer table by default"
+
+[[expect]]
+item = "kitchen_base_run"
+path = "compartment.second drawer.loot"
+op = "=="
+value = "kitchen_drawer"
+why = "a base run's drawers carry the kitchen drawer table by default"
