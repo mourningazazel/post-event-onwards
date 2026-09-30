@@ -758,16 +758,21 @@
       "order": 547,
       "type": "feature",
       "title": "Movement input: fast taps are not lost (D-032)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "user",
+      "owner": "builder",
       "created": "2026-09-30",
       "notes": [
         {
           "at": "2026-09-30",
           "by": "architect",
           "text": "waiting on D-032"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-032 C answered by Ryan; briefed. Up to 3 taps waiting."
         }
       ],
       "references": [

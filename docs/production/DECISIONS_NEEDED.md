@@ -19,9 +19,4 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-## D-032 · Fast direction taps are dropped                     (raised by architect · 2026-09-30 · PEO-065)
-Why now: playtesting found quick taps ignored; D-011 drops any key sooner than 1/3 s after the last step.
-Affects: gameplay · rewrite: none
-- A) Keep D-011 — taps faster than 3 a second are lost; holding stops at once on release
-- B) Queue every press, drained 3 a second, queue cleared when all keys are released — nothing lost; a long burst of taps still plays out after you stop tapping
-- C) Taps and holds differ — each distinct tap is kept (up to 3 waiting, one second's worth); a held key's auto-repeat stays capped at 3 a second and stops the moment it is released   ← recommended
+_No open decisions._
