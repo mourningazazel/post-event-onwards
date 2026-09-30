@@ -94,17 +94,17 @@ an action that crosses no boundary leaves it valid. `turn()` still counts action
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
-the next update's `ScentField::step_linear`, the whole-field sweep. On input,
-`World::commit(Speculation&, Action)` applies the action and runs its seconds; at the update
-boundary it adds the logged deposits with `patch_deposit` and runs `clamp_floor`. The Dead are
-not speculated: between updates they read only the last update's scent, never the player, so
-their seconds run live and match `step()` exactly (D-031). A stale speculation falls back to
-`step()`. Exactness comes from order, not algebra: `step()` runs the
+the next update's `ScentField::step_linear` (the whole-field sweep) and the Dead's seconds up to
+and including that boundary, recorded per second with any poll (PEO-060). Between updates the
+Dead read only the last update's scent, never the player, so those seconds are fixed once an
+update commits. On input, `World::commit(Speculation&, Action)` applies the action and runs its
+seconds, replaying the recorded ones; at the boundary it adds the logged deposits with
+`patch_deposit` and runs `clamp_floor`. A stale speculation, or a second outside the record,
+runs live, exactly as `step()`. Exactness comes from order, not algebra: `step()` runs the
 same `step_linear` → `patch_deposit` → `clamp_floor` sequence, so float rounding matches bit for
 bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on the Builder's
-M1 (release, 200x120, 5000 Dead, one 6 s step, 300 samples, PEO-058): `speculate` 85–103 µs,
-`commit` with the Dead's live seconds 28 µs at best, 165 µs median, 227 µs worst (a 9 s poll).
-At 512x512 with 50,000 Dead the worst commit is 1.43 ms, over D-021's 1 ms (see PEO-058's report).
+M1 (release, one 6 s step, 300 samples, PEO-060): 200x120 with 5000 Dead, `commit` 25–32 µs,
+`speculate` 98–298 µs; 512x512 with 50,000, `commit` 269–280 µs, `speculate` 1.2–2.5 ms.
 
 The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
 auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
