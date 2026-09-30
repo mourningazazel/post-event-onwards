@@ -789,38 +789,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-061",
-      "order": 547,
-      "type": "chore",
-      "title": "soak_rate: bedding without a seat counts as sleep contact (D-013, D-028)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: first two [PEO-061] commits after start (tools rule, pinned expectations). tests: verify.py --frontend --full passed; test.py 407 expectations. values: sleeping_bag 22 portable, bedsheet 22 portable, mattress 40, t_shirt 7, towel 7, sofa 28. open: blanket and pillow do not exist as items, so no expectations for them; the tag rule covers them if added with cat.textile.bedding. Bedding tags used: cat.textile.bedding, cat.camping.sleeping_bag."
-        }
-      ],
-      "references": [
-        "tools/content/derive.py"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-062",
       "order": 557,
       "type": "bug",
