@@ -426,62 +426,6 @@
         "docs/design/scent-performance.md",
         "src/core/src/scent.cpp"
       ],
-      "depends_on": [
-        "PEO-035"
-      ]
-    },
-    {
-      "id": "PEO-035",
-      "order": 297,
-      "type": "chore",
-      "title": "Town fixture: a cramped 200x120 test map with reach, climb and trail helpers",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024. If D-024 A is taken, this becomes the town fixture and acceptance test for the geodesic field (pathfinding review section 7), not a study. The owner's corridor reasoning is in N016."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Rebriefed as the town fixture PEO-030 is accepted against; the study became the acceptance test (pathfinding review section 7)."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "blocked: probe.cpp and the review are only in the cloud session (/mnt/project-files). Commit the probe to the repo to port make_town, or OK a fresh town (baseline may differ)."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "Still needed: commit probe.cpp (make_town, bfs_dist, climb_all) to the repo, or OK a fresh town map (baseline may differ). Unblocks PEO-030."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "unblocked: the review probes are in the repo at docs/design/probes/ (probe.cpp has make_town, bfs_dist, climb_all); brief repointed. Port with no corner cutting, so baselines may shift slightly from the review's 15-18%."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "commits: 51889f1 (town_fixture.hpp) 6494caf (test_town.cpp, CMake). tests: verify.py --frontend --full passed; debug suite 0.64 s summed. baseline: source (139,64), 300 updates, reached 14.5%, climb 15.4%, stretch 1.00, frozen 15752 (review 15-18%). open: (1) five offices on seed 11 had a front door over a partition, reachable only by cutting a corner; the door is carved one cell along, no extra draw, so all open cells are reachable. (2) The exact-geodesic climb check runs in release only: 5 s under ASan vs 61 ms at -O3. (3) The office corridor has rooms off its sides, not one room at its end; the corridor test checks walls broken only by doorways into rooms."
-        }
-      ],
-      "references": [
-        "docs/design/scent-performance.md",
-        "src/core/src/scent.cpp",
-        "src/core/src/dead.cpp"
-      ],
       "depends_on": []
     },
     {
