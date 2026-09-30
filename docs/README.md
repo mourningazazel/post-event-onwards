@@ -19,6 +19,8 @@ Load what the task needs, nothing more. Rolling docs have word caps enforced by
 | Reading what the owner actually said | [design/notes/](design/notes/README.md) (verbatim, never rewritten) |
 | Choosing a dependency | [LICENSING.md](LICENSING.md) |
 | Writing or running tests | [testing.md](testing.md) |
+| Writing or reviewing C++ | `../.agents/skills/cpp-core/SKILL.md` |
+| Measuring or optimising | `../.agents/skills/perf/SKILL.md` |
 | Picking up a Blocked item | `production/handoffs/<id>.md` (index in [production/handoffs/README.md](production/handoffs/README.md)) |
 | Reading or writing a queue item's brief | `production/briefs/<id>.md` (see [production/briefs/README.md](production/briefs/README.md)) |
 | Checking what shipped | `COMPLETED_WORK/YYYY-MM-DD.md` |

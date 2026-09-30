@@ -17,7 +17,9 @@ Decide whether finished work goes where the project is going.
    - **Direction:** consistent with `docs/production/vision.md` pillars and
      `docs/architecture.md` boundaries (logic in `src/app` is a finding).
    - **Abstraction:** new state lives in the right owner; tunables are named;
-     no allocation in per-tick loops; interfaces match the planned seams.
+     no allocation in per-tick loops; interfaces match the planned seams;
+     the diff passes `/cpp-core`, and `/perf` numbers are present for a
+     changed hot path.
    - **Tests:** `git checkout origin/main -- .` in a worktree, run
      `python3 tools/verify.py`. Behaviours added without a test are a
      finding unless the brief listed them as `manual`.
