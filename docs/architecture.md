@@ -35,21 +35,29 @@ today. The renderer reads only a committed world snapshot, so swapping it later 
                               │
                               ├─ rng.hpp    xoshiro256**, seeded, no std::rand
                               ├─ grid.hpp   dense row-major Grid<T>; Grid<bool> is bytes
-                              ├─ scent.hpp  ScentField: deposit / step / strongest_neighbour
+                              ├─ scent_wave.hpp  ScentWave: deposit / update / patch_deposit / strongest_neighbour
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
-### Scent (`scent.hpp`)
+### Scent (`scent_wave.hpp`)
 
-The signature mechanic. A `ScentField` is a double-buffered `Grid<float>`. Each turn the
-player (and later blood, bait, fire) `deposit`s; `step` diffuses to the four orthogonal
-neighbours and decays. Walls and the map edge absorb what flows into them. `strongest_neighbour` is the whole AI today.
+The signature mechanic, and D-024's transport: an integer **geodesic field**. A cell holds the
+best `strength - distance_cost x route - age_cost x age` over the deposits that reached it, the
+route 8-connected along open tiles and never past a wall corner; three numbers set it
+(`WaveParams`: strength, distance and age costs of 8, a 60-cell reach standing still). Values
+are stored with the age folded in, so ageing is a moving line, not a rewrite, and each update
+only the cells that changed carry their value on, `speed` cells a round: the work is bounded by
+reach, not the map. A round offers the values its cells had when it started, so its result is a
+max over offers and independent of order; that makes the **min-plus patch** exact:
+`speculate()` runs the update with no deposit and `commit()` adds the player's with
+`patch_deposit`. `strongest_neighbour` keeps ScentField's contract and is still the whole AI.
+`ScentField` (diffusion) stays in the tree, unused by World, until PEO-030 is accepted.
 
-Where it is going (`docs/design/scent-mobs.md`): two layers per channel (a cheap fine trail and
-a coarse diffusing cloud that drifts with wind), several channels with a dominance matrix, and
-**aggregates** (coarse sums) that the movement rule reads. Constraints that stay: `step` is
-O(cells), linear memory, no allocation, and **linear** so ADR-0012's patch is exact.
+Where it is going (`docs/design/scent-mobs.md`): wind outdoors (PEO-048), z-level routes
+(PEO-049), a reach radius round the player with sealed buildings skipped (PEO-047), rot and
+soak on their own values (PEO-039, PEO-038), several channels with a dominance matrix, and
+aggregates the movement rule reads.
 
 ### Stages (`stage.hpp`)
 
@@ -86,25 +94,25 @@ The world counts game seconds (`World::seconds()`). Each `Action` carries a dura
 and `kWaitSeconds`, both 6). Scent and the Dead update on their own cadence, once every
 `WorldParams::update_period` (6 s), whatever the player does. An action applies at once, then
 its seconds are logged on the player's tile (`occupancy()`, merged per tile). At each period
-boundary one scent update runs: `step_linear`, `patch_deposit` per logged tile with
-`player_scent × seconds / period`, `clamp_floor`. A full period on one tile gives a factor of
-exactly 1. The Dead run every second, on their own 9 s cycle (above). Speculation is per update:
+boundary one scent update runs: each logged tile deposits `strength - age_cost × (period -
+seconds) / period` (a full period exactly `strength`, a runner's tiles a little less, never more),
+then the wave updates. The Dead run every second, on their own 9 s cycle (above). Speculation is per update:
 an action that crosses no boundary leaves it valid. `turn()` still counts actions.
 
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
-the next update's `ScentField::step_linear` (the whole-field sweep) and the Dead's seconds up to
+the next update of the scent wave with no deposit, and the Dead's seconds up to
 and including that boundary, recorded per second with any poll (PEO-060). Between updates the
 Dead read only the last update's scent, never the player, so those seconds are fixed once an
 update commits. On input, `World::commit(Speculation&, Action)` applies the action and runs its
 seconds, replaying the recorded ones; at the boundary it adds the logged deposits with
-`patch_deposit` and runs `clamp_floor`. A stale speculation, or a second outside the record,
-runs live, exactly as `step()`. Exactness comes from order, not algebra: `step()` runs the
-same `step_linear` → `patch_deposit` → `clamp_floor` sequence, so float rounding matches bit for
-bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on the Builder's
-M1 (release, one 6 s step, 300 samples, PEO-060): 200x120 with 5000 Dead, `commit` 25–32 µs,
-`speculate` 98–298 µs; 512x512 with 50,000, `commit` 269–280 µs, `speculate` 1.2–2.5 ms.
+`ScentWave::patch_deposit` (the min-plus patch, exact for one round per update; a faster wave
+commits live). A stale speculation, or a second outside the record, runs live, exactly as
+`step()`. The field is integer, so equal means equal. `Speculation` buffers are reused, so a
+turn allocates nothing. Measured on the Builder's M1 (release, one 6 s step, 300 samples,
+PEO-030): 200x120 with 5000 Dead, `commit` 0–1 µs, `speculate` 28–277 µs; 512x512 with 50,000,
+`commit` 0–3 µs, `speculate` 0.1–1.5 ms.
 
 The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
 auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
@@ -119,7 +127,7 @@ time, so a runner covers two cells per update.
 | Scent physics | `scent: mass is conserved ... while the front is interior`, `walls absorb scent` |
 | The Dead | `dead: the dead never enter walls` |
 | Scale | `dead: a thousand dead step` |
-| Turn model | `world: commit(speculate()) is bit-identical to step()`, `scent: step_linear is linear` |
+| Turn model | `world: commit(speculate()) is bit-identical to step()`, `scent_wave: patch_deposit after update equals deposit then update` |
 | Content | `tools/content/lint.py`, `tools/content/test.py` (374 expectations, 109 chains) |
 | Swarm behaviour | the scenario table in scent-mobs round 3 (harness, queued) |
 

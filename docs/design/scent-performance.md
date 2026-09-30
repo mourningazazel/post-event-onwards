@@ -82,7 +82,19 @@ A gradient climber sitting in that ripple can be pulled the wrong way.
 Choosing 0.5 costs 15 cells of converged reach (57 vs 72 on 200x120) and
 converges 169 turns sooner.
 
+## The geodesic field (PEO-030, D-024)
+
+The world's scent is now the integer wave of `scent_wave.hpp`. M1 Air, `-O3`, pinned, 200x120 with
+5000 Dead, a 6 s step, 300 samples: `speculate` 28 us best, 266 us median, 277 us worst (main before
+it: 96 / 229 / 294), of which the wave's copy and update is 86 us (the float sweep's was ~85); commit
+0-1 us (was 25-30: no whole-grid clamp). 512x512 with 50,000 Dead: speculate median 1.5 ms (was 2.3),
+commit 0-3 us (was 269-280). On the town fixture a standing source in the deepest office reaches all
+969 cells within 60 route-cells and climbs from 100% (diffusion: 14.5% reached, 15.4% climbed).
+
 ## The direct solve
+
+*Superseded by D-024: the geodesic field above replaced diffusion and the IIR far layer.*
+
 
 A separable two-pass IIR solves the same equation exactly instead of
 iterating it, per row then per column:
