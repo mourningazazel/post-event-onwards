@@ -802,28 +802,6 @@
       ]
     },
     {
-      "id": "PEO-055",
-      "order": 497,
-      "type": "chore",
-      "title": "Derived soak_rate per archetype in derive.py (D-013, D-028)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Independent of 052 and 054."
-        }
-      ],
-      "references": [
-        "tools/content/derive.py"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-056",
       "order": 507,
       "type": "chore",
