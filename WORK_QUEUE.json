@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 60,
+  "next_id": 63,
   "items": [
     {
       "id": "PEO-003",
@@ -426,76 +426,6 @@
       ]
     },
     {
-      "id": "PEO-031",
-      "order": 275,
-      "type": "chore",
-      "title": "verify.py cannot catch what CI catches: no release build, no clang",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Ready for the Builder (2026-09-29 review); brief unchanged."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: 445fd1a 9642004 (units 1+2 share 445fd1a: skip is the clang stage's guard). tests: verify.py --frontend --full passed, Arch aarch64, GCC 16.1 + clang 22.1. manual: --full at 69fa874 exits 1 on the clang -Wdouble-promotion break; at 0695dc7 exits 0. Fake clang that cannot link -fsanitize: stage SKIPPED with reason, summary 'did NOT run', exit 0. perf: default verify median ~1.63 s old and new. open: GCC 13's -O3 break does not reproduce with GCC 16, so 1 of 2 breaks locally; docker access for the user would allow a CI-image mirror. clang 22 doctest noise demoted via -Wno-error= locally only (PEO-059). AGENTS.md fit without a trade (448/450). Also updated testing.md and /start-work skill. Details in the report commit."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-032",
-      "order": 276,
-      "type": "bug",
-      "title": "CI concurrency cancels per-commit runs on main, so breakage goes unseen",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Ready for the Builder (2026-09-29 review); brief unchanged."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: 3911ca2 (ci), d14c5a8 (empty second push). tests: verify.py --frontend --full passed. manual: main 3911ca2 run 36664110345 and d14c5a8 run 36664117526 pushed ~17 s apart, overlapped, both success; before the fix 445fd1a, 9642004 and c19e1ce were cancelled. claude/peo-032-ci-scratch: d14c5a8 run 36664128582 cancelled by d23bbb1 run 36664133819 (success); branch deleted. open: tested on main itself, not a scratch branch configured like main; the group is per run_id on main."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-035",
       "order": 297,
       "type": "chore",
@@ -589,112 +519,6 @@
       "depends_on": [
         "PEO-009"
       ]
-    },
-    {
-      "id": "PEO-041",
-      "order": 357,
-      "type": "feature",
-      "title": "Running: a step that takes 3 seconds (D-015)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed; ready for the Builder. Default chosen: R toggles run, starts walking, persists across stages."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "see report commit"
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-042",
-      "order": 367,
-      "type": "design",
-      "title": "Dead speed: probabilistic extra steps per update (D-022)",
-      "status": "Pending",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Briefed from D-022 (N016). Ready after PEO-040 is accepted; the golden variant with fast Dead is the gate."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Held (2026-09-30): D-031 replaces the burst of steps per update with slots over a 9 s cycle; Dead speed folds into PEO-058. Do not start."
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md",
-        "src/core/src/dead.cpp",
-        "src/core/src/world.cpp"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-043",
-      "order": 377,
-      "type": "perf",
-      "title": "Perf variants: 512x512 with 20k and 50k Dead, emitters, both timings (D-021)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Briefed from D-021 (N016). Ready after PEO-040 is accepted. The M1 Air numbers are the deliverable; this container's are the comparison."
-        }
-      ],
-      "references": [
-        "docs/production/vision.md",
-        "docs/design/scent-performance.md"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-044",
-      "order": 387,
-      "type": "bug",
-      "title": "The Dead cut corners: strongest_neighbour allows a diagonal past two walls",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Found in the 2026-09-29 full review (scent.cpp:99-114). Small and independent; take it any time."
-        }
-      ],
-      "references": [
-        "src/core/src/scent.cpp"
-      ],
-      "depends_on": []
     },
     {
       "id": "PEO-045",
@@ -867,28 +691,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-052",
-      "order": 467,
-      "type": "chore",
-      "title": "Content lint: loot versus container capacity; fix the eight mismatches; add storage_bin",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Content and tooling only, all headless."
-        }
-      ],
-      "references": [
-        "tools/content/lint.py"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-053",
       "order": 477,
       "type": "design",
@@ -971,72 +773,6 @@
       ]
     },
     {
-      "id": "PEO-055",
-      "order": 497,
-      "type": "chore",
-      "title": "Derived soak_rate per archetype in derive.py (D-013, D-028)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Independent of 052 and 054."
-        }
-      ],
-      "references": [
-        "tools/content/derive.py"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-056",
-      "order": 507,
-      "type": "chore",
-      "title": "Register the cat.* vocabulary; place or drop the twelve orphan archetypes",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Independent of 052 and 054."
-        }
-      ],
-      "references": [
-        "content/registry"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-058",
-      "order": 517,
-      "type": "design",
-      "title": "The Dead move in staggered slots over a 9 s cycle (D-031)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed; ready for the Builder. Ryan (2026-09-30): calm Dead never share tiles; only alerted Dead push past."
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-059",
       "order": 527,
       "type": "bug",
@@ -1049,6 +785,72 @@
       "notes": [],
       "references": [
         "tools/verify.py"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-060",
+      "order": 537,
+      "type": "perf",
+      "title": "Speculate the Dead's seconds to the next update: 512x512 with 50k Dead back under 1 ms commit (D-021, D-031)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "docs/production/decisions.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-061",
+      "order": 547,
+      "type": "chore",
+      "title": "soak_rate: bedding without a seat counts as sleep contact (D-013, D-028)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "tools/content/derive.py"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-062",
+      "order": 557,
+      "type": "bug",
+      "title": "HUD line overflows an 80-column window: key hints cut off",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "src/app/main.cpp"
       ],
       "depends_on": []
     }
