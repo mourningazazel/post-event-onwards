@@ -521,35 +521,6 @@
       ]
     },
     {
-      "id": "PEO-042",
-      "order": 367,
-      "type": "design",
-      "title": "Dead speed: probabilistic extra steps per update (D-022)",
-      "status": "Pending",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Briefed from D-022 (N016). Ready after PEO-040 is accepted; the golden variant with fast Dead is the gate."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Held (2026-09-30): D-031 replaces the burst of steps per update with slots over a 9 s cycle; Dead speed folds into PEO-058. Do not start."
-        }
-      ],
-      "references": [
-        "docs/production/decisions.md",
-        "src/core/src/dead.cpp",
-        "src/core/src/world.cpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-045",
       "order": 397,
       "type": "feature",
