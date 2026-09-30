@@ -66,6 +66,11 @@ Items are never "stored inside" another item's data. Each item simply records **
 - **Recommendation: B**, with merging allowed only when *all* properties are identical. Detail is
   never lost; the stack just splits.
 - **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
+- **Amended (2026-09-30, N017 / D-026, D-029).** A quantity in a container is one kind ("box
+  of nails"). An item taken out instantiates with its details; put back, it lists as its own
+  entry beside the nameless quantity instead of merging. Entries get no unique names; an
+  unexamined item is marked visually and gains details when examined, removed or modified. A
+  stack's quality is a mean plus a spread, sampled when an item is taken.
 
 ### D3.3 — Where do belongings live on a character?
 

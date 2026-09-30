@@ -5,8 +5,49 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-012, D-014, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-015, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-30 · D-029 · A stack's quality is a mean plus a spread
+
+User decision: B (N017). A line holds a mean quality and a spread; an item taken from it samples
+its quality from them with a counter-based hash of its address. Consequence: PEO-013.
+
+## 2026-09-30 · D-028 · Soak travels with portable absorbers
+
+User decision: B (N017). A portable absorber (mattress, cushion, clothing) keeps its soak as a value
+on the thing and takes it along when moved; floors and fixed furniture keep soak on the tile.
+Consequence: PEO-038 reads tile soak plus the soak of absorbers on the tile; PEO-055 derives rates.
+
+## 2026-09-30 · D-027 · Each compartment is searched on its own
+
+User decision: B (N017). A drawer or shelf costs its own search time, from its volume. The tedium is
+intended; the menus must make it quick to move through, so only game time is slow. Consequence:
+contents are generated per compartment (PEO-053).
+
+## 2026-09-30 · D-026 · A quantity is one kind; an item taken out gains its detail
+
+User decision, the owner's own rule (N017). A line in a container is one kind ("box of nails"). An
+item taken out instantiates with its details at that moment; put back, it lists as its own entry
+beside the nameless quantity, never merged. Entries get no unique names; an unexamined item is
+marked visually and gains details when examined, removed or modified. Consequence: amends D3.2's
+merge rule for instantiated items; PEO-050, PEO-053.
+
+## 2026-09-30 · D-025 · Rot scales the pull down, never zeroes it
+
+User decision: A (N017), amending D-012. In the integer field (D-024), whose values are log
+strength, a Dead subtracts rot times a scale from what it reads, which divides the linear
+pull. Why: a 1:1 subtraction zeroed every cell past about 12 cells. Consequence: PEO-039.
+
+## 2026-09-30 · D-024 · Scent is an integer geodesic field that propagates
+
+User decision: A (N017), superseding D-008's two layers and D-020's inner-wall buildup. A cell holds
+strength − C·distance − K·age along walkable routes as an int32. The front advances `speed` cells
+per update and up to `gust` more downwind; step costs fall downwind and rise upwind, scaled by a
+per-cell openness that is 0 indoors. Stairs are routes; walls and closed buildings absorb; work is
+bounded by a reach radius around the player. Commit patches by min-plus from the logged tiles.
+Why: diffusion reached 18% of a town map and parked the Dead at crossings, and the IIR layer
+cannot see through doors (pathfinding review). Consequence: PEO-035 then PEO-030; PEO-047 to 049.
 
 ## 2026-09-29 · D-023 · Items are seeds until touched
 
@@ -85,31 +126,3 @@ medical and physical conditions. Previous job shapes generation and starting ski
 with a gun and firearms skill); "where were you?" places the start near a fitting area (an office
 worker near the urban core), never exactly. Unlucky characters are intended. Consequence: PEO-046
 designs the generator behind PEO-008 and PEO-012.
-
-## 2026-09-29 · D-015 · The world keeps a clock in seconds; actions take time
-
-User decision, amending D-002 and D-014. The world counts game seconds. Heavy systems (scent spread,
-the Dead) update on their own fixed cadence, every 6 s by default, whatever the player does. Each action
-has a duration in seconds (a walking step 6, a running step 3, a bicycle tile 3, a thrown or falling body
-a run of moves each with its own time) and lands between updates, so a runner moves twice per update
-and a walker once. The player's scent is logged per second on the tile occupied and applied at the next
-update. Rates (scent, soak, rot, Dead speed) are per second. Why: speed is a gradient, not a fixed count
-of ticks, and compute per update does not depend on how the player moves, so running never doubles
-scent or cost. Consequence: the world still waits for input (D-002); the next update is computed ahead
-while idle and the player's moves only patch around the tiles they touched (PEO-007's model). Dead
-speeds become seconds per step. PEO-040 reworks the clock; running is PEO-041.
-
-## 2026-09-29 · D-013 · Buildup is a soak value on each tile, capped, fed by contact
-
-User decision: A. It replaces D-010's fade rule, which the house probe showed does nothing indoors:
-absorbing walls take about 6% of a room's scent a turn against a 1% fade, and the field settles in
-minutes, so it cannot remember days. Each tile holds a soak value from 0 to a ceiling. The player standing
-on it, or using the object on it, charges it by a share of the headroom left, so it never passes the
-ceiling; it leaks slowly. Soak never spreads: the Dead read it on that tile only, added to the human
-scent there. Object emitters are soak: a bed you slept in gives off its soak and fades over days, with
-no separate timer. Calibration (per game second, D-014): camping on one floor tile holds about 30% after 10 days;
-10 days of house life with a bed, table, sofa, bath and desk reach 75-82% on those tiles; camping in the
-bed reaches 95%; half-life about 5 days; furniture soaks about 37 times faster than floor. The ceiling
-leaves headroom for other humans. Why: dens and used objects should read as such, and a value per tile
-is nearly free. Consequence: walls keep absorbing; the far layer returns to a single decay, so D-008's
-IIR solve stands. PEO-038 builds soak. Soak rates and rot per body are the balance sliders: new emitters and emission values are tuned against them rather than by re-deriving the field.
