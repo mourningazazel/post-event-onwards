@@ -704,10 +704,10 @@
       "order": 490,
       "type": "feature",
       "title": "Container purposes and three tags with may-appear tables (D-030)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-30",
       "notes": [
         {
@@ -729,6 +729,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "commits: 00c4e42 (record types, kind/ctx/detail tags, building contexts) 8f6b69a (31 home purposes, split tables, compartments and rooms) fd5ed5d (11 details, 1 detail_loot, 38 extras, lint) e49f014 (generate.py + roll tests) 25a6cfa (docs). tests: verify.py --frontend --full passed; lint 0 errors; test.py 3004 roll checks pass, extras probes refuse unregistered ctx and a detail key; Python hash_u64 equals the C++ on two inputs. acceptance: kitchen drawers name their purpose (cutlery, utensil, junk, wrap and bag, towel); a smoker junk drawer shows evidence in its first 4 lines on all 200 seeds, 46.5% of its fill from the blend. open (spec choices for PEO-053, say if you want others): (1) index 0 of salts 1 and 2 is the empty chance and the roll count n, which the brief left open; (2) a detailed fill is never empty and takes at least 2 turns, or 1-roll drawers show no evidence; (3) an extras table goes in the ctx pass if it matches a ctx, else the kind pass; rolls at t*256; (4) lines are one per pick, not merged per D-026, since merging breaks prefix stability; merge on display; (5) no fishing or gaming details: no evidence items exist; (6) maintenance cabinets hold their purpose in the 230 L cupboard; their 20 L drawer is a junk drawer."
         }
       ],
       "references": [
