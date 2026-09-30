@@ -871,7 +871,7 @@
       "order": 467,
       "type": "chore",
       "title": "Content lint: loot versus container capacity; fix the eight mismatches; add storage_bin",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
