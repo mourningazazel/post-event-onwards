@@ -620,29 +620,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-043",
-      "order": 377,
-      "type": "perf",
-      "title": "Perf variants: 512x512 with 20k and 50k Dead, emitters, both timings (D-021)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Briefed from D-021 (N016). Ready after PEO-040 is accepted. The M1 Air numbers are the deliverable; this container's are the comparison."
-        }
-      ],
-      "references": [
-        "docs/production/vision.md",
-        "docs/design/scent-performance.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-044",
       "order": 387,
       "type": "bug",
