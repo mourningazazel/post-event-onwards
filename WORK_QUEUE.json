@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 64,
+  "next_id": 66,
   "items": [
     {
       "id": "PEO-003",
@@ -734,6 +734,44 @@
       "notes": [],
       "references": [
         "tools/verify.py"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-064",
+      "order": 537,
+      "type": "feature",
+      "title": "Room object slot that places one item from a list (garage: one vehicle); garage back to ~60 m2",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "content/world/rooms/home.toml"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-065",
+      "order": 547,
+      "type": "feature",
+      "title": "Movement input: fast taps are not lost (D-032)",
+      "status": "AwaitingUser",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "user",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "waiting on D-032"
+        }
+      ],
+      "references": [
+        "src/app/main.cpp"
       ],
       "depends_on": []
     }
