@@ -704,7 +704,7 @@
       "order": 490,
       "type": "feature",
       "title": "Container purposes and three tags with may-appear tables (D-030)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
@@ -724,6 +724,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "Blocked by dependency PEO-054, not in progress: nothing actionable for the Builder."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "starting"
         }
       ],
       "references": [
