@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <deque>
+#include <optional>
 #include <vector>
 
 using namespace peo::core;
@@ -346,6 +347,70 @@ TEST_SUITE("world") {
         expected.patch_deposit(start, half, &blocked);
         expected.clamp_floor();
         CHECK(scent_mismatches(w.scent(), expected) == 0);
+    }
+
+    TEST_CASE("a runner moves two cells per update") {
+        // D-015 / PEO-041: a running step takes kRunStepSeconds, so two fit in one
+        // update. Scent follows time: each cell gets half a walking step's deposit.
+        constexpr int kRunSteps = 4;
+        constexpr int kStepsPerUpdate = static_cast<int>(kUpdatePeriodSeconds / kRunStepSeconds);
+        static_assert(kStepsPerUpdate == 2);
+        const WorldParams params = small_world(0);
+        // Find a seed whose entry has kRunSteps open cells in a straight line.
+        std::optional<World> found;
+        Vec2i dir{};
+        for (Seed seed = kSeed; !found && seed < kSeed + 100; ++seed) {
+            World w(seed, params);
+            const Grid<bool>& blocked = w.stage().blocked;
+            for (const Vec2i d : kNeighbours4) {
+                bool clear = true;
+                for (int i = 1; i <= kRunSteps; ++i) {
+                    const Vec2i c = w.player() + Vec2i{d.x * i, d.y * i};
+                    clear = clear && blocked.in_bounds(c) && !blocked.at(c) && c != w.stage().exit;
+                }
+                if (clear) {
+                    found.emplace(w);
+                    dir = d;
+                    break;
+                }
+            }
+        }
+        REQUIRE(found);
+        World& runner = *found;
+        World walker = runner;
+        const Grid<bool>& blocked = runner.stage().blocked;
+        const Vec2i start = runner.player();
+        ScentField expected = runner.scent();
+        const float half = params.player_scent * 0.5F;
+
+        for (int i = 1; i <= kRunSteps; ++i) {
+            runner.step(Action::step(dir, kRunStepSeconds));
+            const Vec2i at = start + Vec2i{dir.x * i, dir.y * i};
+            CHECK(runner.player() == at);
+            CHECK(runner.updates() == static_cast<Tick>(i / kStepsPerUpdate));
+            if (i % kStepsPerUpdate == 1) {
+                REQUIRE(runner.occupancy().size() == 1);
+                CHECK(runner.occupancy()[0].seconds == kRunStepSeconds);
+            } else {
+                // The update just ran on this cell and the one before, half each.
+                expected.step_linear(&blocked);
+                expected.patch_deposit(at - dir, half, &blocked);
+                expected.patch_deposit(at, half, &blocked);
+                expected.clamp_floor();
+            }
+        }
+        CHECK(runner.player() == start + Vec2i{dir.x * kRunSteps, dir.y * kRunSteps});
+        CHECK(runner.updates() == 2);
+        CHECK(scent_mismatches(runner.scent(), expected) == 0);
+        CHECK(half + half == params.player_scent); // per second, a runner deposits as a walker
+
+        // A walker spends the same 12 s on two cells: the same updates, so the Dead
+        // (who move per update) get no more moves against a runner.
+        walker.step(Action::step(dir));
+        walker.step(Action::step(dir));
+        CHECK(walker.seconds() == runner.seconds());
+        CHECK(walker.updates() == runner.updates());
+        CHECK(walker.player() == start + Vec2i{dir.x * kStepsPerUpdate, dir.y * kStepsPerUpdate});
     }
 
     TEST_CASE("a 12 s action runs two updates") {
