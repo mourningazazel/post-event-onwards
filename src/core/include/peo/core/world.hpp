@@ -87,6 +87,11 @@ public:
     /// speculation (other update or stage) falls back to step().
     void commit(Speculation& spec, Action action);
 
+    /// Add `amount` of scent at `at` now, outside the clock. A test hook for
+    /// benchmark emitters (PEO-043); not a game mechanic. It changes the field a
+    /// speculation was built from without making it stale, so speculate after it.
+    void deposit(Vec2i at, float amount) noexcept { scent_.deposit(at, amount); }
+
     /// Same stage, turn, clock, occupancy log, player, horde and scent bits. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
