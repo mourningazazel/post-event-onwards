@@ -449,7 +449,7 @@ value = "hatchet_head"
 item = "leaf_spring"
 path = "tags"
 op = "has"
-value = "cat.stock.blade"
+value = "cat.part.stock.blade"
 why = "blade stock for expert forging (N012)"
 
 [[expect]]

@@ -190,7 +190,7 @@ hammer = 1
 
 [item.leaf_spring]
 name = "leaf spring"
-tags = ["cat.part.spring.leaf", "cat.stock.blade", "from.vehicle", "from.farm", "from.industrial", "use.salvage", "use.weapon"]
+tags = ["cat.part.spring.leaf", "cat.part.stock.blade", "from.vehicle", "from.farm", "from.industrial", "use.salvage", "use.weapon"]
 shape = "rod"
 dims_mm = [1200, 64, 8]
 mass_g = 4800
