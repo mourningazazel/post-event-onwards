@@ -21,6 +21,7 @@ desc = "A deep upholstered armchair with a sprung seat."
 glyph = "obj.armchair"
 why = "Barricade mass a single person can shove; comfortable rest seat; foam and cloth tinder."
 details = ["upholstery_look"]
+absorbs_scent = true
 value_class = "common"
 
 [item.armchair.composition.frame]

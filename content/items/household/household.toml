@@ -11,6 +11,7 @@ blocks_sight = false
 desc = "A three-seat upholstered sofa."
 glyph = "obj.sofa"
 why = "Heavy blocking furniture for barricades; sleeping spot; foam and fabric salvage/fuel."
+absorbs_scent = true
 value_class = "common"
 details = ["upholstery_look"]
 
