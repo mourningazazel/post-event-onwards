@@ -6,6 +6,7 @@
 // a timer. While the player thinks, one worker thread speculates the next turn
 // (PEO-007); input commits it. Core spawns no threads: this file owns the only one.
 
+#include "peo/core/turn_input.hpp"
 #include "peo/core/world.hpp"
 
 #define SDL_MAIN_USE_CALLBACKS 1
@@ -38,12 +39,8 @@ constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
 constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
 constexpr const char* kFallbackIterateHz = "60";
 
-/// D-011: at most this many turns a second from the keyboard. A turn key (press or
-/// auto-repeat) sooner than the interval after the last accepted turn is dropped,
-/// not queued, so releasing a held key stops the player at once.
-constexpr Uint64 kMaxTurnsPerSecond = 3;
-constexpr Uint64 kNsPerSecond = 1'000'000'000;
-constexpr Uint64 kMinTurnIntervalNs = kNsPerSecond / kMaxTurnsPerSecond;
+/// Timer delay floor: SDL treats a 0 ns timer oddly on some backends.
+constexpr Uint64 kMinWakeNs = 1;
 
 /// Scent view bands, log-spaced relative to the field's current maximum so the
 /// view reads the same at any deposit scale (the geodesic field's samples, D-024). Strongest first;
@@ -134,8 +131,11 @@ struct App {
     /// PEO-007 manual test: was the last turn's speculation ready at input?
     bool last_hit = false;
     unsigned long long misses = 0;
-    /// SDL_GetTicksNS() when the last turn key was accepted; empty before the first.
-    std::optional<Uint64> last_turn_ns;
+    /// Turn keys to turns (D-032): taps wait up to 3 deep, played out at 3 a second.
+    TurnInput input;
+    /// A registered SDL event type the wake timer pushes, and the pending timer (0: none).
+    Uint32 wake_event = 0;
+    SDL_TimerID wake_timer = 0;
 };
 
 /// Spend one turn on `action`: commit the speculation if there is one, else step.
@@ -243,6 +243,29 @@ std::optional<Action> action_for(SDL_Keycode key, bool running) {
     }
 }
 
+/// Timer thread: wake the main loop to drain a waiting tap. One shot.
+Uint64 SDLCALL wake(void* userdata, SDL_TimerID /*timer*/, Uint64 /*interval*/) {
+    SDL_Event e{};
+    e.type = static_cast<Uint32>(reinterpret_cast<std::uintptr_t>(userdata));
+    SDL_PushEvent(&e);
+    return 0;
+}
+
+/// Take the turn that is due, if any, and while taps still wait arrange one wake-up
+/// at the next due time; nothing waiting means no timer, so the loop sleeps (PEO-036).
+void drain(App& app) {
+    const Uint64 now = SDL_GetTicksNS();
+    if (const std::optional<Action> action = app.input.take(now)) {
+        take_turn(app, *action);
+        app.dirty = true;
+    }
+    if (const std::optional<Nanos> due = app.input.next_due(); due && app.wake_timer == 0) {
+        const Uint64 delay = std::max(*due > now ? *due - now : 0, kMinWakeNs);
+        app.wake_timer =
+            SDL_AddTimerNS(delay, wake, reinterpret_cast<void*>(static_cast<std::uintptr_t>(app.wake_event)));
+    }
+}
+
 } // namespace
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
@@ -267,6 +290,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
         SDL_Log("CreateWindowAndRenderer failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    app->wake_event = SDL_RegisterEvents(1);
     const bool wait_event = SDL_GetVersion() >= kWaitEventMinVersion;
     SDL_SetHint(SDL_HINT_MAIN_CALLBACK_RATE, wait_event ? "waitevent" : kFallbackIterateHz);
     return SDL_APP_CONTINUE;
@@ -284,6 +308,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     case SDL_EVENT_KEY_DOWN: {
         const SDL_Keycode key = event->key.key;
         if (key == SDLK_ESCAPE) {
+            app->input.clear();
             return SDL_APP_SUCCESS;
         }
         if (key == SDLK_S && (event->key.mod & SDL_KMOD_SHIFT)) {
@@ -293,6 +318,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             app->running = !app->running; // a mode, not a turn: no action, no cap
             app->dirty = true;
         } else if (key == SDLK_N) {
+            app->input.clear();               // taps were meant for the old stage
             (void)app->speculator->quiesce(); // the speculation is for the old stage
             app->world->load_stage(app->world->stage_index() + 1);
             app->speculator->request();
@@ -300,18 +326,17 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         } else if (const std::optional<Action> action = action_for(key, app->running)) {
             // Handling time, not event->key.timestamp: that is only as good as the
             // input device, and synthetic keyboards (wtype) stamp every press with
-            // the same frozen time, which would drop every tap after the first.
-            const Uint64 now = SDL_GetTicksNS();
-            if (app->last_turn_ns && now - *app->last_turn_ns < kMinTurnIntervalNs) {
-                break; // over the D-011 cap: drop it, never queue it
-            }
-            app->last_turn_ns = now;
-            take_turn(*app, *action); // exactly one turn per accepted key press
-            app->dirty = true;
+            // the same frozen time. Walk or run is fixed here, at press time.
+            app->input.offer(*action, event->key.repeat, SDL_GetTicksNS());
+            drain(*app);
         }
         break;
     }
     default:
+        if (event->type == app->wake_event) {
+            app->wake_timer = 0;
+            drain(*app);
+        }
         break;
     }
     return SDL_APP_CONTINUE;
