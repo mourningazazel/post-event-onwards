@@ -126,6 +126,8 @@ struct App {
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
+    /// R toggles it (D-015): steps take kRunStepSeconds. Kept across stages.
+    bool running = false;
     /// Redraw only when something changed (a turn, a view toggle, an expose).
     bool dirty = true;
     /// PEO-007 manual test: was the last turn's speculation ready at input?
@@ -194,10 +196,11 @@ void draw(App& app) {
     glyph(world.player(), "@", 255, 255, 255);
 
     char hud[128];
-    std::snprintf(hud, sizeof hud,
-                  "stage %u  turn %llu  dead %zu  spec:%s (miss %llu)  [arrows/wasd] [space/.] [shift+s] [n]",
-                  world.stage_index(), static_cast<unsigned long long>(world.turn()), world.horde().size(),
-                  app.last_hit ? "hit" : "miss", app.misses);
+    std::snprintf(
+        hud, sizeof hud,
+        "stage %u  turn %llu  %s  dead %zu  spec:%s (miss %llu)  [arrows/wasd] [space/.] [r] [shift+s] [n]",
+        world.stage_index(), static_cast<unsigned long long>(world.turn()), app.running ? "run" : "walk",
+        world.horde().size(), app.last_hit ? "hit" : "miss", app.misses);
     SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);
     SDL_RenderDebugText(app.renderer, 0.0F, 0.0F, hud);
 
@@ -205,21 +208,23 @@ void draw(App& app) {
     SDL_RenderPresent(app.renderer);
 }
 
-/// Map a key to the action it spends a turn on, if any.
-std::optional<Action> action_for(SDL_Keycode key) {
+/// Map a key to the action it spends a turn on, if any. Running shortens steps
+/// only; a wait lasts kWaitSeconds either way.
+std::optional<Action> action_for(SDL_Keycode key, bool running) {
+    const Seconds step = running ? kRunStepSeconds : kStepSeconds;
     switch (key) {
     case SDLK_UP:
     case SDLK_W:
-        return Action::step({0, -1});
+        return Action::step({0, -1}, step);
     case SDLK_DOWN:
     case SDLK_S:
-        return Action::step({0, 1});
+        return Action::step({0, 1}, step);
     case SDLK_LEFT:
     case SDLK_A:
-        return Action::step({-1, 0});
+        return Action::step({-1, 0}, step);
     case SDLK_RIGHT:
     case SDLK_D:
-        return Action::step({1, 0});
+        return Action::step({1, 0}, step);
     case SDLK_SPACE:
     case SDLK_PERIOD:
         return Action::wait();
@@ -274,12 +279,15 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         if (key == SDLK_S && (event->key.mod & SDL_KMOD_SHIFT)) {
             app->show_scent = !app->show_scent;
             app->dirty = true;
+        } else if (key == SDLK_R) {
+            app->running = !app->running; // a mode, not a turn: no action, no cap
+            app->dirty = true;
         } else if (key == SDLK_N) {
             (void)app->speculator->quiesce(); // the speculation is for the old stage
             app->world->load_stage(app->world->stage_index() + 1);
             app->speculator->request();
             app->dirty = true;
-        } else if (const std::optional<Action> action = action_for(key)) {
+        } else if (const std::optional<Action> action = action_for(key, app->running)) {
             // Handling time, not event->key.timestamp: that is only as good as the
             // input device, and synthetic keyboards (wtype) stamp every press with
             // the same frozen time, which would drop every tap after the first.
