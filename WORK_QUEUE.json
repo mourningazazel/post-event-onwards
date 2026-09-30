@@ -656,7 +656,7 @@
       "order": 377,
       "type": "perf",
       "title": "Perf variants: 512x512 with 20k and 50k Dead, emitters, both timings (D-021)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
