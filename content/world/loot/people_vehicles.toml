@@ -125,7 +125,6 @@ entries = [
   { item = "soda_can", w = 3, count = [1, 1] },
   { item = "hoodie", w = 5, count = [1, 1] },
   { item = "t_shirt", w = 2, count = [1, 1] },
-  { item = "shorts", w = 2, count = [1, 1] },
   { item = "sneakers", w = 2, count = [1, 1] },
   { item = "smartphone", w = 4, count = [1, 1] },
   { item = "power_bank", w = 2, count = [1, 1] },

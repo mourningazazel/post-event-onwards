@@ -2,19 +2,14 @@
 
 [loot.farm_barn_stock]
 desc = "Barn shelves, walls and corners: feed, fencing, fuel and oil, hand tools, work clothes, a barn gun."
-rolls = [3, 9]
+rolls = [3, 8]
 empty_chance_pct = 2
 entries = [
   { item = "feed_sack", w = 12, count = [2, 20] },
   { item = "pet_food_bag", w = 3, count = [1, 4] },
-  { item = "pitchfork", w = 6, count = [1, 3] },
-  { item = "shovel", w = 6, count = [1, 3] },
-  { item = "shovel", w = 2, count = [1, 1], mods = ["rusted"] },
-  { item = "rake", w = 3, count = [1, 2] },
   { item = "bucket", w = 7, count = [2, 8] },
   { item = "baling_wire", w = 5, count = [1, 4] },
   { item = "barbed_wire", w = 4, count = [1, 3] },
-  { item = "t_post", w = 4, count = [4, 30] },
   { item = "steel_chain", w = 3, count = [1, 3] },
   { item = "nylon_rope", w = 4, count = [1, 3] },
   { item = "tarp", w = 3, count = [1, 3] },
@@ -32,11 +27,23 @@ entries = [
   { item = "pruning_shears", w = 2, count = [1, 1] },
   { item = "bolt_cutters", w = 2, count = [1, 1] },
   { item = "pliers", w = 2, count = [1, 2] },
-  { item = "sledgehammer", w = 2, count = [1, 1] },
   { item = "chainsaw", w = 2, count = [1, 1] },
   { item = "scrap_metal", w = 3, count = [2, 12], mods = ["rusted"] },
-  { item = "shotgun", w = 1, count = [1, 1] },
   { item = "ammo_12ga", w = 1, count = [5, 25] },
   { item = "battery_lantern", w = 1, count = [1, 1] },
   { item = "kerosene_lantern", w = 1, count = [1, 1] },
+]
+
+[loot.farm_barn_long]
+desc = "Long tools, posts and a barn gun hung on pegs or leaning against the barn wall."
+rolls = [1, 3]
+empty_chance_pct = 10
+entries = [
+  { item = "pitchfork", w = 6, count = [1, 3] },
+  { item = "rake", w = 3, count = [1, 2] },
+  { item = "shotgun", w = 1, count = [1, 1] },
+  { item = "shovel", w = 6, count = [1, 3] },
+  { item = "shovel", w = 2, count = [1, 1], mods = ["rusted"] },
+  { item = "sledgehammer", w = 2, count = [1, 1] },
+  { item = "t_post", w = 4, count = [4, 30] },
 ]

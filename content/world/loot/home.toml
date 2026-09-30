@@ -187,7 +187,6 @@ entries = [
   { item = "notebook", w = 4, count = [1, 2] },
   { item = "garden_gnome", w = 1, count = [1, 1] },
   { item = "glass_bottle", w = 3, count = [1, 2], substance = "liquor", fill_pct = [20, 100] },
-  { item = "cardboard_box", w = 4, count = [1, 1] },
 ]
 
 # Extra (not in world-catalog §7): a dining-room sideboard or hutch.
@@ -335,7 +334,6 @@ empty_chance_pct = 3
 entries = [
   { item = "stuffed_toy", w = 16, count = [1, 5] },
   { item = "book", w = 12, count = [1, 6] },
-  { item = "school_backpack", w = 6, count = [1, 1] },
   { item = "notebook", w = 6, count = [1, 3] },
   { item = "marker", w = 6, count = [1, 6] },
   { item = "t_shirt", w = 6, count = [1, 4] },
@@ -343,11 +341,9 @@ entries = [
   { item = "sneakers", w = 4, count = [1, 2] },
   { item = "hoodie", w = 3, count = [1, 2] },
   { item = "baseball_cap", w = 3, count = [1, 2] },
-  { item = "baseball_bat", w = 3, count = [1, 1] },
   { item = "bike_helmet", w = 3, count = [1, 1] },
   { item = "sports_pads", w = 2, count = [1, 1] },
   { item = "football_helmet", w = 1, count = [1, 1] },
-  { item = "hockey_stick", w = 1, count = [1, 1] },
   { item = "glow_stick", w = 3, count = [1, 4] },
   { item = "flashlight", w = 3, count = [1, 1] },
   { item = "walkie_talkie", w = 2, count = [2, 2] },
@@ -455,8 +451,6 @@ entries = [
   { item = "flashlight", w = 2, count = [1, 1] },
   { item = "car_jack", w = 2, count = [1, 1] },
   { item = "baseball_bat", w = 3, count = [1, 2] },
-  { item = "golf_club", w = 3, count = [3, 12] },
-  { item = "hockey_stick", w = 1, count = [1, 2] },
   { item = "bike_helmet", w = 2, count = [1, 2] },
   { item = "cooler", w = 3, count = [1, 1] },
   { item = "tent", w = 1, count = [1, 1] },
@@ -514,16 +508,10 @@ desc = "A garden shed: yard tools (some long rusted), fuel for the mower, hose, 
 rolls = [3, 8]
 empty_chance_pct = 3
 entries = [
-  { item = "shovel", w = 10, count = [1, 2] },
-  { item = "shovel", w = 3, count = [1, 1], mods = ["rusted"] },
-  { item = "rake", w = 9, count = [1, 2] },
-  { item = "pitchfork", w = 2, count = [1, 1] },
   { item = "pruning_shears", w = 6, count = [1, 1] },
   { item = "hatchet", w = 4, count = [1, 1] },
   { item = "axe", w = 3, count = [1, 1] },
   { item = "machete", w = 1, count = [1, 1] },
-  { item = "pickaxe", w = 1, count = [1, 1] },
-  { item = "sledgehammer", w = 2, count = [1, 1] },
   { item = "chainsaw", w = 2, count = [1, 1] },
   { item = "gas_can", w = 8, count = [1, 1], substance = "gasoline", fill_pct = [5, 100] },
   { item = "motor_oil_bottle", w = 3, count = [1, 1], substance = "motor_oil", fill_pct = [10, 100] },
@@ -533,7 +521,6 @@ entries = [
   { item = "tarp", w = 3, count = [1, 1] },
   { item = "charcoal_bag", w = 3, count = [1, 1] },
   { item = "nylon_rope", w = 2, count = [1, 1] },
-  { item = "wood_plank", w = 3, count = [1, 6] },
   { item = "firewood", w = 3, count = [4, 20] },
   { item = "garden_gnome", w = 1, count = [1, 1] },
 ]
@@ -580,7 +567,6 @@ empty_chance_pct = 10
 entries = [
   { item = "book", w = 14, count = [2, 15] },
   { item = "photo", w = 10, count = [2, 20] },
-  { item = "newspaper", w = 5, count = [1, 10] },
   { item = "stuffed_toy", w = 7, count = [1, 6] },
   { item = "t_shirt", w = 6, count = [2, 8], mods = ["worn_out"] },
   { item = "sweater", w = 5, count = [1, 4], mods = ["worn_out"] },
@@ -589,14 +575,12 @@ entries = [
   { item = "bedsheet", w = 5, count = [1, 4] },
   { item = "candle", w = 6, count = [2, 10] },
   { item = "kerosene_lantern", w = 2, count = [1, 1] },
-  { item = "television", w = 1, count = [1, 1], mods = ["broken"] },
   { item = "laptop", w = 2, count = [1, 1], mods = ["broken"] },
   { item = "laptop", w = 1, count = [1, 1] },
   { item = "smartphone", w = 2, count = [1, 2], mods = ["broken"] },
   { item = "alarm_clock", w = 2, count = [1, 1] },
   { item = "football_helmet", w = 1, count = [1, 1] },
   { item = "sports_pads", w = 2, count = [1, 1] },
-  { item = "baseball_bat", w = 2, count = [1, 1] },
   { item = "dinner_plate", w = 3, count = [4, 12] },
   { item = "jewelry", w = 2, count = [1, 2] },
   { item = "skill_manual", w = 2, count = [1, 2] },
@@ -619,11 +603,53 @@ entries = [
   { item = "trash_bags", w = 6, count = [1, 2] },
   { item = "latex_gloves", w = 5, count = [1, 1] },
   { item = "bucket", w = 6, count = [1, 2] },
-  { item = "broom", w = 5, count = [1, 1] },
   { item = "toilet_paper", w = 6, count = [4, 24] },
   { item = "soap_bar", w = 4, count = [2, 8] },
   { item = "flashlight", w = 2, count = [1, 1] },
   { item = "fire_extinguisher", w = 2, count = [1, 1] },
   { item = "socks", w = 3, count = [1, 4] },
   { item = "battery_aa", w = 2, count = [2, 8] },
+]
+
+[loot.kids_room_floor]
+desc = "A child's room floor and corners: a bat or stick leaning on the wall, the school bag dropped by the door."
+rolls = [1, 2]
+empty_chance_pct = 40
+entries = [
+  { item = "baseball_bat", w = 3, count = [1, 1] },
+  { item = "hockey_stick", w = 1, count = [1, 1] },
+  { item = "school_backpack", w = 6, count = [1, 1] },
+]
+
+[loot.attic_floor]
+desc = "Too long for a box: an old television, a bat, left standing among the boxes."
+rolls = [1, 2]
+empty_chance_pct = 40
+entries = [
+  { item = "television", w = 1, count = [1, 1], mods = ["broken"] },
+  { item = "baseball_bat", w = 2, count = [1, 1] },
+  { item = "newspaper", w = 5, count = [1, 10] },
+]
+
+[loot.garage_floor]
+desc = "Leaning in a garage corner: clubs and sticks too long for the shelves."
+rolls = [1, 2]
+empty_chance_pct = 40
+entries = [
+  { item = "golf_club", w = 3, count = [3, 12] },
+  { item = "hockey_stick", w = 1, count = [1, 2] },
+]
+
+[loot.shed_long]
+desc = "Long-handled yard tools and boards hung on the shed wall or leaning by the door."
+rolls = [1, 3]
+empty_chance_pct = 10
+entries = [
+  { item = "pickaxe", w = 1, count = [1, 1] },
+  { item = "pitchfork", w = 2, count = [1, 1] },
+  { item = "rake", w = 9, count = [1, 2] },
+  { item = "shovel", w = 10, count = [1, 2] },
+  { item = "shovel", w = 3, count = [1, 1], mods = ["rusted"] },
+  { item = "sledgehammer", w = 2, count = [1, 1] },
+  { item = "wood_plank", w = 3, count = [1, 6] },
 ]

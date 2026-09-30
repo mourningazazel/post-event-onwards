@@ -25,6 +25,7 @@ desc = "A drugstore sales floor: OTC medicine and first aid, toiletries, a snack
 size_m2 = [150, 1200]
 floor = "ground"
 tags = ["from.medical", "from.retail"]
+loose = ["pharmacy_mobility"]
 objects = [
   { item = "metal_shelving", count = [8, 30], contains = ["pharmacy_otc"] },
   { item = "metal_shelving", count = [2, 8], contains = ["grocery_household"] },
@@ -54,6 +55,7 @@ desc = "A hardware store floor: tool, fastener and fuel aisles, lumber, ladders,
 size_m2 = [200, 3000]
 floor = "ground"
 tags = ["from.construction", "from.retail"]
+loose = ["hardware_floor_stock"]
 objects = [
   { item = "metal_shelving", count = [6, 20], contains = ["hardware_shelf_tools"] },
   { item = "metal_shelving", count = [6, 20], contains = ["hardware_shelf_fasteners"] },
@@ -89,7 +91,7 @@ floor = "ground"
 tags = ["from.retail"]
 objects = [
   { item = "metal_shelving", count = [6, 30], contains = ["closet_clothes"] },
-  { item = "dining_table", count = [2, 10], contains = ["dresser_clothes"] },
+  { item = "metal_shelving", count = [2, 10], contains = ["dresser_clothes"] },
   { item = "fire_extinguisher", count = [1, 2] },
 ]
 
@@ -98,6 +100,7 @@ desc = "EXTRA. A sporting-goods floor: team sports, fitness, camping and hunting
 size_m2 = [200, 3000]
 floor = "ground"
 tags = ["from.retail", "from.outdoors"]
+loose = ["sporting_goods_rack"]
 objects = [
   { item = "metal_shelving", count = [8, 30], contains = ["sporting_goods_stock"] },
   { item = "metal_shelving", count = [1, 6], contains = ["closet_clothes"] },
@@ -132,6 +135,7 @@ desc = "EXTRA. A bookstore floor: bookshelves, a map and stationery section, rea
 size_m2 = [80, 1200]
 floor = "ground"
 tags = ["from.retail"]
+loose = ["newspaper"]
 objects = [
   { item = "bookshelf", count = [10, 60], contains = ["bookstore_shelf"] },
   { item = "armchair", count = [0, 4] },
@@ -144,8 +148,8 @@ size_m2 = [10, 60]
 floor = "ground"
 tags = ["from.retail", "from.police"]
 objects = [
-  { item = "metal_shelving", count = [2, 6], contains = ["gun_store_stock"] },
-  { item = "safe", count = [1, 2], contains = ["gun_store_stock"] },
+  { item = "metal_shelving", count = [2, 6], contains = ["gun_store_shelf"] },
+  { item = "gun_safe", count = [1, 2], contains = ["gun_store_stock"] },
   { item = "security_camera_dvr", count = [1, 1], chance_pct = 85 },
 ]
 loose = ["convenience_counter"]
@@ -168,7 +172,7 @@ size_m2 = [20, 400]
 floor = "ground"
 tags = ["from.retail"]
 objects = [
-  { item = "metal_shelving", count = [3, 20], contains = ["warehouse_pallet"] },
+  { item = "metal_shelving", count = [3, 20], contains = ["warehouse_shelf"] },
   { item = "pallet", count = [0, 6], contains = ["warehouse_pallet"] },
   { item = "hand_truck", count = [1, 2] },
   { item = "ladder_step", count = [1, 2] },

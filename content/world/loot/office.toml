@@ -71,5 +71,4 @@ entries = [
   { item = "walkie_talkie", w = 3, count = [1, 2] },
   { item = "cash", w = 3, count = [1, 2] },
   { item = "pepper_spray", w = 1, count = [1, 1] },
-  { item = "newspaper", w = 3, count = [1, 3] },
 ]

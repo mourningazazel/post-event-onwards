@@ -67,7 +67,7 @@ objects = [
   { item = "wardrobe", count = [1, 1], chance_pct = 15, contains = ["closet_clothes"] },
   { item = "alarm_clock", count = [1, 1], chance_pct = 60 },
   { item = "television", count = [1, 1], chance_pct = 45 },
-  { item = "safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
+  { item = "gun_safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
   { item = "smoke_detector", count = [1, 1], chance_pct = 75 },
 ]
 loose = ["laundry_hamper"]
@@ -81,13 +81,13 @@ objects = [
   { item = "bed_frame", count = [1, 1] },
   { item = "mattress", count = [1, 1] },
   { item = "dresser", count = [1, 1], contains = ["dresser_clothes"] },
-  { item = "plastic_tub", count = [1, 2], contains = ["kids_room_stuff"] },
+  { item = "storage_bin", count = [1, 2], contains = ["kids_room_stuff"] },
   { item = "nightstand", count = [1, 1], chance_pct = 60, contains = ["kids_room_stuff"] },
   { item = "desk", count = [1, 1], chance_pct = 40, contains = ["kids_room_stuff"] },
   { item = "bookshelf", count = [1, 1], chance_pct = 50, contains = ["kids_room_stuff"] },
   { item = "smoke_detector", count = [1, 1], chance_pct = 75 },
 ]
-loose = ["kids_room_stuff", "laundry_hamper"]
+loose = ["kids_room_stuff", "laundry_hamper", "kids_room_floor"]
 
 [room.bathroom]
 desc = "A home bathroom: toilet, sink with medicine cabinet, tub or shower, vanity."
@@ -111,7 +111,7 @@ objects = [
   { item = "shotgun", count = [1, 1], chance_pct = 2 },
   { item = "hunting_rifle", count = [1, 1], chance_pct = 2 },
   { item = "semi_auto_rifle", count = [1, 1], chance_pct = 1 },
-  { item = "safe", count = [1, 1], chance_pct = 4, contains = ["home_safe"] },
+  { item = "gun_safe", count = [1, 1], chance_pct = 4, contains = ["home_safe"] },
   { item = "water_heater", count = [1, 1], chance_pct = 5 },
 ]
 loose = ["closet_clothes", "closet_clothes"]
@@ -128,7 +128,7 @@ objects = [
   { item = "sink", count = [1, 1], chance_pct = 40 },
   { item = "water_heater", count = [1, 1], chance_pct = 30 },
 ]
-loose = ["laundry_hamper"]
+loose = ["laundry_hamper", "broom"]
 
 [room.home_office]
 desc = "A home office or study: desk and computer, bookshelf, filing cabinet."
@@ -142,7 +142,7 @@ objects = [
   { item = "laptop", count = [1, 1], chance_pct = 50 },
   { item = "bookshelf", count = [1, 2], chance_pct = 70, contains = ["bookshelf_home"] },
   { item = "filing_cabinet", count = [1, 1], chance_pct = 50, contains = ["desk_clutter"] },
-  { item = "safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
+  { item = "gun_safe", count = [1, 1], chance_pct = 6, contains = ["home_safe"] },
 ]
 
 [room.garage]
@@ -150,6 +150,7 @@ desc = "An attached or detached garage: shelves of fluids and gear, workbench, m
 size_m2 = [18, 60]
 floor = "ground"
 tags = ["from.garage"]
+loose = ["garage_floor"]
 objects = [
   { item = "metal_shelving", count = [1, 4], contains = ["garage_shelf"] },
   { item = "workbench", count = [1, 1], chance_pct = 55, contains = ["workbench_tools"] },
@@ -184,7 +185,7 @@ objects = [
   { item = "workbench", count = [1, 1], chance_pct = 35, contains = ["workbench_tools"] },
   { item = "sofa", count = [1, 1], chance_pct = 30 },
   { item = "television", count = [1, 1], chance_pct = 25 },
-  { item = "safe", count = [1, 1], chance_pct = 8, contains = ["home_safe"] },
+  { item = "gun_safe", count = [1, 1], chance_pct = 8, contains = ["home_safe"] },
   { item = "smoke_detector", count = [1, 1], chance_pct = 60 },
 ]
 
@@ -193,9 +194,10 @@ desc = "An attic: stacked boxes and tubs of keepsakes, an old chair or dresser."
 size_m2 = [15, 80]
 floor = "upper"
 tags = ["from.living"]
+loose = ["attic_floor"]
 objects = [
   { item = "cardboard_box", count = [3, 16], contains = ["attic_boxes"] },
-  { item = "plastic_tub", count = [0, 6], contains = ["attic_boxes"] },
+  { item = "storage_bin", count = [0, 6], contains = ["attic_boxes"] },
   { item = "dresser", count = [1, 1], chance_pct = 15, contains = ["attic_boxes"] },
   { item = "armchair", count = [1, 1], chance_pct = 10 },
 ]
@@ -214,4 +216,4 @@ objects = [
   { item = "extension_ladder", count = [1, 1], chance_pct = 25 },
   { item = "bicycle", count = [0, 1] },
 ]
-loose = ["shed_contents"]
+loose = ["shed_contents", "shed_long"]

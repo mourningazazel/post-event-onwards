@@ -11,7 +11,8 @@ floor = "any"
 tags = ["from.school"]
 objects = [
   { item = "school_desk", count = [18, 32] },
-  { item = "desk", count = [1, 1], contains = ["classroom_supplies"] },
+  { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
+  { item = "metal_locker", count = [1, 1], contains = ["classroom_supplies"] },
   { item = "office_chair", count = [1, 1] },
   { item = "bookshelf", count = [1, 3], contains = ["classroom_supplies"] },
   { item = "desktop_pc", count = [1, 1], chance_pct = 50 },
@@ -38,6 +39,7 @@ desc = "A gymnasium: open court, bleachers, the equipment closet, locker banks."
 size_m2 = [300, 1500]
 floor = "ground"
 tags = ["from.school"]
+loose = ["hockey_stick"]
 objects = [
   { item = "metal_shelving", count = [1, 4], contains = ["gym_equipment"] },
   { item = "bench", count = [4, 12] },
@@ -51,6 +53,7 @@ desc = "A school or workplace nurse's office: a cot, supply cabinets, a desk, a 
 size_m2 = [10, 25]
 floor = "ground"
 tags = ["from.medical", "from.school"]
+loose = ["medical_floor"]
 objects = [
   { item = "hospital_bed", count = [1, 2] },
   { item = "desk", count = [1, 1], contains = ["desk_drawer"] },
@@ -81,6 +84,7 @@ desc = "A patient room on a ward: beds, bedside cabinets with patients' belongin
 size_m2 = [15, 40]
 floor = "any"
 tags = ["from.medical"]
+loose = ["medical_floor"]
 objects = [
   { item = "hospital_bed", count = [1, 4] },
   { item = "nightstand", count = [1, 4], contains = ["pockets_generic"] },
@@ -96,6 +100,7 @@ desc = "An emergency department treatment bay: trauma beds, supply carts and she
 size_m2 = [15, 60]
 floor = "ground"
 tags = ["from.medical"]
+loose = ["medical_floor"]
 objects = [
   { item = "hospital_bed", count = [1, 6] },
   { item = "metal_shelving", count = [2, 6], contains = ["hospital_supplies"] },
@@ -143,9 +148,9 @@ size_m2 = [6, 30]
 floor = "any"
 tags = ["from.police"]
 objects = [
-  { item = "metal_shelving", count = [1, 4], contains = ["police_armory_stock"] },
-  { item = "metal_locker", count = [2, 8], contains = ["police_armory_stock"] },
-  { item = "safe", count = [0, 2], contains = ["police_armory_stock"] },
+  { item = "metal_shelving", count = [1, 4], contains = ["police_armory_shelf"] },
+  { item = "metal_locker", count = [2, 8], contains = ["police_armory_shelf"] },
+  { item = "gun_safe", count = [1, 2], contains = ["police_armory_stock"] },
   { item = "workbench", count = [1, 1], chance_pct = 40 },
 ]
 
@@ -165,6 +170,7 @@ desc = "A fire-station apparatus bay: engines and ambulances, gear racks, the wo
 size_m2 = [150, 600]
 floor = "ground"
 tags = ["from.fire_service"]
+loose = ["fire_station_rack"]
 objects = [
   { item = "fire_engine", count = [1, 3] },
   { item = "ambulance", count = [0, 2] },

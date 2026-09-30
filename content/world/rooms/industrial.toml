@@ -5,8 +5,9 @@ desc = "A warehouse floor: pallet racking and floor pallets, forklifts, drums, h
 size_m2 = [500, 10000]
 floor = "ground"
 tags = ["from.industrial"]
+loose = ["warehouse_long"]
 objects = [
-  { item = "metal_shelving", count = [10, 100], contains = ["warehouse_pallet"] },
+  { item = "metal_shelving", count = [10, 100], contains = ["warehouse_shelf"] },
   { item = "pallet", count = [10, 120], contains = ["warehouse_pallet"] },
   { item = "forklift", count = [1, 6] },
   { item = "hand_truck", count = [2, 8] },
@@ -19,6 +20,7 @@ desc = "A repair or fabrication workshop: workbenches and tool chests, parts she
 size_m2 = [30, 300]
 floor = "ground"
 tags = ["from.industrial", "from.garage"]
+loose = ["factory_long_stock"]
 objects = [
   { item = "workbench", count = [1, 6], contains = ["workbench_tools"] },
   { item = "toolbox", count = [1, 4], contains = ["workbench_tools"] },
@@ -38,6 +40,7 @@ desc = "A loading dock: inbound pallets, hand trucks and a forklift, flattened b
 size_m2 = [40, 300]
 floor = "ground"
 tags = ["from.industrial"]
+loose = ["warehouse_long"]
 objects = [
   { item = "pallet", count = [4, 30], contains = ["warehouse_pallet"] },
   { item = "hand_truck", count = [1, 4] },
@@ -52,6 +55,7 @@ desc = "A factory floor: workbenches and parts racks, drums of oil, forklifts, w
 size_m2 = [500, 8000]
 floor = "ground"
 tags = ["from.industrial"]
+loose = ["factory_long_stock"]
 objects = [
   { item = "workbench", count = [4, 20], contains = ["factory_parts"] },
   { item = "metal_shelving", count = [4, 20], contains = ["factory_parts"] },
@@ -83,16 +87,16 @@ floor = "ground"
 tags = ["from.living"]
 objects = [
   { item = "cardboard_box", count = [4, 30], contains = ["attic_boxes"] },
-  { item = "plastic_tub", count = [0, 10], contains = ["attic_boxes"] },
+  { item = "storage_bin", count = [0, 10], contains = ["attic_boxes"] },
   { item = "sofa", count = [1, 1], chance_pct = 30 },
   { item = "mattress", count = [1, 1], chance_pct = 30 },
   { item = "dresser", count = [1, 1], chance_pct = 30, contains = ["dresser_clothes"] },
   { item = "dining_table", count = [1, 1], chance_pct = 20 },
   { item = "metal_shelving", count = [1, 1], chance_pct = 30, contains = ["garage_shelf"] },
   { item = "motorcycle", count = [1, 1], chance_pct = 5 },
-  { item = "safe", count = [1, 1], chance_pct = 3, contains = ["home_safe"] },
+  { item = "gun_safe", count = [1, 1], chance_pct = 3, contains = ["home_safe"] },
 ]
-loose = ["storage_unit_extras"]
+loose = ["storage_unit_extras", "attic_floor"]
 
 [room.control_room]
 desc = "A control or security room: consoles and monitors, the camera recorder, radios, binders."
