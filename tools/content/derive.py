@@ -35,6 +35,8 @@ SOAK_BASE = 1          # the floor itself: the unit everything else is measured 
 SOAK_SURFACE = 3       # a table or counter top: hands and things rest on it
 SOAK_SEAT = 6          # a seat: a body sits on it for minutes at a time
 SOAK_SLEEP = 5         # sleepable: a body lies on it for hours
+# Bedding a body lies in or under for hours soaks like a bed, seat or not (PEO-061).
+SOAK_BEDDING_TAGS = ("cat.textile.bedding", "cat.camping.sleeping_bag")
 SOAK_ABSORBER = 4      # absorbs_scent: made to hold scent (clothing, bedding, upholstery)
 SOAK_MAX = 45          # bedding, about 40x the floor (D-013's "furniture about 37x")
 SOAK_SOFT_BEDDING_PCT = 50   # soft parts at least this share: bedding or clothing, soaks x3
@@ -497,8 +499,9 @@ def soak_rate(db: Db, item: dict) -> int:
     parts, else the main material) scales that; absorbers add a flat amount."""
     f = item.get("features") or {}
     seat = f.get("seat") or {}
+    bedding = any(t == b or t.startswith(b + ".") for t in item.get("tags", []) for b in SOAK_BEDDING_TAGS)
     contact = (SOAK_BASE + (SOAK_SURFACE if "surface" in f else 0) + (SOAK_SEAT if "seat" in f else 0)
-               + (SOAK_SLEEP if seat.get("sleepable") else 0))
+               + (SOAK_SLEEP if seat.get("sleepable") or bedding else 0))
     soft = soft_share(db, item)
     mm = main_material(db, item)
     if soft >= SOAK_SOFT_BEDDING_PCT:
