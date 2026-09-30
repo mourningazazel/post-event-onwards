@@ -787,38 +787,6 @@
         "tools/verify.py"
       ],
       "depends_on": []
-    },
-    {
-      "id": "PEO-062",
-      "order": 557,
-      "type": "bug",
-      "title": "HUD line overflows an 80-column window: key hints cut off",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "starting"
-        },
-        {
-          "at": "2026-09-29",
-          "by": "builder",
-          "text": "commits: the [PEO-062] app commit (two HUD lines, kHudRows 2). tests: verify.py --frontend --full passed. manual: peo 7, Right, r, Right, screenshot at default size (2560x1504): line 1 'stage 0 turn 2 run dead 40 spec:hit (miss 0)', line 2 '[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next'; [n] visible, both lines end well inside the window. open: none."
-        }
-      ],
-      "references": [
-        "src/app/main.cpp"
-      ],
-      "depends_on": []
     }
   ]
 }
