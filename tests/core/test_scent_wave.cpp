@@ -97,37 +97,6 @@ TEST_SUITE("scent_wave") {
         }
     }
 
-    TEST_CASE("nothing is read past strength / (distance_cost + age_cost / speed) cells") {
-        // A standing source long past steady state. Strength set for a 20-cell reach
-        // at speed 1 (26 at speed 2), so a small grid holds the whole disc.
-        constexpr int kReach = 20;
-        constexpr int kBig = 61;
-        constexpr Vec2i kMid{30, 30};
-        constexpr int kUpdates = 45; // the disc stops growing after ~reach updates
-        for (const int speed : {1, 2}) {
-            const WaveParams p{.strength = kReach * (kWaveDistanceCost + kWaveAgeCost), .speed = speed};
-            const Grid<bool> walls(kBig, kBig, false);
-            ScentWave w(kBig, kBig, p);
-            for (int i = 0; i < kUpdates; ++i) {
-                w.deposit(kMid, p.strength);
-                w.update(walls);
-            }
-            const int reach = p.strength / (p.distance_cost + p.age_cost / p.speed);
-            REQUIRE(reach < kMid.x);
-            int farthest = 0;
-            for (int y = 0; y < kBig; ++y) {
-                for (int x = 0; x < kBig; ++x) {
-                    if (w.sample({x, y}) > 0) {
-                        farthest = std::max(farthest, chebyshev({x, y}, kMid));
-                    }
-                }
-            }
-            CAPTURE(speed);
-            CHECK(farthest <= reach);
-            CHECK(farthest >= reach - 1); // and it does reach about that far
-        }
-    }
-
     TEST_CASE("speed 2 advances the front two cells per update") {
         const Grid<bool> walls(kSide, kSide, false);
         for (const int speed : {1, 2}) {
@@ -198,4 +167,37 @@ TEST_SUITE("scent_wave") {
         }
         CHECK(plain.updates() == patched.updates());
     }
+#ifdef NDEBUG
+    TEST_CASE("nothing is read past strength / (distance_cost + age_cost / speed) cells") {
+        // A standing source long past steady state. Strength set for a 20-cell reach
+        // at speed 1 (26 at speed 2), so a small grid holds the whole disc. Release
+        // only: ~110 ms under ASan, the suite's largest case (PEO-063 headroom).
+        constexpr int kReach = 20;
+        constexpr int kBig = 61;
+        constexpr Vec2i kMid{30, 30};
+        constexpr int kUpdates = 45; // the disc stops growing after ~reach updates
+        for (const int speed : {1, 2}) {
+            const WaveParams p{.strength = kReach * (kWaveDistanceCost + kWaveAgeCost), .speed = speed};
+            const Grid<bool> walls(kBig, kBig, false);
+            ScentWave w(kBig, kBig, p);
+            for (int i = 0; i < kUpdates; ++i) {
+                w.deposit(kMid, p.strength);
+                w.update(walls);
+            }
+            const int reach = p.strength / (p.distance_cost + p.age_cost / p.speed);
+            REQUIRE(reach < kMid.x);
+            int farthest = 0;
+            for (int y = 0; y < kBig; ++y) {
+                for (int x = 0; x < kBig; ++x) {
+                    if (w.sample({x, y}) > 0) {
+                        farthest = std::max(farthest, chebyshev({x, y}, kMid));
+                    }
+                }
+            }
+            CAPTURE(speed);
+            CHECK(farthest <= reach);
+            CHECK(farthest >= reach - 1); // and it does reach about that far
+        }
+    }
+#endif
 }

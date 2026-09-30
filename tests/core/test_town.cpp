@@ -1,8 +1,13 @@
+#include "peo/core/dead.hpp"
 #include "peo/core/scent.hpp"
+#include "peo/core/scent_wave.hpp"
 
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <vector>
 
 #include "town_fixture.hpp"
@@ -66,6 +71,46 @@ int longest_corridor(const Grid<bool>& b) {
     return longest;
 }
 
+/// The review's source: the open cell farthest by route from the top street's middle,
+/// inside the middle offices (the probe's search box).
+Vec2i deepest_office_cell(const Grid<bool>& b) {
+    constexpr Vec2i kFarFrom{kTownWidth / 2, 1};
+    constexpr int kMiddleX0 = 60;
+    constexpr int kMiddleX1 = 140;
+    constexpr int kMiddleY0 = 40;
+    constexpr int kMiddleY1 = 80;
+    const std::vector<int> far = bfs_dist(b, kFarFrom);
+    Vec2i source{};
+    int deepest = -1;
+    for (int y = kMiddleY0 + 1; y < kMiddleY1; ++y) {
+        for (int x = kMiddleX0 + 1; x < kMiddleX1; ++x) {
+            const int d = far[cell_index(b, {x, y})];
+            if (!b.at(x, y) && d > deepest) {
+                deepest = d;
+                source = {x, y};
+            }
+        }
+    }
+    return source;
+}
+
+int chebyshev(Vec2i a, Vec2i b) {
+    return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
+/// One of the Dead alone on the town: it decides once per update (about its pace at
+/// a 6 s step) and nothing else occupies or reserves a tile.
+struct Follower {
+    Dead unit;
+    Grid<std::uint8_t> occupied{kTownWidth, kTownHeight, 0};
+    Grid<bool> reserved{kTownWidth, kTownHeight, false};
+    void decide(const ScentWave& f, const Grid<bool>& b) {
+        if (const auto to = decide_move(unit, f, b, occupied, reserved)) {
+            unit.pos = *to;
+        }
+    }
+};
+
 } // namespace
 
 TEST_SUITE("town") {
@@ -114,6 +159,117 @@ TEST_SUITE("town") {
             CHECK(can_step(b, prev, p - prev));
             prev = p;
         }
+    }
+
+    // PEO-030 on the town. Cheap in every build: the wave only works the cells its
+    // fronts reach, a few thousand here, not the map.
+    TEST_CASE("the geodesic field on the town") {
+        // A standing deposit in the deepest office room: every cell within reach reads
+        // scent, and a climb from each of them arrives by a shortest route.
+        const Grid<bool> b = town();
+        const Vec2i source = deepest_office_cell(b);
+        ScentWave f(kTownWidth, kTownHeight);
+        for (int i = 0; i <= kWaveReachCells; ++i) {
+            f.deposit(source, f.params().strength);
+            f.update(b);
+        }
+        std::vector<int> dist = bfs_dist(b, source);
+        int within = 0;
+        int missing = 0;
+        for (std::size_t i = 0; i < dist.size(); ++i) {
+            if (dist[i] >= kWaveReachCells) {
+                dist[i] = -1; // out of reach: not a starting cell for the climb
+            } else if (dist[i] > 0) {
+                ++within;
+                const Vec2i c{static_cast<int>(i % kTownWidth), static_cast<int>(i / kTownWidth)};
+                missing += f.sample(c) > 0 ? 0 : 1;
+            }
+        }
+        const ClimbResult c = climb_all(b, dist, source, [&](Vec2i p) { return f.sample(p); });
+        MESSAGE("geodesic field on the town: " << within << " cells within " << kWaveReachCells
+                                               << " of the source, climb " << 100.0 * c.success << "%");
+        CHECK(within > 0);
+        CHECK(missing == 0);
+        CHECK(c.success == 1.0);
+        CHECK(c.stretch == 1.0);
+        CHECK(c.frozen == 0);
+    }
+
+    TEST_CASE("a Dead follows a trail into the house") {
+        // The player walks from the top street to the deepest office room, a tile per
+        // update, then waits; a Dead starting on the path 5 updates behind follows the
+        // trail in instead of parking at a crossing.
+        constexpr int kBehind = 5;
+        constexpr int kWait = 50;
+        const Grid<bool> b = town();
+        const Vec2i room = deepest_office_cell(b);
+        const Vec2i street{room.x, 1};
+        const std::vector<Vec2i> path = walk_path(b, street, room);
+        REQUIRE(static_cast<int>(path.size()) > kBehind);
+        ScentWave f(kTownWidth, kTownHeight);
+        Vec2i player = street;
+        Follower dead{.unit = {.pos = street}};
+        for (std::size_t i = 0; i < path.size() + kWait; ++i) {
+            player = i < path.size() ? path[i] : player;
+            f.deposit(player, f.params().strength);
+            f.update(b);
+            if (i >= kBehind) {
+                dead.decide(f, b);
+            }
+        }
+        CAPTURE(dead.unit.pos.x);
+        CAPTURE(dead.unit.pos.y);
+        CHECK(chebyshev(dead.unit.pos, player) <= 1);
+    }
+
+    TEST_CASE("the doorway scenario") {
+        // D-008's old acceptance: linger 30 updates just inside a house's front door,
+        // walk 20 cells into the house, and one of the Dead starting outside on the
+        // street reaches the door.
+        constexpr int kLinger = 30;
+        constexpr int kInto = 20;
+        constexpr int kAfter = 40;
+        constexpr int kStreetOffset = 6; // the Dead starts this far along the street
+        const Grid<bool> b = town();
+        // The first house: its front door is the one gap in its top wall.
+        constexpr int kX0 = kStreetWidth;
+        constexpr int kY0 = kStreetWidth;
+        Vec2i door{};
+        for (int x = kX0 + 1; x < kX0 + kBlockPitchX - kStreetWidth - 1; ++x) {
+            if (!b.at(x, kY0)) {
+                door = {x, kY0};
+            }
+        }
+        REQUIRE(door.x > 0);
+        const Vec2i inside = door + Vec2i{0, 1};
+        // Twenty cells in: the first cell of a route that far from the door, inside.
+        const std::vector<int> from_door = bfs_dist(b, inside);
+        Vec2i deep = inside;
+        for (int y = kY0 + 1; y < kY0 + kBlockPitchY - kStreetWidth; ++y) {
+            for (int x = kX0 + 1; x < kX0 + kBlockPitchX - kStreetWidth; ++x) {
+                if (from_door[cell_index(b, {x, y})] == kInto) {
+                    deep = {x, y};
+                }
+            }
+        }
+        REQUIRE(deep != inside);
+        const std::vector<Vec2i> walk = walk_path(b, inside, deep);
+        ScentWave f(kTownWidth, kTownHeight);
+        Follower dead{.unit = {.pos = Vec2i{door.x + kStreetOffset, 1}}};
+        REQUIRE_FALSE(b.at(dead.unit.pos));
+        Vec2i player = inside;
+        bool reached = false;
+        const std::size_t updates = kLinger + walk.size() + kAfter;
+        for (std::size_t i = 0; i < updates; ++i) {
+            if (i >= static_cast<std::size_t>(kLinger) && i - kLinger < walk.size()) {
+                player = walk[i - kLinger];
+            }
+            f.deposit(player, f.params().strength);
+            f.update(b);
+            dead.decide(f, b);
+            reached = reached || dead.unit.pos == door;
+        }
+        CHECK(reached);
     }
 
 #ifdef NDEBUG
@@ -178,5 +334,6 @@ TEST_SUITE("town") {
                                           << ", frozen " << c.frozen);
         CHECK(reachable > 0);
     }
+
 #endif
 }
