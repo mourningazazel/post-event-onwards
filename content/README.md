@@ -81,6 +81,25 @@ salvage = { item = "copper_tubing", count = 1, set = { dims_mm = [1500, 6, 6] },
 
 `tool` is a requirement string: `"<capability>>=<n>"`, several joined by `&`, or `"none"`.
 
+Compartments (PEO-054, D-027): furniture and fixtures list their drawers, shelves and cupboards,
+each searched on its own. An item has `compartments` or `features.container`, never both.
+
+```toml
+[item.kitchen_base_run]
+# ...
+compartments = [
+  { name = "top drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
+  { name = "second drawer", capacity_ml = 12000, max_dim_mm = 500, closable = true, loot = "kitchen_drawer" },
+  { name = "cupboard", capacity_ml = 150000, max_dim_mm = 550, closable = true, loot = "kitchen_cabinet_contents" },
+]
+```
+
+`name` is what the search menu shows; `lock` takes the lock feature's params. A room object
+overrides a compartment's default loot with `loot = { "top drawer" = "junk_drawer" }`, or gives
+the whole item one table with `contains`, rolled once and spread over the compartments by fit
+(never both on one object). `upright = true` marks an item whose longest side is its height;
+`rests_on = "<item>"` marks one that lies on another (a mattress on its bed frame).
+
 ## Modifier record (additive or modifying details, applied by generation)
 
 ```toml
@@ -115,7 +134,8 @@ entries = [
 the expectations and chain feasibility tests in `tests/content/`.
 
 **Contents must fit their container (PEO-052).** A room object with `contains` needs a `container`
-feature. The table's mean fill (`derive.loot_expected`: over rolls, the empty chance, weights and
+feature or compartments (checked as one box: capacities summed, the largest longest side); a
+compartment's own loot is checked against that compartment. The table's mean fill (`derive.loot_expected`: over rolls, the empty chance, weights and
 counts, through nested loot) must not exceed `capacity_ml`, nor `max_mass_g` when set, and no
 entry's packed longest side may exceed `max_dim_mm`. Worst-case rolls may overflow: generation fills
 until full, so capacity is the ceiling, not the table. Sizes are **packed** (`derive.packed_dims`):
@@ -123,3 +143,9 @@ rigid shapes keep `dims_mm`; `fabric` and `bag` fold (halve the longest side, do
 until the longest is at most 450 mm; `cord` coils into a square of side sqrt(length x girth x 0.8),
 at least 150 mm. Long rigid things (tools with handles, lumber, long guns) go in a room's `loose`
 list or a gun safe, never in a shelf or drawer table; do not raise `max_dim_mm` to make them fit.
+
+**Furniture must fit its room (PEO-054).** Each blocking or fixed object covers its floor area in
+m2: its two horizontal dimensions (for `upright` items, the two after its height); `blocks =
+"none"` items cover none, and so does one whose `rests_on` item is in the same room. The sum at
+the minimum counts of objects always placed must be at most 0.6 x the smallest `size_m2`, and the
+sum at every maximum (chance objects included) at most 0.6 x the largest.

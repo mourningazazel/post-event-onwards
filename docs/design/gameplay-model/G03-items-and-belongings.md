@@ -57,6 +57,8 @@ Items are never "stored inside" another item's data. Each item simply records **
 - **Future flexibility:** encumbrance, awkward loads, strapping items *onto* a pack (a `PartOf`
   or `Attached` location).
 - **Owner decision (2026-09-28, N015 / D-003): the recommendation is accepted.**
+- Furniture holds **compartments** (drawers, shelves, cupboards), each with its own capacity and
+  longest side, and each searched on its own, its time set by its volume (D-027, PEO-054).
 
 ### D3.2 — Stacks
 
