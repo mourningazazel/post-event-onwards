@@ -720,28 +720,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-052",
-      "order": 467,
-      "type": "chore",
-      "title": "Content lint: loot versus container capacity; fix the eight mismatches; add storage_bin",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "briefed. Content and tooling only, all headless."
-        }
-      ],
-      "references": [
-        "tools/content/lint.py"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-053",
       "order": 477,
       "type": "design",
