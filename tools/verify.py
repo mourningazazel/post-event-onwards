@@ -8,6 +8,7 @@ marking a queue item Validation or complete; add --full before a push to main.
   python3 tools/verify.py --release  # use the optimised headless preset (perf work)
   python3 tools/verify.py --full     # also the CI jobs a Debug run cannot represent:
                                      # headless-release and a clang (ASan/UBSan) build
+  python3 tools/verify.py --perf     # also print the perf lines from headless-release
 
 Exit code is non-zero on the first failing stage so agents can act on it. A
 stage that cannot run here (no clang-format, no clang sanitizer runtime) is
@@ -40,6 +41,10 @@ SANITIZE = "-fsanitize=address,undefined"
 # CMake and CI keep every warning an error. -Wno-error= because the target's
 # later -Wpedantic re-enables a plain -Wno-.
 NEWER_CLANG_ONLY = ("-Wno-error=c2y-extensions", "-Wno-error=#warnings")
+
+PERF_TESTS = "build/headless-release/tests"
+PERF_FILTER = "-tc=perf*"
+PERF_LINE = re.compile(r"MESSAGE: (perf .*)$")
 
 skipped: list[str] = []
 
@@ -107,6 +112,23 @@ def preset_stage(label: str, preset: str) -> None:
     run(f"{label} test", ["ctest", "--preset", preset])
 
 
+def perf_stage() -> None:
+    """Run only the perf cases from the release build and print their lines to paste."""
+    binary = next(iter(sorted((ROOT / PERF_TESTS).glob("peo_core_tests*"))), None)
+    if binary is None:
+        skip("perf", f"no test binary in {PERF_TESTS}")
+        return
+    print(f"\n=== perf: {binary.relative_to(ROOT)} {PERF_FILTER}")
+    r = subprocess.run([str(binary), PERF_FILTER], cwd=ROOT, capture_output=True, text=True)
+    lines = [m.group(1) for m in map(PERF_LINE.search, r.stdout.splitlines()) if m]
+    print("\n".join(lines))
+    if r.returncode != 0 or not lines:
+        print(r.stdout[-2000:])
+        print(f"=== perf: FAILED")
+        sys.exit(r.returncode or 1)
+    print(f"=== perf: ok ({len(lines)} variants)")
+
+
 def summary() -> int:
     if skipped:
         print("\npassed, but these stages did NOT run:\n  " + "\n  ".join(skipped))
@@ -121,6 +143,7 @@ def main() -> int:
     p.add_argument("--fix", action="store_true")
     p.add_argument("--release", action="store_true")
     p.add_argument("--full", action="store_true")
+    p.add_argument("--perf", action="store_true")
     p.add_argument("--skip-build", action="store_true")
     args = p.parse_args()
 
@@ -144,13 +167,16 @@ def main() -> int:
     run("build", ["cmake", "--build", "--preset", preset])
     run("test", ["ctest", "--preset", preset])
 
+    release_built = preset == "headless-release"
+    if (args.full or args.perf) and not release_built:
+        preset_stage("release", "headless-release")
     if args.full:
-        if preset != "headless-release":
-            preset_stage("release", "headless-release")
         if os.name == "nt":
             skip("clang", "the clang job is Linux-only in CI")
         else:
             clang_stage()
+    if args.perf:
+        perf_stage()
     return summary()
 
 
