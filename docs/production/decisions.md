@@ -5,8 +5,19 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-019, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-020, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-09-30 · D-034 · Horde size and active map size are set per machine, continuously
+
+User decision (N019), extending D-021. Beside the M1 Air, one target PC per tier: low (i5-8400
+class, GTX 1080), medium (i5-12400F or Ryzen 5 5600X, RTX 3060/4060), high (i7-14700K, RTX
+4070 Super). Horde size and active map size are two separate limits (latency and core speed;
+cache and bandwidth). An auto-config calibrates each axis on the machine and sets both as real
+numbers inside D-021's budget; no presets, and a PC may run hordes past what fits on the Mac.
+Why: the game is gradients, and the horde should grow as far as a typical PC allows.
+Consequence: design/performance-targets.md; PEO-070 to PEO-074; the benchmarks stay outside the
+unit suite.
 
 ## 2026-09-30 · D-032 · Quick taps are kept; a held key stays capped
 
@@ -115,14 +126,3 @@ largest variant below has under 50% headroom. Budget, replacing the 16 ms target
 a speculated update under 100 ms on the M1 Air, the floor machine, so most of the 333 ms input gap
 (D-011) stays headroom. Measured at 200x120 with 5,000 Dead, 512x512 with 20,000 and 512x512 with
 50,000, each with many emitters. Consequence: PEO-043; vision.md updated.
-
-## 2026-09-29 · D-020 · Wind carries scent ahead; indoors no wind, and inner walls build up
-
-User decision (N016). Outdoors, wind from behind the player carries scent ahead of them, further
-than they walk when strong enough; D-008's "never ahead of the player" reading is dropped. Indoors
-there is no wind, with an explicit stop in the calculation (per-cell openness 0). Wall and barrier
-rules are house-specific and live outside the base transport. The owner's starting point, open to
-expansion: inner walls build scent up instead of absorbing it, since there is no air above to vent
-into; outdoor walls and the map edge still absorb. Why: scent must reach the room at the end of a
-1x8 corridor, and long turning corridors exist only indoors. Consequence: the solver is D-024;
-PEO-048; PEO-030 and PEO-035 are rebriefed after D-024.
