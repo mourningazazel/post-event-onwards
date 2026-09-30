@@ -380,65 +380,6 @@
       ]
     },
     {
-      "id": "PEO-030",
-      "order": 270,
-      "type": "feature",
-      "title": "Geodesic scent field: integer, propagating, min-plus commit patch (D-024)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "D-010 (2026-09-29): the far layer becomes a buildup layer. A cell's fade rate falls as the sliding 3x3 box total around it rises, to a nonzero minimum; box totals refresh on a turn schedule (every turn near the player, staggered further out); buildup pulls harder than a fresh trail. The separable IIR solve assumes a single decay everywhere, so re-examine the method (e.g. a coarse FTCS far layer stepped on a stagger) when briefing. Acceptance adds: a den where the player lingered, and a path walked often, both outlast and outpull a fresh trail."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "PEO-007 constraint: compute D-010 fade rates (box totals) at the start of a turn from committed state, before the player's deposit is patched in, so speculate() sees the same rates commit() uses; the golden test must stay bit-exact. If a rate had to depend on this turn's deposit, commit would need to recompute every cell whose box includes the patched cells."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "D-013 (2026-09-29) supersedes D-010's fade rule: buildup moves to a per-tile soak value (PEO-038), so the far layer returns to a single decay and D-008's separable IIR solve stands. Drop the buildup acceptance from this item; the doorway scenario stays."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024 (transport). The pathfinding review (reviews/2026-09-29-pathfinding-and-scent-review.md) measured the IIR far layer failing on a town map; D-019 and D-020 (N016) add reach radius, wind and indoor rules the transport must carry. Rebrief once D-024 is answered."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Rebriefed as the geodesic field; D-008's two layers and the IIR far layer are superseded. Build after PEO-035."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "Blocked by dependency PEO-035, not in progress: nothing actionable for the Builder."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "builder",
-          "text": "commits: eaee421 (ScentWave + tests) d79989f (World switch, Dead, app, re-pin 0x4B5B9E9B2BE5F1E7) f6d393d (town cases) 2fbf22a (docs). tests: verify.py --frontend --full passed; golden bit-identical with 1/3/6/12 s; patch_deposit equals deposit-then-update over 300 random updates; sanitizer suite 0.65 s; 0 allocations over 1000 mixed actions. town: 969 cells within reach all scented, climb 100%, stretch 1.0, 0 frozen (diffusion 14.5%/15.4%); trail and doorway pass. perf (M1 Air, -O3, cpu 6, 300 samples, main -> this): 200x120/5k commit 25-30 -> 0-1 us, speculate 96/229/294 -> 28/266/277 us (min/med/max: median +16%, the wave's copy+update is 86 us vs the old sweep's ~85, the rest is the Dead's run-ahead); 512x512/50k commit 269-280 -> 0-3 us, speculate median 2308 -> 1502 us. manual: peo 7 scent view, walk 12, wait 10: scent spreads along the route and round wall cells; the Dead gathered at the player. Stages have no houses or doors yet, so the doorway part is covered by the town test only. open: (1) the brief's step_dead/step_horde and re-decide box no longer exist (PEO-058/060): decide_move and the poll read the wave instead. (2) patch_deposit is exact for speed 1 only; speed > 1 commits live. (3) Reach-bound case runs release only; the three town wave cases run in every build. (4) Speculate median +16% at 200x120 is not yet explained beyond the Dead's share."
-        }
-      ],
-      "references": [
-        "docs/design/scent-mobs.md",
-        "docs/design/scent-performance.md",
-        "src/core/src/scent.cpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-038",
       "order": 327,
       "type": "feature",
@@ -561,9 +502,7 @@
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": [
-        "PEO-030"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-048",
@@ -590,9 +529,7 @@
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": [
-        "PEO-030"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-049",
@@ -619,9 +556,7 @@
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": [
-        "PEO-030"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-050",
