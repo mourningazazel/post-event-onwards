@@ -15,6 +15,17 @@ from derive import (ResolveError, entry_item, item_expected, loot_expected, loot
                     resolve_item, rnd)
 
 REQ_RE = re.compile(r"^([a-z_]+)>=(\d+)$")
+# cat families that label records other than items (buildings, settings): registered, but
+# never queried against items (PEO-056).
+CAT_LABEL_FAMILIES = ("building", "setting")
+# Concrete items no content references because the building generator places them.
+REACHABLE_BY_GENERATOR = {
+    "door_interior": "the building generator hangs interior doors",
+    "door_exterior": "the building generator hangs exterior doors",
+    "door_steel": "the building generator hangs steel doors (commercial, institutional)",
+    "window_house": "the building generator glazes house walls",
+    "window_storefront": "the building generator glazes shop fronts",
+}
 # Keys a compartment may carry (PEO-054) and their types; lock is checked against feature.lock.
 COMPARTMENT_KEYS = {"name": "str", "capacity_ml": "int", "max_mass_g": "int", "max_dim_mm": "int",
                     "closable": "bool", "lock": "table", "loot": "str"}
@@ -107,6 +118,9 @@ class Lint:
             fams = self.db["schema"]["material"]["fields"]["family"][5:].split("|")
             if rest not in fams:
                 self.err(where, f"tag '{tag}': unknown material family")
+        elif ns == "cat":
+            if self.db.get("tag", "cat." + rest.split(".")[0]) is None:
+                self.err(where, f"tag '{tag}': cat family 'cat.{rest.split('.')[0]}' is not registered")
         elif not nsrec.get("open") and self.db.get("tag", tag) is None:
             self.err(where, f"tag '{tag}' is not registered (registry/tags.toml)")
 
@@ -520,6 +534,84 @@ class Lint:
                     src = f"loot {lid}" if lid else "contains"
                     self.err(where, f"{src}: {e['item']} packs to {longest} mm, over max_dim_mm {box['max_dim_mm']}")
 
+    def cat_queries(self) -> list[tuple[str, str]]:
+        """(where, tag) for every cat tag that selects items: modifier and detail table
+        applies_to, fastener items_tag, action role predicates (tag, tag_prefix)."""
+        out = []
+        for rtype in ("modifier", "detail_table"):
+            for rid, rec in self.db[rtype].items():
+                a = rec.get("applies_to") or {}
+                for k in ("tags_any", "tags_all"):
+                    out += [(f"{rtype}.{rid} applies_to.{k}", q) for q in a.get(k, []) if q.startswith("cat.")]
+        for rid, rec in self.db["fastener"].items():
+            q = rec.get("items_tag", "")
+            if q.startswith("cat."):
+                out.append((f"fastener.{rid} items_tag", q))
+
+        def walk(where, v):
+            if isinstance(v, dict):
+                for k, x in v.items():
+                    if k in ("tag", "tag_prefix") and isinstance(x, str) and x.startswith("cat."):
+                        out.append((where, x))
+                    else:
+                        walk(where, x)
+            elif isinstance(v, list):
+                for x in v:
+                    walk(where, x)
+
+        for rid, rec in self.db["action"].items():
+            walk(f"action.{rid}", rec)
+        return out
+
+    def lint_cat_queries(self) -> None:
+        """A cat tag that selects items must match at least one item's tag (prefix match), so
+        a typo cannot make an empty store or an impossible recipe (PEO-056)."""
+        tags: set[str] = set()
+        for iid in self.db["item"]:
+            try:
+                tags.update(t for t in resolve_item(self.db, iid).get("tags", []) if t.startswith("cat."))
+            except ResolveError:
+                continue
+        for where, q in self.cat_queries():
+            if q.split(".")[1] in CAT_LABEL_FAMILIES:
+                continue
+            if not any(t == q or t.startswith(q + ".") for t in tags):
+                self.err(where, f"cat query '{q}' matches no item's tags")
+
+    def lint_reachable(self) -> None:
+        """Warn for each concrete item nothing places: no room, loot, outdoor set, profile or
+        salvage yield names it, and it is not on the generator's list (PEO-056)."""
+        refs: set[str] = set()
+
+        def walk(v):
+            if isinstance(v, str):
+                refs.add(v)
+            elif isinstance(v, list):
+                for x in v:
+                    walk(x)
+            elif isinstance(v, dict):
+                for x in v.values():
+                    walk(x)
+
+        for rtype in ("room", "loot", "outdoor_set", "profile"):
+            for rec in self.db[rtype].values():
+                walk(rec)
+        items = {}
+        for iid in self.db["item"]:
+            try:
+                items[iid] = resolve_item(self.db, iid)
+            except ResolveError:
+                continue
+        for it in items.values():
+            for part in (it.get("composition") or {}).values():
+                if part.get("salvage"):
+                    refs.add(part["salvage"].get("item", ""))
+            walk((it.get("contents") or {}).get("items", []))
+        for iid, it in items.items():
+            if not it.get("abstract") and iid not in refs and iid not in REACHABLE_BY_GENERATOR:
+                self.warn(f"{self.db.where('item', iid)} item.{iid}",
+                          "unreachable: no room, loot, outdoor set, profile or salvage places it")
+
     def run(self) -> None:
         self.lint_registry()
         self.lint_simple("material")
@@ -527,6 +619,8 @@ class Lint:
         self.lint_items()
         self.lint_modifiers()
         self.lint_refs()
+        self.lint_cat_queries()
+        self.lint_reachable()
 
 
 def main() -> int:
