@@ -30,6 +30,24 @@ COIL_PACKING = 0.8     # coiled cord leaves gaps: it fills about 80% of the squa
 # Searching (D-027, PEO-054): each compartment is searched on its own, in whole quanta.
 SEARCH_QUANTUM_S = 6       # one walking step (D-014): the smallest unit of game time an action takes
 SEARCH_BASE_ML = 12000     # a kitchen drawer: one quantum; time grows with the square root of volume
+# Soak (D-013, D-028, PEO-055): how fast a thing takes up scent, as a multiple of the floor.
+SOAK_BASE = 1          # the floor itself: the unit everything else is measured in
+SOAK_SURFACE = 3       # a table or counter top: hands and things rest on it
+SOAK_SEAT = 6          # a seat: a body sits on it for minutes at a time
+SOAK_SLEEP = 5         # sleepable: a body lies on it for hours
+SOAK_ABSORBER = 4      # absorbs_scent: made to hold scent (clothing, bedding, upholstery)
+SOAK_MAX = 45          # bedding, about 40x the floor (D-013's "furniture about 37x")
+SOAK_SOFT_BEDDING_PCT = 50   # soft parts at least this share: bedding or clothing, soaks x3
+SOAK_SOFT_UPHOLSTERED_PCT = 25  # soft parts at least this share: upholstered, soaks x2
+# Multipliers in halves so the engine port stays integer: x3, x2, x1, x0.5.
+SOAK_HALVES_BEDDING = 6
+SOAK_HALVES_POROUS = 4
+SOAK_HALVES_PLAIN = 2
+SOAK_HALVES_HARD = 1
+SOAK_POROUS_SURFACES = ("porous", "fibrous")
+SOAK_HARD_FAMILIES = ("metal", "glass", "ceramic", "stone")
+# One person drags a mattress (32 kg) to a new room; a sofa (45 kg) needs two, so it stays.
+SOAK_PORTABLE_MAX_G = WIELD_MAX_G * 3
 
 
 class ResolveError(Exception):
@@ -460,3 +478,46 @@ def search_seconds(capacity_ml: int) -> int:
     quanta, growing with the square root of the volume so big cupboards are slower but
     not proportionally so."""
     return SEARCH_QUANTUM_S * math.ceil(math.sqrt(capacity_ml / SEARCH_BASE_ML))
+
+
+# ---------------------------------------------------------------- soak (D-013, D-028)
+def soft_share(db: Db, item: dict) -> int:
+    """Percent of an item's mass that is textile or foam: what actually holds scent."""
+    total = 0
+    for p in parts(item).values():
+        m = material(db, p.get("material"))
+        if m.get("family") == "textile" or (m.get("family") == "polymer" and m.get("surface") in SOAK_POROUS_SURFACES):
+            total += p.get("share", 0)
+    return total
+
+
+def soak_rate(db: Db, item: dict) -> int:
+    """How fast an object takes up scent, as an integer multiple of the floor (D-013).
+    Contact (a surface, a seat, a bed) sets how long a body touches it; absorbency (soft
+    parts, else the main material) scales that; absorbers add a flat amount."""
+    f = item.get("features") or {}
+    seat = f.get("seat") or {}
+    contact = (SOAK_BASE + (SOAK_SURFACE if "surface" in f else 0) + (SOAK_SEAT if "seat" in f else 0)
+               + (SOAK_SLEEP if seat.get("sleepable") else 0))
+    soft = soft_share(db, item)
+    mm = main_material(db, item)
+    if soft >= SOAK_SOFT_BEDDING_PCT:
+        halves = SOAK_HALVES_BEDDING
+    elif soft >= SOAK_SOFT_UPHOLSTERED_PCT or mm.get("surface") in SOAK_POROUS_SURFACES:
+        halves = SOAK_HALVES_POROUS
+    elif mm.get("family") in SOAK_HARD_FAMILIES and mm.get("surface") == "smooth":
+        halves = SOAK_HALVES_HARD
+    else:
+        halves = SOAK_HALVES_PLAIN
+    rate = rnd(contact * halves / 2) + (SOAK_ABSORBER if item.get("absorbs_scent") else 0)
+    return max(SOAK_BASE, min(SOAK_MAX, rate))
+
+
+def soak_portable(db: Db, item: dict) -> bool:
+    """D-028: a portable absorber keeps its soak on the thing and takes it along when moved.
+    True when it is loose, light enough for one person to drag, and made to hold scent."""
+    if item.get("fixed") or item.get("mass_g", 0) > SOAK_PORTABLE_MAX_G:
+        return False
+    seat = (item.get("features") or {}).get("seat") or {}
+    return bool(item.get("absorbs_scent") or main_material(db, item).get("family") == "textile"
+                or seat.get("sleepable"))

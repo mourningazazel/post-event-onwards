@@ -9,6 +9,7 @@ tests/content/expectations/*.toml:
     [[expect]]  loot (instead of item), path = loot_volume_ml | loot_mass_g, op, value, why
     [[expect]]  capacity_ml (instead of item), path = search_seconds, op, value, why
       item path search_seconds uses the item's container capacity
+      item paths soak_rate (int, x the floor) and soak_portable (bool): D-013, D-028
 
 Inline: the container fit rule of lint.py fails a too-small kitchen cabinet (PEO-052).
 
@@ -30,8 +31,8 @@ import sys
 from common import Db, fail_if, load, load_tests
 from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilities, display_name,
                     energy_class, impact_outcome, lock_resistance, loot_expected, main_material,
-                    mass_estimate, packed_dims, resolve_item, rigidity, search_seconds, throw_range_tiles,
-                    total_mass)
+                    mass_estimate, packed_dims, resolve_item, rigidity, search_seconds, soak_portable,
+                    soak_rate, throw_range_tiles, total_mass)
 from lint import Lint
 
 REQ_OPS = {
@@ -249,6 +250,10 @@ def run_expectations(ctx: Ctx) -> list[str]:
                 v = packed_dims(ctx.db, it)
             elif p == "packed_long":
                 v = packed_dims(ctx.db, it)[0]
+            elif p == "soak_rate":
+                v = soak_rate(ctx.db, it)
+            elif p == "soak_portable":
+                v = soak_portable(ctx.db, it)
             elif p == "search_seconds":
                 box = (it.get("features") or {}).get("container")
                 v = search_seconds(box["capacity_ml"]) if box else None

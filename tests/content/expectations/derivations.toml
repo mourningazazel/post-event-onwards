@@ -334,3 +334,109 @@ path = "search_seconds"
 op = "=="
 value = 18
 why = "a hiking pack: ceil(sqrt(5)) = 3 quanta"
+
+# ---- soak (D-013, D-028, PEO-055) ----
+[[expect]]
+item = "mattress"
+path = "soak_rate"
+op = ">="
+value = 37
+why = "bedding: (1 + seat 6 + sleep 5) x3 soft + absorber 4 = 40"
+
+[[expect]]
+item = "mattress"
+path = "soak_rate"
+op = "<="
+value = 45
+why = "bedding: about 40x the floor (D-013)"
+
+[[expect]]
+item = "sofa"
+path = "soak_rate"
+op = ">="
+value = 25
+why = "upholstered, sleepable: 12 x2 + 4 = 28"
+
+[[expect]]
+item = "sofa"
+path = "soak_rate"
+op = "<="
+value = 30
+why = "upholstered, sleepable: 12 x2 + 4 = 28"
+
+[[expect]]
+item = "dining_chair"
+path = "soak_rate"
+op = ">="
+value = 12
+why = "bare wood seat: (1 + 6) x2 = 14"
+
+[[expect]]
+item = "dining_chair"
+path = "soak_rate"
+op = "<="
+value = 18
+why = "bare wood seat: (1 + 6) x2 = 14"
+
+[[expect]]
+item = "dining_table"
+path = "soak_rate"
+op = ">="
+value = 6
+why = "bare wood surface: (1 + 3) x2 = 8"
+
+[[expect]]
+item = "dining_table"
+path = "soak_rate"
+op = "<="
+value = 10
+why = "bare wood surface: (1 + 3) x2 = 8"
+
+[[expect]]
+item = "metal_shelving"
+path = "soak_rate"
+op = ">="
+value = 1
+why = "smooth metal, no contact: floor"
+
+[[expect]]
+item = "metal_shelving"
+path = "soak_rate"
+op = "<="
+value = 2
+why = "smooth metal, no contact: floor"
+
+[[expect]]
+item = "t_shirt"
+path = "soak_rate"
+op = ">="
+value = 4
+why = "all textile x3 + absorber 4 = 7"
+
+[[expect]]
+item = "t_shirt"
+path = "soak_portable"
+op = "=="
+value = true
+why = "clothing carries its soak (D-028)"
+
+[[expect]]
+item = "mattress"
+path = "soak_portable"
+op = "=="
+value = true
+why = "one person drags a 32 kg mattress (D-028)"
+
+[[expect]]
+item = "sofa"
+path = "soak_portable"
+op = "=="
+value = false
+why = "45 kg: stays put, soak stays on the tile"
+
+[[expect]]
+item = "kitchen_cabinet"
+path = "soak_portable"
+op = "=="
+value = false
+why = "fixed"
