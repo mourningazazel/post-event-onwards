@@ -3,6 +3,7 @@
 add_library(peo_core STATIC
     src/scent.cpp
     src/scent_wave.cpp
+    src/turn_input.cpp
     src/stage.cpp
     src/dead.cpp
     src/world.cpp)
