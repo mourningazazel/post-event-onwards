@@ -267,7 +267,9 @@ TEST_SUITE("world") {
         // B re-speculates either like the frontend, only when the update or stage
         // moved on, so one speculation serves several short actions, or after every
         // action, so recorded windows of the Dead's seconds also start mid-update
-        // (PEO-060). A and B are compared after every action.
+        // (PEO-060). Odd and even seeds take one mode each, so both run without
+        // doubling the case's cost under the sanitizers (suite budget, 1 s). A and B
+        // are compared after every action.
         constexpr int kSequences = 200;
         constexpr int kTurns = 8;
         constexpr int kGoldenWidth = 6;
@@ -279,36 +281,33 @@ TEST_SUITE("world") {
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
-        for (const bool every_action : {false, true}) {
-            for (int seq = 0; seq < kSequences; ++seq) {
-                const Seed seed = static_cast<Seed>(seq) + 1;
-                Rng pick(seed);
-                World a(seed, params);
-                World b(seed, params);
-                Speculation spec; // reused every turn, as the frontend does
-                b.speculate(spec);
-                for (int t = 0; t < kTurns; ++t) {
-                    const Seconds secs = kDurations[pick.range(0, 3)];
-                    Action act = Action::wait(secs);
-                    if (pick.range(1, kWaitOneIn) != 1) {
-                        act = pick.range(1, kEastOneIn) != 1
-                                  ? Action::step({1, 0}, secs)
-                                  : Action::step(kNeighbours4[pick.range(0, 3)], secs);
-                    }
-                    const std::uint32_t stage_before = a.stage_index();
-                    const Tick update_before = b.updates();
-                    a.step(act);
-                    b.commit(spec, act);
-                    if (every_action || b.updates() != update_before || b.stage_index() != stage_before) {
-                        b.speculate(spec);
-                    }
-                    transitions += a.stage_index() != stage_before ? 1 : 0;
-                    // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
-                    // the sanitizers cost more than the turn itself.
-                    if (!World::equivalent(a, b)) {
-                        FAIL("diverged at sequence " << seq << " turn " << t << " every_action "
-                                                     << every_action);
-                    }
+        for (int seq = 0; seq < kSequences; ++seq) {
+            const bool every_action = seq % 2 == 1;
+            const Seed seed = static_cast<Seed>(seq) + 1;
+            Rng pick(seed);
+            World a(seed, params);
+            World b(seed, params);
+            Speculation spec; // reused every turn, as the frontend does
+            b.speculate(spec);
+            for (int t = 0; t < kTurns; ++t) {
+                const Seconds secs = kDurations[pick.range(0, 3)];
+                Action act = Action::wait(secs);
+                if (pick.range(1, kWaitOneIn) != 1) {
+                    act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
+                                                         : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+                }
+                const std::uint32_t stage_before = a.stage_index();
+                const Tick update_before = b.updates();
+                a.step(act);
+                b.commit(spec, act);
+                if (every_action || b.updates() != update_before || b.stage_index() != stage_before) {
+                    b.speculate(spec);
+                }
+                transitions += a.stage_index() != stage_before ? 1 : 0;
+                // Plain branch, not a per-turn REQUIRE: doctest's bookkeeping under
+                // the sanitizers cost more than the turn itself.
+                if (!World::equivalent(a, b)) {
+                    FAIL("diverged at sequence " << seq << " turn " << t << " every_action " << every_action);
                 }
             }
         }
