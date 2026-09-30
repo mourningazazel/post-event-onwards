@@ -440,3 +440,60 @@ path = "soak_portable"
 op = "=="
 value = false
 why = "fixed"
+
+# ---- bedding counts as sleep contact (PEO-061) ----
+[[expect]]
+item = "sleeping_bag"
+path = "soak_rate"
+op = ">="
+value = 20
+why = "bedding: (1 + sleep 5) x3 soft + absorber 4 = 22"
+
+[[expect]]
+item = "sleeping_bag"
+path = "soak_rate"
+op = "<="
+value = 40
+why = "bedding: (1 + sleep 5) x3 soft + absorber 4 = 22"
+
+[[expect]]
+item = "sleeping_bag"
+path = "soak_portable"
+op = "=="
+value = true
+why = "carried to camp; its soak goes with it (D-028)"
+
+[[expect]]
+item = "bedsheet"
+path = "soak_rate"
+op = ">="
+value = 20
+why = "bedding: (1 + sleep 5) x3 soft + absorber 4 = 22"
+
+[[expect]]
+item = "bedsheet"
+path = "soak_rate"
+op = "<="
+value = 40
+why = "bedding: (1 + sleep 5) x3 soft + absorber 4 = 22"
+
+[[expect]]
+item = "bedsheet"
+path = "soak_portable"
+op = "=="
+value = true
+why = "stripped off a bed and carried (D-028)"
+
+[[expect]]
+item = "mattress"
+path = "soak_rate"
+op = "=="
+value = 40
+why = "unchanged by the bedding rule (already sleepable)"
+
+[[expect]]
+item = "t_shirt"
+path = "soak_rate"
+op = "=="
+value = 7
+why = "clothing is not bedding"
