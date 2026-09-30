@@ -595,10 +595,10 @@
       "order": 357,
       "type": "feature",
       "title": "Running: a step that takes 3 seconds (D-015)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -610,6 +610,11 @@
           "at": "2026-09-29",
           "by": "builder",
           "text": "starting"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "see report commit"
         }
       ],
       "references": [
