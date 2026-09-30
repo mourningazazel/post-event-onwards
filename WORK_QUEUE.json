@@ -741,10 +741,10 @@
       "order": 487,
       "type": "feature",
       "title": "Compartments feature and cabinet runs; home room programs fit their tiles",
-      "status": "Blocked",
+      "status": "Pending",
       "severity": "S3",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-30",
       "notes": [
         {
@@ -761,6 +761,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "Still needed: answers to the two questions in docs/production/handoffs/PEO-054.md (loot per compartment; room fit rule). Unblocks PEO-057."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "unblocked: answers in the handoff. Q1 B (roll once per object, spread by fit; interim until PEO-057's purposes). Q2 C on the footprint (horizontal area, upright and rests_on properties). No user decision changed."
         }
       ],
       "references": [
