@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 66,
+  "next_id": 67,
   "items": [
     {
       "id": "PEO-003",
@@ -663,6 +663,28 @@
       "notes": [],
       "references": [
         "content/world/rooms/home.toml"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-066",
+      "order": 547,
+      "type": "chore",
+      "title": "Keep the headless suite under budget as scenario tests grow (D-033)",
+      "status": "AwaitingUser",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "user",
+      "created": "2026-09-30",
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "waiting on D-033"
+        }
+      ],
+      "references": [
+        "tools/suite_budget.py"
       ],
       "depends_on": []
     }
