@@ -384,10 +384,10 @@
       "order": 270,
       "type": "feature",
       "title": "Geodesic scent field: integer, propagating, min-plus commit patch (D-024)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
@@ -424,6 +424,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "commits: eaee421 (ScentWave + tests) d79989f (World switch, Dead, app, re-pin 0x4B5B9E9B2BE5F1E7) f6d393d (town cases) 2fbf22a (docs). tests: verify.py --frontend --full passed; golden bit-identical with 1/3/6/12 s; patch_deposit equals deposit-then-update over 300 random updates; sanitizer suite 0.65 s; 0 allocations over 1000 mixed actions. town: 969 cells within reach all scented, climb 100%, stretch 1.0, 0 frozen (diffusion 14.5%/15.4%); trail and doorway pass. perf (M1 Air, -O3, cpu 6, 300 samples, main -> this): 200x120/5k commit 25-30 -> 0-1 us, speculate 96/229/294 -> 28/266/277 us (min/med/max: median +16%, the wave's copy+update is 86 us vs the old sweep's ~85, the rest is the Dead's run-ahead); 512x512/50k commit 269-280 -> 0-3 us, speculate median 2308 -> 1502 us. manual: peo 7 scent view, walk 12, wait 10: scent spreads along the route and round wall cells; the Dead gathered at the player. Stages have no houses or doors yet, so the doorway part is covered by the town test only. open: (1) the brief's step_dead/step_horde and re-decide box no longer exist (PEO-058/060): decide_move and the poll read the wave instead. (2) patch_deposit is exact for speed 1 only; speed > 1 commits live. (3) Reach-bound case runs release only; the three town wave cases run in every build. (4) Speculate median +16% at 200x120 is not yet explained beyond the Dead's share."
         }
       ],
       "references": [
