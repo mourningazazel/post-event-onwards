@@ -10,6 +10,26 @@ roughly 40-70x more than `-O2`; budget against that number, not this one.
 about 8.8 ns per cell. PEO-007 budgets 16 ms for `speculate()`. There is
 ~75x headroom. Nothing here justifies optimising throughput.
 
+## D-021 variants (PEO-043)
+
+`python3 tools/verify.py --perf` prints one line per variant from `headless-release`: the World
+after 20 waits, emitters (floor tiles drawn from the seed, `player_scent` each before every
+sample), then `speculate` and `commit` of a 6 s wait, best of 10. Budget: commit under 1 ms,
+speculated update under 100 ms on the M1 Air.
+
+| variant | emitters / 1000 tiles | M1 Air speculate | M1 Air commit | container |
+|---|---|---|---|---|
+| 200x120, 5,000 Dead | 0 | 224 us | 32 us | not measured |
+| 200x120, 5,000 Dead | 6 | 233 us | 37 us | not measured |
+| 512x512, 20,000 Dead | 6 | 2.06 ms | 337 us | not measured |
+| 512x512, 50,000 Dead | 6 | 2.77 ms | 371 us | not measured |
+| 512x512, 50,000 Dead | 20 | 2.63 ms | 415 us | not measured |
+
+M1 Air (Asahi Linux, GCC 16), on mains power, pinned to a performance core (`taskset -c 6`),
+2026-09-30; the median of three runs. Every variant is inside the budget: the worst commit uses 42%
+of 1 ms, the worst speculate 3% of 100 ms. Unpinned, the first variant can land on an efficiency
+core and read ~536 us / 52 us; the rest match. On battery: not yet measured.
+
 ## The latency is the problem
 
 `step()` is one Jacobi sweep of the screened Poisson equation
