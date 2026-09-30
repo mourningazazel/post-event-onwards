@@ -305,3 +305,32 @@ path = "loot_volume_ml"
 op = "<="
 value = 1320
 why = "about 1.2 L measured by the item-system review; within 10%"
+
+# ---- search time (D-027, PEO-054): 6 s x ceil(sqrt(capacity / 12 L)) ----
+[[expect]]
+capacity_ml = 12000
+path = "search_seconds"
+op = "=="
+value = 6
+why = "a kitchen drawer is one quantum"
+
+[[expect]]
+capacity_ml = 120000
+path = "search_seconds"
+op = "=="
+value = 24
+why = "a cupboard: ceil(sqrt(10)) = 4 quanta"
+
+[[expect]]
+capacity_ml = 700000
+path = "search_seconds"
+op = "=="
+value = 48
+why = "a shelving unit: ceil(sqrt(58.3)) = 8 quanta"
+
+[[expect]]
+capacity_ml = 60000
+path = "search_seconds"
+op = "=="
+value = 18
+why = "a hiking pack: ceil(sqrt(5)) = 3 quanta"

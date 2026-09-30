@@ -27,6 +27,9 @@ FOLD_TARGET_MM = 450   # fabric and bags fold until the longest side fits a draw
 COIL_SHAPES = ("cord",)
 COIL_MIN_MM = 150      # a coil is never smaller across than a hand wraps it
 COIL_PACKING = 0.8     # coiled cord leaves gaps: it fills about 80% of the square it lies in
+# Searching (D-027, PEO-054): each compartment is searched on its own, in whole quanta.
+SEARCH_QUANTUM_S = 6       # one walking step (D-014): the smallest unit of game time an action takes
+SEARCH_BASE_ML = 12000     # a kitchen drawer: one quantum; time grows with the square root of volume
 
 
 class ResolveError(Exception):
@@ -450,3 +453,10 @@ def loot_items(db: Db, loot_id: str, seen: tuple = ()) -> list[tuple[str, dict]]
         elif "item" in e:
             out.append((loot_id, e))
     return out
+
+
+def search_seconds(capacity_ml: int) -> int:
+    """Seconds to search one compartment or container of this capacity (D-027): whole
+    quanta, growing with the square root of the volume so big cupboards are slower but
+    not proportionally so."""
+    return SEARCH_QUANTUM_S * math.ceil(math.sqrt(capacity_ml / SEARCH_BASE_ML))

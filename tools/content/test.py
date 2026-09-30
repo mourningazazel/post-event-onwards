@@ -7,6 +7,8 @@ tests/content/expectations/*.toml:
                   | mass_est | packed_dims | packed_long | <dotted path into the resolved item>
       optional: mods = [modifier ids applied before checking]
     [[expect]]  loot (instead of item), path = loot_volume_ml | loot_mass_g, op, value, why
+    [[expect]]  capacity_ml (instead of item), path = search_seconds, op, value, why
+      item path search_seconds uses the item's container capacity
 
 Inline: the container fit rule of lint.py fails a too-small kitchen cabinet (PEO-052).
 
@@ -28,7 +30,8 @@ import sys
 from common import Db, fail_if, load, load_tests
 from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilities, display_name,
                     energy_class, impact_outcome, lock_resistance, loot_expected, main_material,
-                    mass_estimate, packed_dims, resolve_item, rigidity, throw_range_tiles, total_mass)
+                    mass_estimate, packed_dims, resolve_item, rigidity, search_seconds, throw_range_tiles,
+                    total_mass)
 from lint import Lint
 
 REQ_OPS = {
@@ -217,6 +220,12 @@ def run_expectations(ctx: Ctx) -> list[str]:
             if "loot" in e:
                 errors += check_loot_expectation(ctx, f.name, e)
                 continue
+            if "capacity_ml" in e:
+                v = search_seconds(e["capacity_ml"]) if e["path"] == "search_seconds" else None
+                if v is None or not REQ_OPS[e["op"]](v, e["value"]):
+                    errors.append(f"{f.name}: capacity_ml {e['capacity_ml']} {e['path']} {e['op']} "
+                                  f"{e['value']!r}: got {v!r}  ({e.get('why', '')})")
+                continue
             where = f"{f.name}: {e['item']} {e['path']} {e['op']} {e['value']!r}"
             try:
                 it = ctx.item(e["item"])
@@ -240,6 +249,9 @@ def run_expectations(ctx: Ctx) -> list[str]:
                 v = packed_dims(ctx.db, it)
             elif p == "packed_long":
                 v = packed_dims(ctx.db, it)[0]
+            elif p == "search_seconds":
+                box = (it.get("features") or {}).get("container")
+                v = search_seconds(box["capacity_ml"]) if box else None
             else:
                 v = get_path(it, p)
             if v is None or not REQ_OPS[e["op"]](v, e["value"]):
