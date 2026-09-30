@@ -10,6 +10,7 @@ tests/content/expectations/*.toml:
     [[expect]]  capacity_ml (instead of item), path = search_seconds, op, value, why
       item path search_seconds uses the item's container capacity
       item paths soak_rate (int, x the floor) and soak_portable (bool): D-013, D-028
+      item paths compartment_count, and compartment.<name>.<key> (PEO-054)
 
 Inline: the container fit rule of lint.py fails a too-small kitchen cabinet (PEO-052).
 
@@ -250,6 +251,12 @@ def run_expectations(ctx: Ctx) -> list[str]:
                 v = packed_dims(ctx.db, it)
             elif p == "packed_long":
                 v = packed_dims(ctx.db, it)[0]
+            elif p == "compartment_count":
+                v = len(it.get("compartments") or [])
+            elif p.startswith("compartment."):
+                name, _, key = p[len("compartment."):].rpartition(".")
+                comp = next((c for c in it.get("compartments") or [] if c.get("name") == name), {})
+                v = comp.get(key)
             elif p == "soak_rate":
                 v = soak_rate(ctx.db, it)
             elif p == "soak_portable":
@@ -286,14 +293,18 @@ FIT_PROBE_EXPECT = "kitchen_cabinet_contents: expected"
 
 
 def run_fit_probe(db: Db) -> list[str]:
-    box = db.get("item", FIT_PROBE_ITEM)["features"]["container"]
-    saved = box["capacity_ml"]
-    box["capacity_ml"] = FIT_PROBE_CAPACITY_ML
+    rec = db.get("item", FIT_PROBE_ITEM)
+    # A single container, or compartments (PEO-054): shrink whichever it has.
+    boxes = rec["compartments"] if "compartments" in rec else [rec["features"]["container"]]
+    saved = [b["capacity_ml"] for b in boxes]
+    for b in boxes:
+        b["capacity_ml"] = FIT_PROBE_CAPACITY_ML // len(boxes)
     try:
         lint = Lint(db)
         lint.lint_world()
     finally:
-        box["capacity_ml"] = saved
+        for b, s in zip(boxes, saved):
+            b["capacity_ml"] = s
     hits = [e for e in lint.errors if FIT_PROBE_EXPECT in e and "exceeds capacity_ml" in e]
     print(f"fit probe: {FIT_PROBE_ITEM} at {FIT_PROBE_CAPACITY_ML} ml -> {len(hits)} fit error(s)")
     return [] if hits else [f"fit probe: no '{FIT_PROBE_EXPECT} ... exceeds capacity_ml' error"]

@@ -32,6 +32,18 @@ COMPARTMENT_KEYS = {"name": "str", "capacity_ml": "int", "max_mass_g": "int", "m
 COMPARTMENT_REQUIRED = ("name", "capacity_ml")
 
 
+def combined_box(comps: list[dict]) -> dict:
+    """An item's compartments as one container for a table rolled once and spread over
+    them by fit (PEO-054, Q1 B): the capacities summed, the mass limits summed when every
+    compartment has one, and the largest longest side any compartment takes."""
+    box = {"capacity_ml": sum(c.get("capacity_ml", 0) for c in comps)}
+    if comps and all("max_mass_g" in c for c in comps):
+        box["max_mass_g"] = sum(c["max_mass_g"] for c in comps)
+    if comps and all("max_dim_mm" in c for c in comps):
+        box["max_dim_mm"] = max(c["max_dim_mm"] for c in comps)
+    return box
+
+
 class Lint:
     def __init__(self, db: Db) -> None:
         self.db = db
@@ -466,9 +478,11 @@ class Lint:
     def lint_fit(self, w: str, fx: dict) -> None:
         """A room object's contents must fit it (PEO-052): the mean fill by volume and mass,
         and every entry's packed longest side. Worst case may overflow: generation fills
-        until full (PEO-053), so capacity is the ceiling, not the table. An item with
-        compartments is checked per compartment against its loot, the room's override
-        (loot = { name = id }) first (PEO-054)."""
+        until full (PEO-053), so capacity is the ceiling, not the table. On an item with
+        compartments (PEO-054) a room's contains is rolled once for the object and spread
+        over them by fit, so it is checked against their sum; without contains, each
+        compartment is checked against its own loot, the room's override
+        (loot = { name = id }) first."""
         oid = fx.get("item", "")
         try:
             obj = resolve_item(self.db, oid)
@@ -479,7 +493,11 @@ class Lint:
         override = fx.get("loot")
         if comps is not None:
             if fx.get("contains"):
-                self.err(where, f"contains on an item with compartments; use loot = {{ <compartment> = <loot> }}")
+                if override is not None:
+                    self.err(where, "both contains and loot overrides: contains is rolled once and spread over "
+                             "the compartments, so use one or the other")
+                self.check_box(where, combined_box(comps), fx["contains"])
+                return
             by_name = {c.get("name"): c for c in comps}
             for name, ref in (override or {}).items():
                 if name not in by_name:
