@@ -793,7 +793,7 @@
       "order": 537,
       "type": "perf",
       "title": "Speculate the Dead's seconds to the next update: 512x512 with 50k Dead back under 1 ms commit (D-021, D-031)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
@@ -803,6 +803,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-29",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
