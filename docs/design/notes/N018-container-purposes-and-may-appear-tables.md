@@ -33,7 +33,19 @@
   2. **context**: where it is, from the building type and room (`ctx.office`, `ctx.retail`), so
      the same maintenance cabinet holds paper and pens in an office and store supplies in a shop;
   3. **detail**: one more specific modifier for targeted placement (a persona's hobby, an
-     aftermath trace, an authored story beat).
+     aftermath trace, an authored story beat). Refined by the follow-up below: it blends
+     rather than adds.
+
+## Follow-up (same day)
+
+> The detail tag actually should replace items, run both loot tables and then as you fill it,
+> take one from each table back and forth so there is some sort of distribution that reflects the
+> detail modifier. These will be used for unique drops so I want actual evidence of that tag, it
+> will be used sparingly
+
+Settles: a detail tag has no extras table. Its own loot table is blended into the main fill,
+alternating one pick from the main table and one from the detail table, so roughly half the
+contents show the detail. Details are rare and authored, for unique drops.
 
 ## Acted on in
 

@@ -24,17 +24,17 @@ Consequence: each Dead decides once per cycle, not once per update; replaces PEO
 steps at each update (held). Between updates the Dead read only the last update's scent, so they
 run live and exact; speculation keeps only the scent sweep. Calm Dead never share a tile. PEO-058.
 
-## 2026-09-30 · D-030 · Every container has a purpose and three tags that add extras
+## 2026-09-30 · D-030 · Every container has a purpose and three tags
 
 User decision (N018), refining D-027. A compartment's purpose is rolled from its seed before its
 contents: it picks the main loot table and names the compartment once examined ("cutlery drawer").
-Each container also carries three tags, each linked to "may randomly appear" tables that add rare,
-useful, dangerous or negative extras: kind (the purpose), context (building type and room: a
-maintenance cabinet holds paper and pens in an office, store supplies in a shop) and detail (one
-specific modifier: a persona's hobby, an aftermath trace, an authored beat). Nested containers
-inherit context. Why: contents stay organized and predictable, and rare finds can be placed
-precisely without new archetypes. Consequence: PEO-057 authors it; PEO-053 generates purpose,
-then main loot, then extras, all from the compartment seed.
+Each container carries three tags. Kind (the purpose) and context (building type and room: a
+maintenance cabinet holds paper and pens in an office, store supplies in a shop) link to "may
+randomly appear" tables of rare, useful, dangerous or negative extras. Detail (a rare modifier: a
+hobby, a smoker, a trace) replaces items instead: its own table is blended into the main fill, one
+pick from each in turn, so the container shows clear evidence of it. Nested containers inherit
+context. Why: predictable contents; unique finds placed precisely. Consequence: PEO-057 authors it;
+PEO-053 generates purpose, then the main fill, then extras, all from the compartment seed.
 
 ## 2026-09-30 · D-029 · A stack's quality is a mean plus a spread
 
