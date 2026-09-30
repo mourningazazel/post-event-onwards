@@ -394,8 +394,21 @@ questions the reviews raised are open as D-024 and D-025.
 - **Wall rules are house-specific** and live outside the base transport. The owner's starting
   point: **inner walls build scent up** rather than absorb it, since there is no air above to
   vent into; outdoor walls and the map edge still absorb (D-007's wall rule). The pathfinding
-  review measured that buildup restores reach but flattens the gradient in rooms; whether it is
-  needed at all depends on D-024.
+  review measured that buildup restores reach but flattens the gradient in rooms. **Not built:**
+  D-024 A chose a transport that reaches through corridors and doors without it (below).
+
+### The transport: a geodesic field (D-024, [N017](notes/N017-scent-transport-rot-and-item-detail.md))
+
+- A cell holds **strength − C × distance − K × age** as an `int32`, distance measured along
+  walkable routes, so scent goes round corners and through doors the way feet do, and walls
+  absorb. It replaces diffusion and D-008's IIR far layer.
+- The front advances **`speed`** cells per update, plus up to **`gust`** more downwind. Step
+  costs fall downwind and rise upwind, scaled by a per-cell **openness** (0 indoors), which is
+  D-020's wind as one field. Stairs and downward tiles are routes (D-019).
+- Work is bounded by a **reach radius** around the player; sealed buildings have no route in.
+- **Rot scales, never zeroes (D-025):** the value is log strength, so a Dead subtracts rot × a
+  scale from what it reads.
+- Measurements and the probe code: the pathfinding review, sections 3, 4 and 8.
 
 ### Only near the player (D-019)
 

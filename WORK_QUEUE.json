@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 52,
+  "next_id": 57,
   "items": [
     {
       "id": "PEO-003",
@@ -93,7 +93,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "Item-system review (2026-09-29): bake resolved archetypes and intern variants (archetype, modifier set, brand) into a table at load, so generation never deep-merges at runtime; add a golden test that it does not."
+        }
+      ],
       "references": [
         "content/README.md",
         "tools/content/derive.py",
@@ -204,7 +210,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-029 answered: B. A stack line holds mean quality plus a spread; an item taken samples its quality from them with a hash of its address."
+        }
+      ],
       "references": [
         "docs/design/content-model.md"
       ],
@@ -371,11 +383,11 @@
       "id": "PEO-030",
       "order": 270,
       "type": "feature",
-      "title": "Two-layer staggered scent field: near layer each turn, far layer by IIR",
-      "status": "AwaitingUser",
+      "title": "Geodesic scent field: integer, propagating, min-plus commit patch (D-024)",
+      "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
@@ -397,10 +409,21 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Waits on D-024 (transport). The pathfinding review (reviews/2026-09-29-pathfinding-and-scent-review.md) measured the IIR far layer failing on a town map; D-019 and D-020 (N016) add reach radius, wind and indoor rules the transport must carry. Rebrief once D-024 is answered."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-024 answered: A. Rebriefed as the geodesic field; D-008's two layers and the IIR far layer are superseded. Build after PEO-035."
         }
       ],
-      "references": [],
-      "depends_on": []
+      "references": [
+        "docs/design/scent-mobs.md",
+        "docs/design/scent-performance.md",
+        "src/core/src/scent.cpp"
+      ],
+      "depends_on": [
+        "PEO-035"
+      ]
     },
     {
       "id": "PEO-031",
@@ -455,18 +478,23 @@
     {
       "id": "PEO-035",
       "order": 297,
-      "type": "research",
-      "title": "Turn cost and Dead movement in cramped layouts: houses, offices, corridors",
-      "status": "AwaitingUser",
+      "type": "chore",
+      "title": "Town fixture: a cramped 200x120 test map with reach, climb and trail helpers",
+      "status": "Pending",
       "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
+      "effort": "S",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
           "at": "2026-09-29",
           "by": "architect",
           "text": "Waits on D-024. If D-024 A is taken, this becomes the town fixture and acceptance test for the geodesic field (pathfinding review section 7), not a study. The owner's corridor reasoning is in N016."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-024 answered: A. Rebriefed as the town fixture PEO-030 is accepted against; the study became the acceptance test (pathfinding review section 7)."
         }
       ],
       "references": [
@@ -496,6 +524,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-015: soak charges and leaks per game second, so it runs on the one-second world clock (PEO-040)."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-028 answered: B. Portable absorbers (mattress, cushion, clothing) carry soak as a value on the thing and take it with them; floors and fixed furniture keep it on the tile. D-024: the field is integer log strength, so express soak in the same units and have the Dead read the larger of field and soak (a log-sum approximation); PEO-055 derives the per-object soak rate."
         }
       ],
       "references": [
@@ -518,6 +551,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-025 (open) asks whether rot masks by scaling instead of 1:1 subtraction; the pathfinding review measured subtraction zeroing every cell past about 12 cells. Fold the answer into the draw formula before starting. PEO-051 may supply the section grid."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-025 answered: A. In the geodesic field (D-024, PEO-030) values are log strength, so a Dead subtracts rot x a named scale from the value it reads; it dulls the pull and never zeroes a distant trail. Replaces D-012's 1:1 subtraction. Build on ScentWave, after PEO-030."
         }
       ],
       "references": [
@@ -697,7 +735,7 @@
       "order": 417,
       "type": "feature",
       "title": "Scent only near the player: reach radius, sealed buildings skipped, opened tag (D-019)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "L",
       "owner": "architect",
@@ -707,19 +745,26 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Waits on D-024."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
         }
       ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": []
+      "depends_on": [
+        "PEO-030"
+      ]
     },
     {
       "id": "PEO-048",
       "order": 427,
       "type": "feature",
       "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "M",
       "owner": "architect",
@@ -729,19 +774,26 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Waits on D-024."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
         }
       ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": []
+      "depends_on": [
+        "PEO-030"
+      ]
     },
     {
       "id": "PEO-049",
       "order": 437,
       "type": "feature",
       "title": "Z-level scent routes near the player (D-019)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S3",
       "effort": "M",
       "owner": "architect",
@@ -751,12 +803,19 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "Waits on D-024 and a multi-z stage."
+        },
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
         }
       ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
-      "depends_on": []
+      "depends_on": [
+        "PEO-030"
+      ]
     },
     {
       "id": "PEO-050",
@@ -768,7 +827,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-09-30",
+          "by": "architect",
+          "text": "D-026 (owner's rule): a line is one kind; an item taken out instantiates with details; put back it lists beside the nameless quantity, not merged; unexamined entries are marked visually. D-027 B: search per compartment, time from volume, menus fast to traverse. The item review's model is implied -> line -> thing; lines are arrays, things are entities."
+        }
+      ],
       "references": [
         "docs/design/gameplay-model/G03-items-and-belongings.md",
         "docs/design/gameplay-model/G02-templates-generation-detail.md"
@@ -790,6 +855,90 @@
       "notes": [],
       "references": [
         "src/core/include/peo/core/grid.hpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-052",
+      "order": 467,
+      "type": "chore",
+      "title": "Content lint: loot versus container capacity; fix the eight mismatches; add storage_bin",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "tools/content/lint.py"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-053",
+      "order": 477,
+      "type": "design",
+      "title": "Contents generator: compartments, per-compartment seeds, fill until full, freeze on search (D-023, D-026, D-027)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "docs/design/gameplay-model/G02-templates-generation-detail.md",
+        "docs/design/gameplay-model/G03-items-and-belongings.md"
+      ],
+      "depends_on": [
+        "PEO-008",
+        "PEO-054"
+      ]
+    },
+    {
+      "id": "PEO-054",
+      "order": 487,
+      "type": "feature",
+      "title": "Compartments feature and cabinet runs; home room programs fit their tiles",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "content/registry/features.toml"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-055",
+      "order": 497,
+      "type": "chore",
+      "title": "Derived soak_rate per archetype in derive.py (D-013, D-028)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "tools/content/derive.py"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-056",
+      "order": 507,
+      "type": "chore",
+      "title": "Register the cat.* vocabulary; place or drop the twelve orphan archetypes",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-09-30",
+      "notes": [],
+      "references": [
+        "content/registry"
       ],
       "depends_on": []
     }
