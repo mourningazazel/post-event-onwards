@@ -924,10 +924,10 @@
       "order": 487,
       "type": "feature",
       "title": "Compartments feature and cabinet runs; home room programs fit their tiles",
-      "status": "InProgress",
+      "status": "Blocked",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-30",
       "notes": [
         {
