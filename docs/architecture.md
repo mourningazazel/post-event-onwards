@@ -20,7 +20,7 @@ the current code are marked below; the rest apply as each system lands.
 | R6 content is data (registry, TOML) | data exists in `content/`; loading is queued |
 | R1/R2 one CMake target per system, acyclic | one `core` target today; split as systems appear |
 | R3 commands and events | `Action` is the first command (PEO-002) |
-| R4 batch-first APIs | `step_horde` is batch-first; keep it that way |
+| R4 batch-first APIs | the Dead's poll and slot buckets are one pass over the horde; keep it that way |
 | R9/R10 budgets, metrics, profiling | not yet |
 | R15 playable headless with a rule checker | designed in `docs/design/playtest-harness.md`; queued |
 
@@ -37,7 +37,7 @@ today. The renderer reads only a committed world snapshot, so swapping it later 
                               ├─ grid.hpp   dense row-major Grid<T>; Grid<bool> is bytes
                               ├─ scent.hpp  ScentField: deposit / step / strongest_neighbour
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
-                              └─ dead.hpp   Dead, step_horde
+                              └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
 ### Scent (`scent.hpp`)
@@ -61,8 +61,15 @@ settlement → structure → tile → contents), baseline + Event + aftermath on
 
 ### The Dead (`dead.hpp`)
 
-`Dead` is deliberately tiny; thousands must step per turn. `step_horde` is one pass over a
-vector. Target: the **weighted draw** of scent-mobs round 3 (scent, aggregate, company,
+`Dead` is deliberately tiny; thousands must step per turn. They move in staggered slots
+(D-031): every `dead_cycle` (9 s) the world polls the horde, and each unit with a stronger
+neighbour gets `plan_slots`: 9 / `step_seconds` slots, the whole part always and the fraction a
+hashed chance, evenly spaced from a hashed offset. Hashes of (stage seed, cycle, index), never a
+shared stream, so who moves when changes each cycle. At its slot a unit `decide_move`s: its
+strongest neighbour, only if no Dead stands there and no pending move reserved it; a calm Dead
+never sidesteps or climbs over another, it stays put. The move lands one second later; in each
+second the slot's units decide before last second's moves land, so a vacated tile is free only
+from the next second and a crowd files through gaps, jamming a one-wide corridor. Target: the **weighted draw** of scent-mobs round 3 (scent, aggregate, company,
 attractor, stimulus, repellent, footing terms), triggers by general direction, sound events,
 trips and trample, population aggregates beyond the detailed radius. Struct-of-arrays when the
 profiler asks.
@@ -79,24 +86,25 @@ The world counts game seconds (`World::seconds()`). Each `Action` carries a dura
 and `kWaitSeconds`, both 6). Scent and the Dead update on their own cadence, once every
 `WorldParams::update_period` (6 s), whatever the player does. An action applies at once, then
 its seconds are logged on the player's tile (`occupancy()`, merged per tile). At each period
-boundary one update runs: `step_linear`, `patch_deposit` per logged tile with
-`player_scent × seconds / period`, `clamp_floor`, the Dead (`cooldown_s`, `step_seconds`). A
-full period on one tile gives a factor of exactly 1, so 6 s steps replay the pre-clock world bit
-for bit (pinned hash test). Speculation is per update: an action that crosses no boundary leaves
-it valid, and `commit` re-decides the Dead near any logged tile. `turn()` still counts actions.
+boundary one scent update runs: `step_linear`, `patch_deposit` per logged tile with
+`player_scent × seconds / period`, `clamp_floor`. A full period on one tile gives a factor of
+exactly 1. The Dead run every second, on their own 9 s cycle (above). Speculation is per update:
+an action that crosses no boundary leaves it valid. `turn()` still counts actions.
 
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
-the next turn assuming a Wait with no deposit, scent left after `ScentField::step_linear` and
-the Dead decided on a clamped copy. On input, `World::commit(Speculation&, Action)` applies the
-action, adds the player's deposit with `patch_deposit` (the cell and its four open neighbours),
-runs `clamp_floor`, and re-decides only the Dead within Chebyshev 2 of the player. A stale
-speculation falls back to `step()`. Exactness comes from order, not algebra: `step()` runs the
+the next update's `ScentField::step_linear`, the whole-field sweep. On input,
+`World::commit(Speculation&, Action)` applies the action and runs its seconds; at the update
+boundary it adds the logged deposits with `patch_deposit` and runs `clamp_floor`. The Dead are
+not speculated: between updates they read only the last update's scent, never the player, so
+their seconds run live and match `step()` exactly (D-031). A stale speculation falls back to
+`step()`. Exactness comes from order, not algebra: `step()` runs the
 same `step_linear` → `patch_deposit` → `clamp_floor` sequence, so float rounding matches bit for
 bit. `Speculation` buffers are reused, so a turn allocates nothing. Measured on the Builder's
-M1 (release, 200x120, 5000 Dead, best of 10): `speculate` 224–542 µs, `commit` 31–65 µs (PEO-040, best of 200: 225 µs and 32 µs). In
-game at 80x45 the HUD read `spec:hit` on every turn, including ~46 keys/s.
+M1 (release, 200x120, 5000 Dead, one 6 s step, 300 samples, PEO-058): `speculate` 85–103 µs,
+`commit` with the Dead's live seconds 28 µs at best, 165 µs median, 227 µs worst (a 9 s poll).
+At 512x512 with 50,000 Dead the worst commit is 1.43 ms, over D-021's 1 ms (see PEO-058's report).
 
 The frontend accepts at most `kMaxTurnsPerSecond` (3) turn keys a second (D-011); a press or
 auto-repeat inside the interval is dropped, never queued, so releasing a key stops at once.
