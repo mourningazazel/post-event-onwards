@@ -28,7 +28,7 @@ using namespace peo::core;
 
 constexpr int kCell = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE; // 8 px glyphs
 constexpr int kScale = 2;
-constexpr int kHudRows = 1;
+constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
 /// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
 /// event arrives ("waitevent", SDL 3.4+). Older SDL parses that string as 0 and
 /// would spin, so there it gets a frame cap instead. The SDL fetched from source
@@ -195,14 +195,18 @@ void draw(App& app) {
     }
     glyph(world.player(), "@", 255, 255, 255);
 
-    char hud[128];
-    std::snprintf(
-        hud, sizeof hud,
-        "stage %u  turn %llu  %s  dead %zu  spec:%s (miss %llu)  [arrows/wasd] [space/.] [r] [shift+s] [n]",
-        world.stage_index(), static_cast<unsigned long long>(world.turn()), app.running ? "run" : "walk",
-        world.horde().size(), app.last_hit ? "hit" : "miss", app.misses);
+    // Two lines, each under the default stage's 80 columns.
+    char status[80];
+    std::snprintf(status, sizeof status, "stage %u  turn %llu  %s  dead %zu  spec:%s (miss %llu)",
+                  world.stage_index(), static_cast<unsigned long long>(world.turn()),
+                  app.running ? "run" : "walk", world.horde().size(), app.last_hit ? "hit" : "miss",
+                  app.misses);
+    static constexpr const char* kKeyHints =
+        "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
     SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);
-    SDL_RenderDebugText(app.renderer, 0.0F, 0.0F, hud);
+    SDL_RenderDebugText(app.renderer, 0.0F, 0.0F, status);
+    SDL_SetRenderDrawColor(app.renderer, 140, 140, 100, 255);
+    SDL_RenderDebugText(app.renderer, 0.0F, static_cast<float>(kCell), kKeyHints);
 
     SDL_SetRenderScale(app.renderer, 1.0F, 1.0F);
     SDL_RenderPresent(app.renderer);
