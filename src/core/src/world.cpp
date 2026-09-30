@@ -59,11 +59,15 @@ void World::load_stage(std::uint32_t index) {
     const int count = std::clamp(params_.initial_dead, 0, open);
     horde_.clear();
     horde_.reserve(static_cast<std::size_t>(count));
+    // One of the Dead per tile (D-031): an occupied draw is redrawn, so occupancy
+    // starts valid. count <= open keeps the loop finite.
+    occupied_ = Grid<std::uint8_t>(stage_.spec.width, stage_.spec.height, 0);
     for (int i = 0; i < count; ++i) {
         Vec2i p;
         do {
             p = {rng_.range(1, stage_.spec.width - 2), rng_.range(1, stage_.spec.height - 2)};
-        } while (stage_.blocked.at(p) || p == player_);
+        } while (stage_.blocked.at(p) || p == player_ || occupied_.at(p) != 0);
+        occupied_.at(p) = 1;
         horde_.push_back(
             {.pos = p,
              .cooldown_s = 0,

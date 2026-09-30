@@ -126,6 +126,8 @@ private:
     Stage stage_;
     ScentField scent_{1, 1};
     std::vector<Dead> horde_;
+    /// Dead per tile (D-031): at most 1 for calm Dead.
+    Grid<std::uint8_t> occupied_{1, 1};
     Vec2i player_{};
     Rng rng_{1};
     Tick turn_ = 0;
