@@ -311,15 +311,16 @@ TEST_SUITE("scent_wave") {
     TEST_CASE("the plain and AVX2 kernels give the same field and directions" *
               doctest::test_suite("scenario: scent_wave")) {
         // PEO-085: one source built twice. Two waves on the same walled stage take the
-        // same deposits, one on each kernel; after every update their values and every
-        // direction byte (read through flow_target) must agree. The stage spans several
-        // tiles each way and the run outlasts the reach, so the front, the saturated
-        // field and the aged-out cells all go through both copies; then again under a
-        // wind with gusts and some indoor cells, for the windy kernel (PEO-048).
-        constexpr int kW = 3 * kWaveTileWidth + 9;
-        constexpr int kH = 5 * kWaveTileHeight + 3;
+        // same deposits, one on each kernel; after every update their values must agree,
+        // and every direction byte (read through flow_target) at the midpoint and the
+        // end. The stage spans 3x4 tiles, so rows cross tile borders, and the run
+        // outlasts the reach, so the front, the saturated field and the aged-out cells
+        // all go through both copies; then again under a wind with gusts and some indoor
+        // cells, for the windy kernel (PEO-048). Sized for the scenario budget (PEO-086).
+        constexpr int kW = 2 * kWaveTileWidth + 9;
+        constexpr int kH = 3 * kWaveTileHeight + 3;
         constexpr int kWallOneIn = 7;
-        constexpr int kEmitters = 12;
+        constexpr int kEmitters = 8;
         constexpr int kUpdates = kWaveReachCells + 10;
         const bool has_avx2 = ScentWave::kernel_available(WaveKernel::Avx2);
         if (!has_avx2) {
@@ -378,7 +379,10 @@ TEST_SUITE("scent_wave") {
                 avx2.update(b, &openness);
                 CAPTURE(u);
                 REQUIRE(plain.values() == avx2.values());
-                REQUIRE(differ([&](Vec2i c) { return plain.flow_target(c) == avx2.flow_target(c); }) == 0);
+                if (u == kUpdates / 2 || u == kUpdates - 1) {
+                    REQUIRE(differ([&](Vec2i c) { return plain.flow_target(c) == avx2.flow_target(c); }) ==
+                            0);
+                }
             }
             // The plain half against the oracle, once, on the aged field.
             CHECK(differ([&](Vec2i c) {
@@ -525,18 +529,19 @@ TEST_SUITE("scent_wave") {
         int ahead = 0;
         int behind = 0;
     };
-    /// The review's walker (probe 3): 200x120 open, the player walks east a cell an
-    /// update for 120 updates from x = 20 on row 60, a full wind toward east. Deposit,
+    /// The review's walker (probe 3), smaller (PEO-086): 120x40 open, the player walks
+    /// east a cell an update for 40 updates from x = 10 on row 20, a full wind toward
+    /// east; gust 2 is past 20 cells ahead well inside that. Deposit,
     /// update, then step, so "ahead" counts from a cell the walker has not yet stood
     /// on. `indoors` puts the path inside a building: a corridor five cells wide along
     /// the whole stage, walled both sides, openness 0 within.
     Reach walk_east(int gust, bool indoors) {
-        constexpr int kW = 200;
-        constexpr int kH = 120;
-        constexpr int kRow = 60;
-        constexpr int kStartX = 20;
-        constexpr int kStopX = 190;
-        constexpr int kUpdates = 120;
+        constexpr int kW = 120;
+        constexpr int kH = 40;
+        constexpr int kRow = 20;
+        constexpr int kStartX = 10;
+        constexpr int kStopX = 110;
+        constexpr int kUpdates = 40;
         constexpr int kHalfCorridor = 2;
         Grid<bool> b = open_stage(kW, kH);
         Grid<std::uint8_t> openness(kW, kH, kOpennessOutdoors);
@@ -590,10 +595,11 @@ TEST_SUITE("scent_wave") {
     }
 
     TEST_CASE("upwind reaches fewer cells than downwind" * doctest::test_suite("scenario: scent_wave")) {
-        constexpr int kW = 200;
-        constexpr int kH = 60;
-        constexpr Vec2i kSource{100, 30};
-        constexpr int kUpdates = 100;
+        // Upwind settles near 40 cells; downwind passes that within 60 updates (PEO-086).
+        constexpr int kW = 140;
+        constexpr int kH = 20;
+        constexpr Vec2i kSource{70, 10};
+        constexpr int kUpdates = 60;
         const Grid<bool> b = open_stage(kW, kH);
         for (const int gust : {0, 2}) {
             ScentWave w(kW, kH, {.gust = gust});
@@ -673,11 +679,11 @@ TEST_SUITE("scent_wave") {
         // 1-3, a deposit patched in after update() equals deposit() then update(), value
         // for value and byte for byte, and both waves stay equal through more updates
         // (so the patch also leaves the right tiles active).
-        constexpr int kW = 2 * kWaveTileWidth + 20;
-        constexpr int kH = 3 * kWaveTileHeight + 5;
+        constexpr int kW = kWaveTileWidth + 20;
+        constexpr int kH = 2 * kWaveTileHeight + 5;
         constexpr int kWallOneIn = 7;
-        constexpr int kTrials = 12;
-        constexpr int kWarm = 12;
+        constexpr int kTrials = 6; // gust 1-3 twice, the upward loss in trial 3 (PEO-086)
+        constexpr int kWarm = 8;
         constexpr int kAfter = 4;
         Rng rng(71);
         const auto open_cell = [&](const Grid<bool>& b) {

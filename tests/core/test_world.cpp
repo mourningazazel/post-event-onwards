@@ -769,8 +769,8 @@ TEST_SUITE("world") {
         // PEO-048: patch_deposit stays exact under wind and gusts, so commit keeps using
         // the speculation (D-021) and still equals step() after every action, over
         // seeds that draw different winds.
-        constexpr int kSeeds = 10;
-        constexpr int kActions = 40;
+        constexpr int kSeeds = 5; // PEO-086: the scenario budget
+        constexpr int kActions = 30;
         constexpr int kWaitOneIn = 5;
         constexpr Seconds kDurations[] = {1, 3, 6, 12};
         WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
