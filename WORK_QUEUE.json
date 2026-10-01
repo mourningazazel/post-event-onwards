@@ -848,16 +848,21 @@
       "order": 737,
       "type": "chore",
       "title": "Scenario tier back under half its budget: shrink the AVX2-equivalence and wind-walker cases (3.8 s of 5 s in CI)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: 26c06d5. tests: verify --frontend --full passed (arm64, gcc 16, clang 22); all assertions kept (walker 0 / 68 / 0 ahead, 49 behind each; upwind 39 < downwind 60 and 68). perf, sanitizer build here, per case before -> after: walker 666 -> 55 ms, patch oracle 354 -> 60, windy World 290 -> 102, upwind 258 -> 38, AVX2 case 263 -> 114 (both halves forced: 225); tier 2660 -> 1195 ms, about 1.3 s with both AVX2 halves. manual: none. open: no AVX2 here, so the x86 figure (expect about 1.6 s) needs your container."
         }
       ],
       "references": [],
