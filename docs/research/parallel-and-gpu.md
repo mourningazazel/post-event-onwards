@@ -268,6 +268,9 @@ measurable, and fits PEO-074 (perf levers) and PEO-070 (`peo_bench`):
 
 ## 8. Questions for Ryan
 
+**Answered 2026-10-01 (N020): Q1 B (D-035), Q2 C (D-036), Q3 C (D-037).** ADR-0014 records the
+architecture; the work is PEO-078 to PEO-084.
+
 Each has a recommendation; the reply in the thread asks the same.
 
 - **Q1. Threads in core (ADR-0012 says core spawns no threads).**

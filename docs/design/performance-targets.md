@@ -87,6 +87,8 @@ These follow the owner's direction: algorithms first, and spread the load.
    update, so they can be split across cores deterministically. A conflict pass in index order
    handles reservations. This is 3-5x on the 6-core tiers, but it changes ADR-0012
    ("core spawns no threads"), so it goes to Ryan as a decision when a tier misses its target.
+   *Decided 2026-10-01: D-035 (core uses an executor it is given) and D-036 (GPU compute starts
+   now); measurements in [research/parallel-and-gpu.md](../research/parallel-and-gpu.md).*
 
 ## Auto-config (D-034)
 

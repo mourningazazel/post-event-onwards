@@ -51,7 +51,8 @@ updates before asking for a mechanics change.
   grids. SIMD and micro-tuning last, and only with a measured win.
 - Every change keeps `commit(speculate()) == step()` bit-identical and the
   determinism tests green.
-- Core spawns no threads (ADR-0012); the frontend owns the worker.
+- Core creates no thread or GPU device; it uses the executor and field backend
+  it is given (ADR-0014). Serial, threaded and GPU runs must match bit for bit.
 
 ## Report
 

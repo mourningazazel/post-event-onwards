@@ -5,8 +5,33 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-020, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-023, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-10-01 · D-037 · Richer Dead and crowd pressure are the first scale-up
+
+User decision: C (N020). Of the things threads and the GPU open up, the Dead's weighted draw
+(PEO-009) and crowd pressure come first. Why: hordes are a pillar, and PEO-009 is the next
+mechanic. Consequence: PEO-009 bakes every term that reads only the last update into a per-cell
+desire field (research/parallel-and-gpu.md section 6); crowd pressure is PEO-084.
+
+## 2026-10-01 · D-036 · GPU compute starts now, to go bigger
+
+User decision: C (N020), superseding D-021's "no GPU work"; D-021's budget stands. The intent is
+the biggest world the hardware allows. Three goals, and the GPU earns its place if it delivers
+one: stages of 1024x1024 to 2048x2048 as the norm, so the Dead flow across a city instead of
+spawning at a border; scent that reaches far and builds up, instead of aggregates adjusting
+spawns; and fast time passing, because players sleep and pass time often. Every GPU kernel is
+integer, has a CPU reference, and an equivalence test checks them bit for bit (SYSTEMS R11).
+Consequence: ADR-0014; PEO-081 to PEO-083; stage size stays per machine (D-034).
+
+## 2026-10-01 · D-035 · Core uses threads it does not own
+
+User decision: B (N020), amending ADR-0012's "core spawns no threads". The frontend passes core a
+parallel-for; core still creates no thread. Tests run it serially, and a golden test checks
+serial and threaded runs give the same world bit for bit, beside speculate/commit's. Why: the
+scent field, the flow grid and the Dead's intents split by tile or unit with results combined by
+maximum or minimum, so threads cannot change them. Consequence: ADR-0014; PEO-080.
 
 ## 2026-09-30 · D-034 · Horde size and active map size are set per machine, continuously
 
@@ -96,33 +121,3 @@ per-cell openness that is 0 indoors. Stairs are routes; walls and closed buildin
 bounded by a reach radius around the player. Commit patches by min-plus from the logged tiles.
 Why: diffusion reached 18% of a town map and parked the Dead at crossings, and the IIR layer
 cannot see through doors (pathfinding review). Consequence: PEO-035 then PEO-030; PEO-047 to 049.
-
-## 2026-09-29 · D-023 · Items are seeds until touched
-
-User decision (N016). An unopened container is a seed; its contents exist as the calculation that
-makes them until one is modified. An item reads its properties through its seed; the first change to
-a property instantiates it as a unique record. Nothing ticks per turn: time-driven change (rot,
-quality) resolves from the clock on access, name first, details after, unless refreshing a whole
-container on view measures cheap at 500 items. A hidden per-container count cap, far above play,
-refuses new adds but never blocks growth from an existing stack and never crashes. Why: a furnished
-house is about 800 loot items and a store 13,000; only what differs from generation deserves memory.
-Consequence: PEO-050; D-026 to D-029 refine it.
-
-## 2026-09-29 · D-022 · The Dead take a probabilistic number of steps per update
-
-User decision (N016, review option 3). Expected steps per update = kUpdatePeriodSeconds /
-step_seconds, a real number: the integer part is guaranteed, the fraction is the chance of one more
-step, drawn from a counter-based hash of (seed, update, Dead index), never a shared stream. Cap at
-6 steps per update. Why: speed stays a gradient (D-015) with no per-second Dead pass, and cost scales
-with steps taken. Consequence: replaces PEO-040's one step per update; the commit repatch radius
-grows with the step cap; PEO-042.
-
-## 2026-09-29 · D-021 · Fields stay on the CPU; the budget is the gap between inputs
-
-Architect decision, delegated by the user (N016). No GPU work: D-002's bit identity and the commit
-patch need one code path, and every field measured by the reviews is bounded by reach, not map size.
-To keep a port possible, new fields are integer-valued stencils over flat arrays. Revisit when the
-largest variant below has under 50% headroom. Budget, replacing the 16 ms target: commit under 1 ms;
-a speculated update under 100 ms on the M1 Air, the floor machine, so most of the 333 ms input gap
-(D-011) stays headroom. Measured at 200x120 with 5,000 Dead, 512x512 with 20,000 and 512x512 with
-50,000, each with many emitters. Consequence: PEO-043; vision.md updated.

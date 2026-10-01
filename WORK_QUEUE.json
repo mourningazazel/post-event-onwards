@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 78,
+  "next_id": 85,
   "items": [
     {
       "id": "PEO-003",
@@ -137,6 +137,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "D-022 (N016) settles Dead speed: probabilistic extra steps per update, built in PEO-042 ahead of this item. The pathfinding review found that occupancy and a wake-up cascade make moves order-dependent, which breaks the commit patch; the draw needs an intents-then-resolve step, and PEO-022 stacks on that."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "D-037 (2026-10-01): this is the first scale-up. Bake every term that reads only the last update (scent, aggregate, company, footing, repellent) into a per-cell desire field of eight weights in the dense pass; per decision only the unit's own terms remain. See research/parallel-and-gpu.md section 6."
         }
       ],
       "references": [
@@ -816,7 +821,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "2026-10-01: the copy lever is PEO-078 (two buffers), parallel decisions are PEO-080 (D-035). Commit swap and the static emitter layer stay here."
+        }
+      ],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -869,6 +880,141 @@
         "src/core/include/peo/core/scent_wave.hpp"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-078",
+      "order": 667,
+      "type": "perf",
+      "title": "Scent field as a dense pull over active tiles",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-10-01",
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "docs/research/parallel-and-gpu.md",
+        "docs/adr/0014-threads-and-gpu-compute-in-core.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-079",
+      "order": 677,
+      "type": "perf",
+      "title": "Flow-direction grid for the Dead's poll and decisions",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/research/parallel-and-gpu.md"
+      ],
+      "depends_on": [
+        "PEO-078"
+      ]
+    },
+    {
+      "id": "PEO-080",
+      "order": 687,
+      "type": "feature",
+      "title": "Executor in core; thread the field and the Dead",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/adr/0014-threads-and-gpu-compute-in-core.md"
+      ],
+      "depends_on": [
+        "PEO-078",
+        "PEO-079"
+      ]
+    },
+    {
+      "id": "PEO-081",
+      "order": 697,
+      "type": "feature",
+      "title": "GPU field backend matching the CPU pull bit for bit",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/adr/0014-threads-and-gpu-compute-in-core.md",
+        "docs/adr/0001-platforms-and-gpu-backend.md"
+      ],
+      "depends_on": [
+        "PEO-078"
+      ]
+    },
+    {
+      "id": "PEO-082",
+      "order": 707,
+      "type": "design",
+      "title": "Fast time passing: sleep, wait and search at full detail",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/research/parallel-and-gpu.md"
+      ],
+      "depends_on": [
+        "PEO-078",
+        "PEO-080"
+      ]
+    },
+    {
+      "id": "PEO-083",
+      "order": 717,
+      "type": "research",
+      "title": "Big stages: 1024 to 2048 square with far-reaching scent",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/research/parallel-and-gpu.md",
+        "docs/design/performance-targets.md"
+      ],
+      "depends_on": [
+        "PEO-078"
+      ]
+    },
+    {
+      "id": "PEO-084",
+      "order": 727,
+      "type": "design",
+      "title": "Crowd pressure field: barricades fail from crowd depth",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "docs/research/parallel-and-gpu.md"
+      ],
+      "depends_on": [
+        "PEO-022"
+      ]
     }
   ]
 }
