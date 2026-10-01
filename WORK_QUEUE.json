@@ -783,7 +783,7 @@
       "order": 687,
       "type": "feature",
       "title": "Executor in core; thread the field and the Dead",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
