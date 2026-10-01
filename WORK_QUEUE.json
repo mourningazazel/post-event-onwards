@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 87,
+  "next_id": 88,
   "items": [
     {
       "id": "PEO-003",
@@ -776,9 +776,15 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "docs/adr/0014-threads-and-gpu-compute-in-core.md"
       ],
@@ -792,13 +798,18 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "Ryan 2026-10-01: emitters may be most active tiles, so the saturated windy field is the GPU load. Plan temporal blocking: each workgroup loads its tile plus a halo of speed+gust cells into shared memory, runs all rounds there, writes the interior. Cache standing emitters (PEO-074 lever 3)."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
         }
       ],
       "references": [
@@ -880,6 +891,26 @@
           "at": "2026-10-01",
           "by": "builder",
           "text": "commits: 26c06d5. tests: verify --frontend --full passed (arm64, gcc 16, clang 22); all assertions kept (walker 0 / 68 / 0 ahead, 49 behind each; upwind 39 < downwind 60 and 68). perf, sanitizer build here, per case before -> after: walker 666 -> 55 ms, patch oracle 354 -> 60, windy World 290 -> 102, upwind 258 -> 38, AVX2 case 263 -> 114 (both halves forced: 225); tier 2660 -> 1195 ms, about 1.3 s with both AVX2 halves. manual: none. open: no AVX2 here, so the x86 figure (expect about 1.6 s) needs your container."
+        }
+      ],
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-087",
+      "order": 747,
+      "type": "feature",
+      "title": "GPU wind and gust rounds fused in shared memory; direction bytes on the GPU under wind",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-10-01",
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed; after PEO-081"
         }
       ],
       "references": [],
