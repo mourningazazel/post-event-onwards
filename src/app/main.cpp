@@ -28,6 +28,8 @@
 #include <system_error>
 #include <thread>
 
+#include "thread_pool.hpp"
+
 namespace {
 
 using namespace peo::core;
@@ -42,6 +44,13 @@ constexpr int kGameWindGust = 2;
 /// Compass points, clockwise from east as Wind::toward_degrees runs (y down).
 constexpr std::array<const char*, 8> kCompass{"E", "SE", "S", "SW", "W", "NW", "N", "NE"};
 constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t>(kCompass.size());
+
+/// Threads that run core's pieces (PEO-080): the hardware's, less one for the main
+/// thread, at least one. `--threads N` overrides it; 1 is serial.
+std::size_t default_threads() noexcept {
+    const unsigned hardware = std::thread::hardware_concurrency();
+    return hardware > 1 ? hardware - 1 : 1;
+}
 
 WorldParams game_params() noexcept {
     WorldParams params;
@@ -141,6 +150,8 @@ private:
 struct App {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
+    /// Core's executor (D-035): before world and speculator, so destroyed after them.
+    std::optional<peo::app::ThreadPool> pool;
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
@@ -291,6 +302,19 @@ void drain(App& app) {
     }
 }
 
+/// `arg` as a count of threads, at least 1; anything else warns and keeps `fallback`.
+std::size_t parse_threads(const char* arg, std::size_t fallback) {
+    const std::string_view text(arg);
+    std::size_t threads = 0;
+    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), threads);
+    if (error != std::errc{} || end != text.data() + text.size() || threads == 0) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--threads \"%s\" is not a whole number from 1; using %zu",
+                    arg, fallback);
+        return fallback;
+    }
+    return threads;
+}
+
 /// `arg` as a seed: decimal digits only, in range. Anything else (letters, trailing
 /// characters, a sign, too many digits) is warned about and starts on kDefaultSeed, so a
 /// typo opens a game instead of ending the program.
@@ -313,8 +337,24 @@ Seed parse_seed(const char* arg) {
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
-    const Seed seed = argc > 1 ? parse_seed(argv[1]) : kDefaultSeed;
+    // Arguments: an optional seed, and `--threads N` anywhere (PEO-080).
+    Seed seed = kDefaultSeed;
+    std::size_t threads = default_threads();
+    for (int i = 1; i < argc; ++i) {
+        if (std::string_view(argv[i]) == "--threads") {
+            if (i + 1 < argc) {
+                threads = parse_threads(argv[++i], threads);
+            } else {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--threads needs a number; using %zu", threads);
+            }
+            continue;
+        }
+        seed = parse_seed(argv[i]);
+    }
+    SDL_Log("seed %llu, %zu thread(s) for the simulation", static_cast<unsigned long long>(seed), threads);
+    app->pool.emplace(threads);
     app->world.emplace(seed, game_params());
+    app->world->set_executor(&*app->pool);
     app->speculator.emplace(*app->world);
     app->speculator->request();
 
