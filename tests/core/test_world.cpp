@@ -12,6 +12,8 @@
 #include <optional>
 #include <vector>
 
+#include "town_fixture.hpp"
+
 using namespace peo::core;
 
 namespace {
@@ -266,6 +268,85 @@ TEST_SUITE("world") {
         CHECK(w.stage_index() == 1);
         CHECK(w.turn() == 0);
         CHECK(w.player() == w.stage().entry);
+    }
+
+    TEST_CASE("the Dead's positions are pinned" * doctest::test_suite("scenario: world")) {
+        // PEO-079: recorded before the poll and decide_move read the direction bytes
+        // (ScentWave::flow_target); the switch must not move a single unit. Two hordes:
+        // a World on a generated 200x120 walled stage with 3000 Dead, 60 updates of
+        // walking and waiting; and 2000 Dead on the PEO-035 town, each deciding once per
+        // update with real occupancy, while a player walks into the town and stands.
+        constexpr int kUpdates = 60;
+        constexpr int kWorldDead = 3000;
+        constexpr int kTownDead = 2000;
+        constexpr std::uint64_t kPinnedWorld = 0xE55A8939897997F8ULL;
+        constexpr std::uint64_t kPinnedTown = 0x4494EC59599E60F5ULL;
+        constexpr int kMinMoved = 100; // the hash pins real movement, not a frozen horde
+
+        World w(kSeed, {.initial_dead = kWorldDead, .stage_width = 200, .stage_height = 120});
+        const std::vector<Dead> world_start = w.horde();
+        for (int i = 0; i < kUpdates; ++i) {
+            w.step(scripted_action(i));
+        }
+        REQUIRE(w.stage_index() == 0);
+        Fnv1a world_hash;
+        for (const Dead& d : w.horde()) {
+            world_hash.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.x)));
+            world_hash.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.y)));
+        }
+
+        Rng town_rng(peo::test::kTownWidth);
+        const Grid<bool> town = peo::test::make_town(town_rng, true);
+        const Vec2i street{1, 1};
+        Vec2i goal{peo::test::kTownWidth / 2, peo::test::kTownHeight / 2};
+        while (town.at(goal)) {
+            ++goal.x;
+        }
+        const std::vector<Vec2i> path = peo::test::walk_path(town, street, goal);
+        REQUIRE_FALSE(path.empty());
+        ScentWave wave(peo::test::kTownWidth, peo::test::kTownHeight);
+        Grid<std::uint8_t> occupied(peo::test::kTownWidth, peo::test::kTownHeight, 0);
+        const Grid<bool> reserved(peo::test::kTownWidth, peo::test::kTownHeight, false);
+        std::vector<Dead> horde;
+        Rng place(kSeed);
+        while (horde.size() < static_cast<std::size_t>(kTownDead)) {
+            const Vec2i c{place.range(1, peo::test::kTownWidth - 2),
+                          place.range(1, peo::test::kTownHeight - 2)};
+            if (!town.at(c) && occupied.at(c) == 0 && c != street) {
+                occupied.at(c) = 1;
+                horde.push_back({.pos = c});
+            }
+        }
+        const std::vector<Dead> town_start = horde;
+        Vec2i player = street;
+        for (int u = 0; u < kUpdates; ++u) {
+            player = static_cast<std::size_t>(u) < path.size() ? path[static_cast<std::size_t>(u)] : player;
+            wave.deposit(player, wave.params().strength);
+            wave.update(town);
+            for (Dead& d : horde) {
+                if (const auto to = decide_move(d, wave, town, occupied, reserved)) {
+                    --occupied.at(d.pos);
+                    d.pos = *to;
+                    ++occupied.at(d.pos);
+                }
+            }
+        }
+        Fnv1a town_hash;
+        for (const Dead& d : horde) {
+            town_hash.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.x)));
+            town_hash.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.pos.y)));
+        }
+        const auto moved = [](const std::vector<Dead>& a, const std::vector<Dead>& b) {
+            int n = 0;
+            for (std::size_t i = 0; i < a.size(); ++i) {
+                n += a[i].pos != b[i].pos ? 1 : 0;
+            }
+            return n;
+        };
+        CHECK(moved(world_start, w.horde()) >= kMinMoved);
+        CHECK(moved(town_start, horde) >= kMinMoved);
+        CHECK(world_hash.h == kPinnedWorld);
+        CHECK(town_hash.h == kPinnedTown);
     }
 
     TEST_CASE("commit(speculate()) is bit-identical to step()" * doctest::test_suite("scenario: world")) {
