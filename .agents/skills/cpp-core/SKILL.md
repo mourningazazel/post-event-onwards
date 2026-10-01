@@ -17,10 +17,10 @@ Builder a miss is a fix before commit, for the Architect a review finding.
   simulation.
 - Never iterate an `unordered_map` or `unordered_set` to produce a result;
   its order is library-defined. Sort, or use a dense vector keyed by id.
-- Integer maths for anything that feeds back into the simulation. A float
-  compared against a draw can differ in the last bit between the M1 and
-  x86 (fused multiply-add is contracted on one and not the other), so the
-  same seed builds a different world. Floats are for display and reporting.
+- Integer maths for anything that feeds back into the simulation. Floats
+  are for display and reporting. Core builds with `-ffp-contract=off`
+  (PEO-028) because arm64 would otherwise fuse `a + b * x` into one FMA and
+  round differently from x86; keep that flag on any new core target.
 - New state is covered by `World::equivalent` and the
   `commit(speculate()) == step()` test, or the test says why not.
 
