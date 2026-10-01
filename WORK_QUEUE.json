@@ -886,7 +886,7 @@
       "order": 667,
       "type": "perf",
       "title": "Scent field as a dense pull over active tiles",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -896,6 +896,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
