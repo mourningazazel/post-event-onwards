@@ -40,17 +40,24 @@ PEO_WAVE_KERNEL_CLONES bool pull_row(const std::int32_t* __restrict a, std::int3
                                      std::int32_t cost, std::int32_t line) {
     int changed = 0;
     for (std::ptrdiff_t i = begin; i < end; ++i) {
+        // Every load is unconditional (interior cells have all eight neighbours) and the
+        // masks only select, so the loop has no branches and vectorises.
         const std::int32_t m = diag[i];
+        const std::int32_t ne = a[i - w + 1];
+        const std::int32_t se = a[i + w + 1];
+        const std::int32_t sw = a[i + w - 1];
+        const std::int32_t nw = a[i - w - 1];
         std::int32_t best = std::max(std::max(a[i - w], a[i + 1]), std::max(a[i + w], a[i - 1]));
-        best = std::max(best, (m & kNE) != 0 ? a[i - w + 1] : kUnreached);
-        best = std::max(best, (m & kSE) != 0 ? a[i + w + 1] : kUnreached);
-        best = std::max(best, (m & kSW) != 0 ? a[i + w - 1] : kUnreached);
-        best = std::max(best, (m & kNW) != 0 ? a[i - w - 1] : kUnreached);
+        best = std::max(best, (m & kNE) != 0 ? ne : kUnreached);
+        best = std::max(best, (m & kSE) != 0 ? se : kUnreached);
+        best = std::max(best, (m & kSW) != 0 ? sw : kUnreached);
+        best = std::max(best, (m & kNW) != 0 ? nw : kUnreached);
         const std::int32_t candidate = best - cost;
         const std::int32_t old = a[i];
-        const std::int32_t v = (open[i] != 0 && candidate > line && candidate > old) ? candidate : old;
+        const bool take = (open[i] != 0) & (candidate > line) & (candidate > old);
+        const std::int32_t v = take ? candidate : old;
         b[i] = v;
-        changed |= v != old ? 1 : 0;
+        changed |= static_cast<int>(take);
     }
     return changed != 0;
 }

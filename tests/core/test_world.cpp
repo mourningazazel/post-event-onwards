@@ -714,6 +714,44 @@ TEST_SUITE("world") {
     TEST_CASE("perf: 200x120, 5000 Dead, no emitters") {
         run_perf(200, 120, 5000, 0);
     }
+
+    TEST_CASE("perf: saturated scent update, 512x512, 6 emitters per 1000 tiles") {
+        // PEO-078: the scent update alone at steady state. 80 warm-up updates fill the
+        // field round every emitter; then the median and p95 of 40 updates.
+        constexpr int kSide = 512;
+        constexpr int kEmitters = 6; // per 1000 tiles
+        constexpr int kPerMille = 1000;
+        constexpr int kWarm = 80;
+        constexpr int kSamples = 40;
+        constexpr std::size_t kP95 = kSamples * 95 / 100;
+        using Clock = std::chrono::steady_clock;
+        Grid<bool> walls(kSide, kSide, false);
+        for (int i = 0; i < kSide; ++i) {
+            walls.at(i, 0) = walls.at(i, kSide - 1) = walls.at(0, i) = walls.at(kSide - 1, i) = true;
+        }
+        Rng rng(kSeed);
+        std::vector<Vec2i> emitters(static_cast<std::size_t>(kSide * kSide * kEmitters / kPerMille));
+        for (Vec2i& e : emitters) {
+            e = {rng.range(1, kSide - 2), rng.range(1, kSide - 2)};
+        }
+        ScentWave wave(kSide, kSide);
+        std::vector<double> us;
+        for (int i = 0; i < kWarm + kSamples; ++i) {
+            for (const Vec2i e : emitters) {
+                wave.deposit(e, wave.params().strength);
+            }
+            const auto t0 = Clock::now();
+            wave.update(walls);
+            if (i >= kWarm) {
+                us.push_back(std::chrono::duration<double, std::micro>(Clock::now() - t0).count());
+            }
+        }
+        std::sort(us.begin(), us.end());
+        MESSAGE("perf 512x512 scent saturated emitters=6 update_median=" << us[us.size() / 2]
+                                                                         << " us p95=" << us[kP95] << " us");
+        CHECK(wave.active_cells() > 0);
+    }
+
     TEST_CASE("perf: 200x120, 5000 Dead, 6 emitters per 1000 tiles") {
         run_perf(200, 120, 5000, 6);
     }
