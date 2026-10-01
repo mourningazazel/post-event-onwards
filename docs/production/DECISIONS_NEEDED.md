@@ -18,10 +18,3 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 ```
 
 ---
-
-## D-033 · The 1 s test budget and the town scenario tests      (raised by architect · 2026-09-30 · PEO-066)
-Why now: the town scenarios (PEO-030) add ~350 ms under the sanitizers; the suite runs 0.86-1.08 s on slower machines, so CI will go red again.
-Affects: direction · rewrite: none
-- A) Keep one 1 s budget for everything — scenario tests shrink to small map slices, losing some realism
-- B) Two tiers — unit tests keep the 1 s budget for the edit-test loop; town and scenario tests run in the same CI build under their own 5 s budget   ← recommended
-- C) Raise the single budget to 2 s — simplest; the edit-test loop gets slower as scenarios keep growing

@@ -12,8 +12,9 @@ updates before asking for a mechanics change.
 
 - D-021, release build on the Builder's M1 Air: `commit` under 1 ms,
   speculated update under 100 ms.
-- Headless unit suite (Debug with sanitizers) under 1 s, enforced by the
-  `suite_budget` test.
+- Headless suite (Debug with sanitizers): unit tier under 1 s, enforced by
+  `suite_budget`; scenario tier (`scenario*` suites) under 5 s, enforced by
+  `scenario_budget` (D-033).
 
 ## Measure
 

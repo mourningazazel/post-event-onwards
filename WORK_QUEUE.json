@@ -677,33 +677,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-066",
-      "order": 547,
-      "type": "chore",
-      "title": "Keep the headless suite under budget as scenario tests grow (D-033)",
-      "status": "AwaitingUser",
-      "severity": "S2",
-      "effort": "S",
-      "owner": "user",
-      "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "waiting on D-033"
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "CI went red at 1149 ms after PEO-030. Sanitizer build moved from -Og to -O1: suite ~0.3 s locally (was ~1.0 s). D-033 still open for when scenarios grow, but no longer urgent."
-        }
-      ],
-      "references": [
-        "tools/suite_budget.py"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-068",
       "order": 567,
       "type": "chore",

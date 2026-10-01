@@ -113,7 +113,8 @@ struct Follower {
 
 } // namespace
 
-TEST_SUITE("town") {
+// Scenario tier (D-033): runs under the 5 s scenario budget, not the 1 s unit budget.
+TEST_SUITE("scenario: town") {
     TEST_CASE("the town fixture is deterministic") {
         const Grid<bool> a = town();
         const Grid<bool> b = town();
