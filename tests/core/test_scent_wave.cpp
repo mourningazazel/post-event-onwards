@@ -275,6 +275,36 @@ TEST_SUITE("scent_wave") {
             CHECK(first_mismatch(b, {.speed = speed}, kEmitters, kUpdates, 5) == -1);
         }
     }
+    TEST_CASE("a partner sync copies only written tiles and equals a full copy") {
+        // PEO-078: the World's wave and its Speculation's are partners after a copy; a
+        // later sync copies just the tiles either wrote, and the waves stay equal.
+        constexpr int kBig = 512;
+        constexpr Vec2i kSource{40, 40};
+        constexpr int kUpdates = 10;
+        const Grid<bool> walls(kBig, kBig, false);
+        ScentWave world(kBig, kBig);
+        world.set_token(1);
+        world.deposit(kSource, world.params().strength);
+        world.update(walls);
+        ScentWave spec(1, 1);
+        const std::size_t cold = spec.sync_from(world); // not partners yet: everything
+        CHECK(spec.values() == world.values());
+        for (int i = 0; i < kUpdates; ++i) {
+            world.deposit(kSource, world.params().strength);
+            world.update(walls);
+            spec.update(walls); // the partner moves on too: its writes are recorded
+            const std::size_t warm = spec.sync_from(world);
+            CHECK(warm < cold);
+            CHECK(spec.values() == world.values());
+            CHECK(spec.updates() == world.updates());
+            ScentWave a = world;
+            ScentWave b = spec;
+            a.update(walls);
+            b.update(walls);
+            CHECK(a.values() == b.values()); // and they update alike
+        }
+    }
+
 #ifdef NDEBUG
     TEST_CASE("the field equals the reference push on the town and a large open stage") {
         constexpr int kEmitters = 6;  // per 1000 tiles

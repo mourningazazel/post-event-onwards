@@ -276,8 +276,7 @@ std::size_t ScentWave::sync_from(const ScentWave& source) {
         return 0;
     }
     const bool partners = partner_token_ != 0 && partner_token_ == source.partner_token_ &&
-                          width_ == source.width_ && height_ == source.height_ &&
-                          masks_built_ == source.masks_built_;
+                          width_ == source.width_ && height_ == source.height_;
     if (!partners) {
         *this = source; // copy-assign reuses this wave's storage once it is the right size
         for (const std::uint32_t t : written_) {
@@ -285,6 +284,11 @@ std::size_t ScentWave::sync_from(const ScentWave& source) {
         }
         written_.clear();
         return changed_.size();
+    }
+    if (!masks_built_ && source.masks_built_) { // the same stage's masks, built on one side only
+        open_ = source.open_;                   // same size: no allocation
+        diag_ = source.diag_;
+        masks_built_ = true;
     }
     // Tiles either side wrote since this wave last matched: copy those into both of this
     // wave's buffers. Everywhere else the two waves, and this wave's buffers, are equal.

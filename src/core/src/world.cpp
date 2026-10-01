@@ -101,6 +101,7 @@ void World::load_stage(std::uint32_t index) {
     spec.height = params_.stage_height;
     stage_ = generate_stage(spec);
     scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
+    scent_.set_token(++wave_tokens_);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
@@ -283,7 +284,8 @@ Speculation World::speculate() const {
 }
 
 void World::speculate(Speculation& out) const {
-    out.scent = scent_; // copy-assign reuses out's storage once it is the right size
+    // A partner wave (the one finish_from swapped out) copies only what changed.
+    out.synced_tiles = out.scent.sync_from(scent_);
     out.update = updates_;
     out.stage_index = stage_index_;
     out.scent.update(stage_.blocked);

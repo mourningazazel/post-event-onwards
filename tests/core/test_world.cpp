@@ -599,6 +599,55 @@ TEST_SUITE("world") {
         }
     }
 
+    TEST_CASE("a reused or a fresh speculation commits exactly as step") {
+        // PEO-078: a reused Speculation syncs its wave from the World's partner (only
+        // changed tiles); a fresh one copies the whole field. Both match step() after
+        // every one of 200 mixed actions, and a warm speculate copies less than the field.
+        constexpr int kActions = 200;
+        constexpr int kWaitOneIn = 5;
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        for (const bool reuse : {true, false}) {
+            Rng pick(kSeed);
+            World a(kSeed, small_world());
+            World b(kSeed, small_world());
+            Speculation kept;
+            for (int i = 0; i < kActions; ++i) {
+                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Action act = pick.range(1, kWaitOneIn) == 1
+                                       ? Action::wait(secs)
+                                       : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+                Speculation fresh;
+                Speculation& spec = reuse ? kept : fresh;
+                b.speculate(spec);
+                a.step(act);
+                b.commit(spec, act);
+                if (!World::equivalent(a, b)) {
+                    FAIL("diverged at action " << i << " reuse " << reuse);
+                }
+            }
+        }
+    }
+
+    TEST_CASE("a warm speculate copies only the tiles that changed") {
+        // PEO-078: on a 384x128 stage (48 tiles of 128x8) the first speculate copies the
+        // field; once the World and the Speculation have swapped waves, a speculate
+        // copies only what either wrote since, a few tiles round the player.
+        constexpr int kW = 384;
+        constexpr int kH = 128;
+        constexpr std::size_t kTiles = (kW / kWaveTileWidth) * (kH / kWaveTileHeight);
+        constexpr int kWaits = 6;
+        World w(kSeed, {.initial_dead = 0, .stage_width = kW, .stage_height = kH});
+        Speculation spec;
+        w.speculate(spec);
+        CHECK(spec.synced_tiles == kTiles); // cold: the whole field
+        for (int i = 0; i < kWaits; ++i) {
+            w.commit(spec, Action::wait());
+            w.speculate(spec);
+            CAPTURE(i);
+            CHECK(spec.synced_tiles < kTiles);
+        }
+    }
+
     TEST_CASE("a stale speculation falls back to step") {
         World a(kSeed, small_world());
         World b(kSeed, small_world());

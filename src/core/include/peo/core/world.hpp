@@ -78,9 +78,14 @@ struct HordeState {
 /// for the update and stage it was made on, across any number of actions that
 /// cross no update boundary.
 /// Reusable: speculate(out) and commit() recycle its buffers, so a frontend that
-/// keeps one Speculation allocates nothing per update.
+/// keeps one Speculation allocates nothing per update. A Speculation serves one World:
+/// after the first speculate on a stage its wave and the World's are partners (they
+/// swap in finish_from), so a warm speculate copies only the tiles either changed
+/// since they last matched, not the field (PEO-078).
 struct Speculation {
     ScentWave scent{1, 1};
+    /// Tiles the last speculate copied into `scent`: all of them when cold. Diagnostic.
+    std::size_t synced_tiles = 0;
     Tick update = 0;
     std::uint32_t stage_index = 0;
     /// The Dead's seconds (from, to] are recorded: second t's decisions are
@@ -180,6 +185,8 @@ private:
     Stage stage_;
     ScentWave scent_{1, 1};
     HordeState dead_;
+    /// Gives each stage's wave a token of its own, for ScentWave::sync_from.
+    std::uint64_t wave_tokens_ = 0;
     /// Mixed into the slot hashes: the stage's own seed.
     std::uint64_t stage_salt_ = 0;
     Vec2i player_{};
