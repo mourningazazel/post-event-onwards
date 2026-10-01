@@ -18,6 +18,8 @@ namespace peo::core {
 
 using namespace wave_kernel;
 
+static_assert(kUnreached == kWaveUnreached, "the kernels' unreached value is the wave's");
+
 namespace {
 bool pull_row_plain(const std::int32_t* a, std::int32_t* b, const std::uint8_t* open,
                     const std::uint8_t* diag, std::ptrdiff_t w, std::ptrdiff_t begin, std::ptrdiff_t end,
@@ -319,6 +321,7 @@ void ScentWave::update(const Grid<bool>& blocked) {
     if (first) {
         build_masks(blocked);
     }
+    assert(updates_ < max_wave_updates(params_)); // the age line stays in int32 (PEO-077)
     ++updates_;
     for (int r = 0; r < params_.speed; ++r) {
         round();

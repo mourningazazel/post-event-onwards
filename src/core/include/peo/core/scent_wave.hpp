@@ -6,6 +6,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <vector>
 
@@ -39,6 +40,37 @@ struct WaveParams {
     std::int32_t age_cost = kWaveAgeCost;
     int speed = 1;
 };
+
+/// Stored value of a cell nothing has reached: far below any age line, and far enough
+/// above the type's minimum that subtracting a distance cost cannot overflow.
+inline constexpr std::int32_t kWaveUnreached = std::numeric_limits<std::int32_t>::min() / 2;
+
+/// How many updates a wave with `params` can run before its int32 age line (age_cost x
+/// updates) breaks (PEO-077). The line must stay at or below -kWaveUnreached, or an
+/// unreached cell's sample() underflows, and at or below INT32_MAX - strength, or a fresh
+/// deposit overflows. A wave lives one stage (World::load_stage builds a new one); if one
+/// ever has to outlive that, subtract the age line from its stored values first
+/// (ADR-0011's global clock), an O(cells) pass.
+[[nodiscard]] constexpr std::uint32_t max_wave_updates(const WaveParams& params) noexcept {
+    if (params.age_cost <= 0) {
+        return std::numeric_limits<std::uint32_t>::max(); // the line never moves
+    }
+    const std::int64_t below_unreached = -std::int64_t{kWaveUnreached};
+    const std::int64_t below_overflow =
+        std::int64_t{std::numeric_limits<std::int32_t>::max()} - params.strength;
+    const std::int64_t line = below_unreached < below_overflow ? below_unreached : below_overflow;
+    return static_cast<std::uint32_t>(line / params.age_cost);
+}
+
+/// The default numbers' bound: 2^27 updates, about 25 game years at one update per 6 s.
+inline constexpr std::uint32_t kMaxWaveUpdates = max_wave_updates(WaveParams{});
+/// The least game time a wave must be able to live: one year, ample for a stage.
+inline constexpr std::uint64_t kSecondsPerDay = 24ULL * 60 * 60;
+inline constexpr std::uint64_t kDaysPerYear = 365;
+inline constexpr std::uint64_t kMinWaveLifeSeconds = kDaysPerYear * kSecondsPerDay;
+static_assert(std::uint64_t{kMaxWaveUpdates} * kUpdatePeriodSeconds >= kMinWaveLifeSeconds,
+              "kMaxWaveUpdates: with these WaveParams defaults the scent wave's int32 age line breaks "
+              "within kMinWaveLifeSeconds; lower age_cost or strength, or rebase the line (PEO-077)");
 
 /// The world's scent (D-024): an integer geodesic field. Each cell holds the best
 /// strength - distance_cost x route - age_cost x age over the deposits that reached
