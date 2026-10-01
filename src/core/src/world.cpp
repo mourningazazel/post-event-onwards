@@ -34,12 +34,11 @@ bool same_moves(const std::vector<DeadMove>& a, const std::vector<DeadMove>& b) 
 
 /// Give every unit with a stronger neighbour its slots for cycle `cycle` (D-031),
 /// bucketed by second in ascending unit order.
-void poll(HordeState& d, const ScentWave& scent, const Grid<bool>& blocked, std::uint64_t salt,
-          std::uint64_t cycle, Seconds len) {
+void poll(HordeState& d, const ScentWave& scent, std::uint64_t salt, std::uint64_t cycle, Seconds len) {
     d.slot_begin.assign(static_cast<std::size_t>(len) + 1, 0);
     for (std::size_t i = 0; i < d.horde.size(); ++i) {
         // Only a unit with somewhere better to go this cycle gets slots.
-        d.plans[i] = scent.strongest_neighbour(d.horde[i].pos, &blocked)
+        d.plans[i] = scent.flow_target(d.horde[i].pos)
                          ? plan_slots(salt, cycle, i, d.horde[i].step_seconds, len)
                          : SlotPlan{};
         for (Seconds j = 0; j < d.plans[i].count; ++j) {
@@ -217,7 +216,7 @@ void World::finish_from(Speculation& spec) {
 void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
     const Seconds len = params_.dead_cycle;
     if (t % len == 0) {
-        poll(d, scent_, stage_.blocked, stage_salt_, t / len, len);
+        poll(d, scent_, stage_salt_, t / len, len);
         if (record != nullptr) {
             record->poll_at = t;
             record->poll_begin = d.slot_begin; // copy-assign reuses capacity

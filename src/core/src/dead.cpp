@@ -22,7 +22,9 @@ SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, 
 
 std::optional<Vec2i> decide_move(const Dead& unit, const ScentWave& scent, const Grid<bool>& blocked,
                                  const Grid<std::uint8_t>& occupied, const Grid<bool>& reserved) noexcept {
-    const std::optional<Vec2i> best = scent.strongest_neighbour(unit.pos, &blocked);
+    // A wave only deposited into has not seen its grid, so it has no direction bytes yet.
+    const std::optional<Vec2i> best =
+        scent.has_flow() ? scent.flow_target(unit.pos) : scent.strongest_neighbour(unit.pos, &blocked);
     if (!best || occupied.at(*best) != 0 || reserved.at(*best)) {
         return std::nullopt;
     }

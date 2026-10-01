@@ -45,7 +45,9 @@ struct SlotPlan {
 /// Where a calm one of the Dead steps next (D-031): its strongest neighbour, as
 /// strongest_neighbour() picks it, but only if no other Dead stands there and no
 /// pending move has reserved it. A calm Dead never sidesteps to a weaker tile and
-/// never climbs over another: when its best tile is taken it stays put.
+/// never climbs over another: when its best tile is taken it stays put. Reads the
+/// wave's direction byte (flow_target, PEO-079), so `blocked` must be the grid the
+/// wave is updated against; it is read only before the wave has seen that grid.
 [[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentWave& scent,
                                                const Grid<bool>& blocked, const Grid<std::uint8_t>& occupied,
                                                const Grid<bool>& reserved) noexcept;

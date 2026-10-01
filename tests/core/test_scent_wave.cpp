@@ -359,6 +359,9 @@ TEST_SUITE("scent_wave") {
             spec.sync_from(world); // the first is cold: a full copy
             CHECK(agrees(spec) == 0);
         }
+        // A deposit between updates (World::deposit) is read at once, as the field is.
+        world.deposit(open_near({kWaveTileWidth / 2, kH / 2}), world.params().strength);
+        CHECK(agrees(world) == 0);
     }
 
 #ifdef NDEBUG

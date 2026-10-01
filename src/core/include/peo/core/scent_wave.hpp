@@ -92,9 +92,11 @@ public:
     /// cell, not of the unit: one direction byte per cell, written once per update
     /// over the cells whose neighbourhood changed, read here in O(1). The byte is
     /// stored without the age line, which never reorders neighbours; this checks
-    /// only that the target still reads above it. Empty before the first update(),
-    /// which is when the wave learns its blocked grid.
+    /// only that the target still reads above it. Empty until has_flow().
     [[nodiscard]] std::optional<Vec2i> flow_target(Vec2i from) const noexcept;
+    /// Whether the wave has its blocked grid (from the first update(), patch_deposit()
+    /// or a sync from a wave that has it), so flow_target() answers.
+    [[nodiscard]] bool has_flow() const noexcept { return masks_built_; }
 
     [[nodiscard]] const WaveParams& params() const noexcept { return params_; }
     [[nodiscard]] int width() const noexcept { return width_; }
@@ -120,9 +122,14 @@ private:
                static_cast<std::size_t>(x / kWaveTileWidth);
     }
     void build_masks(const Grid<bool>& blocked);
-    /// A cell's value changed in the current buffer outside a round: its tile is
-    /// pulled next round, and a partner learns of it.
+    /// A cell's value changed in the current buffer: its tile is pulled next round, and
+    /// a partner learns of it.
     void touched(std::size_t tile) noexcept;
+    /// Rewrite the direction bytes of the cells in [x0, x1) x [y0, y1), clamped to the map.
+    void refresh_flow(int x0, int y0, int x1, int y1) noexcept;
+    void refresh_flow_cell(int x, int y) noexcept;
+    /// A tile and the one-cell ring round it: the bytes a change inside the tile can move.
+    [[nodiscard]] std::array<int, 4> flow_reach(std::size_t tile) const noexcept;
     void expand_active();
     void round();
     [[nodiscard]] bool pull_tile(std::size_t tile);
@@ -142,6 +149,13 @@ private:
     std::vector<std::uint8_t> open_;
     std::vector<std::uint8_t> diag_;
     bool masks_built_ = false;
+    /// Per cell: the kNeighbours8 index flow_target() steps to, or none (PEO-079). Exact
+    /// for the current values whenever update() is not running: deposit() and
+    /// patch_deposit() rewrite the bytes round what they raise, update() rewrites the
+    /// tiles its rounds changed (stale_) after them, sync_from() copies.
+    std::vector<std::uint8_t> flow_;
+    std::vector<std::uint8_t> stale_mark_;
+    std::vector<std::uint32_t> stale_;
     /// Per tile: changed last round (or by a deposit or patch since); and scratch for
     /// building the active list.
     std::vector<std::uint8_t> changed_;
