@@ -507,6 +507,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Held: the pull already bounds work by reach while only the player emits. Brief with the first other emitter (PEO-039 or PEO-003); sealed buildings wait on a generator with buildings."
         }
       ],
       "references": [
@@ -521,8 +526,8 @@
       "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
       "status": "Pending",
       "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
+      "effort": "L",
+      "owner": "builder",
       "created": "2026-09-29",
       "notes": [
         {
@@ -534,6 +539,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
         }
       ],
       "references": [
@@ -814,9 +824,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/app/main.cpp"
       ],
@@ -830,9 +846,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/core/include/peo/core/scent.hpp"
       ],
@@ -846,9 +868,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/core/include/peo/core/scent_wave.hpp"
       ],
@@ -862,9 +890,15 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "docs/research/parallel-and-gpu.md"
       ],
@@ -965,10 +999,16 @@
       "title": "Pull kernel portability and Speculation ownership: AVX2 on MSVC, no target_clones on Darwin, foreign Speculation cold-copies",
       "status": "Pending",
       "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
+      "effort": "M",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "docs/production/briefs/PEO-078.md"
       ],

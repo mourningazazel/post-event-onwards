@@ -86,6 +86,16 @@ public:
     [[nodiscard]] std::optional<Vec2i>
     strongest_neighbour(Vec2i from, const Grid<bool>* blocked = nullptr) const noexcept;
 
+    /// Where a calm Dead at `from` would step (PEO-079): always equal to
+    /// strongest_neighbour(from, &blocked) for the blocked grid this wave was built
+    /// from. Between updates the field is fixed, so the answer is a property of the
+    /// cell, not of the unit: one direction byte per cell, written once per update
+    /// over the cells whose neighbourhood changed, read here in O(1). The byte is
+    /// stored without the age line, which never reorders neighbours; this checks
+    /// only that the target still reads above it. Empty before the first update(),
+    /// which is when the wave learns its blocked grid.
+    [[nodiscard]] std::optional<Vec2i> flow_target(Vec2i from) const noexcept;
+
     [[nodiscard]] const WaveParams& params() const noexcept { return params_; }
     [[nodiscard]] int width() const noexcept { return width_; }
     [[nodiscard]] int height() const noexcept { return height_; }

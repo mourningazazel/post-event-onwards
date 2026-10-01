@@ -380,4 +380,25 @@ std::optional<Vec2i> ScentWave::strongest_neighbour(Vec2i from, const Grid<bool>
     return result;
 }
 
+std::optional<Vec2i> ScentWave::flow_target(Vec2i from) const noexcept {
+    // PEO-079 placeholder: computes the answer from the masks on every call, so the
+    // contract and its test exist before the direction bytes do. The Builder replaces
+    // this with a read of the stored byte.
+    std::int32_t best = sample(from);
+    std::optional<Vec2i> result;
+    for (std::size_t d = 0; d < std::size(kNeighbours8); ++d) {
+        const Vec2i n = from + kNeighbours8[d];
+        const bool diagonal = d % 2 == 1;
+        if (!open_at(n.x, n.y) || (diagonal && (diag_[index(from)] & (1U << (d / 2))) == 0)) {
+            continue;
+        }
+        const std::int32_t v = sample(n);
+        if (v > best) {
+            best = v;
+            result = n;
+        }
+    }
+    return result;
+}
+
 } // namespace peo::core

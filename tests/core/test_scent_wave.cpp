@@ -307,6 +307,60 @@ TEST_SUITE("scent_wave") {
         }
     }
 
+    TEST_CASE("flow_target equals strongest_neighbour on every open cell" *
+              doctest::test_suite("scenario: scent_wave")) {
+        // PEO-079's contract. The stage spans 3x3 pull tiles, sources sit on tile
+        // borders, and the check runs after updates, a patched deposit and both kinds
+        // of sync, so a direction byte left stale anywhere shows up here.
+        constexpr int kW = 2 * kWaveTileWidth + 16;
+        constexpr int kH = 2 * kWaveTileHeight + 5;
+        constexpr int kWallOneIn = 6;
+        constexpr int kUpdates = 9;
+        const Grid<bool> b = random_stage(kW, kH, kWallOneIn, true, 31);
+        const auto open_near = [&](Vec2i c) {
+            while (b.at(c)) {
+                c.x = c.x % (kW - 2) + 1;
+            }
+            return c;
+        };
+        const Vec2i sources[] = {open_near({kWaveTileWidth - 1, kWaveTileHeight}),
+                                 open_near({kWaveTileWidth, 2 * kWaveTileHeight - 1}),
+                                 open_near({2 * kWaveTileWidth + 5, 2 * kWaveTileHeight})};
+        const auto agrees = [&](const ScentWave& w) {
+            int wrong = 0;
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    if (!b.at(x, y) && w.flow_target({x, y}) != w.strongest_neighbour({x, y}, &b)) {
+                        ++wrong;
+                    }
+                }
+            }
+            return wrong;
+        };
+        ScentWave world(kW, kH);
+        world.set_token(1);
+        CHECK_FALSE(world.flow_target(sources[0]).has_value()); // no update yet
+        ScentWave spec(1, 1);
+        for (int i = 0; i < kUpdates; ++i) {
+            const Vec2i at = sources[static_cast<std::size_t>(i) % std::size(sources)];
+            if (i % 3 == 2) { // as the World commits a speculation: update, then patch
+                const ScentWave before = world;
+                world.update(b);
+                world.patch_deposit(before, at, world.params().strength, b);
+            } else {
+                world.deposit(at, world.params().strength);
+                world.update(b);
+            }
+            CAPTURE(i);
+            CHECK(agrees(world) == 0);
+            if (i > 0) {
+                spec.update(b); // the partner's own writes, then a warm sync
+            }
+            spec.sync_from(world); // the first is cold: a full copy
+            CHECK(agrees(spec) == 0);
+        }
+    }
+
 #ifdef NDEBUG
     TEST_CASE("the field equals the reference push on the town and a large open stage") {
         constexpr int kEmitters = 6;  // per 1000 tiles
