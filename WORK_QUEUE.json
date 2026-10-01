@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 86,
+  "next_id": 87,
   "items": [
     {
       "id": "PEO-003",
@@ -842,6 +842,26 @@
       "depends_on": [
         "PEO-022"
       ]
+    },
+    {
+      "id": "PEO-086",
+      "order": 737,
+      "type": "chore",
+      "title": "Scenario tier back under half its budget: shrink the AVX2-equivalence and wind-walker cases (3.8 s of 5 s in CI)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-10-01",
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [],
+      "depends_on": []
     }
   ]
 }
