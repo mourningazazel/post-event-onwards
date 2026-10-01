@@ -815,7 +815,7 @@
       "order": 697,
       "type": "feature",
       "title": "GPU field backend matching the CPU pull bit for bit",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
