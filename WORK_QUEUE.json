@@ -1032,16 +1032,21 @@
       "order": 737,
       "type": "chore",
       "title": "Pull kernel portability and Speculation ownership: AVX2 on MSVC, no target_clones on Darwin, foreign Speculation cold-copies",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "report: its report commit"
         }
       ],
       "references": [
