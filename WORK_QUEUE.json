@@ -85,7 +85,7 @@
       "order": 90,
       "type": "design",
       "title": "Weighted-draw movement for the Dead with aggregates and company pull",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
