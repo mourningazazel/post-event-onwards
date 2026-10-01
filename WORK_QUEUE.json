@@ -681,10 +681,10 @@
       "order": 547,
       "type": "chore",
       "title": "Keep the headless suite under budget as scenario tests grow (D-033)",
-      "status": "AwaitingUser",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
-      "owner": "user",
+      "owner": "architect",
       "created": "2026-09-30",
       "notes": [
         {
@@ -696,6 +696,11 @@
           "at": "2026-09-30",
           "by": "architect",
           "text": "CI went red at 1149 ms after PEO-030. Sanitizer build moved from -Og to -O1: suite ~0.3 s locally (was ~1.0 s). D-033 still open for when scenarios grow, but no longer urgent."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "D-033 answered: B. Architect implements (tests and tooling): scenario* doctest suites, a second CTest budget of 5 s."
         }
       ],
       "references": [

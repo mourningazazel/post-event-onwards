@@ -8,6 +8,14 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-023, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-10-01 · D-033 · Two test tiers: unit under 1 s, scenarios under 5 s
+
+User decision: B. Unit tests keep the 1 s budget so the edit-test loop stays fast. Town, scenario
+and long golden-run tests form a second tier, the doctest suites named `scenario*`, run in the same
+CI build under their own 5 s budget; each tier is enforced by its own CTest. Why: the town
+scenarios keep growing and pushed one shared budget red twice. Consequence: PEO-066; a case over
+about 50 ms belongs in the scenario tier rather than being skipped.
+
 ## 2026-10-01 · D-037 · Richer Dead and crowd pressure are the first scale-up
 
 User decision: C (N020). Of the things threads and the GPU open up, the Dead's weighted draw
