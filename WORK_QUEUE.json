@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 75,
+  "next_id": 78,
   "items": [
     {
       "id": "PEO-003",
@@ -44,6 +44,11 @@
           "at": "2026-09-29",
           "by": "architect",
           "text": "PEO-043 carries the larger variants and both timings (D-021); keep this item for the per-step ScentField number only, or fold it in when PEO-043 lands."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Obsolete once ScentField is removed (PEO-076); close with it."
         }
       ],
       "references": [
@@ -694,22 +699,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-067",
-      "order": 557,
-      "type": "bug",
-      "title": "Stage wall density and Dead slot chance use float; FMA contraction can break M1 vs x86 bit identity",
-      "status": "Pending",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-30",
-      "notes": [],
-      "references": [
-        "src/core/src/stage.cpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-068",
       "order": 567,
       "type": "chore",
@@ -830,6 +819,54 @@
       "notes": [],
       "references": [
         "docs/design/performance-targets.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-075",
+      "order": 637,
+      "type": "bug",
+      "title": "peo with a non-numeric seed aborts: std::stoull throws uncaught",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "src/app/main.cpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-076",
+      "order": 647,
+      "type": "chore",
+      "title": "Remove ScentField (scent.hpp/.cpp, test_scent.cpp) now PEO-030 is accepted",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "src/core/include/peo/core/scent.hpp"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-077",
+      "order": 657,
+      "type": "chore",
+      "title": "ScentWave: write down the int32 bound on the age line",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-01",
+      "notes": [],
+      "references": [
+        "src/core/include/peo/core/scent_wave.hpp"
       ],
       "depends_on": []
     }
