@@ -259,7 +259,8 @@ TEST_SUITE("scent_wave") {
     }
 #endif
 
-    TEST_CASE("the field equals the reference push on every update") {
+    TEST_CASE("the field equals the reference push on every update" *
+              doctest::test_suite("scenario: scent_wave")) {
         // PEO-078: small stages in every build; the town and larger stages below in
         // release. Open and walled borders, speed 1 and 2, emitters and a walker.
         constexpr int kW = 48;
@@ -275,7 +276,8 @@ TEST_SUITE("scent_wave") {
             CHECK(first_mismatch(b, {.speed = speed}, kEmitters, kUpdates, 5) == -1);
         }
     }
-    TEST_CASE("a partner sync copies only written tiles and equals a full copy") {
+    TEST_CASE("a partner sync copies only written tiles and equals a full copy" *
+              doctest::test_suite("scenario: scent_wave")) {
         // PEO-078: the World's wave and its Speculation's are partners after a copy; a
         // later sync copies just the tiles either wrote, and the waves stay equal.
         constexpr int kBig = 512;

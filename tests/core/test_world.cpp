@@ -268,7 +268,7 @@ TEST_SUITE("world") {
         CHECK(w.player() == w.stage().entry);
     }
 
-    TEST_CASE("commit(speculate()) is bit-identical to step()") {
+    TEST_CASE("commit(speculate()) is bit-identical to step()" * doctest::test_suite("scenario: world")) {
         // PEO-007 golden test, extended for D-015 and D-031. Random seeds and action
         // sequences, biased east so runs cross stage exits; walls make some steps into
         // waits. Durations are 1, 3, 6 or 12 s, so some actions cross no update
@@ -599,7 +599,8 @@ TEST_SUITE("world") {
         }
     }
 
-    TEST_CASE("a reused or a fresh speculation commits exactly as step") {
+    TEST_CASE("a reused or a fresh speculation commits exactly as step" *
+              doctest::test_suite("scenario: world")) {
         // PEO-078: a reused Speculation syncs its wave from the World's partner (only
         // changed tiles); a fresh one copies the whole field. Both match step() after
         // every one of 200 mixed actions, and a warm speculate copies less than the field.
