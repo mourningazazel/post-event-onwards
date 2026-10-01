@@ -146,6 +146,13 @@ Dead upwards.
 Every variant gave exactly the same moves as `decide_move`. The flow grid costs 0.5-0.6 ms at 512x512 and 7-8 ms at 2048x2048 with every tile active on one core, a quarter of that on four, and well under 0.1 ms with only the player walking per
 update (the last column of the table in section 2). It is paid once per update, however many Dead there are, so it pays for itself from roughly 20,000 Dead on a fully active field and at any horde size when only the player is moving.
 
+**Built (PEO-079)**, one thread: `ScentWave::flow_target` reads the byte, the poll and
+`decide_move` call it, and every move is unchanged (a pinned golden of the Dead's positions).
+At 512x512 with 50,000 Dead and 6 sources per 1000 tiles the byte refresh adds 0.45 ms to the
+saturated update (222 to 675 us), and the Dead's share of a speculated update falls from 4.3 ms
+to 1.8 ms (2.3x); the whole speculate goes from 4.6 to 2.6 ms. See
+`docs/design/scent-performance.md`.
+
 ## 4. Threads: what can be split, and how it stays deterministic
 
 The current code already follows most of the rules threads need:

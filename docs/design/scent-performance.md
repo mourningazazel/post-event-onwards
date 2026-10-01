@@ -91,6 +91,25 @@ it: 96 / 229 / 294), of which the wave's copy and update is 86 us (the float swe
 commit 0-3 us (was 269-280). On the town fixture a standing source in the deepest office reaches all
 969 cells within 60 route-cells and climbs from 100% (diffusion: 14.5% reached, 15.4% climbed).
 
+## The direction bytes (PEO-079)
+
+`ScentWave` keeps one byte per cell naming the neighbour `strongest_neighbour` would pick, rewritten
+after each update's rounds over the tiles they changed (each with a one-cell ring), round a deposit
+or a patched deposit, and copied by `sync_from`. The poll and `decide_move` read it through
+`flow_target`. Builder's M1 Air, `-O3`, pinned, 80 warm-up updates then median (p95) of 40; the
+Dead's share is the speculate with the Dead less the same speculate with none.
+
+| case, 6 emitters per 1000 tiles | before (nine-cell scan) | after (bytes) |
+|---|---|---|
+| scent update alone, saturated 512x512 | 222 (224) us | 675 (677) us |
+| speculate, 512x512, 50,000 Dead | 4,617 (4,652) us | 2,617 (2,646) us |
+| speculate, 512x512, no Dead | 292 (297) us | 768 (771) us |
+| the Dead's share, 512x512 | 4,325 us | 1,849 us (2.3x less) |
+| speculate, 200x200, 5000 Dead | 460 (467) us | 308 (313) us |
+
+Commit is unchanged at 4-5 us. The refresh kernel vectorises (NEON) only with unconditional loads
+and integer masks; with a `bool & bool` select GCC left it scalar at about 2.4 ms.
+
 ## The dense pull (PEO-078)
 
 `ScentWave::update` now pulls active 128x8 tiles between two buffers; it is bit-identical to the
