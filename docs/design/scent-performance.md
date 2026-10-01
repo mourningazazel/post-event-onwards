@@ -1,5 +1,8 @@
 # Scent field: what the measurements say
 
+ScentWave (D-024, the geodesic field) is the only field. `ScentField`, the diffusion field the
+early sections measure, was removed in PEO-076; those sections stay as the record of why.
+
 Architect analysis, 2026-09-29. Measured on the session container at `-O2`
 unless stated. The `headless` preset is Debug + ASan/UBSan, which costs
 roughly 40-70x more than `-O2`; budget against that number, not this one.

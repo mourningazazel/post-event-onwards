@@ -90,7 +90,7 @@ Never hand-edit it; the tool owns the format:
 | Field | Content |
 |-------|---------|
 | `goal` | One sentence: what is true when this is done. |
-| `context` | Files and doc anchors to read first (`src/core/include/peo/core/scent.hpp`, `docs/architecture.md#scent`). |
+| `context` | Files and doc anchors to read first (`src/core/include/peo/core/scent_wave.hpp`, `docs/architecture.md#scent`). |
 | `units` | Ordered, commit-sized steps. Each starts with the layer it touches. |
 | `acceptance` | Observable criteria. Prefer "test X passes" and "in game, Y happens". |
 | `tests` | Headless tests that must pass (written by Architect, may be red until the unit lands). |

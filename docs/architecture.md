@@ -51,10 +51,10 @@ only the cells that changed carry their value on, `speed` cells a round: the wor
 reach, not the map. A round offers the values its cells had when it started, so its result is a
 max over offers and independent of order; that makes the **min-plus patch** exact:
 `speculate()` runs the update with no deposit and `commit()` adds the player's with
-`patch_deposit`. `strongest_neighbour` keeps ScentField's contract and is still the whole AI; since
-PEO-079 the Dead read it as one stored direction byte per cell (`flow_target`), rewritten with
-each update.
-`ScentField` (diffusion) stays in the tree, unused by World, until PEO-030 is accepted.
+`patch_deposit`. `strongest_neighbour` (climb to the strongest neighbour, no corner cutting) is
+still the whole AI; since PEO-079 the Dead read it as one stored direction byte per cell
+(`flow_target`), rewritten with each update. ScentWave is the only field: the diffusion field it
+replaced (`ScentField`) was removed in PEO-076.
 Since PEO-078 a round is a **pull** between two buffers over active 128x8 tiles (those that
 changed last round and their neighbours); a tile nobody pulls holds the same values in both, and
 the branch-free row kernel vectorises. Since PEO-085 the row kernels are one source built twice,
