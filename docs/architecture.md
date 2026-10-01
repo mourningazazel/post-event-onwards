@@ -62,7 +62,8 @@ plain (NEON on arm64, SSE2 on x86-64) and for AVX2 on x86-64 with every compiler
 picks once per process (`src/core/src/wave_kernels.hpp`). The World's and the Speculation's waves
 are partners that swap in `finish_from`, so a warm `speculate` syncs only the tiles either changed
 instead of copying the field; tokens are unique per process, so a Speculation moved to another
-World cold-copies.
+World cold-copies. Since PEO-048 a stage's wind (`peo/core/wind.hpp`) and openness make step costs
+directional and add `gust` downwind rounds; a calm wave runs the windless kernel unchanged.
 
 Where it is going (`docs/design/scent-mobs.md`): wind outdoors (PEO-048), z-level routes
 (PEO-049), a reach radius round the player with sealed buildings skipped (PEO-047), rot and

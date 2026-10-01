@@ -396,6 +396,17 @@ questions the reviews raised are open as D-024 and D-025.
   vent into; outdoor walls and the map edge still absorb (D-007's wall rule). The pathfinding
   review measured that buildup restores reach but flattens the gradient in rooms. **Not built:**
   D-024 A chose a transport that reaches through corridors and doors without it (below).
+- **Built (PEO-048).** Each stage draws a wind (any whole degree, intensity up to
+  `WorldParams::wind_max`, 0 by default: calm) from its seed; `Stage::openness` is 255 outdoors,
+  0 indoors. A step costs `max(1, C - wind_d x openness / 255)`, `wind_d` from a fixed integer
+  cosine table (`peo/core/wind.hpp`), and `gust` rounds a update then carry scent only downwind
+  from outdoor cells. Measured (200x120, walker east, full wind): gust 0 reaches 0 cells ahead,
+  gust 2 reaches 58, a walled indoor corridor 0; behind, 119 in all three. A standing source
+  reaches 98 cells downwind, 39 upwind. Every round takes every offer it allows, so a cell a
+  gust reached spreads sideways the next update, and `patch_deposit` stays exact (commit keeps
+  the speculation). One difference from the probe: an indoor band with no walls lets scent out
+  sideways, along the wind outside and back in ahead; the probe's push lost those offers (and
+  with them almost all indoor spread once gust > 0). The game plays with full wind, gust 2.
 
 ### The transport: a geodesic field (D-024, [N017](notes/N017-scent-transport-rot-and-item-detail.md))
 
