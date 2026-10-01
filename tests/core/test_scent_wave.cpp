@@ -6,7 +6,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+#include <utility>
 #include <vector>
+
+#include "reference_wave.hpp"
+#include "town_fixture.hpp"
 
 using namespace peo::core;
 
@@ -25,6 +29,60 @@ void run(ScentWave& w, const Grid<bool>& walls, int updates) {
     for (int i = 0; i < updates; ++i) {
         w.update(walls);
     }
+}
+
+/// A stage with one wall cell in `wall_one_in`, and a border wall when `bordered`.
+Grid<bool> random_stage(int w, int h, int wall_one_in, bool bordered, Seed seed) {
+    Rng rng(seed);
+    Grid<bool> b(w, h, false);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const bool edge = x == 0 || y == 0 || x == w - 1 || y == h - 1;
+            b.at(x, y) = (bordered && edge) || rng.range(1, wall_one_in) == 1;
+        }
+    }
+    return b;
+}
+
+/// PEO-078's oracle: the push (ReferenceWave) and ScentWave side by side on `b`, with
+/// `emitters_per_1000` standing sources and one walker wandering the open cells, every
+/// update compared value for value. Returns the first update that differs, or -1.
+int first_mismatch(const Grid<bool>& b, WaveParams p, int emitters_per_1000, int updates, Seed seed) {
+    constexpr int kPerMille = 1000;
+    Rng rng(seed);
+    const auto open_cell = [&] {
+        Vec2i c{};
+        do {
+            c = {rng.range(0, b.width() - 1), rng.range(0, b.height() - 1)};
+        } while (b.at(c));
+        return c;
+    };
+    std::vector<Vec2i> emitters(
+        static_cast<std::size_t>(b.width() * b.height() * emitters_per_1000 / kPerMille));
+    for (Vec2i& e : emitters) {
+        e = open_cell();
+    }
+    Vec2i walker = open_cell();
+    peo::test::ReferenceWave ref(b.width(), b.height(), p);
+    ScentWave wave(b.width(), b.height(), p);
+    for (int u = 0; u < updates; ++u) {
+        const Vec2i step = kNeighbours4[static_cast<std::size_t>(rng.range(0, 3))];
+        if (b.in_bounds(walker + step) && !b.at(walker + step)) {
+            walker = walker + step;
+        }
+        for (const Vec2i e : emitters) {
+            ref.deposit(e, p.strength);
+            wave.deposit(e, p.strength);
+        }
+        ref.deposit(walker, p.strength);
+        wave.deposit(walker, p.strength);
+        ref.update(b);
+        wave.update(b);
+        if (ref.values() != wave.values() || ref.updates() != wave.updates()) {
+            return u;
+        }
+    }
+    return -1;
 }
 
 } // namespace
@@ -197,6 +255,40 @@ TEST_SUITE("scent_wave") {
             CAPTURE(speed);
             CHECK(farthest <= reach);
             CHECK(farthest >= reach - 1); // and it does reach about that far
+        }
+    }
+#endif
+
+    TEST_CASE("the field equals the reference push on every update") {
+        // PEO-078: small stages in every build; the town and larger stages below in
+        // release. Open and walled borders, speed 1 and 2, emitters and a walker.
+        constexpr int kW = 48;
+        constexpr int kH = 32;
+        constexpr int kWallOneIn = 7;
+        constexpr int kEmitters = 3; // per 1000 tiles
+        constexpr int kUpdates = 60; // the reach fills in 60 updates
+        // Two cases cover both borders and both speeds (suite budget).
+        for (const auto& [bordered, speed] : {std::pair{false, 1}, std::pair{true, 2}}) {
+            const Grid<bool> b = random_stage(kW, kH, kWallOneIn, bordered, 11);
+            CAPTURE(bordered);
+            CAPTURE(speed);
+            CHECK(first_mismatch(b, {.speed = speed}, kEmitters, kUpdates, 5) == -1);
+        }
+    }
+#ifdef NDEBUG
+    TEST_CASE("the field equals the reference push on the town and a large open stage") {
+        constexpr int kEmitters = 6;  // per 1000 tiles
+        constexpr int kUpdates = 120; // past the 60-cell reach's saturation, twice over
+        constexpr int kW = 200;
+        constexpr int kH = 120;
+        constexpr int kWallOneIn = 9;
+        peo::test::Rng town_rng(11);
+        const Grid<bool> town = peo::test::make_town(town_rng, true);
+        const Grid<bool> open = random_stage(kW, kH, kWallOneIn, true, 23);
+        for (const int speed : {1, 2}) {
+            CAPTURE(speed);
+            CHECK(first_mismatch(town, {.speed = speed}, kEmitters, kUpdates, 7) == -1);
+            CHECK(first_mismatch(open, {.speed = speed}, kEmitters, kUpdates, 9) == -1);
         }
     }
 #endif
