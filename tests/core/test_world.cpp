@@ -12,11 +12,25 @@
 #include <optional>
 #include <vector>
 
+#include "test_executors.hpp"
+#include "thread_pool.hpp"
 #include "town_fixture.hpp"
 
 using namespace peo::core;
 
 namespace {
+/// PEO-080's executor golden: the brief's 512x512 with 20,000 Dead over 200 actions in
+/// release builds; under the sanitizers that alone would take 8 s of the scenario tier's
+/// 5, so the same run is smaller there (still several pull tiles, every executor path).
+#ifdef NDEBUG
+constexpr int kExecutorGoldenActions = 200;
+constexpr int kExecutorGoldenDead = 20000;
+constexpr int kExecutorGoldenSide = 512;
+#else
+constexpr int kExecutorGoldenActions = 40;
+constexpr int kExecutorGoldenDead = 1000;
+constexpr int kExecutorGoldenSide = 144;
+#endif
 
 constexpr Seed kSeed = 7;
 constexpr int kDeterminismTurns = 100;
@@ -798,6 +812,55 @@ TEST_SUITE("world") {
             }
         }
         CHECK(windy > 0);
+    }
+
+    TEST_CASE("serial, shuffled and threaded executors give the same world" *
+              doctest::test_suite("scenario: world")) {
+        // D-035, PEO-080: one world stepped serially, and two that speculate and commit
+        // on a shuffling executor, on real threads and on the frontend's pool, with every
+        // batch of the Dead's decisions split (threshold 1) and a wind with gusts; equal
+        // after every action.
+        constexpr int kActions = kExecutorGoldenActions;
+        constexpr int kWaitOneIn = 4;
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr std::size_t kThreads = 4;
+        WorldParams params{.initial_dead = kExecutorGoldenDead,
+                           .stage_width = kExecutorGoldenSide,
+                           .stage_height = kExecutorGoldenSide};
+        params.wind_max = kWindFull;
+        params.scent.gust = 2;
+        params.parallel_decide_min = 1;
+        World serial(kSeed, params);
+        World shuffled(kSeed, params);
+        World threaded(kSeed, params);
+        World pooled(kSeed, params);
+        peo::test::ShuffledExecutor shuffler(kSeed);
+        peo::test::ThreadedExecutor threads(kThreads);
+        shuffled.set_executor(&shuffler);
+        threaded.set_executor(&threads);
+        peo::app::ThreadPool pool(kThreads);
+        pooled.set_executor(&pool);
+        Speculation shuffled_spec;
+        Speculation threaded_spec;
+        Speculation pooled_spec;
+        Rng pick(kSeed);
+        for (int i = 0; i < kActions; ++i) {
+            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Action act = pick.range(1, kWaitOneIn) == 1
+                                   ? Action::wait(secs)
+                                   : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+            serial.step(act);
+            shuffled.speculate(shuffled_spec);
+            shuffled.commit(shuffled_spec, act);
+            threaded.speculate(threaded_spec);
+            threaded.commit(threaded_spec, act);
+            pooled.speculate(pooled_spec);
+            pooled.commit(pooled_spec, act);
+            if (!World::equivalent(serial, shuffled) || !World::equivalent(serial, threaded) ||
+                !World::equivalent(serial, pooled)) {
+                FAIL("executors diverged at action " << i);
+            }
+        }
     }
 
     TEST_CASE("a warm speculate copies only the tiles that changed") {

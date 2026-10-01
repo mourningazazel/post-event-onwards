@@ -108,6 +108,7 @@ void World::load_stage(std::uint32_t index) {
     wind_.toward_degrees = wind_rng.range(0, kDegreesPerTurn - 1);
     wind_.intensity = wind_rng.range(0, std::clamp(params_.wind_max, 0, kMaxWindStep));
     scent_.set_wind(wind_);
+    scent_.set_executor(executor_);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
@@ -151,6 +152,7 @@ void World::load_stage(std::uint32_t index) {
     d.landing.clear();
     d.deciding.reserve(d.horde.size());
     d.landing.reserve(d.horde.size());
+    d.intents.reserve(d.horde.size());
     stage_salt_ = stage_seed(seed_, index);
     dead_second(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
 }
@@ -232,13 +234,38 @@ void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
         }
     }
     const Seconds s = t % len;
-    for (std::uint32_t k = d.slot_begin[s]; k < d.slot_begin[s + 1]; ++k) {
-        const std::uint32_t u = d.slot_units[k];
-        if (d.moving[u] != 0) {
-            continue;
+    const std::uint32_t first = d.slot_begin[s];
+    const std::uint32_t batch = d.slot_begin[s + 1] - first;
+    if (executor_ != nullptr && executor_->width() > 1 && batch >= params_.parallel_decide_min) {
+        // Intents, then claims (PEO-080): every unit's choice reads only the second's
+        // starting occupancy and reservations, so the units decide as pieces, each into
+        // its own slot. A calm unit whose tile is taken stays put, so resolving claims in
+        // slot order (ascending unit index) gives each tile to the lowest index that
+        // wanted it: exactly the serial loop's outcome.
+        d.intents.resize(batch); // reserved at the stage's start: no allocation
+        run_ranges(executor_, batch, [&](std::size_t begin, std::size_t end) {
+            for (std::size_t i = begin; i < end; ++i) {
+                const std::uint32_t u = d.slot_units[first + i];
+                d.intents[i] = d.moving[u] != 0
+                                   ? std::nullopt
+                                   : decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved);
+            }
+        });
+        for (std::uint32_t i = 0; i < batch; ++i) {
+            if (const auto to = d.intents[i]; to && !d.reserved.at(*to)) {
+                decided(d, {.unit = d.slot_units[first + i], .to = *to});
+            }
         }
-        if (const auto to = decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved)) {
-            decided(d, {.unit = u, .to = *to});
+        d.intents.clear();
+    } else {
+        for (std::uint32_t k = first; k < first + batch; ++k) {
+            const std::uint32_t u = d.slot_units[k];
+            if (d.moving[u] != 0) {
+                continue;
+            }
+            if (const auto to = decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved)) {
+                decided(d, {.unit = u, .to = *to});
+            }
         }
     }
     if (record != nullptr) {
@@ -290,13 +317,33 @@ Speculation World::speculate() const {
     return spec;
 }
 
+void World::set_executor(Executor* executor) noexcept {
+    executor_ = executor;
+    scent_.set_executor(executor);
+}
+
 void World::speculate(Speculation& out) const {
-    // A partner wave (the one finish_from swapped out) copies only what changed.
-    out.synced_tiles = out.scent.sync_from(scent_);
     out.update = updates_;
     out.stage_index = stage_index_;
-    out.scent.update(stage_.blocked, &stage_.openness);
+    // Two independent halves (PEO-080): the update writes out.scent, the Dead's seconds
+    // read only scent_ and write out.ahead and the record, so they run as two pieces.
+    run_pieces(executor_, 2, [&](std::size_t half) {
+        if (half == 0) {
+            speculate_scent(out);
+        } else {
+            speculate_dead(out);
+        }
+    });
+}
 
+void World::speculate_scent(Speculation& out) const {
+    // A partner wave (the one finish_from swapped out) copies only what changed.
+    out.synced_tiles = out.scent.sync_from(scent_);
+    out.scent.set_executor(executor_);
+    out.scent.update(stage_.blocked, &stage_.openness);
+}
+
+void World::speculate_dead(Speculation& out) const {
     // The Dead's seconds up to and including the boundary read only scent_, which
     // cannot change before it, so they are fixed now. A second poll in the window
     // (only when update_period > dead_cycle) is left to run live.
@@ -307,6 +354,7 @@ void World::speculate(Speculation& out) const {
     const std::size_t units = dead_.horde.size();
     out.ahead.deciding.reserve(units);
     out.ahead.landing.reserve(units);
+    out.ahead.intents.reserve(units);
     out.decided.reserve(units * ((params_.update_period + 1) / 2));
     out.ahead.slot_units.reserve(units * params_.dead_cycle);
     out.poll_units.reserve(units * params_.dead_cycle);

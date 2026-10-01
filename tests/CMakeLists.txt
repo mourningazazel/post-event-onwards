@@ -13,8 +13,13 @@ add_executable(peo_core_tests
     core/test_world.cpp
     core/test_town.cpp
     core/test_scent_wave.cpp
-    core/test_turn_input.cpp)
+    core/test_turn_input.cpp
+    core/test_executor.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
+# PEO-080: the executor tests also run the frontend's thread pool (header-only, no SDL).
+target_include_directories(peo_core_tests PRIVATE ${CMAKE_SOURCE_DIR}/src/app)
+find_package(Threads REQUIRED)
+target_link_libraries(peo_core_tests PRIVATE Threads::Threads)
 
 add_test(NAME core COMMAND peo_core_tests --no-intro)
 set_tests_properties(core PROPERTIES TIMEOUT 30)

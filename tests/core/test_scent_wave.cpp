@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "reference_wave.hpp"
+#include "test_executors.hpp"
 #include "town_fixture.hpp"
 
 using namespace peo::core;
@@ -48,7 +49,8 @@ Grid<bool> random_stage(int w, int h, int wall_one_in, bool bordered, Seed seed)
 /// PEO-078's oracle: the push (ReferenceWave) and ScentWave side by side on `b`, with
 /// `emitters_per_1000` standing sources and one walker wandering the open cells, every
 /// update compared value for value. Returns the first update that differs, or -1.
-int first_mismatch(const Grid<bool>& b, WaveParams p, int emitters_per_1000, int updates, Seed seed) {
+int first_mismatch(const Grid<bool>& b, WaveParams p, int emitters_per_1000, int updates, Seed seed,
+                   Executor* executor = nullptr) {
     constexpr int kPerMille = 1000;
     Rng rng(seed);
     const auto open_cell = [&] {
@@ -66,6 +68,7 @@ int first_mismatch(const Grid<bool>& b, WaveParams p, int emitters_per_1000, int
     Vec2i walker = open_cell();
     peo::test::ReferenceWave ref(b.width(), b.height(), p);
     ScentWave wave(b.width(), b.height(), p);
+    wave.set_executor(executor); // PEO-080: any executor gives the push's bits
     for (int u = 0; u < updates; ++u) {
         const Vec2i step = kNeighbours4[static_cast<std::size_t>(rng.range(0, 3))];
         if (b.in_bounds(walker + step) && !b.at(walker + step)) {
@@ -275,6 +278,8 @@ TEST_SUITE("scent_wave") {
             CAPTURE(bordered);
             CAPTURE(speed);
             CHECK(first_mismatch(b, {.speed = speed}, kEmitters, kUpdates, 5) == -1);
+            peo::test::ShuffledExecutor shuffled(5);
+            CHECK(first_mismatch(b, {.speed = speed}, kEmitters, kUpdates, 5, &shuffled) == -1);
         }
     }
     TEST_CASE("a partner sync copies only written tiles and equals a full copy" *
@@ -421,31 +426,92 @@ TEST_SUITE("scent_wave") {
             }
             return wrong;
         };
-        ScentWave world(kW, kH);
-        world.set_token(1);
-        CHECK_FALSE(world.flow_target(sources[0]).has_value()); // no update yet
-        ScentWave spec(1, 1);
-        for (int i = 0; i < kUpdates; ++i) {
-            const Vec2i at = sources[static_cast<std::size_t>(i) % std::size(sources)];
-            if (i % 3 == 2) { // as the World commits a speculation: update, then patch
-                const ScentWave before = world;
-                world.update(b);
-                world.patch_deposit(before, at, world.params().strength, b);
-            } else {
-                world.deposit(at, world.params().strength);
-                world.update(b);
+        peo::test::ShuffledExecutor shuffled(3);
+        for (Executor* executor : {static_cast<Executor*>(nullptr), static_cast<Executor*>(&shuffled)}) {
+            CAPTURE(executor != nullptr); // PEO-080: the bytes are split by tile on an executor
+            ScentWave world(kW, kH);
+            world.set_token(1);
+            world.set_executor(executor);
+            CHECK_FALSE(world.flow_target(sources[0]).has_value()); // no update yet
+            ScentWave spec(1, 1);
+            for (int i = 0; i < kUpdates; ++i) {
+                const Vec2i at = sources[static_cast<std::size_t>(i) % std::size(sources)];
+                if (i % 3 == 2) { // as the World commits a speculation: update, then patch
+                    const ScentWave before = world;
+                    world.update(b);
+                    world.patch_deposit(before, at, world.params().strength, b);
+                } else {
+                    world.deposit(at, world.params().strength);
+                    world.update(b);
+                }
+                CAPTURE(i);
+                CHECK(agrees(world) == 0);
+                if (i > 0) {
+                    spec.update(b); // the partner's own writes, then a warm sync
+                }
+                spec.sync_from(world); // the first is cold: a full copy
+                CHECK(agrees(spec) == 0);
             }
-            CAPTURE(i);
+            // A deposit between updates (World::deposit) is read at once, as the field is.
+            world.deposit(open_near({kWaveTileWidth / 2, kH / 2}), world.params().strength);
             CHECK(agrees(world) == 0);
-            if (i > 0) {
-                spec.update(b); // the partner's own writes, then a warm sync
-            }
-            spec.sync_from(world); // the first is cold: a full copy
-            CHECK(agrees(spec) == 0);
         }
-        // A deposit between updates (World::deposit) is read at once, as the field is.
-        world.deposit(open_near({kWaveTileWidth / 2, kH / 2}), world.params().strength);
-        CHECK(agrees(world) == 0);
+    }
+
+    TEST_CASE("the scent wave on the town gives the same bits on every executor" *
+              doctest::test_suite("scenario: scent_wave")) {
+        // D-035, PEO-080: a walker crosses the town into a building and stands, under a
+        // wind with gusts; the serial, shuffled and threaded waves hold the same values
+        // after every update and the same direction bytes at the end. The test's threads
+        // start afresh on every run, so under the sanitizers the run is shorter.
+#ifdef NDEBUG
+        constexpr int kUpdates = 200;
+#else
+        constexpr int kUpdates = 30;
+#endif
+        constexpr std::size_t kThreads = 4;
+        peo::test::Rng town_rng(11);
+        const Grid<bool> town = peo::test::make_town(town_rng, true);
+        const Grid<std::uint8_t> openness = peo::test::town_openness(true);
+        const Vec2i street{1, 1};
+        Vec2i goal{peo::test::kTownWidth / 2, peo::test::kTownHeight / 2};
+        while (town.at(goal)) {
+            ++goal.x;
+        }
+        const std::vector<Vec2i> path = peo::test::walk_path(town, street, goal);
+        REQUIRE_FALSE(path.empty());
+        peo::test::ShuffledExecutor shuffler(13);
+        peo::test::ThreadedExecutor threads(kThreads);
+        const WaveParams p{.gust = 2};
+        const Wind wind{.toward_degrees = 20, .intensity = kWindFull};
+        ScentWave serial(peo::test::kTownWidth, peo::test::kTownHeight, p);
+        ScentWave shuffled(peo::test::kTownWidth, peo::test::kTownHeight, p);
+        ScentWave threaded(peo::test::kTownWidth, peo::test::kTownHeight, p);
+        shuffled.set_executor(&shuffler);
+        threaded.set_executor(&threads);
+        for (ScentWave* w : {&serial, &shuffled, &threaded}) {
+            w->set_wind(wind);
+        }
+        for (int u = 0; u < kUpdates; ++u) {
+            const Vec2i at = path[std::min(static_cast<std::size_t>(u), path.size() - 1)];
+            for (ScentWave* w : {&serial, &shuffled, &threaded}) {
+                w->deposit(at, p.strength);
+                w->update(town, &openness);
+            }
+            CAPTURE(u);
+            REQUIRE(shuffled.values() == serial.values());
+            REQUIRE(threaded.values() == serial.values());
+        }
+        int differ = 0;
+        for (int y = 0; y < peo::test::kTownHeight; ++y) {
+            for (int x = 0; x < peo::test::kTownWidth; ++x) {
+                differ += shuffled.flow_target({x, y}) == serial.flow_target({x, y}) &&
+                                  threaded.flow_target({x, y}) == serial.flow_target({x, y})
+                              ? 0
+                              : 1;
+            }
+        }
+        CHECK(differ == 0);
     }
 
 #ifdef NDEBUG
@@ -462,6 +528,8 @@ TEST_SUITE("scent_wave") {
             CAPTURE(speed);
             CHECK(first_mismatch(town, {.speed = speed}, kEmitters, kUpdates, 7) == -1);
             CHECK(first_mismatch(open, {.speed = speed}, kEmitters, kUpdates, 9) == -1);
+            peo::test::ShuffledExecutor shuffled(7);
+            CHECK(first_mismatch(town, {.speed = speed}, kEmitters, kUpdates, 7, &shuffled) == -1);
         }
     }
 #endif

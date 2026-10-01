@@ -103,6 +103,8 @@ ScentWave::ScentWave(int width, int height, WaveParams params)
     patch_buf_[0].assign(side * side, kUnreached);
     patch_buf_[1].assign(side * side, kUnreached);
     stale_mark_.assign(tiles, 0);
+    pulled_.assign(tiles, 0);
+    flow_tiles_.reserve(tiles);
     stale_.reserve(tiles);
     changed_.assign(tiles, 0);
     mark_.assign(tiles, 0);
@@ -310,8 +312,16 @@ bool ScentWave::pull_tile(std::size_t tile, Round kind) {
 void ScentWave::round(Round kind) {
     expand_active();
     std::fill(changed_.begin(), changed_.end(), 0);
-    for (const std::uint32_t t : active_) {
-        if (pull_tile(t, kind)) {
+    // Within a round each tile reads one buffer and writes only its own cells of the
+    // other, so tiles run as pieces; the shared bookkeeping follows in tile order.
+    run_ranges(executor_, active_.size(), [&](std::size_t begin, std::size_t end) {
+        for (std::size_t k = begin; k < end; ++k) {
+            pulled_[k] = pull_tile(active_[k], kind) ? 1 : 0;
+        }
+    });
+    for (std::size_t k = 0; k < active_.size(); ++k) {
+        const std::uint32_t t = active_[k];
+        if (pulled_[k] != 0) {
             touched(t);
             if (stale_mark_[t] == 0) { // its bytes are rewritten once the rounds are done
                 stale_mark_[t] = 1;
@@ -416,14 +426,59 @@ void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* open
         }
         changed_ = carry_;
     }
-    if (first) { // bytes written before the masks existed saw no open neighbour
-        refresh_flow(0, 0, width_, height_);
-    }
-    for (const std::uint32_t t : stale_) {
-        if (!first) {
-            const auto [x0, y0, x1, y1] = flow_reach(t);
-            refresh_flow(x0, y0, x1, y1);
+    refresh_stale_flow(first); // bytes written before the masks existed saw no open neighbour
+}
+
+void ScentWave::refresh_stale_flow(bool all) {
+    // A stale tile's bytes and the one-cell ring round it move, and the ring lies in the
+    // neighbouring tiles. Each piece takes one tile and rewrites only its own cells:
+    // those within reach of a stale tile among it and its eight neighbours.
+    flow_tiles_.clear();
+    for (int ty = 0; ty < tiles_y_; ++ty) {
+        for (int tx = 0; tx < tiles_x_; ++tx) {
+            bool near_stale = all;
+            for (int y = std::max(ty - 1, 0); y <= std::min(ty + 1, tiles_y_ - 1) && !near_stale; ++y) {
+                for (int x = std::max(tx - 1, 0); x <= std::min(tx + 1, tiles_x_ - 1) && !near_stale; ++x) {
+                    near_stale =
+                        stale_mark_[static_cast<std::size_t>(y) * static_cast<std::size_t>(tiles_x_) +
+                                    static_cast<std::size_t>(x)] != 0;
+                }
+            }
+            if (near_stale) {
+                flow_tiles_.push_back(static_cast<std::uint32_t>(ty * tiles_x_ + tx));
+            }
         }
+    }
+    run_ranges(executor_, flow_tiles_.size(), [&](std::size_t begin, std::size_t end) {
+        for (std::size_t k = begin; k < end; ++k) {
+            const auto t = static_cast<int>(flow_tiles_[k]);
+            const int tx = t % tiles_x_;
+            const int ty = t / tiles_x_;
+            const int x0 = tx * kWaveTileWidth;
+            const int y0 = ty * kWaveTileHeight;
+            const int x1 = std::min(x0 + kWaveTileWidth, width_);
+            const int y1 = std::min(y0 + kWaveTileHeight, height_);
+            // A stale tile rewrites all its cells in one pass, which covers its share of
+            // every neighbour's ring; a tile that is not stale rewrites only the edge
+            // cells a stale neighbour's ring reaches.
+            if (all || stale_mark_[static_cast<std::size_t>(t)] != 0) {
+                refresh_flow(x0, y0, x1, y1);
+                continue;
+            }
+            for (int y = std::max(ty - 1, 0); y <= std::min(ty + 1, tiles_y_ - 1); ++y) {
+                for (int x = std::max(tx - 1, 0); x <= std::min(tx + 1, tiles_x_ - 1); ++x) {
+                    const std::size_t s = static_cast<std::size_t>(y) * static_cast<std::size_t>(tiles_x_) +
+                                          static_cast<std::size_t>(x);
+                    if (stale_mark_[s] == 0) {
+                        continue;
+                    }
+                    const auto [rx0, ry0, rx1, ry1] = flow_reach(s);
+                    refresh_flow(std::max(rx0, x0), std::max(ry0, y0), std::min(rx1, x1), std::min(ry1, y1));
+                }
+            }
+        }
+    });
+    for (const std::uint32_t t : stale_) {
         stale_mark_[t] = 0;
     }
     stale_.clear();

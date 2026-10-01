@@ -1,5 +1,6 @@
 #pragma once
 
+#include "peo/core/executor.hpp"
 #include "peo/core/grid.hpp"
 #include "peo/core/types.hpp"
 #include "peo/core/wind.hpp"
@@ -125,6 +126,10 @@ public:
     /// The stage's wind (PEO-048), for this wave's life. Calm (the default) keeps the
     /// windless kernel, bit-identical to a wave that never had a wind.
     void set_wind(Wind wind) noexcept;
+
+    /// Where the rounds' tiles and the direction-byte refresh run (D-035, PEO-080): any
+    /// executor gives the same bits as none (serial), which is the default.
+    void set_executor(Executor* executor) noexcept { executor_ = executor; }
     [[nodiscard]] const WindTable& wind() const noexcept { return wind_; }
 
     /// Make this wave equal to `source` (values, age line and what changes next round).
@@ -210,6 +215,9 @@ private:
     [[nodiscard]] std::array<int, 4> flow_reach(std::size_t tile) const noexcept;
     void expand_active();
     void round(Round kind);
+    /// Rewrite the direction bytes of every stale tile and the ring round it (all of
+    /// them when `all`), split by tile so that no two pieces write one cell.
+    void refresh_stale_flow(bool all);
     [[nodiscard]] bool pull_tile(std::size_t tile, Round kind);
     [[nodiscard]] bool pull_border_cell(int x, int y);
     [[nodiscard]] bool open_at(int x, int y) const noexcept;
@@ -246,6 +254,12 @@ private:
     std::vector<std::uint8_t> flow_;
     std::vector<std::uint8_t> stale_mark_;
     std::vector<std::uint32_t> stale_;
+    /// Per active tile, by position in active_: whether its pull changed it (written by
+    /// the round's pieces, read after them in tile order). And the tiles whose bytes a
+    /// refresh rewrites (stale or beside a stale one).
+    std::vector<std::uint8_t> pulled_;
+    std::vector<std::uint32_t> flow_tiles_;
+    Executor* executor_ = nullptr;
     /// Per tile: changed last round (or by a deposit or patch since); and scratch for
     /// building the active list.
     std::vector<std::uint8_t> changed_;

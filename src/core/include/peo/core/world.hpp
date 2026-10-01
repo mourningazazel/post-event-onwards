@@ -2,12 +2,15 @@
 
 #include "peo/core/action.hpp"
 #include "peo/core/dead.hpp"
+#include "peo/core/executor.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/scent_wave.hpp"
 #include "peo/core/stage.hpp"
 #include "peo/core/types.hpp"
 
+#include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 namespace peo::core {
@@ -20,6 +23,12 @@ inline constexpr int kMinStageSide = 3;
 /// enforced by clamping in World (core has no exceptions): each stage side is at
 /// least kMinStageSide; at most one of the Dead per open cell other than the
 /// player's entry is spawned, and never fewer than zero.
+/// The default for WorldParams::parallel_decide_min (PEO-080). Measured on the M1 with 4
+/// threads and a saturated field, a whole step gains 1.04x at 50,000 Dead (batches of
+/// about 5,000 a second), 1.07x at 200,000 (about 20,000) and 1.2-1.5x past a million,
+/// and is never slower; the split starts where it clearly pays.
+inline constexpr std::size_t kParallelDecideMin = 16384;
+
 struct WorldParams {
     int initial_dead = 40;
     /// The geodesic scent field (D-024): a walking step deposits scent.strength.
@@ -36,6 +45,9 @@ struct WorldParams {
     /// intensity in [0, wind_max], from its seed. 0, the default, is always calm, and
     /// then nothing differs from a world without wind. Clamped to kMaxWindStep.
     std::int32_t wind_max = 0;
+    /// The smallest batch of the Dead deciding in one second that is split across the
+    /// executor (PEO-080): below it, waking workers costs more than the decisions.
+    std::size_t parallel_decide_min = kParallelDecideMin;
 };
 
 /// Game seconds the player spent on one tile since the last update. The log of
@@ -71,6 +83,9 @@ struct HordeState {
     /// Moves decided this second, and those decided last second, which land now.
     std::vector<DeadMove> deciding;
     std::vector<DeadMove> landing;
+    /// Scratch for a split second (PEO-080): each deciding unit's target, by slot. Empty
+    /// between uses, so copying the horde costs nothing for it.
+    std::vector<std::optional<Vec2i>> intents;
 };
 
 /// The next update computed ahead (PEO-007, D-015, PEO-060). The scent: the wave's
@@ -148,6 +163,10 @@ public:
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
+    /// Where speculate(), the scent updates and big batches of the Dead's decisions run
+    /// their pieces (D-035, PEO-080). Null, the default, is serial; every executor gives
+    /// the same world. Not owned: it must outlive the World's use of it.
+    void set_executor(Executor* executor) noexcept;
     /// This stage's wind (PEO-048), drawn from its seed.
     [[nodiscard]] const Wind& wind() const noexcept { return wind_; }
     [[nodiscard]] const ScentWave& scent() const noexcept { return scent_; }
@@ -183,6 +202,8 @@ private:
     void deposit_log(ScentWave& field) const noexcept;
     void run_update();
     void finish_from(Speculation& spec);
+    void speculate_scent(Speculation& out) const;
+    void speculate_dead(Speculation& out) const;
     void finish_turn();
 
     Seed seed_;
@@ -190,6 +211,7 @@ private:
     std::uint32_t stage_index_ = 0;
     Stage stage_;
     Wind wind_{};
+    Executor* executor_ = nullptr;
     ScentWave scent_{1, 1};
     HordeState dead_;
     /// Mixed into the slot hashes: the stage's own seed.
