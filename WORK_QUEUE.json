@@ -530,38 +530,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-048",
-      "order": 427,
-      "type": "feature",
-      "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
-      "references": [
-        "docs/design/scent-mobs.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-049",
       "order": 437,
       "type": "feature",
