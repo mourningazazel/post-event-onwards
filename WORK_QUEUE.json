@@ -25,43 +25,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-004",
-      "order": 40,
-      "type": "perf",
-      "title": "Benchmark ScentField::step at 200x120",
-      "status": "Pending",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "PEO-028 set -ffp-contract=off on core and did not re-measure docs/design/scent-performance.md. Re-measure those numbers here with the flag in place."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "PEO-043 carries the larger variants and both timings (D-021); keep this item for the per-step ScentField number only, or fold it in when PEO-043 lands."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "Obsolete once ScentField is removed (PEO-076); close with it."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "ScentField removed (899c163); close at review."
-        }
-      ],
-      "references": [
-        "docs/production/vision.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-005",
       "order": 50,
       "type": "feature",
