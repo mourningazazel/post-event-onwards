@@ -35,6 +35,20 @@ using namespace peo::core;
 constexpr int kCell = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE; // 8 px glyphs
 /// The seed with no argument, or with one that is not a seed (PEO-075).
 constexpr Seed kDefaultSeed = 1;
+/// The game's wind (PEO-048): each stage blows its own way at up to full strength, and
+/// two gust rounds a update carry scent ahead downwind.
+constexpr std::int32_t kGameWindMax = kWindFull;
+constexpr int kGameWindGust = 2;
+/// Compass points, clockwise from east as Wind::toward_degrees runs (y down).
+constexpr std::array<const char*, 8> kCompass{"E", "SE", "S", "SW", "W", "NW", "N", "NE"};
+constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t>(kCompass.size());
+
+WorldParams game_params() noexcept {
+    WorldParams params;
+    params.wind_max = kGameWindMax;
+    params.scent.gust = kGameWindGust;
+    return params;
+}
 constexpr int kScale = 2;
 constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
 /// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
@@ -207,12 +221,17 @@ void draw(App& app) {
     }
     glyph(world.player(), "@", 255, 255, 255);
 
-    // Two lines, each under the default stage's 80 columns.
+    // Two lines, each under the default stage's 80 columns. The wind is named by where
+    // it blows to, so "to E" is downwind east.
+    const Wind wind = world.wind();
+    const auto point = static_cast<std::size_t>(((wind.toward_degrees + kCompassStep / 2) / kCompassStep) %
+                                                static_cast<std::int32_t>(kCompass.size()));
     char status[80];
-    std::snprintf(status, sizeof status, "stage %u  turn %llu  %s  dead %zu  spec:%s (miss %llu)",
-                  world.stage_index(), static_cast<unsigned long long>(world.turn()),
-                  app.running ? "run" : "walk", world.horde().size(), app.last_hit ? "hit" : "miss",
-                  app.misses);
+    std::snprintf(
+        status, sizeof status, "stage %u  turn %llu  %s  dead %zu  wind to %s %d  spec:%s (miss %llu)",
+        world.stage_index(), static_cast<unsigned long long>(world.turn()), app.running ? "run" : "walk",
+        world.horde().size(), wind.intensity > 0 ? kCompass[point] : "-", wind.intensity,
+        app.last_hit ? "hit" : "miss", app.misses);
     static constexpr const char* kKeyHints =
         "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
     SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);
@@ -295,7 +314,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
     const Seed seed = argc > 1 ? parse_seed(argv[1]) : kDefaultSeed;
-    app->world.emplace(seed);
+    app->world.emplace(seed, game_params());
     app->speculator.emplace(*app->world);
     app->speculator->request();
 
