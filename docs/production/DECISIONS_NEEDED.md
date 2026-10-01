@@ -19,9 +19,4 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
-## D-038 · How sure-footed the Dead are on a scent trail      (raised by architect · 2026-10-01 · PEO-009)
-Why now: PEO-009's draw needs it; the geodesic field (D-024) drops by the same step every cell, so D-007's power law no longer makes the Dead surer near the player.
-Affects: gameplay · rewrite: none
-- A) Same odds wherever scent reaches: a climbing tile is a fixed few times likelier than a level one, near or far
-- B) Surer as the scent gets stronger: near a fresh trail they climb almost every step, at the edge of reach they wander with a lean; two knobs, a gradient between   ← recommended
-- C) Greedy wherever there is scent, as today; the draw only shapes wandering where there is none
+_No open decisions._

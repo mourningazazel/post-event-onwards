@@ -5,8 +5,17 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-023, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-024, D-032, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-10-01 · D-038 · The Dead are surer on a trail as the scent gets stronger
+
+User decision: B ("good job on keeping to the gradient mindset"). The Dead's step is a weighted
+draw over the neighbours and staying; how sharply it favours climbing scent grows with the
+scent's strength, set by two knobs (sharpness at the edge of reach and at full strength) with an
+integer gradient between. Near a fresh trail they climb almost every step; at the edge of reach
+they wander with a lean. Why: the geodesic field (D-024) drops by the same step every cell, so a
+fixed preference would make them as sure at the edge as at the source. Consequence: PEO-009.
 
 ## 2026-10-01 · D-033 · Two test tiers: unit under 1 s, scenarios under 5 s
 
@@ -51,15 +60,6 @@ numbers inside D-021's budget; no presets, and a PC may run hordes past what fit
 Why: the game is gradients, and the horde should grow as far as a typical PC allows.
 Consequence: design/performance-targets.md; PEO-070 to PEO-074; the benchmarks stay outside the
 unit suite.
-
-## 2026-09-30 · D-032 · Quick taps are kept; a held key stays capped
-
-User decision (C), amending D-011. Each distinct press of a direction key is kept, up to 3 waiting
-(one second's worth at 3 steps a second), and played out at the cap. A held key's auto-repeat stays
-capped at 3 a second, is never queued, and stops the moment the key is released. Why: playtesting
-lost quick taps under D-011's drop rule; a bounded tap queue keeps them without letting a hold build
-lag. Ryan will judge the feel in the next playtest. Consequence: PEO-065; the queue depth is a
-tunable.
 
 ## 2026-09-30 · D-031 · The Dead move in staggered slots over a 9 s cycle
 
@@ -119,13 +119,3 @@ merge rule for instantiated items; PEO-050, PEO-053.
 User decision: A (N017), amending D-012. In the integer field (D-024), whose values are log
 strength, a Dead subtracts rot times a scale from what it reads, which divides the linear
 pull. Why: a 1:1 subtraction zeroed every cell past about 12 cells. Consequence: PEO-039.
-
-## 2026-09-30 · D-024 · Scent is an integer geodesic field that propagates
-
-User decision: A (N017), superseding D-008's two layers and D-020's inner-wall buildup. A cell holds
-strength − C·distance − K·age along walkable routes as an int32. The front advances `speed` cells
-per update and up to `gust` more downwind; step costs fall downwind and rise upwind, scaled by a
-per-cell openness that is 0 indoors. Stairs are routes; walls and closed buildings absorb; work is
-bounded by a reach radius around the player. Commit patches by min-plus from the logged tiles.
-Why: diffusion reached 18% of a town map and parked the Dead at crossings, and the IIR layer
-cannot see through doors (pathfinding review). Consequence: PEO-035 then PEO-030; PEO-047 to 049.
