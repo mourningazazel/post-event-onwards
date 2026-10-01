@@ -15,13 +15,17 @@
 
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <condition_variable>
 #include <cstdint>
 #include <cstdio>
+#include <limits>
 #include <mutex>
 #include <optional>
 #include <stop_token>
 #include <string>
+#include <string_view>
+#include <system_error>
 #include <thread>
 
 namespace {
@@ -29,6 +33,8 @@ namespace {
 using namespace peo::core;
 
 constexpr int kCell = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE; // 8 px glyphs
+/// The seed with no argument, or with one that is not a seed (PEO-075).
+constexpr Seed kDefaultSeed = 1;
 constexpr int kScale = 2;
 constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
 /// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
@@ -266,15 +272,29 @@ void drain(App& app) {
     }
 }
 
+/// `arg` as a seed: decimal digits only, in range. Anything else (letters, trailing
+/// characters, a sign, too many digits) is warned about and starts on kDefaultSeed, so a
+/// typo opens a game instead of ending the program.
+Seed parse_seed(const char* arg) {
+    const std::string_view text(arg);
+    Seed seed = 0;
+    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), seed);
+    if (error != std::errc{} || end != text.data() + text.size()) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "seed \"%s\" is not a whole number from 0 to %llu; starting on seed %llu", arg,
+                    static_cast<unsigned long long>(std::numeric_limits<Seed>::max()),
+                    static_cast<unsigned long long>(kDefaultSeed));
+        return kDefaultSeed;
+    }
+    return seed;
+}
+
 } // namespace
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
-    Seed seed = 1;
-    if (argc > 1) {
-        seed = std::stoull(argv[1]);
-    }
+    const Seed seed = argc > 1 ? parse_seed(argv[1]) : kDefaultSeed;
     app->world.emplace(seed);
     app->speculator.emplace(*app->world);
     app->speculator->request();
