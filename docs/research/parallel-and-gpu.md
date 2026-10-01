@@ -184,6 +184,16 @@ core a "run these N pieces" function (a parallel-for). Tests pass a serial one, 
 checks that serial and threaded runs give the same world bit for bit, beside the existing
 speculate/commit golden test. That is question Q1.
 
+**Built (PEO-080)**, as above: the field's tiles, the direction bytes, speculate's two halves
+and, past 16,384 a second, the Dead's decisions. M1 Air, `-O3`, performance cores, median of
+40: serial is no slower than before the executor (saturated 512x512 update 680 -> 621 us, the
+byte refresh no longer overlaps; 512x512/50,000 Dead speculate 2,640 -> 2,606 us). Saturated
+update, 1 / 2 / 4 threads: 512x512 625 / 323 / 245 us (2.56x), 1024x1024 2,340 / 1,196 / 906 us
+(2.58x); windy with gust 2, 1024x1024 14.7 / 8.5 / 6.6 ms (2.2x). Speculate at 512x512 with
+50,000 Dead: 2,607 / 1,882 / 1,891 us (1.38x: the Dead's half bounds it, and its decisions run
+serially inside that piece); windy 6.3 / 4.4 / 3.6 ms. Splitting the decisions gains 1.04x on
+a whole step at 50,000 Dead and 1.2-1.5x past a million, never less than 0.97x.
+
 ## 5. The GPU: what it is good at here
 
 What the GPU is: thousands of simple cores with 5-10x the memory bandwidth of the CPU, but a

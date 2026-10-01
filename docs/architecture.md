@@ -99,6 +99,16 @@ Time moves only through `World::step(Action)`. Order within a turn: apply the pl
 scent step; the Dead step (moves, contests, trample); sound events resolve. Core spawns no
 threads; the frontend owns the worker and draws only the committed world.
 
+Core does use threads it is lent (D-035, ADR-0014, PEO-080): `peo/core/executor.hpp` is a
+parallel-for over N pieces, null meaning serial. `World::set_executor` hands it to the scent
+wave, whose rounds pull active tiles as pieces and whose direction bytes refresh by tile (no
+two pieces write one cell); `speculate()` runs the scent half and the Dead's half as two
+pieces; a second's batch of the Dead's decisions at least `WorldParams::parallel_decide_min`
+long splits by unit, each into its own slot, with claims resolved after in slot order. The
+frontend's `ThreadPool` (`src/app/thread_pool.hpp`, `--threads N`) runs a run started inside a
+piece, or beside another thread's, inline. Serial, shuffled and threaded runs are bit-identical
+(golden tests; the threaded ones also run under ThreadSanitizer in CI).
+
 ### The clock (PEO-040, D-015)
 
 The world counts game seconds (`World::seconds()`). Each `Action` carries a duration (`kStepSeconds`
