@@ -15,8 +15,8 @@ scale independently:
 | axis | what grows it | bound by | container cost |
 |---|---|---|---|
 | horde | Dead that decide per update | memory latency (scattered reads of 9 scent cells plus occupancy) | 100 ns per Dead per update when the map fits in cache, 150 ns when it does not |
-| active area | scent cells re-propagated per update | cache, then latency | 43 ns per active cell (512²), 53 ns (1024²), 73 ns (2048²) |
-| stage size | the whole wave copied per speculate | memory bandwidth | 0.9 ms at 1024², 3.1 ms at 2048², 26 ms at 4096² |
+| active area | scent cells re-propagated per update | bandwidth (since PEO-078's pull) | ~2 ns per active cell (512² and 1024², AVX2); was 43-73 ns with the push |
+| stage size | the whole wave copied per speculate | memory bandwidth | gone when warm (PEO-078 syncs only changed tiles): 2048² 3.1 ms -> 0.7 ms |
 
 Commit, which runs on the input path, replays the recorded Dead moves. It takes about
 2-5 ns per Dead, with a worst case of 2 ms at 400k Dead. The container runs about 1.4x slower than the M1 Air.
@@ -26,6 +26,11 @@ and 512x512 with 50,000 Dead.
 Horde and active area are Ryan's "two different hardware limits". Horde size is
 limited by latency and core speed. Active area is limited by cache size, which is why a
 large L3 matters. Stage size is limited by bandwidth.
+
+*Update 2026-10-01: PEO-078 made the scent field about 20x cheaper per active cell, so the horde
+axis now dominates: 512² with 50,000 Dead and a saturated field measures 5.5 ms, of which about
+5 ms is the Dead. The ceilings below were estimated with the old field and are now conservative on
+the active-area column.*
 
 ## A flaw in the current perf lines
 
