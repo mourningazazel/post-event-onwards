@@ -49,6 +49,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "Obsolete once ScentField is removed (PEO-076); close with it."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "ScentField removed (899c163); close at review."
         }
       ],
       "references": [
@@ -858,16 +863,21 @@
       "order": 647,
       "type": "chore",
       "title": "Remove ScentField (scent.hpp/.cpp, test_scent.cpp) now PEO-030 is accepted",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S4",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: 899c163 ca283a6; tests: verify --full passed; perf: unit tier 0.149→0.147 s; manual, open: none"
         }
       ],
       "references": [
