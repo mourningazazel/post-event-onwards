@@ -3,6 +3,8 @@
 #include "peo/core/grid.hpp"
 #include "peo/core/types.hpp"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -15,6 +17,10 @@ inline constexpr std::int32_t kWaveDistanceCost = 8;
 inline constexpr std::int32_t kWaveAgeCost = 8;
 /// How far a fresh deposit is read, in cells of route, when the player stands still.
 inline constexpr std::int32_t kWaveReachCells = 60;
+/// The pull works in tiles of this many cells (PEO-078): a wide, short tile keeps each
+/// row segment long enough to vectorise and the active set tight round a front.
+inline constexpr int kWaveTileWidth = 128;
+inline constexpr int kWaveTileHeight = 8;
 
 /// The geodesic field's numbers (D-024). A deposit of `strength` reads
 /// strength - distance_cost x route - age_cost x age, and is gone when that reaches
@@ -31,8 +37,18 @@ struct WaveParams {
 /// it, propagated `speed` cells per update along walkable routes that never cut a
 /// wall corner. Values are stored with the age folded in (age_cost x the update
 /// they were made on), so nothing is rewritten to age them: sample() subtracts the
-/// current age line. Work per update is the cells that changed, bounded by reach,
-/// not the map. Deterministic, integer, no allocation once warm.
+/// current age line.
+///
+/// A round is computed as a pull (PEO-078): every open cell takes the best offer of
+/// its eight neighbours from the round-start buffer, if it beats its own value and
+/// the age line, into the second buffer, and the buffers flip. That equals pushing
+/// from the changed cells (values only rise, so an unchanged cell has made every
+/// offer it can). Only tiles that changed last round, and their neighbours, are
+/// pulled; a tile nobody pulls holds the same values in both buffers. The kernel is
+/// branch-free and integer, so it vectorises and every build gives the same bits.
+/// A wave is updated against one blocked grid for its life (a stage): its open and
+/// corner masks are built from the first grid it sees. Deterministic, no allocation
+/// once built.
 class ScentWave {
 public:
     ScentWave(int width, int height, WaveParams params = {});
@@ -43,15 +59,23 @@ public:
     /// One update: the age line moves on, then `speed` rounds carry every changed
     /// cell's value, less distance_cost, to its open neighbours (no corner cutting),
     /// wherever that improves them and stays above the age line.
-    void update(const Grid<bool>& blocked) noexcept;
+    void update(const Grid<bool>& blocked);
 
     /// Add a deposit that belonged before the update this wave has just run (the
     /// World speculates the update with no deposit and patches the player's in at
     /// commit, PEO-030). `before` is the wave before that update. Bit-exact against
     /// deposit() then update() for speed 1: a round is a max over offers made from
     /// round-start values, so the deposits' offers can be added after the others.
-    void patch_deposit(const ScentWave& before, Vec2i at, std::int32_t strength,
-                       const Grid<bool>& blocked) noexcept;
+    void patch_deposit(const ScentWave& before, Vec2i at, std::int32_t strength, const Grid<bool>& blocked);
+
+    /// Make this wave equal to `source` (values, age line and what changes next round).
+    /// Partners (the same nonzero token, the same size: a wave and a copy of it, as the
+    /// World's and its Speculation's are after the first speculate) copy only the tiles
+    /// either has written since this one was last synced; anything else copies the whole
+    /// field (PEO-078). Returns the tiles copied.
+    std::size_t sync_from(const ScentWave& source);
+    /// Identity for sync_from: copies share it. The World gives each stage's wave a new one.
+    void set_token(std::uint64_t token) noexcept { partner_token_ = token; }
 
     /// Scent at `at` now: its stored value less the age line, never below 0.
     [[nodiscard]] std::int32_t sample(Vec2i at) const noexcept;
@@ -68,12 +92,12 @@ public:
     /// Updates run: the age line is age_cost x this.
     [[nodiscard]] std::uint32_t updates() const noexcept { return updates_; }
     /// Stored values, row-major, age folded in. For tests and equivalence.
-    [[nodiscard]] const std::vector<std::int32_t>& values() const noexcept { return value_; }
-    /// Cells that will carry their value on at the next update.
-    [[nodiscard]] std::size_t active_cells() const noexcept { return active_.size(); }
+    [[nodiscard]] const std::vector<std::int32_t>& values() const noexcept { return buf_[cur_]; }
+    /// Cells the next round will pull: those of the tiles that changed and their
+    /// neighbours (PEO-078; before, the count of changed cells).
+    [[nodiscard]] std::size_t active_cells() const noexcept;
 
 private:
-    void round(const Grid<bool>& blocked) noexcept;
     [[nodiscard]] std::size_t index(Vec2i c) const noexcept {
         return static_cast<std::size_t>(c.y) * static_cast<std::size_t>(width_) +
                static_cast<std::size_t>(c.x);
@@ -81,21 +105,44 @@ private:
     [[nodiscard]] std::int32_t age_line() const noexcept {
         return params_.age_cost * static_cast<std::int32_t>(updates_);
     }
-    /// Offer `value` less distance_cost to the open neighbours of `from`.
-    void offer(std::uint32_t from, std::int32_t value, const Grid<bool>& blocked) noexcept;
+    [[nodiscard]] std::size_t tile_of(int x, int y) const noexcept {
+        return static_cast<std::size_t>(y / kWaveTileHeight) * static_cast<std::size_t>(tiles_x_) +
+               static_cast<std::size_t>(x / kWaveTileWidth);
+    }
+    void build_masks(const Grid<bool>& blocked);
+    /// A cell's value changed in the current buffer outside a round: its tile is
+    /// pulled next round, and a partner learns of it.
+    void touched(std::size_t tile) noexcept;
+    void expand_active();
+    void round();
+    [[nodiscard]] bool pull_tile(std::size_t tile);
+    [[nodiscard]] bool pull_border_cell(int x, int y);
+    [[nodiscard]] bool open_at(int x, int y) const noexcept;
 
     WaveParams params_;
     int width_ = 0;
     int height_ = 0;
-    std::vector<std::int32_t> value_;
-    /// A cell is in active_ when its stamp equals round_; so no cell is listed twice.
-    std::vector<std::uint32_t> stamp_;
+    int tiles_x_ = 0;
+    int tiles_y_ = 0;
+    /// The two buffers; buf_[cur_] is the field now.
+    std::array<std::vector<std::int32_t>, 2> buf_;
+    std::size_t cur_ = 0; // 0 or 1
+    /// Per cell: 1 when open (built from the blocked grid on first use), and a 4-bit
+    /// mask of the diagonals that may offer into it (both cells beside the step open).
+    std::vector<std::uint8_t> open_;
+    std::vector<std::uint8_t> diag_;
+    bool masks_built_ = false;
+    /// Per tile: changed last round (or by a deposit or patch since); and scratch for
+    /// building the active list.
+    std::vector<std::uint8_t> changed_;
+    std::vector<std::uint8_t> mark_;
     std::vector<std::uint32_t> active_;
-    std::vector<std::uint32_t> next_;
-    /// Scratch: the active cells' values as a round starts.
-    std::vector<std::int32_t> start_;
+    /// Tiles written since this wave last matched its partner, and their marks.
+    std::vector<std::uint32_t> written_;
+    std::vector<std::uint8_t> written_mark_;
+    /// Shared by a wave and its copies; 0 means none, so sync_from always copies all.
+    std::uint64_t partner_token_ = 0;
     std::uint32_t updates_ = 0;
-    std::uint32_t round_ = 1; // stamps start at 0, so nothing begins listed
 };
 
 } // namespace peo::core
