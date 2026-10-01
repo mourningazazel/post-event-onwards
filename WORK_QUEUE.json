@@ -908,38 +908,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-079",
-      "order": 677,
-      "type": "perf",
-      "title": "Flow-direction grid for the Dead's poll and decisions",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "starting unit 1 (Dead-position golden)"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "commits: 91dc0f1 test (Dead-position golden pinned before the switch: World 3000 Dead on 200x120 and 2000 Dead on the town, 60 updates, both hordes move >=100 units), d551496 core (direction bytes; poll and decide_move read flow_target; placeholder deleted), c447de1 docs (research section 3 'built', scent-performance before/after). tests: verify --frontend --full green (core, suite_budget, scenario_budget, release, clang); the golden and every World golden unchanged; 'flow_target equals strongest_neighbour' passes on the stored bytes and gained a check for a deposit between updates (fails if deposit skips the refresh, checked). decide_move keeps its signature and falls back to strongest_neighbour(pos, &blocked) only for a wave that has not seen its grid (has_flow() false): test_dead's 'takes the best tile or stays put' deposits with no update and stays unchanged. Bytes are exact outside update(): deposit rewrites 3x3, patch 5x5, update rewrites the tiles its rounds changed with a one-cell ring, sync_from copies (full copy, or the copied tiles and rings on a partner sync). allocation: 0 in deposit, update, patch_deposit, partner sync_from, flow_target and 500 warm World speculate+commit (counter). perf (M1 Air, -O3, pinned, 80 warm then median (p95) of 40, 91dc0f1 vs now): saturated 512x512 scent update 222 (224) -> 675 (677) us, refresh +453 us (<=1 ms ok); 512x512/50k Dead/6 emitters speculate 4628 -> 2609 us, no Dead 293 -> 772 us, so the Dead's share 4335 -> 1837 us (2.36x, >=2x ok); 200x200/5k 463 -> 308 us; commit 4-5 us unchanged. The refresh kernel vectorises (NEON) only with unconditional loads and integer masks; a bool & bool select left it scalar at 2.4 ms. manual: not run in the window: the desktop was in use (the user's agent window had focus) and I do not take focus; the moves are pinned bit-identical by the golden instead. Perf observation without the window: the game's default World (80x45, 40 Dead) speculate+commit 8 -> 17 us. open: that +9 us at the default horde is the per-update refresh on a fully active small field with almost no Dead to save (the research's break-even is ~20k Dead on a fully active field); it does rise, against the manual step's 'should not rise'. Your call whether that matters at 0.06% of a frame; a cheaper refresh (skip the ring toward stale neighbours, about -25%) is possible if wanted."
-        }
-      ],
-      "references": [
-        "docs/research/parallel-and-gpu.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-080",
       "order": 687,
       "type": "feature",
@@ -953,9 +921,7 @@
       "references": [
         "docs/adr/0014-threads-and-gpu-compute-in-core.md"
       ],
-      "depends_on": [
-        "PEO-079"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-081",
