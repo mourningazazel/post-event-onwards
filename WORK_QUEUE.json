@@ -534,10 +534,10 @@
       "order": 427,
       "type": "feature",
       "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-29",
       "notes": [
         {
