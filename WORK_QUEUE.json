@@ -886,10 +886,10 @@
       "order": 667,
       "type": "perf",
       "title": "Scent field as a dense pull over active tiles",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
@@ -901,6 +901,11 @@
           "at": "2026-09-30",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-09-30",
+          "by": "builder",
+          "text": "commits: 29c5087 (reference push + golden) 92f18df (dense pull) 3dff98c (speculate syncs, no copy) 0be4fb0 (kernel vectorises; saturated perf case) 9dff5f4 (docs). tests: verify.py --frontend --full passed; golden vs reference push every update (small stages debug; town and 200x120 speeds 1, 2 release); commit(speculate())==step() over 200 actions reused and fresh; warm speculate syncs < all tiles; partner sync test; mutation (sync forgets own writes) caught; 0 allocations in commit/speculate over 1000 actions; pinned world hash unchanged. perf (M1 Air, -O3, cpu 6, median (p95) of 40): saturated 512x512 scent update push 4756 (4765) -> pull 227 (229) us = 21x, 20 emitters 4639 -> 227; speculate 200x120/5k no emitters 243 (274) -> 189 (203), 6 emitters 1007 (1030) -> 444 (449); 512x512/50k 6 emitters 11082 -> 4608, 20 emitters 11142 -> 4470; commit 1-5 us unchanged; 2048x2048 warm speculate 2941 (cold copy) -> 251 us, 6 tiles synced. manual: the visual scent-view replay did not run: the game window never got focus (the desktop was in use); the field is bit-identical by the golden and the unchanged pinned hash. open: (1) masks are built from the first blocked grid a wave sees (one grid per wave; World and tests comply). (2) a Speculation serves one World (tokens are per World). (3) the first kernel left GCC scalar (5.5x); loads made unconditional for NEON. (4) AVX2 clone compiled only here (arm64)."
         }
       ],
       "references": [
