@@ -85,10 +85,10 @@
       "order": 90,
       "type": "design",
       "title": "Weighted-draw movement for the Dead with aggregates and company pull",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "notes": [
         {
@@ -125,6 +125,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed per D-038 B; after PEO-080"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: 8e57ee1 core+tests, af7cb64 docs. tests: verify --full and CI green; equivalence tests unchanged and passing; goldens repinned (D-038). swarm: climbing share of moving draws 96% within 10, 55% beyond 45, falling each band between; accumulation 4.5x; fan-out 5.4x, no shared tile. perf (M1, 1 / 4 threads, speculate): 512/20k 6.1 / 2.8 ms (was 1.5 / 0.75), 512/50k 7.7 / 4.5 ms (was 2.6 / 1.9); commit 6-13 us. Desire 16 B/cell, 16 MiB at 1024x1024. 0 allocations. manual: not run (desktop in use). open: gradient counts draws, not landed moves; release executor golden cut to 30 actions and perf cases moved to the scenario tier, which is 4.3 s of 5 on CI; flow bytes (PEO-079) now unread by the Dead."
         }
       ],
       "references": [
