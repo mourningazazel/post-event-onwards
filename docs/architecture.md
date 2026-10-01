@@ -57,9 +57,12 @@ each update.
 `ScentField` (diffusion) stays in the tree, unused by World, until PEO-030 is accepted.
 Since PEO-078 a round is a **pull** between two buffers over active 128x8 tiles (those that
 changed last round and their neighbours); a tile nobody pulls holds the same values in both, and
-the branch-free row kernel vectorises (NEON, or an AVX2 clone on x86-64). The World's and the
-Speculation's waves are partners that swap in `finish_from`, so a warm `speculate` syncs only the
-tiles either changed instead of copying the field.
+the branch-free row kernel vectorises. Since PEO-085 the row kernels are one source built twice,
+plain (NEON on arm64, SSE2 on x86-64) and for AVX2 on x86-64 with every compiler, and a CPU check
+picks once per process (`src/core/src/wave_kernels.hpp`). The World's and the Speculation's waves
+are partners that swap in `finish_from`, so a warm `speculate` syncs only the tiles either changed
+instead of copying the field; tokens are unique per process, so a Speculation moved to another
+World cold-copies.
 
 Where it is going (`docs/design/scent-mobs.md`): wind outdoors (PEO-048), z-level routes
 (PEO-049), a reach radius round the player with sealed buildings skipped (PEO-047), rot and
