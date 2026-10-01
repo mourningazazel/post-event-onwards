@@ -794,7 +794,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Ryan 2026-10-01: emitters may be most active tiles, so the saturated windy field is the GPU load. Plan temporal blocking: each workgroup loads its tile plus a halo of speed+gust cells into shared memory, runs all rounds there, writes the interior. Cache standing emitters (PEO-074 lever 3)."
+        }
+      ],
       "references": [
         "docs/adr/0014-threads-and-gpu-compute-in-core.md",
         "docs/adr/0001-platforms-and-gpu-backend.md"
