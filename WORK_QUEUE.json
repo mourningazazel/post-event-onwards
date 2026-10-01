@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 86,
+  "next_id": 87,
   "items": [
     {
       "id": "PEO-003",
@@ -17,43 +17,6 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "title: Blood scent layer on contact with the Dead"
-        }
-      ],
-      "references": [
-        "docs/production/vision.md"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-004",
-      "order": 40,
-      "type": "perf",
-      "title": "Benchmark ScentField::step at 200x120",
-      "status": "Pending",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "PEO-028 set -ffp-contract=off on core and did not re-measure docs/design/scent-performance.md. Re-measure those numbers here with the flag in place."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "PEO-043 carries the larger variants and both timings (D-021); keep this item for the per-step ScentField number only, or fold it in when PEO-043 lands."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "Obsolete once ScentField is removed (PEO-076); close with it."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "ScentField removed (899c163); close at review."
         }
       ],
       "references": [
@@ -530,38 +493,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-048",
-      "order": 427,
-      "type": "feature",
-      "title": "Wind carries scent ahead outdoors; no wind indoors (D-020)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
-      "references": [
-        "docs/design/scent-mobs.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-049",
       "order": 437,
       "type": "feature",
@@ -827,119 +758,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-075",
-      "order": 637,
-      "type": "bug",
-      "title": "peo with a non-numeric seed aborts: std::stoull throws uncaught",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "commits: e24fe05 app: parse_seed with std::from_chars in src/app/main.cpp; kDefaultSeed = 1 named; any failure (no digits, trailing characters, a sign, out of range) logs one SDL_LogWarn naming the argument and the range, and starts on kDefaultSeed. tests: none headless (frontend parse, per the brief); verify --frontend --full green. manual (SDL_VIDEO_DRIVER=offscreen, so the user's desktop was untouched; each run still alive at 2 s, timeout exit 124): 'peo abc', 'peo 12x', 'peo -5', 'peo 99999999999999999999999' each logged exactly one 'WARNING: seed \"<arg>\" is not a whole number from 0 to 18446744073709551615; starting on seed 1'; 'peo 42' and 'peo' logged no warning. Not seen on screen: the offscreen driver shows no window, and the game does not log the seed, so 'starts on 42' rests on the parse. open: none."
-        }
-      ],
-      "references": [
-        "src/app/main.cpp"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-076",
-      "order": 647,
-      "type": "chore",
-      "title": "Remove ScentField (scent.hpp/.cpp, test_scent.cpp) now PEO-030 is accepted",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "commits: 899c163 ca283a6; tests: verify --full passed; perf: unit tier 0.149→0.147 s; manual, open: none"
-        }
-      ],
-      "references": [
-        "src/core/include/peo/core/scent.hpp"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-077",
-      "order": 657,
-      "type": "chore",
-      "title": "ScentWave: write down the int32 bound on the age line",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
-      "references": [
-        "src/core/include/peo/core/scent_wave.hpp"
-      ],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-079",
-      "order": 677,
-      "type": "perf",
-      "title": "Flow-direction grid for the Dead's poll and decisions",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "starting unit 1 (Dead-position golden)"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "commits: 91dc0f1 test (Dead-position golden pinned before the switch: World 3000 Dead on 200x120 and 2000 Dead on the town, 60 updates, both hordes move >=100 units), d551496 core (direction bytes; poll and decide_move read flow_target; placeholder deleted), c447de1 docs (research section 3 'built', scent-performance before/after). tests: verify --frontend --full green (core, suite_budget, scenario_budget, release, clang); the golden and every World golden unchanged; 'flow_target equals strongest_neighbour' passes on the stored bytes and gained a check for a deposit between updates (fails if deposit skips the refresh, checked). decide_move keeps its signature and falls back to strongest_neighbour(pos, &blocked) only for a wave that has not seen its grid (has_flow() false): test_dead's 'takes the best tile or stays put' deposits with no update and stays unchanged. Bytes are exact outside update(): deposit rewrites 3x3, patch 5x5, update rewrites the tiles its rounds changed with a one-cell ring, sync_from copies (full copy, or the copied tiles and rings on a partner sync). allocation: 0 in deposit, update, patch_deposit, partner sync_from, flow_target and 500 warm World speculate+commit (counter). perf (M1 Air, -O3, pinned, 80 warm then median (p95) of 40, 91dc0f1 vs now): saturated 512x512 scent update 222 (224) -> 675 (677) us, refresh +453 us (<=1 ms ok); 512x512/50k Dead/6 emitters speculate 4628 -> 2609 us, no Dead 293 -> 772 us, so the Dead's share 4335 -> 1837 us (2.36x, >=2x ok); 200x200/5k 463 -> 308 us; commit 4-5 us unchanged. The refresh kernel vectorises (NEON) only with unconditional loads and integer masks; a bool & bool select left it scalar at 2.4 ms. manual: not run in the window: the desktop was in use (the user's agent window had focus) and I do not take focus; the moves are pinned bit-identical by the golden instead. Perf observation without the window: the game's default World (80x45, 40 Dead) speculate+commit 8 -> 17 us. open: that +9 us at the default horde is the per-update refresh on a fully active small field with almost no Dead to save (the research's break-even is ~20k Dead on a fully active field); it does rise, against the manual step's 'should not rise'. Your call whether that matters at 0.06% of a frame; a cheaper refresh (skip the ring toward stale neighbours, about -25%) is possible if wanted."
-        }
-      ],
-      "references": [
-        "docs/research/parallel-and-gpu.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-080",
       "order": 687,
       "type": "feature",
@@ -953,9 +771,7 @@
       "references": [
         "docs/adr/0014-threads-and-gpu-compute-in-core.md"
       ],
-      "depends_on": [
-        "PEO-079"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-081",
@@ -1028,30 +844,23 @@
       ]
     },
     {
-      "id": "PEO-085",
+      "id": "PEO-086",
       "order": 737,
       "type": "chore",
-      "title": "Pull kernel portability and Speculation ownership: AVX2 on MSVC, no target_clones on Darwin, foreign Speculation cold-copies",
-      "status": "Validation",
+      "title": "Scenario tier back under half its budget: shrink the AVX2-equivalence and wind-walker cases (3.8 s of 5 s in CI)",
+      "status": "Pending",
       "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
+      "effort": "S",
+      "owner": "builder",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "report: its report commit"
         }
       ],
-      "references": [
-        "docs/production/briefs/PEO-078.md"
-      ],
+      "references": [],
       "depends_on": []
     }
   ]
