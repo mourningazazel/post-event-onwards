@@ -22,6 +22,14 @@ inline constexpr std::int32_t kWaveReachCells = 60;
 inline constexpr int kWaveTileWidth = 128;
 inline constexpr int kWaveTileHeight = 8;
 
+/// The row kernels a wave can run (PEO-085): one source, built plain everywhere and for
+/// AVX2 on x86-64. A wave starts on the best this CPU has, checked once per process;
+/// both give the same bits.
+enum class WaveKernel : std::uint8_t {
+    Plain, ///< auto-vectorised for the build's baseline (NEON on arm64, SSE2 on x86-64)
+    Avx2,  ///< x86-64 with AVX2, which has the 32-bit integer max SSE2 lacks
+};
+
 /// The geodesic field's numbers (D-024). A deposit of `strength` reads
 /// strength - distance_cost x route - age_cost x age, and is gone when that reaches
 /// zero; `speed` is how many cells the front advances per update.
@@ -76,6 +84,15 @@ public:
     std::size_t sync_from(const ScentWave& source);
     /// Identity for sync_from: copies share it. The World gives each stage's wave a new one.
     void set_token(std::uint64_t token) noexcept { partner_token_ = token; }
+    /// A token no other wave in this process has had (PEO-085): two Worlds never share
+    /// one, so a Speculation moved between them cold-copies. Never 0.
+    [[nodiscard]] static std::uint64_t new_token() noexcept;
+
+    /// Whether this process can run `kernel`: Plain always, Avx2 on a CPU that has it.
+    [[nodiscard]] static bool kernel_available(WaveKernel kernel) noexcept;
+    /// Run this wave's rounds and direction bytes on `kernel` (for tests: the plain and
+    /// AVX2 copies are compared). It must be available.
+    void use_kernel(WaveKernel kernel) noexcept;
 
     /// Scent at `at` now: its stored value less the age line, never below 0.
     [[nodiscard]] std::int32_t sample(Vec2i at) const noexcept;
@@ -141,6 +158,7 @@ private:
     int height_ = 0;
     int tiles_x_ = 0;
     int tiles_y_ = 0;
+    WaveKernel kernel_ = WaveKernel::Plain;
     /// The two buffers; buf_[cur_] is the field now.
     std::array<std::vector<std::int32_t>, 2> buf_;
     std::size_t cur_ = 0; // 0 or 1

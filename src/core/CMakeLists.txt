@@ -3,11 +3,19 @@
 add_library(peo_core STATIC
     src/scent.cpp
     src/scent_wave.cpp
+    src/wave_kernels_avx2.cpp
     src/turn_input.cpp
     src/stage.cpp
     src/dead.cpp
     src/world.cpp)
 add_library(peo::core ALIAS peo_core)
+
+# PEO-085: GCC and Clang mark the AVX2 copy of the scent wave's row kernels with a target
+# attribute; MSVC has none, so it builds that one file for AVX2. ScentWave calls it only
+# after a CPU check.
+if(MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(AMD64|x86_64)$")
+    set_source_files_properties(src/wave_kernels_avx2.cpp PROPERTIES COMPILE_OPTIONS /arch:AVX2)
+endif()
 
 target_include_directories(peo_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)

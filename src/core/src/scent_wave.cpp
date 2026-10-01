@@ -2,105 +2,83 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <limits>
 
-namespace peo::core {
+#include "wave_kernels.hpp"
 
-namespace {
-/// Stored value of a cell nothing has reached: far below any age line, and far enough
-/// above the type's minimum that subtracting a distance cost cannot overflow.
-constexpr std::int32_t kUnreached = std::numeric_limits<std::int32_t>::min() / 2;
-
-/// kNeighbours8 alternates orthogonal and diagonal (N, NE, E, SE, S, SW, W, NW): the
-/// diagonal 2k+1 lies between orthogonals k and k+1 of kNeighbours4. Diagonal mask bit
-/// k is kNeighbours8[2k+1]: NE, SE, SW, NW.
-constexpr std::size_t kOrthogonals = 4;
-constexpr std::uint8_t kNE = 1;
-constexpr std::uint8_t kSE = 2;
-constexpr std::uint8_t kSW = 4;
-constexpr std::uint8_t kNW = 8;
-/// A direction byte meaning "no neighbour is stronger" (indices 0-7 are kNeighbours8's).
-constexpr std::uint8_t kNoFlow = 0xFF;
-constexpr std::size_t kDirections = std::size(kNeighbours8);
-
-#if defined(__x86_64__) && defined(__GNUC__)
-// AVX2 has the 32-bit integer max the kernel needs; plain x86-64 (SSE2) does not, so
-// pick at load time. arm64 has NEON as standard.
-#define PEO_WAVE_KERNEL_CLONES __attribute__((target_clones("avx2", "default")))
-#else
-#define PEO_WAVE_KERNEL_CLONES
+#if PEO_WAVE_HAS_AVX2 && defined(_MSC_VER)
+#include <intrin.h>
 #endif
 
-/// The pull for one row segment [begin, end) of interior cells (never on the map's
-/// border, so all eight neighbours exist): branch-free so it vectorises. Returns
-/// whether any cell changed.
-PEO_WAVE_KERNEL_CLONES bool pull_row(const std::int32_t* __restrict a, std::int32_t* __restrict b,
-                                     const std::uint8_t* __restrict open, const std::uint8_t* __restrict diag,
-                                     std::ptrdiff_t w, std::ptrdiff_t begin, std::ptrdiff_t end,
-                                     std::int32_t cost, std::int32_t line) {
-    int changed = 0;
-    for (std::ptrdiff_t i = begin; i < end; ++i) {
-        // Every load is unconditional (interior cells have all eight neighbours) and the
-        // masks only select, so the loop has no branches and vectorises.
-        const std::int32_t m = diag[i];
-        const std::int32_t ne = a[i - w + 1];
-        const std::int32_t se = a[i + w + 1];
-        const std::int32_t sw = a[i + w - 1];
-        const std::int32_t nw = a[i - w - 1];
-        std::int32_t best = std::max(std::max(a[i - w], a[i + 1]), std::max(a[i + w], a[i - 1]));
-        best = std::max(best, (m & kNE) != 0 ? ne : kUnreached);
-        best = std::max(best, (m & kSE) != 0 ? se : kUnreached);
-        best = std::max(best, (m & kSW) != 0 ? sw : kUnreached);
-        best = std::max(best, (m & kNW) != 0 ? nw : kUnreached);
-        const std::int32_t candidate = best - cost;
-        const std::int32_t old = a[i];
-        const bool take = (open[i] != 0) & (candidate > line) & (candidate > old);
-        const std::int32_t v = take ? candidate : old;
-        b[i] = v;
-        changed |= static_cast<int>(take);
-    }
-    return changed != 0;
+namespace peo::core {
+
+using namespace wave_kernel;
+
+namespace {
+bool pull_row_plain(const std::int32_t* a, std::int32_t* b, const std::uint8_t* open,
+                    const std::uint8_t* diag, std::ptrdiff_t w, std::ptrdiff_t begin, std::ptrdiff_t end,
+                    std::int32_t cost, std::int32_t line) noexcept {
+    return pull_row(a, b, open, diag, w, begin, end, cost, line);
+}
+void flow_row_plain(const std::int32_t* a, std::uint8_t* flow, const std::uint8_t* open,
+                    const std::uint8_t* diag, std::ptrdiff_t w, std::ptrdiff_t begin,
+                    std::ptrdiff_t end) noexcept {
+    flow_row(a, flow, open, diag, w, begin, end);
 }
 
-/// The direction bytes for one row segment [begin, end) of interior cells (PEO-079): the
-/// first neighbour in kNeighbours8 order holding the strict maximum stored value above
-/// the cell's own, among those a step may reach (open; a diagonal also needs its corner
-/// mask bit). Stored values keep the order sample() gives everything above the age line,
-/// so with flow_target()'s check of the target against the line this is
-/// strongest_neighbour. Branch-free, as pull_row: loads are unconditional, the masks are
-/// integers that only select (a bool & bool here keeps GCC from vectorising).
-PEO_WAVE_KERNEL_CLONES void flow_row(const std::int32_t* __restrict a, std::uint8_t* __restrict flow,
-                                     const std::uint8_t* __restrict open, const std::uint8_t* __restrict diag,
-                                     std::ptrdiff_t w, std::ptrdiff_t begin, std::ptrdiff_t end) {
-    std::array<std::ptrdiff_t, kDirections> offset{};
-    for (std::size_t d = 0; d < kDirections; ++d) {
-        offset[d] = kNeighbours8[d].y * w + kNeighbours8[d].x;
+struct RowKernels {
+    decltype(&pull_row_plain) pull;
+    decltype(&flow_row_plain) flow;
+};
+/// Indexed by WaveKernel.
+constexpr std::array<RowKernels, 2> kRowKernels{{
+    {pull_row_plain, flow_row_plain},
+#if PEO_WAVE_HAS_AVX2
+    {pull_row_avx2, flow_row_avx2},
+#else
+    {pull_row_plain, flow_row_plain}, // never chosen: kernel_available(Avx2) is false here
+#endif
+}};
+
+bool cpu_has_avx2() noexcept {
+#if !PEO_WAVE_HAS_AVX2
+    return false;
+#elif defined(_MSC_VER)
+    // Leaf 7 says the CPU has AVX2; leaf 1's OSXSAVE and AVX bits and XCR0 say the OS
+    // saves the YMM registers, without which AVX2 code faults.
+    constexpr int kLeafFeatures = 1;
+    constexpr int kLeafExtended = 7;
+    constexpr int kOsxsave = 1 << 27;
+    constexpr int kAvx = 1 << 28;
+    constexpr int kAvx2 = 1 << 5;
+    constexpr unsigned long long kYmmState = 0x6; // XCR0: SSE and AVX state
+    std::array<int, 4> regs{};                    // eax, ebx, ecx, edx
+    __cpuid(regs.data(), kLeafFeatures);
+    if ((regs[2] & kOsxsave) == 0 || (regs[2] & kAvx) == 0 || (_xgetbv(0) & kYmmState) != kYmmState) {
+        return false;
     }
-    for (std::ptrdiff_t i = begin; i < end; ++i) {
-        const std::int32_t m = diag[i];
-        std::int32_t best = a[i];
-        std::int32_t to = kNoFlow;
-        for (std::size_t d = 0; d < kDirections; ++d) {
-            const std::ptrdiff_t n = i + offset[d];
-            const std::int32_t stored = a[n];
-            const std::int32_t corner = d % 2 == 0 ? 1 : m >> (d / 2); // diagonal d is mask bit d/2
-            const std::int32_t reach = static_cast<std::int32_t>(open[n]) & corner & 1;
-            const std::int32_t v = reach != 0 ? stored : kUnreached;
-            to = v > best ? static_cast<std::int32_t>(d) : to;
-            best = std::max(best, v);
-        }
-        flow[i] = static_cast<std::uint8_t>(to);
-    }
+    __cpuidex(regs.data(), kLeafExtended, 0);
+    return (regs[1] & kAvx2) != 0;
+#else
+    __builtin_cpu_init();
+    return __builtin_cpu_supports("avx2") != 0;
+#endif
+}
+
+WaveKernel best_kernel() noexcept {
+    static const WaveKernel best = cpu_has_avx2() ? WaveKernel::Avx2 : WaveKernel::Plain;
+    return best;
 }
 } // namespace
 
 ScentWave::ScentWave(int width, int height, WaveParams params)
     : params_(params), width_(width), height_(height),
       tiles_x_((width + kWaveTileWidth - 1) / kWaveTileWidth),
-      tiles_y_((height + kWaveTileHeight - 1) / kWaveTileHeight) {
+      tiles_y_((height + kWaveTileHeight - 1) / kWaveTileHeight), kernel_(best_kernel()) {
     const std::size_t cells = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
     const std::size_t tiles = static_cast<std::size_t>(tiles_x_) * static_cast<std::size_t>(tiles_y_);
     buf_[0].assign(cells, kUnreached);
@@ -239,8 +217,9 @@ bool ScentWave::pull_tile(std::size_t tile) {
             changed = pull_border_cell(0, y) || changed;
         }
         if (in0 < in1) {
-            changed = pull_row(a, b, open_.data(), diag_.data(), w, y * w + in0, y * w + in1,
-                               params_.distance_cost, age_line()) ||
+            changed = kRowKernels[static_cast<std::size_t>(kernel_)].pull(
+                          a, b, open_.data(), diag_.data(), w, y * w + in0, y * w + in1,
+                          params_.distance_cost, age_line()) ||
                       changed;
         }
         if (x1 == width_ && width_ > 1) {
@@ -317,7 +296,8 @@ void ScentWave::refresh_flow(int x0, int y0, int x1, int y1) noexcept {
             refresh_flow_cell(0, y);
         }
         if (in0 < in1) {
-            flow_row(values().data(), flow_.data(), open_.data(), diag_.data(), w, y * w + in0, y * w + in1);
+            kRowKernels[static_cast<std::size_t>(kernel_)].flow(values().data(), flow_.data(), open_.data(),
+                                                                diag_.data(), w, y * w + in0, y * w + in1);
         }
         if (x1 == width_ && width_ > 1) {
             refresh_flow_cell(width_ - 1, y);
@@ -392,6 +372,22 @@ void ScentWave::patch_deposit(const ScentWave& before, Vec2i at, std::int32_t st
         }
     }
     refresh_flow(at.x - kPatchReach, at.y - kPatchReach, at.x + kPatchReach + 1, at.y + kPatchReach + 1);
+}
+
+bool ScentWave::kernel_available(WaveKernel kernel) noexcept {
+    return kernel == WaveKernel::Plain || best_kernel() == WaveKernel::Avx2;
+}
+
+void ScentWave::use_kernel(WaveKernel kernel) noexcept {
+    assert(kernel_available(kernel));
+    kernel_ = kernel;
+}
+
+std::uint64_t ScentWave::new_token() noexcept {
+    // The one piece of process-wide state in the core: identity only, so the order in
+    // which threads or Worlds draw tokens changes how much a sync copies, never a value.
+    static std::atomic<std::uint64_t> next{0};
+    return next.fetch_add(1, std::memory_order_relaxed) + 1;
 }
 
 std::size_t ScentWave::sync_from(const ScentWave& source) {

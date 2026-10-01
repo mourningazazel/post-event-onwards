@@ -307,6 +307,67 @@ TEST_SUITE("scent_wave") {
         }
     }
 
+    TEST_CASE("the plain and AVX2 kernels give the same field and directions" *
+              doctest::test_suite("scenario: scent_wave")) {
+        // PEO-085: one source built twice. Two waves on the same walled stage take the
+        // same deposits, one on each kernel; after every update their values and every
+        // direction byte (read through flow_target) must agree. The stage spans several
+        // tiles each way and the run outlasts the reach, so the front, the saturated
+        // field and the aged-out cells all go through both copies.
+        constexpr int kW = 3 * kWaveTileWidth + 9;
+        constexpr int kH = 5 * kWaveTileHeight + 3;
+        constexpr int kWallOneIn = 7;
+        constexpr int kEmitters = 12;
+        constexpr int kUpdates = kWaveReachCells + 10;
+        const bool has_avx2 = ScentWave::kernel_available(WaveKernel::Avx2);
+        if (!has_avx2) {
+            MESSAGE("no AVX2 on this CPU: the AVX2 half is skipped, the plain half runs");
+        }
+        const Grid<bool> b = random_stage(kW, kH, kWallOneIn, true, 41);
+        peo::test::Rng rng(41);
+        std::vector<Vec2i> emitters;
+        while (emitters.size() < static_cast<std::size_t>(kEmitters)) {
+            const Vec2i c{rng.range(1, kW - 2), rng.range(1, kH - 2)};
+            if (!b.at(c)) {
+                emitters.push_back(c);
+            }
+        }
+        ScentWave plain(kW, kH);
+        ScentWave avx2(kW, kH);
+        plain.use_kernel(WaveKernel::Plain);
+        if (has_avx2) {
+            avx2.use_kernel(WaveKernel::Avx2);
+        }
+        const auto differ = [&](const auto& same) {
+            int n = 0;
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    n += same(Vec2i{x, y}) ? 0 : 1;
+                }
+            }
+            return n;
+        };
+        for (int u = 0; u < kUpdates; ++u) {
+            // Emitters fall silent one by one, so cells also age out under both kernels.
+            for (std::size_t e = static_cast<std::size_t>(u) % emitters.size(); e < emitters.size(); ++e) {
+                plain.deposit(emitters[e], plain.params().strength);
+                avx2.deposit(emitters[e], avx2.params().strength);
+            }
+            plain.update(b);
+            if (!has_avx2) {
+                continue;
+            }
+            avx2.update(b);
+            CAPTURE(u);
+            REQUIRE(plain.values() == avx2.values());
+            REQUIRE(differ([&](Vec2i c) { return plain.flow_target(c) == avx2.flow_target(c); }) == 0);
+        }
+        // The plain half against the oracle, once, on the aged field.
+        CHECK(differ([&](Vec2i c) {
+                  return b.at(c) || plain.flow_target(c) == plain.strongest_neighbour(c, &b);
+              }) == 0);
+    }
+
     TEST_CASE("flow_target equals strongest_neighbour on every open cell" *
               doctest::test_suite("scenario: scent_wave")) {
         // PEO-079's contract. The stage spans 3x3 pull tiles, sources sit on tile

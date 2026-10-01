@@ -710,6 +710,38 @@ TEST_SUITE("world") {
         }
     }
 
+    TEST_CASE("one Speculation across two Worlds commits exactly as step on each" *
+              doctest::test_suite("scenario: world")) {
+        // PEO-085: two Worlds of the same size (different seeds, so different walls and
+        // scent) share one Speculation, turn about. Each one's wave must be a stranger to
+        // the other's: a partner sync against the wrong World's field would keep its
+        // values and masks, so every switch cold-copies and both match step().
+        constexpr int kActions = 60;
+        constexpr int kWaitOneIn = 5;
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        const WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
+        World a(kSeed, params);
+        World b(kSeed + 1, params);
+        World ref_a(kSeed, params);
+        World ref_b(kSeed + 1, params);
+        Speculation shared;
+        Rng pick(kSeed);
+        for (int i = 0; i < kActions; ++i) {
+            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Action act = pick.range(1, kWaitOneIn) == 1
+                                   ? Action::wait(secs)
+                                   : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+            for (auto [w, ref] : {std::pair{&a, &ref_a}, std::pair{&b, &ref_b}}) {
+                w->speculate(shared);
+                w->commit(shared, act);
+                ref->step(act);
+                if (!World::equivalent(*w, *ref)) {
+                    FAIL("diverged at action " << i << (w == &a ? " on A" : " on B"));
+                }
+            }
+        }
+    }
+
     TEST_CASE("a warm speculate copies only the tiles that changed") {
         // PEO-078: on a 384x128 stage (48 tiles of 128x8) the first speculate copies the
         // field; once the World and the Speculation have swapped waves, a speculate

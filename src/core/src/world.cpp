@@ -100,7 +100,7 @@ void World::load_stage(std::uint32_t index) {
     spec.height = params_.stage_height;
     stage_ = generate_stage(spec);
     scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
-    scent_.set_token(++wave_tokens_);
+    scent_.set_token(ScentWave::new_token());
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop

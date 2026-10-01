@@ -185,8 +185,6 @@ private:
     Stage stage_;
     ScentWave scent_{1, 1};
     HordeState dead_;
-    /// Gives each stage's wave a token of its own, for ScentWave::sync_from.
-    std::uint64_t wave_tokens_ = 0;
     /// Mixed into the slot hashes: the stage's own seed.
     std::uint64_t stage_salt_ = 0;
     Vec2i player_{};
