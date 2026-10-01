@@ -992,33 +992,6 @@
       "depends_on": [
         "PEO-022"
       ]
-    },
-    {
-      "id": "PEO-085",
-      "order": 737,
-      "type": "chore",
-      "title": "Pull kernel portability and Speculation ownership: AVX2 on MSVC, no target_clones on Darwin, foreign Speculation cold-copies",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-01",
-          "by": "builder",
-          "text": "report: its report commit"
-        }
-      ],
-      "references": [
-        "docs/production/briefs/PEO-078.md"
-      ],
-      "depends_on": []
     }
   ]
 }
