@@ -848,7 +848,7 @@
       "order": 737,
       "type": "chore",
       "title": "Scenario tier back under half its budget: shrink the AVX2-equivalence and wind-walker cases (3.8 s of 5 s in CI)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
