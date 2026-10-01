@@ -485,6 +485,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "Held: the pull already bounds work by reach while only the player emits. Brief with the first other emitter (PEO-039 or PEO-003); sealed buildings wait on a generator with buildings."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Ryan 2026-10-01 (thread): detailed per-tile scent and wind only inside a window round the player; past it, generic aggregate spread with cheap wind drift (N021). Window size = D-034's active-area slider."
         }
       ],
       "references": [
