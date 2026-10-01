@@ -61,6 +61,16 @@
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       }
+    },
+    {
+      "name": "headless-tsan",
+      "displayName": "Headless ThreadSanitizer (core + tests; the threaded tests, PEO-080)",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PEO_BUILD_FRONTEND": "OFF",
+        "PEO_ENABLE_TSAN": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -84,6 +94,10 @@
       "name": "win-dev",
       "configurePreset": "win-dev",
       "configuration": "Debug"
+    },
+    {
+      "name": "headless-tsan",
+      "configurePreset": "headless-tsan"
     }
   ],
   "testPresets": [
@@ -119,6 +133,13 @@
       "name": "win-dev",
       "configurePreset": "win-dev",
       "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "headless-tsan",
+      "configurePreset": "headless-tsan",
       "output": {
         "outputOnFailure": true
       }

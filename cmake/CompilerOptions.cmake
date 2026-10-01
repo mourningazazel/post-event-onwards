@@ -22,4 +22,10 @@ else()
         target_compile_options(peo_options INTERFACE -O1 -fsanitize=address,undefined -fno-omit-frame-pointer)
         target_link_options(peo_options INTERFACE -fsanitize=address,undefined)
     endif()
+    if(PEO_ENABLE_TSAN)
+        # PEO-080: the executor's threaded runs, checked for data races. TSan and ASan
+        # cannot share a binary, hence its own preset (headless-tsan).
+        target_compile_options(peo_options INTERFACE -O1 -g -fsanitize=thread)
+        target_link_options(peo_options INTERFACE -fsanitize=thread)
+    endif()
 endif()

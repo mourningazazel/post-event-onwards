@@ -53,6 +53,23 @@ jobs:
       - run: cmake --build --preset headless
       - run: ctest --preset headless
 
+  core-tsan:
+    # PEO-080 (D-035): the executor and the passes it splits, on real threads, under
+    # ThreadSanitizer. Any report fails the job (halt_on_error).
+    name: core threads (tsan)
+    runs-on: ubuntu-latest
+    env:
+      CC: clang-18
+      CXX: clang++-18
+      TSAN_OPTIONS: halt_on_error=1 second_deadlock_stack=1
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev
+      - run: cmake --preset headless-tsan
+      - run: cmake --build --preset headless-tsan
+      - run: ./build/headless-tsan/tests/peo_core_tests --no-intro -ts='executor'
+      - run: ./build/headless-tsan/tests/peo_core_tests --no-intro -tc='serial*,the scent wave on the town*'
+
   core-release:
     name: core tests (release)
     runs-on: ubuntu-latest

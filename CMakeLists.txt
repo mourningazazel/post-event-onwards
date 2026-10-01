@@ -13,6 +13,7 @@ option(PEO_BUILD_FRONTEND "Build the SDL3 frontend (needs a display to run)" ON)
 option(PEO_BUILD_TESTS "Build the headless core test suite" ON)
 option(PEO_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(PEO_ENABLE_SANITIZERS "Enable ASan/UBSan (Debug, GCC/Clang only)" OFF)
+option(PEO_ENABLE_TSAN "Enable ThreadSanitizer (GCC/Clang only; not with PEO_ENABLE_SANITIZERS)" OFF)
 option(PEO_FETCH_SDL "Fetch SDL3 from source when no system package is found" ON)
 
 set(CMAKE_CXX_STANDARD 20)
