@@ -485,6 +485,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "Held: the pull already bounds work by reach while only the player emits. Brief with the first other emitter (PEO-039 or PEO-003); sealed buildings wait on a generator with buildings."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Ryan 2026-10-01 (thread): detailed per-tile scent and wind only inside a window round the player; past it, generic aggregate spread with cheap wind drift (N021). Window size = D-034's active-area slider."
         }
       ],
       "references": [
@@ -559,7 +564,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "N021 (2026-10-01): the far aggregates carry wind. Fuse spread and upwind drift in one pass from the same buffer (additive splitting); the layer runs beside the detailed field and exchanges at the boundary once per update."
+        }
+      ],
       "references": [
         "src/core/include/peo/core/grid.hpp"
       ],
@@ -783,7 +794,13 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "Ryan 2026-10-01: emitters may be most active tiles, so the saturated windy field is the GPU load. Plan temporal blocking: each workgroup loads its tile plus a halo of speed+gust cells into shared memory, runs all rounds there, writes the interior. Cache standing emitters (PEO-074 lever 3)."
+        }
+      ],
       "references": [
         "docs/adr/0014-threads-and-gpu-compute-in-core.md",
         "docs/adr/0001-platforms-and-gpu-backend.md"
