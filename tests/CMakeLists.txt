@@ -8,7 +8,6 @@ add_executable(peo_core_tests
     main.cpp
     core/test_rng.cpp
     core/test_grid.cpp
-    core/test_scent.cpp
     core/test_stage.cpp
     core/test_dead.cpp
     core/test_world.cpp

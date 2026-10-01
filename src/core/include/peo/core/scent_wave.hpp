@@ -97,9 +97,10 @@ public:
     /// Scent at `at` now: its stored value less the age line, never below 0.
     [[nodiscard]] std::int32_t sample(Vec2i at) const noexcept;
 
-    /// The neighbouring cell (8-connected) with the strongest scent strictly
-    /// stronger than `from`, as ScentField's. With `blocked`, a diagonal counts only
-    /// when both orthogonal cells beside it are open (PEO-044).
+    /// The neighbouring cell (8-connected, on the map) whose sample() is the greatest
+    /// and strictly greater than `from`'s; of equals, the first in kNeighbours8 order.
+    /// Empty when no neighbour is stronger. With `blocked`, a blocked cell never counts,
+    /// and a diagonal counts only when both orthogonal cells beside it are open (PEO-044).
     [[nodiscard]] std::optional<Vec2i>
     strongest_neighbour(Vec2i from, const Grid<bool>* blocked = nullptr) const noexcept;
 

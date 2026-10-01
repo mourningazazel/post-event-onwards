@@ -1,7 +1,6 @@
 # peo::core — the simulation. No SDL, no filesystem, no globals. Deterministic
 # given a seed so tests and replays are reproducible.
 add_library(peo_core STATIC
-    src/scent.cpp
     src/scent_wave.cpp
     src/wave_kernels_avx2.cpp
     src/turn_input.cpp

@@ -1,5 +1,4 @@
 #include "peo/core/dead.hpp"
-#include "peo/core/scent.hpp"
 #include "peo/core/scent_wave.hpp"
 
 #include <doctest/doctest.h>
@@ -286,54 +285,6 @@ TEST_SUITE("scenario: town") {
         CHECK(r.success == 1.0);
         CHECK(r.stretch == 1.0);
         CHECK(r.frozen == 0);
-    }
-
-    TEST_CASE("baseline: the diffusion field on the town") {
-        // The before-picture PEO-030 improves on: the review's standing source in the
-        // deepest office room, 300 updates of today's field. No assertion on the two
-        // shares; the review measured about 15-18% on this town.
-        constexpr int kUpdates = 300;
-        constexpr Vec2i kFarFrom{kTownWidth / 2, 1};
-        constexpr int kMiddleX0 = 60; // the probe's search box: the middle offices
-        constexpr int kMiddleX1 = 140;
-        constexpr int kMiddleY0 = 40;
-        constexpr int kMiddleY1 = 80;
-        const Grid<bool> b = town();
-        const std::vector<int> far = bfs_dist(b, kFarFrom);
-        Vec2i source{};
-        int deepest = -1;
-        for (int y = kMiddleY0 + 1; y < kMiddleY1; ++y) {
-            for (int x = kMiddleX0 + 1; x < kMiddleX1; ++x) {
-                const int d = far[cell_index(b, {x, y})];
-                if (!b.at(x, y) && d > deepest) {
-                    deepest = d;
-                    source = {x, y};
-                }
-            }
-        }
-        REQUIRE(deepest > 0);
-        const std::vector<int> dist = bfs_dist(b, source);
-        ScentField f(kTownWidth, kTownHeight);
-        for (int i = 0; i < kUpdates; ++i) {
-            f.deposit(source, kPlayerScent);
-            f.step(&b);
-        }
-        int reachable = 0;
-        int reached = 0;
-        for (int y = 0; y < b.height(); ++y) {
-            for (int x = 0; x < b.width(); ++x) {
-                if (!b.at(x, y) && dist[cell_index(b, {x, y})] > 0) {
-                    ++reachable;
-                    reached += f.sample({x, y}) > 0.0F ? 1 : 0;
-                }
-            }
-        }
-        const ClimbResult c = climb_all(b, dist, source, [&](Vec2i p) { return f.sample(p); });
-        MESSAGE("town baseline: source (" << source.x << "," << source.y << "), " << kUpdates
-                                          << " updates: reached " << 100.0 * reached / reachable
-                                          << "%, climb " << 100.0 * c.success << "%, stretch " << c.stretch
-                                          << ", frozen " << c.frozen);
-        CHECK(reachable > 0);
     }
 
 #endif
