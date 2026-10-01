@@ -890,10 +890,10 @@
       "order": 657,
       "type": "chore",
       "title": "ScentWave: write down the int32 bound on the age line",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S4",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
