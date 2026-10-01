@@ -117,7 +117,7 @@
       "order": 90,
       "type": "design",
       "title": "Weighted-draw movement for the Dead with aggregates and company pull",
-      "status": "Pending",
+      "status": "AwaitingUser",
       "severity": "S2",
       "effort": "L",
       "owner": "architect",
@@ -142,6 +142,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "D-037 (2026-10-01): this is the first scale-up. Bake every term that reads only the last update (scent, aggregate, company, footing, repellent) into a per-cell desire field of eight weights in the dense pass; per decision only the unit's own terms remain. See research/parallel-and-gpu.md section 6."
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "D-038"
         }
       ],
       "references": [
