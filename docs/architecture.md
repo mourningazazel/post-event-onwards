@@ -53,6 +53,11 @@ max over offers and independent of order; that makes the **min-plus patch** exac
 `speculate()` runs the update with no deposit and `commit()` adds the player's with
 `patch_deposit`. `strongest_neighbour` keeps ScentField's contract and is still the whole AI.
 `ScentField` (diffusion) stays in the tree, unused by World, until PEO-030 is accepted.
+Since PEO-078 a round is a **pull** between two buffers over active 128x8 tiles (those that
+changed last round and their neighbours); a tile nobody pulls holds the same values in both, and
+the branch-free row kernel vectorises (NEON, or an AVX2 clone on x86-64). The World's and the
+Speculation's waves are partners that swap in `finish_from`, so a warm `speculate` syncs only the
+tiles either changed instead of copying the field.
 
 Where it is going (`docs/design/scent-mobs.md`): wind outdoors (PEO-048), z-level routes
 (PEO-049), a reach radius round the player with sealed buildings skipped (PEO-047), rot and

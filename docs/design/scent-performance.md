@@ -91,6 +91,26 @@ it: 96 / 229 / 294), of which the wave's copy and update is 86 us (the float swe
 commit 0-3 us (was 269-280). On the town fixture a standing source in the deepest office reaches all
 969 cells within 60 route-cells and climbs from 100% (diffusion: 14.5% reached, 15.4% climbed).
 
+## The dense pull (PEO-078)
+
+`ScentWave::update` now pulls active 128x8 tiles between two buffers; it is bit-identical to the
+push (a reference copy of it runs beside the field in the tests, compared on every update).
+Builder's M1 Air, `-O3`, pinned to a performance core, median (p95) of 40 after warm-up.
+
+| case | before (push) | after (pull) |
+|---|---|---|
+| scent update alone, saturated 512x512, 6 emitters per 1000 tiles | 4,756 (4,765) us | 227 (229) us |
+| scent update alone, saturated 512x512, 20 emitters per 1000 tiles | 4,639 (4,647) us | 227 (229) us |
+| speculate, 200x120, 5000 Dead, no emitters | 243 (274) us | 189 (203) us |
+| speculate, 200x120, 5000 Dead, 6 emitters | 1,007 (1,030) us | 444 (449) us |
+| speculate, 512x512, 50,000 Dead, 6 emitters | 11,082 (11,159) us | 4,608 (4,659) us |
+| speculate, 512x512, 50,000 Dead, 20 emitters | 11,142 (11,223) us | 4,470 (4,496) us |
+| speculate, 2048x2048, warm (no Dead) | 2,941 us cold copy | 251 us (6 tiles synced) |
+
+Commit is unchanged at 1-5 us. What is left of the 512x512 speculate is the Dead's run-ahead
+(PEO-060), not the scent. Before the kernel's loads were made unconditional GCC left it scalar
+(865 us, 5.5x); with them it vectorises with NEON.
+
 ## The direct solve
 
 *Superseded by D-024: the geodesic field above replaced diffusion and the IIR far layer.*
