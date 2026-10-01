@@ -824,9 +824,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/app/main.cpp"
       ],
@@ -840,9 +846,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/core/include/peo/core/scent.hpp"
       ],
@@ -856,9 +868,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "src/core/include/peo/core/scent_wave.hpp"
       ],
@@ -981,10 +999,16 @@
       "title": "Pull kernel portability and Speculation ownership: AVX2 on MSVC, no target_clones on Darwin, foreign Speculation cold-copies",
       "status": "Pending",
       "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
+      "effort": "M",
+      "owner": "builder",
       "created": "2026-10-01",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "docs/production/briefs/PEO-078.md"
       ],
