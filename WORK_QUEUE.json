@@ -85,10 +85,10 @@
       "order": 90,
       "type": "design",
       "title": "Weighted-draw movement for the Dead with aggregates and company pull",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "notes": [
         {
@@ -115,6 +115,16 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "D-038"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "D-038 answered: B"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "briefed per D-038 B; after PEO-080"
         }
       ],
       "references": [
