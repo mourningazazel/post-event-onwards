@@ -11,6 +11,9 @@ namespace peo::core {
 namespace {
 /// Mixed into the stage seed so the horde's placement stream differs from the map's.
 constexpr Seed kHordeSeedSalt = 0xABCDULL;
+/// And so the wind's two draws come from a stream of their own: drawing them changes
+/// nothing else, so a calm world is the world it was before wind (PEO-048).
+constexpr Seed kWindSeedSalt = 0x5EEDULL;
 /// Range of the spawn draw: updates between a spawned Dead's steps. Stored in
 /// seconds as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
@@ -101,6 +104,10 @@ void World::load_stage(std::uint32_t index) {
     stage_ = generate_stage(spec);
     scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
     scent_.set_token(ScentWave::new_token());
+    Rng wind_rng(stage_seed(seed_, index) ^ kWindSeedSalt);
+    wind_.toward_degrees = wind_rng.range(0, kDegreesPerTurn - 1);
+    wind_.intensity = wind_rng.range(0, std::clamp(params_.wind_max, 0, kMaxWindStep));
+    scent_.set_wind(wind_);
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
@@ -193,7 +200,7 @@ void World::deposit_log(ScentWave& field) const noexcept {
 
 void World::run_update() {
     deposit_log(scent_);
-    scent_.update(stage_.blocked);
+    scent_.update(stage_.blocked, &stage_.openness);
     log_.clear();
     ++updates_;
 }
@@ -202,7 +209,8 @@ void World::run_update() {
 // after it, which ScentWave makes bit-identical to depositing first (PEO-030).
 void World::finish_from(Speculation& spec) {
     for (const Occupancy& o : log_) {
-        spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.seconds), stage_.blocked);
+        spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.seconds), stage_.blocked,
+                                 &stage_.openness);
     }
     std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffers to reuse
     spec.update = kSpentUpdate;
@@ -287,7 +295,7 @@ void World::speculate(Speculation& out) const {
     out.synced_tiles = out.scent.sync_from(scent_);
     out.update = updates_;
     out.stage_index = stage_index_;
-    out.scent.update(stage_.blocked);
+    out.scent.update(stage_.blocked, &stage_.openness);
 
     // The Dead's seconds up to and including the boundary read only scent_, which
     // cannot change before it, so they are fixed now. A second poll in the window

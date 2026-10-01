@@ -32,17 +32,25 @@ void flow_row_plain(const std::int32_t* a, std::uint8_t* flow, const std::uint8_
     flow_row(a, flow, open, diag, w, begin, end);
 }
 
+bool pull_row_wind_plain(const std::int32_t* a, std::int32_t* b, const std::uint8_t* open,
+                         const std::uint8_t* diag, const std::uint8_t* openness, std::ptrdiff_t w,
+                         std::ptrdiff_t begin, std::ptrdiff_t end, std::int32_t cost, std::int32_t line,
+                         const WindRound* wind) noexcept {
+    return pull_row_wind(a, b, open, diag, openness, w, begin, end, cost, line, wind);
+}
+
 struct RowKernels {
     decltype(&pull_row_plain) pull;
     decltype(&flow_row_plain) flow;
+    decltype(&pull_row_wind_plain) pull_wind;
 };
 /// Indexed by WaveKernel.
 constexpr std::array<RowKernels, 2> kRowKernels{{
-    {pull_row_plain, flow_row_plain},
+    {pull_row_plain, flow_row_plain, pull_row_wind_plain},
 #if PEO_WAVE_HAS_AVX2
-    {pull_row_avx2, flow_row_avx2},
+    {pull_row_avx2, flow_row_avx2, pull_row_wind_avx2},
 #else
-    {pull_row_plain, flow_row_plain}, // never chosen: kernel_available(Avx2) is false here
+    {pull_row_plain, flow_row_plain, pull_row_wind_plain}, // never chosen: no AVX2 here
 #endif
 }};
 
@@ -87,7 +95,13 @@ ScentWave::ScentWave(int width, int height, WaveParams params)
     buf_[1].assign(cells, kUnreached);
     open_.assign(cells, 0);
     diag_.assign(cells, 0);
+    openness_.assign(cells, kOpennessOutdoors);
     flow_.assign(cells, kNoFlow);
+    carry_.assign(tiles, 0);
+    const auto side =
+        static_cast<std::size_t>(2 * (std::max(params.speed, 1) + std::max(params.gust, 0)) + 1);
+    patch_buf_[0].assign(side * side, kUnreached);
+    patch_buf_[1].assign(side * side, kUnreached);
     stale_mark_.assign(tiles, 0);
     stale_.reserve(tiles);
     changed_.assign(tiles, 0);
@@ -101,10 +115,11 @@ bool ScentWave::open_at(int x, int y) const noexcept {
     return x >= 0 && y >= 0 && x < width_ && y < height_ && open_[index({x, y})] != 0;
 }
 
-void ScentWave::build_masks(const Grid<bool>& blocked) {
+void ScentWave::build_masks(const Grid<bool>& blocked, const Grid<std::uint8_t>* openness) {
     for (int y = 0; y < height_; ++y) {
         for (int x = 0; x < width_; ++x) {
             open_[index({x, y})] = blocked.at(x, y) ? 0 : 1;
+            openness_[index({x, y})] = openness != nullptr ? openness->at(x, y) : kOpennessOutdoors;
         }
     }
     for (int y = 0; y < height_; ++y) {
@@ -197,7 +212,61 @@ bool ScentWave::pull_border_cell(int x, int y) {
     return v != old;
 }
 
-bool ScentWave::pull_tile(std::size_t tile) {
+namespace {
+/// The kernel's per-offset wind for one round (PEO-048): the step into the receiver
+/// from its neighbour k runs in direction k + 4.
+WindRound wind_round(const WindTable& wind, bool gust) noexcept {
+    WindRound r{};
+    for (std::size_t k = 0; k < kDirections; ++k) {
+        const std::size_t travel = (k + kDirections / 2) % kDirections;
+        const std::int32_t step = wind.step[travel];
+        r.magnitude[k] = step < 0 ? -step : step;
+        r.sign[k] = step > 0 ? 1 : (step < 0 ? -1 : 0);
+        r.allowed[k] = gust ? static_cast<std::int32_t>((wind.downwind >> travel) & 1U) : 1;
+    }
+    r.need_open = gust ? 1 : 0;
+    return r;
+}
+} // namespace
+
+template <typename Value> std::int32_t ScentWave::wind_offer(int x, int y, Round kind, Value value) const {
+    const std::size_t i = index({x, y});
+    const bool gust = kind == Round::Gust;
+    std::int32_t best = kUnreached;
+    for (std::size_t d = 0; d < kDirections; ++d) {
+        const Vec2i n = Vec2i{x, y} + kNeighbours8[d];
+        if (n.x < 0 || n.y < 0 || n.x >= width_ || n.y >= height_ ||
+            (d % 2 == 1 && (diag_[i] & (1U << (d / 2))) == 0)) {
+            continue;
+        }
+        const std::size_t travel = (d + kDirections / 2) % kDirections;
+        const std::int32_t op = openness_[index(n)];
+        if (gust && (((wind_.downwind >> travel) & 1U) == 0 || op == 0)) {
+            continue;
+        }
+        const std::int32_t step = wind_.step[travel];
+        const std::int32_t sign = step > 0 ? 1 : (step < 0 ? -1 : 0);
+        best = std::max(best, value(n) - wind_cost(params_.distance_cost, sign, step * sign, op));
+    }
+    return best;
+}
+
+bool ScentWave::pull_border_cell_wind(int x, int y, Round kind) {
+    const std::vector<std::int32_t>& a = buf_[cur_];
+    std::vector<std::int32_t>& b = buf_[cur_ ^ 1U];
+    const std::size_t i = index({x, y});
+    const std::int32_t old = a[i];
+    if (open_[i] == 0) {
+        b[i] = old;
+        return false;
+    }
+    const std::int32_t best = wind_offer(x, y, kind, [&](Vec2i n) { return a[index(n)]; });
+    const std::int32_t v = (best > age_line() && best > old) ? best : old;
+    b[i] = v;
+    return v != old;
+}
+
+bool ScentWave::pull_tile(std::size_t tile, Round kind) {
     const int x0 = static_cast<int>(tile % static_cast<std::size_t>(tiles_x_)) * kWaveTileWidth;
     const int y0 = static_cast<int>(tile / static_cast<std::size_t>(tiles_x_)) * kWaveTileHeight;
     const int x1 = std::min(x0 + kWaveTileWidth, width_);
@@ -205,37 +274,44 @@ bool ScentWave::pull_tile(std::size_t tile) {
     const std::int32_t* a = buf_[cur_].data();
     std::int32_t* b = buf_[cur_ ^ 1U].data();
     const auto w = static_cast<std::ptrdiff_t>(width_);
+    const RowKernels& k = kRowKernels[static_cast<std::size_t>(kernel_)];
+    const WindRound wind = wind_round(wind_, kind == Round::Gust);
+    const auto border = [&](int x, int y) {
+        return windy_ ? pull_border_cell_wind(x, y, kind) : pull_border_cell(x, y);
+    };
     bool changed = false;
     for (int y = y0; y < y1; ++y) {
         if (y == 0 || y == height_ - 1) {
             for (int x = x0; x < x1; ++x) {
-                changed = pull_border_cell(x, y) || changed;
+                changed = border(x, y) || changed;
             }
             continue;
         }
         const int in0 = std::max(x0, 1);
         const int in1 = std::min(x1, width_ - 1);
         if (x0 == 0) {
-            changed = pull_border_cell(0, y) || changed;
+            changed = border(0, y) || changed;
         }
         if (in0 < in1) {
-            changed = kRowKernels[static_cast<std::size_t>(kernel_)].pull(
-                          a, b, open_.data(), diag_.data(), w, y * w + in0, y * w + in1,
-                          params_.distance_cost, age_line()) ||
-                      changed;
+            const bool row =
+                windy_ ? k.pull_wind(a, b, open_.data(), diag_.data(), openness_.data(), w, y * w + in0,
+                                     y * w + in1, params_.distance_cost, age_line(), &wind)
+                       : k.pull(a, b, open_.data(), diag_.data(), w, y * w + in0, y * w + in1,
+                                params_.distance_cost, age_line());
+            changed = row || changed;
         }
         if (x1 == width_ && width_ > 1) {
-            changed = pull_border_cell(width_ - 1, y) || changed;
+            changed = border(width_ - 1, y) || changed;
         }
     }
     return changed;
 }
 
-void ScentWave::round() {
+void ScentWave::round(Round kind) {
     expand_active();
     std::fill(changed_.begin(), changed_.end(), 0);
     for (const std::uint32_t t : active_) {
-        if (pull_tile(t)) {
+        if (pull_tile(t, kind)) {
             touched(t);
             if (stale_mark_[t] == 0) { // its bytes are rewritten once the rounds are done
                 stale_mark_[t] = 1;
@@ -316,15 +392,29 @@ std::array<int, 4> ScentWave::flow_reach(std::size_t tile) const noexcept {
             std::min(y0 + kWaveTileHeight + 1, height_)};
 }
 
-void ScentWave::update(const Grid<bool>& blocked) {
+void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* openness) {
     const bool first = !masks_built_;
     if (first) {
-        build_masks(blocked);
+        build_masks(blocked, openness);
     }
     assert(updates_ < max_wave_updates(params_)); // the age line stays in int32 (PEO-077)
     ++updates_;
     for (int r = 0; r < params_.speed; ++r) {
-        round();
+        round(Round::Full);
+    }
+    if (windy_ && params_.gust > 0 && wind_.downwind != 0) {
+        // The gust rounds take only downwind offers, so a cell reached in the last full
+        // round or a gust round has not yet offered the other ways: its tile stays
+        // active into the next update. Every round then takes every offer it allows,
+        // whatever the tiles, which is what makes patch_deposit exact under wind.
+        carry_ = changed_; // same size: no allocation
+        for (int g = 0; g < params_.gust; ++g) {
+            round(Round::Gust);
+            for (std::size_t t = 0; t < carry_.size(); ++t) {
+                carry_[t] = static_cast<std::uint8_t>(carry_[t] | changed_[t]);
+            }
+        }
+        changed_ = carry_;
     }
     if (first) { // bytes written before the masks existed saw no open neighbour
         refresh_flow(0, 0, width_, height_);
@@ -340,14 +430,18 @@ void ScentWave::update(const Grid<bool>& blocked) {
 }
 
 void ScentWave::patch_deposit(const ScentWave& before, Vec2i at, std::int32_t strength,
-                              const Grid<bool>& blocked) {
+                              const Grid<bool>& blocked, const Grid<std::uint8_t>* openness) {
     if (!masks_built_) {
-        build_masks(blocked);
+        build_masks(blocked, openness);
     }
     // As deposit() would have made it, before the update: only a deposit that beat
     // the cell's value then took part in the update's round.
     const std::int32_t v = before.age_line() + strength;
     if (v <= before.values()[index(at)]) {
+        return;
+    }
+    if (windy_) {
+        patch_with_wind(at, v);
         return;
     }
     std::vector<std::int32_t>& cur = buf_[cur_];
@@ -375,6 +469,60 @@ void ScentWave::patch_deposit(const ScentWave& before, Vec2i at, std::int32_t st
         }
     }
     refresh_flow(at.x - kPatchReach, at.y - kPatchReach, at.x + kPatchReach + 1, at.y + kPatchReach + 1);
+}
+
+void ScentWave::patch_with_wind(Vec2i at, std::int32_t v) {
+    // Every round is a max over offers from round-start values, so the update is
+    // max-linear: the field with the deposit is the speculated field maxed with the
+    // deposit run alone through the same rounds. Alone, it moves one cell a round, so
+    // it stays inside a block of reach speed + gust round the deposit.
+    const int gusts = params_.gust > 0 && wind_.downwind != 0 ? params_.gust : 0;
+    const int reach = params_.speed + gusts;
+    const int x0 = std::max(at.x - reach, 0);
+    const int y0 = std::max(at.y - reach, 0);
+    const int x1 = std::min(at.x + reach + 1, width_);
+    const int y1 = std::min(at.y + reach + 1, height_);
+    const int bw = x1 - x0;
+    const auto block = [&](Vec2i c) {
+        return static_cast<std::size_t>(c.y - y0) * static_cast<std::size_t>(bw) +
+               static_cast<std::size_t>(c.x - x0);
+    };
+    std::vector<std::int32_t>* p = &patch_buf_[0];
+    std::vector<std::int32_t>* q = &patch_buf_[1];
+    std::fill(p->begin(), p->end(), kUnreached);
+    (*p)[block(at)] = v;
+    const auto value = [&](Vec2i n) {
+        return n.x >= x0 && n.y >= y0 && n.x < x1 && n.y < y1 ? (*p)[block(n)] : kUnreached;
+    };
+    for (int r = 0; r < reach; ++r) {
+        const Round kind = r < params_.speed ? Round::Full : Round::Gust;
+        for (int y = y0; y < y1; ++y) {
+            for (int x = x0; x < x1; ++x) {
+                const std::size_t bi = block({x, y});
+                const std::int32_t old = (*p)[bi];
+                const std::int32_t best =
+                    open_[index({x, y})] != 0 ? wind_offer(x, y, kind, value) : kUnreached;
+                (*q)[bi] = (best > age_line() && best > old) ? best : old;
+            }
+        }
+        std::swap(p, q);
+    }
+    std::vector<std::int32_t>& cur = buf_[cur_];
+    for (int y = y0; y < y1; ++y) {
+        for (int x = x0; x < x1; ++x) {
+            const std::int32_t raised = (*p)[block({x, y})];
+            if (raised > cur[index({x, y})]) {
+                cur[index({x, y})] = raised;
+                touched(tile_of(x, y)); // the other buffer is behind here: pull it next round
+            }
+        }
+    }
+    refresh_flow(x0 - 1, y0 - 1, x1 + 1, y1 + 1);
+}
+
+void ScentWave::set_wind(Wind wind) noexcept {
+    wind_ = wind_table(wind, params_.wind_loss);
+    windy_ = !wind_.calm();
 }
 
 bool ScentWave::kernel_available(WaveKernel kernel) noexcept {
@@ -411,8 +559,11 @@ std::size_t ScentWave::sync_from(const ScentWave& source) {
     if (masks_arrived) {      // the same stage's masks, built on one side only
         open_ = source.open_; // same size: no allocation
         diag_ = source.diag_;
+        openness_ = source.openness_;
         masks_built_ = true;
     }
+    wind_ = source.wind_;
+    windy_ = source.windy_;
     // Tiles either side wrote since this wave last matched: copy those into both of this
     // wave's buffers. Everywhere else the two waves, and this wave's buffers, are equal.
     std::fill(mark_.begin(), mark_.end(), 0);

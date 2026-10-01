@@ -44,6 +44,12 @@ Stage generate_stage(const StageSpec& spec) {
     stage.exit = Vec2i{spec.width - 2, rng.range(1, spec.height - 2)};
     stage.blocked.at(stage.entry) = false;
     stage.blocked.at(stage.exit) = false;
+    stage.openness = Grid<std::uint8_t>(spec.width, spec.height, kOpennessIndoors);
+    for (int y = 0; y < spec.height; ++y) {
+        for (int x = 0; x < spec.width; ++x) {
+            stage.openness.at(x, y) = stage.blocked.at(x, y) ? kOpennessIndoors : kOpennessOutdoors;
+        }
+    }
     return stage;
 }
 

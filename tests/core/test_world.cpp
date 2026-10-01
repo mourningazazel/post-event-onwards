@@ -742,6 +742,64 @@ TEST_SUITE("world") {
         }
     }
 
+    TEST_CASE("each stage draws its wind from its seed") {
+        // PEO-048: the same seed gives the same wind; wind_max 0 (the default) is calm,
+        // and the wave gets the stage's wind.
+        WorldParams windy = small_world();
+        windy.wind_max = kWindFull;
+        const World a(kSeed, windy);
+        const World b(kSeed, windy);
+        CHECK(a.wind() == b.wind());
+        CHECK(a.wind().intensity >= 0);
+        CHECK(a.wind().intensity <= kWindFull);
+        CHECK(a.wind().toward_degrees >= 0);
+        CHECK(a.wind().toward_degrees < kDegreesPerTurn);
+        CHECK(a.scent().wind().step == wind_table(a.wind(), windy.scent.wind_loss).step);
+        const World calm(kSeed, small_world());
+        CHECK(calm.wind().intensity == 0);
+        CHECK(calm.scent().wind().calm());
+        // The wind's draws are a stream of their own: the stage and horde do not move.
+        CHECK(a.stage().entry == calm.stage().entry);
+        CHECK(a.horde().size() == calm.horde().size());
+        CHECK(a.horde().front().pos == calm.horde().front().pos);
+    }
+
+    TEST_CASE("with wind and gusts commit(speculate()) is bit-identical to step()" *
+              doctest::test_suite("scenario: world")) {
+        // PEO-048: patch_deposit stays exact under wind and gusts, so commit keeps using
+        // the speculation (D-021) and still equals step() after every action, over
+        // seeds that draw different winds.
+        constexpr int kSeeds = 10;
+        constexpr int kActions = 40;
+        constexpr int kWaitOneIn = 5;
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
+        params.wind_max = kWindFull;
+        params.scent.gust = 2;
+        int windy = 0;
+        for (int s = 0; s < kSeeds; ++s) {
+            const Seed seed = kSeed + static_cast<Seed>(s);
+            World a(seed, params);
+            World b(seed, params);
+            windy += a.wind().intensity > 0 ? 1 : 0;
+            Speculation spec;
+            Rng pick(seed);
+            for (int i = 0; i < kActions; ++i) {
+                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Action act = pick.range(1, kWaitOneIn) == 1
+                                       ? Action::wait(secs)
+                                       : Action::step(kNeighbours4[pick.range(0, 3)], secs);
+                b.speculate(spec);
+                a.step(act);
+                b.commit(spec, act);
+                if (!World::equivalent(a, b)) {
+                    FAIL("diverged at action " << i << " seed " << seed);
+                }
+            }
+        }
+        CHECK(windy > 0);
+    }
+
     TEST_CASE("a warm speculate copies only the tiles that changed") {
         // PEO-078: on a 384x128 stage (48 tiles of 128x8) the first speculate copies the
         // field; once the World and the Speculation have swapped waves, a speculate

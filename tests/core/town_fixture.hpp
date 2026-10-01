@@ -9,9 +9,11 @@
 #include "peo/core/grid.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/types.hpp"
+#include "peo/core/wind.hpp"
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <deque>
 #include <vector>
 
@@ -112,6 +114,26 @@ inline Grid<bool> make_town(Rng& rng, bool cramped) {
         }
     }
     return b;
+}
+
+/// The town's openness to the wind (PEO-048): every building's footprint, walls and all,
+/// is indoors; streets and the open map are outdoors. Buildings sit on the fixed pitch,
+/// so this needs no draws and matches make_town for any seed.
+inline Grid<std::uint8_t> town_openness(bool cramped) {
+    Grid<std::uint8_t> o(kTownWidth, kTownHeight, core::kOpennessOutdoors);
+    if (!cramped) {
+        return o;
+    }
+    for (int by = kStreetWidth; by + kBlockPitchY - kStreetWidth <= kTownHeight - 1; by += kBlockPitchY) {
+        for (int bx = kStreetWidth; bx + kBlockPitchX - kStreetWidth <= kTownWidth - 1; bx += kBlockPitchX) {
+            for (int y = by; y <= by + kBlockPitchY - kStreetWidth - 1; ++y) {
+                for (int x = bx; x <= bx + kBlockPitchX - kStreetWidth - 1; ++x) {
+                    o.at(x, y) = core::kOpennessIndoors;
+                }
+            }
+        }
+    }
+    return o;
 }
 
 /// Whether one step from `from` by `d` is allowed: onto an open cell, and for a

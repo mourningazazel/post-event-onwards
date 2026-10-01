@@ -2,6 +2,7 @@
 
 #include "peo/core/grid.hpp"
 #include "peo/core/types.hpp"
+#include "peo/core/wind.hpp"
 
 #include <array>
 #include <cstddef>
@@ -39,7 +40,14 @@ struct WaveParams {
     std::int32_t distance_cost = kWaveDistanceCost;
     std::int32_t age_cost = kWaveAgeCost;
     int speed = 1;
+    /// Rounds after the `speed` ones in which scent runs only downwind, from outdoor
+    /// cells (PEO-048): the front outruns a walker with the wind behind them.
+    int gust = 0;
+    /// Scent lost upward outdoors in wind: a step's cost rises by this x the wind's
+    /// intensity, scaled by openness (PEO-048).
+    std::int32_t wind_loss = 0;
 };
+static_assert(kWindFull == kWaveDistanceCost, "a full wind makes a straight downwind step cost the floor");
 
 /// Stored value of a cell nothing has reached: far below any age line, and far enough
 /// above the type's minimum that subtracting a distance cost cannot overflow.
@@ -98,15 +106,26 @@ public:
 
     /// One update: the age line moves on, then `speed` rounds carry every changed
     /// cell's value, less distance_cost, to its open neighbours (no corner cutting),
-    /// wherever that improves them and stays above the age line.
-    void update(const Grid<bool>& blocked);
+    /// wherever that improves them and stays above the age line. Under a wind
+    /// (set_wind) each step's cost moves with the wind, scaled by the sending cell's
+    /// openness, and `gust` more rounds follow that carry scent only downwind and only
+    /// from outdoor cells. `openness` (default: all outdoors) is learned with `blocked`.
+    void update(const Grid<bool>& blocked, const Grid<std::uint8_t>* openness = nullptr);
 
     /// Add a deposit that belonged before the update this wave has just run (the
     /// World speculates the update with no deposit and patches the player's in at
     /// commit, PEO-030). `before` is the wave before that update. Bit-exact against
     /// deposit() then update() for speed 1: a round is a max over offers made from
     /// round-start values, so the deposits' offers can be added after the others.
-    void patch_deposit(const ScentWave& before, Vec2i at, std::int32_t strength, const Grid<bool>& blocked);
+    /// Under a wind, gust rounds and all, the deposit is run alone through the update's
+    /// rounds on a block round it and maxed in: exact for any speed (PEO-048).
+    void patch_deposit(const ScentWave& before, Vec2i at, std::int32_t strength, const Grid<bool>& blocked,
+                       const Grid<std::uint8_t>* openness = nullptr);
+
+    /// The stage's wind (PEO-048), for this wave's life. Calm (the default) keeps the
+    /// windless kernel, bit-identical to a wave that never had a wind.
+    void set_wind(Wind wind) noexcept;
+    [[nodiscard]] const WindTable& wind() const noexcept { return wind_; }
 
     /// Make this wave equal to `source` (values, age line and what changes next round).
     /// Partners (the same nonzero token, the same size: a wave and a copy of it, as the
@@ -171,7 +190,16 @@ private:
         return static_cast<std::size_t>(y / kWaveTileHeight) * static_cast<std::size_t>(tiles_x_) +
                static_cast<std::size_t>(x / kWaveTileWidth);
     }
-    void build_masks(const Grid<bool>& blocked);
+    /// A full round carries scent every way; a gust round only downwind (PEO-048).
+    enum class Round : std::uint8_t { Full, Gust };
+    void build_masks(const Grid<bool>& blocked, const Grid<std::uint8_t>* openness);
+    /// The best offer into (x, y) this round under the wind: the scalar form of the
+    /// windy kernel, for border cells and the patch block. `value(n)` reads a
+    /// neighbour's round-start value.
+    template <typename Value>
+    [[nodiscard]] std::int32_t wind_offer(int x, int y, Round kind, Value value) const;
+    [[nodiscard]] bool pull_border_cell_wind(int x, int y, Round kind);
+    void patch_with_wind(Vec2i at, std::int32_t v);
     /// A cell's value changed in the current buffer: its tile is pulled next round, and
     /// a partner learns of it.
     void touched(std::size_t tile) noexcept;
@@ -181,8 +209,8 @@ private:
     /// A tile and the one-cell ring round it: the bytes a change inside the tile can move.
     [[nodiscard]] std::array<int, 4> flow_reach(std::size_t tile) const noexcept;
     void expand_active();
-    void round();
-    [[nodiscard]] bool pull_tile(std::size_t tile);
+    void round(Round kind);
+    [[nodiscard]] bool pull_tile(std::size_t tile, Round kind);
     [[nodiscard]] bool pull_border_cell(int x, int y);
     [[nodiscard]] bool open_at(int x, int y) const noexcept;
 
@@ -199,7 +227,18 @@ private:
     /// mask of the diagonals that may offer into it (both cells beside the step open).
     std::vector<std::uint8_t> open_;
     std::vector<std::uint8_t> diag_;
+    /// Per cell: how far the wind reaches it, kOpennessIndoors to kOpennessOutdoors.
+    std::vector<std::uint8_t> openness_;
     bool masks_built_ = false;
+    /// The wind's table, and whether it does anything (else the windless kernel runs).
+    WindTable wind_{};
+    bool windy_ = false;
+    /// Per tile, during an update with gust rounds: changed in the last full round or
+    /// any gust round since. Those cells have offered only downwind, so their tiles
+    /// stay active into the next update's first round.
+    std::vector<std::uint8_t> carry_;
+    /// The patch block's two buffers: (2 x (speed + gust) + 1)^2 cells, sized once.
+    std::array<std::vector<std::int32_t>, 2> patch_buf_;
     /// Per cell: the kNeighbours8 index flow_target() steps to, or none (PEO-079). Exact
     /// for the current values whenever update() is not running: deposit() and
     /// patch_deposit() rewrite the bytes round what they raise, update() rewrites the

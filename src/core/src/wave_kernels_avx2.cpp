@@ -28,6 +28,14 @@ PEO_WAVE_AVX2_TARGET void flow_row_avx2(const std::int32_t* a, std::uint8_t* flo
     flow_row(a, flow, open, diag, w, begin, end);
 }
 
+PEO_WAVE_AVX2_TARGET bool pull_row_wind_avx2(const std::int32_t* a, std::int32_t* b, const std::uint8_t* open,
+                                             const std::uint8_t* diag, const std::uint8_t* openness,
+                                             std::ptrdiff_t w, std::ptrdiff_t begin, std::ptrdiff_t end,
+                                             std::int32_t cost, std::int32_t line,
+                                             const WindRound* wind) noexcept {
+    return pull_row_wind(a, b, open, diag, openness, w, begin, end, cost, line, wind);
+}
+
 } // namespace peo::core::wave_kernel
 
 #endif

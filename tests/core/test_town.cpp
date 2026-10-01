@@ -145,6 +145,20 @@ TEST_SUITE("scenario: town") {
         CHECK(longest_corridor(make_town(rng, false)) == 0); // the open map has none
     }
 
+    TEST_CASE("the town's buildings are indoors, its streets outdoors") {
+        // PEO-048: every cell enclosed by a building's outer wall is indoors; the top
+        // street and the left street are outdoors.
+        const Grid<bool> b = town();
+        const Grid<std::uint8_t> o = town_openness(true);
+        CHECK(o.at(kTopStreet) == kOpennessOutdoors);
+        CHECK(o.at(1, kTownHeight / 2) == kOpennessOutdoors);
+        const Vec2i inside = deepest_office_cell(b);
+        CHECK(o.at(inside) == kOpennessIndoors);
+        CHECK(o.at(kStreetWidth, kStreetWidth) == kOpennessIndoors); // a building's corner wall
+        const Grid<std::uint8_t> open = town_openness(false);
+        CHECK(std::all_of(open.begin(), open.end(), [](std::uint8_t v) { return v == kOpennessOutdoors; }));
+    }
+
     TEST_CASE("walk_path follows a shortest route") {
         const Grid<bool> b = town();
         const Vec2i to = kTopStreet;

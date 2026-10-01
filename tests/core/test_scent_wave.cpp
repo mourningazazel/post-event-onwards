@@ -4,6 +4,7 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <utility>
@@ -313,7 +314,8 @@ TEST_SUITE("scent_wave") {
         // same deposits, one on each kernel; after every update their values and every
         // direction byte (read through flow_target) must agree. The stage spans several
         // tiles each way and the run outlasts the reach, so the front, the saturated
-        // field and the aged-out cells all go through both copies.
+        // field and the aged-out cells all go through both copies; then again under a
+        // wind with gusts and some indoor cells, for the windy kernel (PEO-048).
         constexpr int kW = 3 * kWaveTileWidth + 9;
         constexpr int kH = 5 * kWaveTileHeight + 3;
         constexpr int kWallOneIn = 7;
@@ -332,11 +334,12 @@ TEST_SUITE("scent_wave") {
                 emitters.push_back(c);
             }
         }
-        ScentWave plain(kW, kH);
-        ScentWave avx2(kW, kH);
-        plain.use_kernel(WaveKernel::Plain);
-        if (has_avx2) {
-            avx2.use_kernel(WaveKernel::Avx2);
+        Grid<std::uint8_t> openness(kW, kH, kOpennessOutdoors);
+        for (int y = 0; y < kH; ++y) {
+            for (int x = 0; x < kW / 3; ++x) {
+                openness.at(x, y) =
+                    static_cast<std::uint8_t>(x % 2 == 0 ? kOpennessIndoors : kOpennessOutdoors / 3);
+            }
         }
         const auto differ = [&](const auto& same) {
             int n = 0;
@@ -347,25 +350,41 @@ TEST_SUITE("scent_wave") {
             }
             return n;
         };
-        for (int u = 0; u < kUpdates; ++u) {
-            // Emitters fall silent one by one, so cells also age out under both kernels.
-            for (std::size_t e = static_cast<std::size_t>(u) % emitters.size(); e < emitters.size(); ++e) {
-                plain.deposit(emitters[e], plain.params().strength);
-                avx2.deposit(emitters[e], avx2.params().strength);
+        for (const bool windy : {false, true}) {
+            CAPTURE(windy);
+            const WaveParams params{.gust = windy ? 2 : 0};
+            ScentWave plain(kW, kH, params);
+            ScentWave avx2(kW, kH, params);
+            plain.use_kernel(WaveKernel::Plain);
+            if (has_avx2) {
+                avx2.use_kernel(WaveKernel::Avx2);
             }
-            plain.update(b);
-            if (!has_avx2) {
-                continue;
+            if (windy) {
+                const Wind wind{.toward_degrees = 200, .intensity = kWindFull};
+                plain.set_wind(wind);
+                avx2.set_wind(wind);
             }
-            avx2.update(b);
-            CAPTURE(u);
-            REQUIRE(plain.values() == avx2.values());
-            REQUIRE(differ([&](Vec2i c) { return plain.flow_target(c) == avx2.flow_target(c); }) == 0);
+            for (int u = 0; u < kUpdates; ++u) {
+                // Emitters fall silent one by one, so cells also age out under both kernels.
+                for (std::size_t e = static_cast<std::size_t>(u) % emitters.size(); e < emitters.size();
+                     ++e) {
+                    plain.deposit(emitters[e], plain.params().strength);
+                    avx2.deposit(emitters[e], avx2.params().strength);
+                }
+                plain.update(b, &openness);
+                if (!has_avx2) {
+                    continue;
+                }
+                avx2.update(b, &openness);
+                CAPTURE(u);
+                REQUIRE(plain.values() == avx2.values());
+                REQUIRE(differ([&](Vec2i c) { return plain.flow_target(c) == avx2.flow_target(c); }) == 0);
+            }
+            // The plain half against the oracle, once, on the aged field.
+            CHECK(differ([&](Vec2i c) {
+                      return b.at(c) || plain.flow_target(c) == plain.strongest_neighbour(c, &b);
+                  }) == 0);
         }
-        // The plain half against the oracle, once, on the aged field.
-        CHECK(differ([&](Vec2i c) {
-                  return b.at(c) || plain.flow_target(c) == plain.strongest_neighbour(c, &b);
-              }) == 0);
     }
 
     TEST_CASE("flow_target equals strongest_neighbour on every open cell" *
@@ -442,4 +461,282 @@ TEST_SUITE("scent_wave") {
         }
     }
 #endif
+
+    // ---- PEO-048: wind -------------------------------------------------------------
+
+    TEST_CASE("the wind table in integers") {
+        CHECK(cos_degrees(0) == kTrigOne);
+        CHECK(cos_degrees(90) == 0);
+        CHECK(cos_degrees(180) == -kTrigOne);
+        CHECK(cos_degrees(270) == 0);
+        CHECK(cos_degrees(360) == kTrigOne);
+        CHECK(cos_degrees(-90) == 0);
+        CHECK(cos_degrees(60) == kTrigOne / 2);
+        // A full wind toward east: a step with any eastward progress is fully downwind
+        // (the review's probe), north and south untouched, westward fully upwind.
+        const WindTable east = wind_table({.toward_degrees = 0, .intensity = kWindFull}, 0);
+        constexpr std::array<std::int32_t, 8> kEast{0, kWindFull,  kWindFull,  kWindFull,
+                                                    0, -kWindFull, -kWindFull, -kWindFull};
+        CHECK(east.step == kEast);
+        CHECK(east.downwind == 0b0000'1110); // NE, E, SE
+        // Toward south-east (45 degrees, y down): diagonal progress is sqrt 2.
+        const WindTable se = wind_table({.toward_degrees = 45, .intensity = kWindFull}, 0);
+        CHECK(se.step[3] == 11); // SE: round(8 x 1.414)
+        CHECK(se.step[2] == 6);  // E: round(8 x 0.707)
+        CHECK(se.step[7] == -11);
+        // The upward loss comes off every direction.
+        const WindTable lossy = wind_table({.toward_degrees = 0, .intensity = kWindFull}, 1);
+        CHECK(lossy.step[2] == 0);
+        CHECK(lossy.step[0] == -kWindFull);
+        CHECK(lossy.downwind == east.downwind);
+        CHECK(wind_table({.toward_degrees = 123, .intensity = 0}, 3).calm());
+    }
+
+    TEST_CASE("a calm wind changes nothing") {
+        const Grid<bool> b = random_stage(150, 30, 7, true, 51);
+        ScentWave plain(150, 30);
+        ScentWave calm(150, 30, {.gust = 3});
+        calm.set_wind({.toward_degrees = 30, .intensity = 0});
+        for (int i = 0; i < 40; ++i) {
+            const Vec2i at{10 + i, 15};
+            if (!b.at(at)) {
+                plain.deposit(at, plain.params().strength);
+                calm.deposit(at, calm.params().strength);
+            }
+            plain.update(b);
+            calm.update(b);
+        }
+        CHECK(calm.values() == plain.values());
+    }
+
+    namespace {
+    /// An open stage with a border wall.
+    Grid<bool> open_stage(int w, int h) {
+        Grid<bool> b(w, h, false);
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                b.at(x, y) = x == 0 || y == 0 || x == w - 1 || y == h - 1;
+            }
+        }
+        return b;
+    }
+
+    struct Reach {
+        int ahead = 0;
+        int behind = 0;
+    };
+    /// The review's walker (probe 3): 200x120 open, the player walks east a cell an
+    /// update for 120 updates from x = 20 on row 60, a full wind toward east. Deposit,
+    /// update, then step, so "ahead" counts from a cell the walker has not yet stood
+    /// on. `indoors` puts the path inside a building: a corridor five cells wide along
+    /// the whole stage, walled both sides, openness 0 within.
+    Reach walk_east(int gust, bool indoors) {
+        constexpr int kW = 200;
+        constexpr int kH = 120;
+        constexpr int kRow = 60;
+        constexpr int kStartX = 20;
+        constexpr int kStopX = 190;
+        constexpr int kUpdates = 120;
+        constexpr int kHalfCorridor = 2;
+        Grid<bool> b = open_stage(kW, kH);
+        Grid<std::uint8_t> openness(kW, kH, kOpennessOutdoors);
+        for (int x = 1; indoors && x < kW - 1; ++x) {
+            b.at(x, kRow - kHalfCorridor - 1) = true;
+            b.at(x, kRow + kHalfCorridor + 1) = true;
+            for (int y = kRow - kHalfCorridor; y <= kRow + kHalfCorridor; ++y) {
+                openness.at(x, y) = kOpennessIndoors;
+            }
+        }
+        ScentWave w(kW, kH, {.gust = gust});
+        w.set_wind({.toward_degrees = 0, .intensity = kWindFull});
+        int px = kStartX;
+        for (int t = 0; t < kUpdates; ++t) {
+            w.deposit({px, kRow}, w.params().strength);
+            w.update(b, &openness);
+            px += px < kStopX ? 1 : 0;
+        }
+        Reach r;
+        while (px + r.ahead + 1 < kW && w.sample({px + r.ahead + 1, kRow}) > 0) {
+            ++r.ahead;
+        }
+        while (px - r.behind - 1 >= 0 && w.sample({px - r.behind - 1, kRow}) > 0) {
+            ++r.behind;
+        }
+        return r;
+    }
+    } // namespace
+
+    TEST_CASE("wind carries scent ahead of a walker only with gusts and only outdoors" *
+              doctest::test_suite("scenario: scent_wave")) {
+        // D-020 and the review's section 8.1: without gust rounds the front keeps pace
+        // with the walker; with two it runs well ahead; inside a building (walls, and
+        // openness 0) the wind does nothing. Behind, the trail is the walker's own
+        // deposits, so it reaches the same distance in all three. (An indoor band with no
+        // walls is not a building: scent leaves it sideways, rides the wind outside and
+        // comes back in ahead; the probe's push lost those offers.)
+        constexpr int kGust = 2;
+        constexpr int kAheadWithGust = 20; // the brief's floor; the probe measured 59
+        const Reach still = walk_east(0, false);
+        const Reach gusty = walk_east(kGust, false);
+        const Reach indoors = walk_east(kGust, true);
+        MESSAGE("ahead: no gust " << still.ahead << ", gust 2 " << gusty.ahead << ", indoors "
+                                  << indoors.ahead << "; behind " << still.behind << " / " << gusty.behind
+                                  << " / " << indoors.behind);
+        CHECK(still.ahead == 0);
+        CHECK(gusty.ahead >= kAheadWithGust);
+        CHECK(indoors.ahead == 0);
+        CHECK(gusty.behind == still.behind);
+        CHECK(indoors.behind == still.behind);
+    }
+
+    TEST_CASE("upwind reaches fewer cells than downwind" * doctest::test_suite("scenario: scent_wave")) {
+        constexpr int kW = 200;
+        constexpr int kH = 60;
+        constexpr Vec2i kSource{100, 30};
+        constexpr int kUpdates = 100;
+        const Grid<bool> b = open_stage(kW, kH);
+        for (const int gust : {0, 2}) {
+            ScentWave w(kW, kH, {.gust = gust});
+            w.set_wind({.toward_degrees = 0, .intensity = kWindFull});
+            for (int t = 0; t < kUpdates; ++t) {
+                w.deposit(kSource, w.params().strength);
+                w.update(b);
+            }
+            int down = 0;
+            int up = 0;
+            while (w.sample({kSource.x + down + 1, kSource.y}) > 0) {
+                ++down;
+            }
+            while (w.sample({kSource.x - up - 1, kSource.y}) > 0) {
+                ++up;
+            }
+            CAPTURE(gust);
+            MESSAGE("gust " << gust << ": downwind " << down << ", upwind " << up);
+            CHECK(up < down);
+        }
+    }
+
+    TEST_CASE("a windy field is still a climb to its source" * doctest::test_suite("scenario: scent_wave")) {
+        // Every reached cell got its value from a stronger neighbour (a step costs at
+        // least 1), so a strict strongest-neighbour walk from anywhere ends on the
+        // source: wind, gusts and indoor patches included.
+        constexpr int kW = 160;
+        constexpr int kH = 64;
+        constexpr int kWallOneIn = 6;
+        constexpr int kUpdates = 70;
+        constexpr int kClimbLimit = 400;
+        constexpr int kRoomSide = 12;
+        const Grid<bool> b = random_stage(kW, kH, kWallOneIn, true, 61);
+        Grid<std::uint8_t> openness(kW, kH, kOpennessOutdoors);
+        for (int y = 10; y < 10 + kRoomSide; ++y) { // an indoor patch and a half-open one
+            for (int x = 30; x < 30 + kRoomSide; ++x) {
+                openness.at(x, y) = kOpennessIndoors;
+                openness.at(x + 60, y + 30) = kOpennessOutdoors / 2;
+            }
+        }
+        Vec2i source{kW / 2, kH / 2};
+        while (b.at(source)) {
+            ++source.x;
+        }
+        ScentWave w(kW, kH, {.gust = 2, .wind_loss = 1});
+        w.set_wind({.toward_degrees = 30, .intensity = kWindFull});
+        for (int t = 0; t < kUpdates; ++t) {
+            w.deposit(source, w.params().strength);
+            w.update(b, &openness);
+        }
+        int reached = 0;
+        int lost = 0;
+        for (int y = 0; y < kH; ++y) {
+            for (int x = 0; x < kW; ++x) {
+                if (b.at(x, y) || w.sample({x, y}) == 0) {
+                    continue;
+                }
+                ++reached;
+                Vec2i p{x, y};
+                for (int s = 0; s < kClimbLimit; ++s) {
+                    const auto next = w.strongest_neighbour(p, &b);
+                    if (!next) {
+                        break;
+                    }
+                    p = *next;
+                }
+                lost += p == source ? 0 : 1;
+            }
+        }
+        MESSAGE("reached " << reached << " cells");
+        CHECK(reached > 0);
+        CHECK(lost == 0);
+    }
+
+    TEST_CASE("patch_deposit is exact under wind and gusts" * doctest::test_suite("scenario: scent_wave")) {
+        // PEO-048's oracle: on random walled stages with random openness, wind and gust
+        // 1-3, a deposit patched in after update() equals deposit() then update(), value
+        // for value and byte for byte, and both waves stay equal through more updates
+        // (so the patch also leaves the right tiles active).
+        constexpr int kW = 2 * kWaveTileWidth + 20;
+        constexpr int kH = 3 * kWaveTileHeight + 5;
+        constexpr int kWallOneIn = 7;
+        constexpr int kTrials = 12;
+        constexpr int kWarm = 12;
+        constexpr int kAfter = 4;
+        Rng rng(71);
+        const auto open_cell = [&](const Grid<bool>& b) {
+            Vec2i c{};
+            do {
+                c = {rng.range(0, kW - 1), rng.range(0, kH - 1)};
+            } while (b.at(c));
+            return c;
+        };
+        int windy = 0;
+        for (int trial = 0; trial < kTrials; ++trial) {
+            const Grid<bool> b =
+                random_stage(kW, kH, kWallOneIn, trial % 2 == 0, static_cast<Seed>(80 + trial));
+            Grid<std::uint8_t> openness(kW, kH, kOpennessOutdoors);
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    const int pick = rng.range(0, 9);
+                    openness.at(x, y) = pick == 0 ? kOpennessIndoors
+                                        : pick == 1
+                                            ? static_cast<std::uint8_t>(rng.range(1, kOpennessOutdoors - 1))
+                                            : kOpennessOutdoors;
+                }
+            }
+            const WaveParams p{.gust = 1 + trial % 3, .wind_loss = trial % 4 == 3 ? 1 : 0};
+            const Wind wind{.toward_degrees = rng.range(0, kDegreesPerTurn - 1),
+                            .intensity = rng.range(1, kWindFull + 4)};
+            ScentWave truth(kW, kH, p);
+            truth.set_wind(wind);
+            windy += truth.wind().calm() ? 0 : 1;
+            for (int i = 0; i < kWarm; ++i) {
+                truth.deposit(open_cell(b), p.strength);
+                truth.update(b, &openness);
+            }
+            const ScentWave before = truth;
+            const Vec2i at = open_cell(b);
+            truth.deposit(at, p.strength);
+            truth.update(b, &openness);
+            ScentWave patched = before;
+            patched.update(b, &openness);
+            patched.patch_deposit(before, at, p.strength, b, &openness);
+            CAPTURE(trial);
+            REQUIRE(patched.values() == truth.values());
+            for (int i = 0; i < kAfter; ++i) {
+                const Vec2i next = open_cell(b);
+                truth.deposit(next, p.strength);
+                patched.deposit(next, p.strength);
+                truth.update(b, &openness);
+                patched.update(b, &openness);
+                CAPTURE(i);
+                REQUIRE(patched.values() == truth.values());
+            }
+            int differ = 0;
+            for (int y = 0; y < kH; ++y) {
+                for (int x = 0; x < kW; ++x) {
+                    differ += patched.flow_target({x, y}) == truth.flow_target({x, y}) ? 0 : 1;
+                }
+            }
+            CHECK(differ == 0);
+        }
+        CHECK(windy == kTrials);
+    }
 }

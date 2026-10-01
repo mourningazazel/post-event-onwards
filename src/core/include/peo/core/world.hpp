@@ -32,6 +32,10 @@ struct WorldParams {
     Seconds update_period = kUpdatePeriodSeconds;
     /// Game seconds in one cycle of the Dead's slots (D-031).
     Seconds dead_cycle = kDeadCycleSeconds;
+    /// The strongest wind a stage can draw (PEO-048): each stage blows its own way at an
+    /// intensity in [0, wind_max], from its seed. 0, the default, is always calm, and
+    /// then nothing differs from a world without wind. Clamped to kMaxWindStep.
+    std::int32_t wind_max = 0;
 };
 
 /// Game seconds the player spent on one tile since the last update. The log of
@@ -144,6 +148,8 @@ public:
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
+    /// This stage's wind (PEO-048), drawn from its seed.
+    [[nodiscard]] const Wind& wind() const noexcept { return wind_; }
     [[nodiscard]] const ScentWave& scent() const noexcept { return scent_; }
     [[nodiscard]] const std::vector<Dead>& horde() const noexcept { return dead_.horde; }
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
@@ -183,6 +189,7 @@ private:
     WorldParams params_;
     std::uint32_t stage_index_ = 0;
     Stage stage_;
+    Wind wind_{};
     ScentWave scent_{1, 1};
     HordeState dead_;
     /// Mixed into the slot hashes: the stage's own seed.

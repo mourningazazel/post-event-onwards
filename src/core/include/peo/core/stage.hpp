@@ -2,6 +2,7 @@
 
 #include "peo/core/grid.hpp"
 #include "peo/core/types.hpp"
+#include "peo/core/wind.hpp"
 
 #include <cstdint>
 
@@ -29,6 +30,10 @@ struct Stage {
     StageSpec spec;
     /// true = wall. Border cells are always walls.
     Grid<bool> blocked;
+    /// How far the wind reaches each cell (D-020, PEO-048): kOpennessOutdoors on every
+    /// open cell of a generated stage today, kOpennessIndoors on walls; buildings mark
+    /// their insides indoors.
+    Grid<std::uint8_t> openness;
     Vec2i entry{};
     Vec2i exit{};
 };
