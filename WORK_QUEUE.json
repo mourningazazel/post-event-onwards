@@ -826,16 +826,26 @@
       "order": 637,
       "type": "bug",
       "title": "peo with a non-numeric seed aborts: std::stoull throws uncaught",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S4",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: e24fe05 app: parse_seed with std::from_chars in src/app/main.cpp; kDefaultSeed = 1 named; any failure (no digits, trailing characters, a sign, out of range) logs one SDL_LogWarn naming the argument and the range, and starts on kDefaultSeed. tests: none headless (frontend parse, per the brief); verify --frontend --full green. manual (SDL_VIDEO_DRIVER=offscreen, so the user's desktop was untouched; each run still alive at 2 s, timeout exit 124): 'peo abc', 'peo 12x', 'peo -5', 'peo 99999999999999999999999' each logged exactly one 'WARNING: seed \"<arg>\" is not a whole number from 0 to 18446744073709551615; starting on seed 1'; 'peo 42' and 'peo' logged no warning. Not seen on screen: the offscreen driver shows no window, and the game does not log the seed, so 'starts on 42' rests on the parse. open: none."
         }
       ],
       "references": [
