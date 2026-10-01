@@ -559,7 +559,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-01",
+          "by": "architect",
+          "text": "N021 (2026-10-01): the far aggregates carry wind. Fuse spread and upwind drift in one pass from the same buffer (additive splitting); the layer runs beside the detailed field and exchanges at the boundary once per update."
+        }
+      ],
       "references": [
         "src/core/include/peo/core/grid.hpp"
       ],
