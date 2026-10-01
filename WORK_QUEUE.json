@@ -827,28 +827,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-077",
-      "order": 657,
-      "type": "chore",
-      "title": "ScentWave: write down the int32 bound on the age line",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-01",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
-      "references": [
-        "src/core/include/peo/core/scent_wave.hpp"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-080",
       "order": 687,
       "type": "feature",
