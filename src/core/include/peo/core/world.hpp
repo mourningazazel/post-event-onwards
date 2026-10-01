@@ -2,6 +2,7 @@
 
 #include "peo/core/action.hpp"
 #include "peo/core/dead.hpp"
+#include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/scent_wave.hpp"
@@ -48,6 +49,8 @@ struct WorldParams {
     /// The smallest batch of the Dead deciding in one second that is split across the
     /// executor (PEO-080): below it, waking workers costs more than the decisions.
     std::size_t parallel_decide_min = kParallelDecideMin;
+    /// The calm Dead's weighted draw (D-038 B, PEO-009).
+    DeadDrawParams draw{};
 };
 
 /// Game seconds the player spent on one tile since the last update. The log of
@@ -103,6 +106,9 @@ struct HordeState {
 /// since they last matched, not the field (PEO-078).
 struct Speculation {
     ScentWave scent{1, 1};
+    /// The desire field for the update after the boundary (PEO-009), from `scent` and
+    /// the occupancy the Dead's seconds reach the boundary with.
+    DesireField desire;
     /// Tiles the last speculate copied into `scent`: all of them when cold. Diagnostic.
     std::size_t synced_tiles = 0;
     Tick update = 0;
@@ -163,6 +169,8 @@ public:
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
+    /// What the calm Dead draw from until the next update (PEO-009).
+    [[nodiscard]] const DesireField& desire() const noexcept { return desire_; }
     /// Where speculate(), the scent updates and big batches of the Dead's decisions run
     /// their pieces (D-035, PEO-080). Null, the default, is serial; every executor gives
     /// the same world. Not owned: it must outlive the World's use of it.
@@ -211,6 +219,7 @@ private:
     std::uint32_t stage_index_ = 0;
     Stage stage_;
     Wind wind_{};
+    DesireField desire_;
     Executor* executor_ = nullptr;
     ScentWave scent_{1, 1};
     HordeState dead_;

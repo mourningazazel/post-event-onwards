@@ -98,13 +98,20 @@ int chebyshev(Vec2i a, Vec2i b) {
 }
 
 /// One of the Dead alone on the town: it decides once per update (about its pace at
-/// a 6 s step) and nothing else occupies or reserves a tile.
+/// a 6 s step) and nothing else occupies or reserves a tile. It draws (PEO-009,
+/// D-038 B) from the desire field of the update, each decision with its own word.
 struct Follower {
     Dead unit;
     Grid<std::uint8_t> occupied{kTownWidth, kTownHeight, 0};
     Grid<bool> reserved{kTownWidth, kTownHeight, false};
+    DesireField desire{kTownWidth, kTownHeight};
+    Seconds decisions = 0;
     void decide(const ScentWave& f, const Grid<bool>& b) {
-        if (const auto to = decide_move(unit, f, b, occupied, reserved)) {
+        constexpr std::uint64_t kFollowerSalt = 0xF0;
+        // Alone, it needs only its own cell's choices (nobody's company to count).
+        desire.rebuild(f, b, DeadDrawParams{}, unit.pos.x, unit.pos.y, unit.pos.x + 1, unit.pos.y + 1);
+        if (const auto to =
+                decide_move(unit, desire, occupied, reserved, draw_word(kFollowerSalt, decisions++, 0))) {
             unit.pos = *to;
         }
     }

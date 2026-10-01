@@ -7,6 +7,7 @@ add_library(peo_core STATIC
     src/turn_input.cpp
     src/stage.cpp
     src/dead.cpp
+    src/desire.cpp
     src/world.cpp)
 add_library(peo::core ALIAS peo_core)
 

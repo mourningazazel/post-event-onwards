@@ -140,6 +140,7 @@ public:
     std::size_t sync_from(const ScentWave& source);
     /// Identity for sync_from: copies share it. The World gives each stage's wave a new one.
     void set_token(std::uint64_t token) noexcept { partner_token_ = token; }
+    [[nodiscard]] std::uint64_t token() const noexcept { return partner_token_; }
     /// A token no other wave in this process has had (PEO-085): two Worlds never share
     /// one, so a Speculation moved between them cold-copies. Never 0.
     [[nodiscard]] static std::uint64_t new_token() noexcept;

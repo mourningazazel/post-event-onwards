@@ -1,9 +1,10 @@
 #pragma once
 
+#include "peo/core/desire.hpp"
 #include "peo/core/grid.hpp"
-#include "peo/core/scent_wave.hpp"
 #include "peo/core/types.hpp"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -42,14 +43,22 @@ struct SlotPlan {
     return (plan.offset + j * dead_cycle / plan.count) % dead_cycle;
 }
 
-/// Where a calm one of the Dead steps next (D-031): its strongest neighbour, as
-/// strongest_neighbour() picks it, but only if no other Dead stands there and no
-/// pending move has reserved it. A calm Dead never sidesteps to a weaker tile and
-/// never climbs over another: when its best tile is taken it stays put. Reads the
-/// wave's direction byte (flow_target, PEO-079), so `blocked` must be the grid the
-/// wave is updated against; it is read only before the wave has seen that grid.
-[[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const ScentWave& scent,
-                                               const Grid<bool>& blocked, const Grid<std::uint8_t>& occupied,
-                                               const Grid<bool>& reserved) noexcept;
+/// The draw's random word for unit `index` deciding at second `second` (PEO-009): a
+/// counter-based hash with its own salt, never a shared stream, so a unit's draw does
+/// not depend on any other unit or on the order they decide in.
+[[nodiscard]] std::uint64_t draw_word(std::uint64_t salt, Seconds second, std::size_t index) noexcept;
+
+/// The choice `word` picks from nine weights (kNeighbours8 order, then staying): each
+/// in proportion to its weight. Staying when every weight is 0.
+[[nodiscard]] std::size_t draw_choice(const std::array<std::uint32_t, kDrawChoices>& weights,
+                                      std::uint64_t word) noexcept;
+
+/// Where a calm one of the Dead steps next (D-038 B, PEO-009): one weighted draw over
+/// its eight neighbours and staying, from the desire field at its tile. If it draws a
+/// tile another Dead stands on or a pending move has reserved, it stays and does not
+/// draw again (D-031): a calm Dead never sidesteps, never climbs over another.
+[[nodiscard]] std::optional<Vec2i> decide_move(const Dead& unit, const DesireField& desire,
+                                               const Grid<std::uint8_t>& occupied, const Grid<bool>& reserved,
+                                               std::uint64_t word) noexcept;
 
 } // namespace peo::core

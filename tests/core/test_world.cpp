@@ -23,13 +23,13 @@ namespace {
 /// release builds; under the sanitizers that alone would take 8 s of the scenario tier's
 /// 5, so the same run is smaller there (still several pull tiles, every executor path).
 #ifdef NDEBUG
-constexpr int kExecutorGoldenActions = 200;
+constexpr int kExecutorGoldenActions = 30; // 200 until PEO-009: every unit draws now (5.5 s)
 constexpr int kExecutorGoldenDead = 20000;
 constexpr int kExecutorGoldenSide = 512;
 #else
-constexpr int kExecutorGoldenActions = 40;
-constexpr int kExecutorGoldenDead = 1000;
-constexpr int kExecutorGoldenSide = 144;
+constexpr int kExecutorGoldenActions = 20;
+constexpr int kExecutorGoldenDead = 600;
+constexpr int kExecutorGoldenSide = 128;
 #endif
 
 constexpr Seed kSeed = 7;
@@ -176,8 +176,11 @@ TEST_SUITE("world") {
         // cooldown, so their paths and the hashed state changed.
         // PEO-030 (D-024) re-pinned it again on purpose: the scent is now the integer
         // geodesic field, so every sample, and the Dead's routes, changed.
+        // PEO-009 (D-038 B) re-pinned it again on purpose: a calm Dead now draws its step
+        // from the desire field instead of taking the strongest neighbour, and every
+        // unit draws at its slots, so the horde and its moves changed.
         constexpr int kRandomActions = 100; // before and after the walk to the exit
-        constexpr std::uint64_t kPinnedHash = 0x4B5B9E9B2BE5F1E7ULL;
+        constexpr std::uint64_t kPinnedHash = 0x0B7AE23A093585AAULL;
         World w(kSeed, small_world());
         Rng pick(kSeed);
         const auto random_actions = [&] {
@@ -287,14 +290,16 @@ TEST_SUITE("world") {
     TEST_CASE("the Dead's positions are pinned" * doctest::test_suite("scenario: world")) {
         // PEO-079: recorded before the poll and decide_move read the direction bytes
         // (ScentWave::flow_target); the switch must not move a single unit. Two hordes:
-        // a World on a generated 200x120 walled stage with 3000 Dead, 60 updates of
+        // a World on a generated 200x120 walled stage with 3000 Dead, 30 updates of
         // walking and waiting; and 2000 Dead on the PEO-035 town, each deciding once per
         // update with real occupancy, while a player walks into the town and stands.
-        constexpr int kUpdates = 60;
+        constexpr int kUpdates = 30; // PEO-009: was 60; every unit draws now (scenario budget)
         constexpr int kWorldDead = 3000;
         constexpr int kTownDead = 2000;
-        constexpr std::uint64_t kPinnedWorld = 0xE55A8939897997F8ULL;
-        constexpr std::uint64_t kPinnedTown = 0x4494EC59599E60F5ULL;
+        // PEO-009 (D-038 B) re-pinned both on purpose: the Dead draw their steps from the
+        // desire field now, so every position changed. PEO-079's own switch kept them.
+        constexpr std::uint64_t kPinnedWorld = 0x5D57B27C6F414513ULL;
+        constexpr std::uint64_t kPinnedTown = 0x74210D1A20481B71ULL;
         constexpr int kMinMoved = 100; // the hash pins real movement, not a frozen horde
 
         World w(kSeed, {.initial_dead = kWorldDead, .stage_width = 200, .stage_height = 120});
@@ -333,12 +338,18 @@ TEST_SUITE("world") {
         }
         const std::vector<Dead> town_start = horde;
         Vec2i player = street;
+        DesireField desire(peo::test::kTownWidth, peo::test::kTownHeight);
+        constexpr std::uint64_t kTownDrawSalt = 0x70;
         for (int u = 0; u < kUpdates; ++u) {
             player = static_cast<std::size_t>(u) < path.size() ? path[static_cast<std::size_t>(u)] : player;
             wave.deposit(player, wave.params().strength);
             wave.update(town);
-            for (Dead& d : horde) {
-                if (const auto to = decide_move(d, wave, town, occupied, reserved)) {
+            // PEO-009 (D-038 B): the Dead draw from the desire field of this update.
+            desire.build(wave, town, occupied, DeadDrawParams{}, nullptr);
+            for (std::size_t i = 0; i < horde.size(); ++i) {
+                Dead& d = horde[i];
+                if (const auto to = decide_move(d, desire, occupied, reserved,
+                                                draw_word(kTownDrawSalt, static_cast<Seconds>(u), i))) {
                     --occupied.at(d.pos);
                     d.pos = *to;
                     ++occupied.at(d.pos);
@@ -895,7 +906,8 @@ TEST_SUITE("world") {
     }
 
 #ifdef NDEBUG
-    // Perf variants (PEO-007, PEO-043, D-021), release builds only: under
+    // Perf variants (PEO-007, PEO-043, D-021), release builds only, in the scenario tier
+    // since PEO-009 made each a few hundred ms (D-033): under
     // Debug+ASan they would cost most of the suite. Report, do not assert on time:
     // shared CI runners are too noisy. D-021 budget on the M1 Air: commit < 1 ms,
     // speculated update < 100 ms. `tools/verify.py --perf` prints these lines.
@@ -946,11 +958,12 @@ TEST_SUITE("world") {
         CHECK(w.turn() == static_cast<Tick>(kWarmTurns + kSamples));
     }
 
-    TEST_CASE("perf: 200x120, 5000 Dead, no emitters") {
+    TEST_CASE("perf: 200x120, 5000 Dead, no emitters" * doctest::test_suite("scenario: perf")) {
         run_perf(200, 120, 5000, 0);
     }
 
-    TEST_CASE("perf: saturated scent update, 512x512, 6 emitters per 1000 tiles") {
+    TEST_CASE("perf: saturated scent update, 512x512, 6 emitters per 1000 tiles" *
+              doctest::test_suite("scenario: perf")) {
         // PEO-078: the scent update alone at steady state. 80 warm-up updates fill the
         // field round every emitter; then the median and p95 of 40 updates.
         constexpr int kSide = 512;
@@ -987,16 +1000,19 @@ TEST_SUITE("world") {
         CHECK(wave.active_cells() > 0);
     }
 
-    TEST_CASE("perf: 200x120, 5000 Dead, 6 emitters per 1000 tiles") {
+    TEST_CASE("perf: 200x120, 5000 Dead, 6 emitters per 1000 tiles" * doctest::test_suite("scenario: perf")) {
         run_perf(200, 120, 5000, 6);
     }
-    TEST_CASE("perf: 512x512, 20000 Dead, 6 emitters per 1000 tiles") {
+    TEST_CASE("perf: 512x512, 20000 Dead, 6 emitters per 1000 tiles" *
+              doctest::test_suite("scenario: perf")) {
         run_perf(512, 512, 20000, 6);
     }
-    TEST_CASE("perf: 512x512, 50000 Dead, 6 emitters per 1000 tiles") {
+    TEST_CASE("perf: 512x512, 50000 Dead, 6 emitters per 1000 tiles" *
+              doctest::test_suite("scenario: perf")) {
         run_perf(512, 512, 50000, 6);
     }
-    TEST_CASE("perf: 512x512, 50000 Dead, 20 emitters per 1000 tiles") {
+    TEST_CASE("perf: 512x512, 50000 Dead, 20 emitters per 1000 tiles" *
+              doctest::test_suite("scenario: perf")) {
         run_perf(512, 512, 50000, 20);
     }
 #endif

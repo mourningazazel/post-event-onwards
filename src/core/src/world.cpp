@@ -14,6 +14,8 @@ constexpr Seed kHordeSeedSalt = 0xABCDULL;
 /// And so the wind's two draws come from a stream of their own: drawing them changes
 /// nothing else, so a calm world is the world it was before wind (PEO-048).
 constexpr Seed kWindSeedSalt = 0x5EEDULL;
+/// And so the Dead's draws never reuse a word of plan_slots' (PEO-009).
+constexpr std::uint64_t kDrawSalt = 0xD8A3ULL;
 /// Range of the spawn draw: updates between a spawned Dead's steps. Stored in
 /// seconds as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
@@ -37,13 +39,12 @@ bool same_moves(const std::vector<DeadMove>& a, const std::vector<DeadMove>& b) 
 
 /// Give every unit with a stronger neighbour its slots for cycle `cycle` (D-031),
 /// bucketed by second in ascending unit order.
-void poll(HordeState& d, const ScentWave& scent, std::uint64_t salt, std::uint64_t cycle, Seconds len) {
+void poll(HordeState& d, std::uint64_t salt, std::uint64_t cycle, Seconds len) {
     d.slot_begin.assign(static_cast<std::size_t>(len) + 1, 0);
     for (std::size_t i = 0; i < d.horde.size(); ++i) {
-        // Only a unit with somewhere better to go this cycle gets slots.
-        d.plans[i] = scent.flow_target(d.horde[i].pos)
-                         ? plan_slots(salt, cycle, i, d.horde[i].step_seconds, len)
-                         : SlotPlan{};
+        // Every unit draws at its slots (PEO-009): one with nowhere better to go
+        // wanders or stays, by the draw.
+        d.plans[i] = plan_slots(salt, cycle, i, d.horde[i].step_seconds, len);
         for (Seconds j = 0; j < d.plans[i].count; ++j) {
             ++d.slot_begin[slot_second(d.plans[i], j, len) + 1];
         }
@@ -154,6 +155,8 @@ void World::load_stage(std::uint32_t index) {
     d.landing.reserve(d.horde.size());
     d.intents.reserve(d.horde.size());
     stage_salt_ = stage_seed(seed_, index);
+    desire_ = DesireField(stage_.spec.width, stage_.spec.height);
+    desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
     dead_second(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
 }
 
@@ -203,6 +206,7 @@ void World::deposit_log(ScentWave& field) const noexcept {
 void World::run_update() {
     deposit_log(scent_);
     scent_.update(stage_.blocked, &stage_.openness);
+    desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
     log_.clear();
     ++updates_;
 }
@@ -210,11 +214,24 @@ void World::run_update() {
 // The speculated update ran with no deposit; the logged tiles' deposits are added
 // after it, which ScentWave makes bit-identical to depositing first (PEO-030).
 void World::finish_from(Speculation& spec) {
+    // A deposit raises cells within speed + gust of it, so the desire it can move is
+    // that block and the ring round it (PEO-009).
+    const int reach = params_.scent.speed + std::max(params_.scent.gust, 0) + 1;
+    const bool desire_ready = spec.to == seconds_; // the Dead's seconds reached the boundary
     for (const Occupancy& o : log_) {
         spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.seconds), stage_.blocked,
                                  &stage_.openness);
+        if (desire_ready) {
+            spec.desire.rebuild(spec.scent, stage_.blocked, params_.draw, o.tile.x - reach, o.tile.y - reach,
+                                o.tile.x + reach + 1, o.tile.y + reach + 1);
+        }
     }
     std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffers to reuse
+    if (desire_ready) {
+        std::swap(desire_, spec.desire);
+    } else { // a second poll stopped the speculation early: the snapshot is now
+        desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
+    }
     spec.update = kSpentUpdate;
     log_.clear();
     ++updates_;
@@ -226,7 +243,7 @@ void World::finish_from(Speculation& spec) {
 void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
     const Seconds len = params_.dead_cycle;
     if (t % len == 0) {
-        poll(d, scent_, stage_salt_, t / len, len);
+        poll(d, stage_salt_, t / len, len);
         if (record != nullptr) {
             record->poll_at = t;
             record->poll_begin = d.slot_begin; // copy-assign reuses capacity
@@ -246,9 +263,9 @@ void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
         run_ranges(executor_, batch, [&](std::size_t begin, std::size_t end) {
             for (std::size_t i = begin; i < end; ++i) {
                 const std::uint32_t u = d.slot_units[first + i];
-                d.intents[i] = d.moving[u] != 0
-                                   ? std::nullopt
-                                   : decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved);
+                d.intents[i] = d.moving[u] != 0 ? std::nullopt
+                                                : decide_move(d.horde[u], desire_, d.occupied, d.reserved,
+                                                              draw_word(stage_salt_ ^ kDrawSalt, t, u));
             }
         });
         for (std::uint32_t i = 0; i < batch; ++i) {
@@ -263,7 +280,8 @@ void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
             if (d.moving[u] != 0) {
                 continue;
             }
-            if (const auto to = decide_move(d.horde[u], scent_, stage_.blocked, d.occupied, d.reserved)) {
+            if (const auto to = decide_move(d.horde[u], desire_, d.occupied, d.reserved,
+                                            draw_word(stage_salt_ ^ kDrawSalt, t, u))) {
                 decided(d, {.unit = u, .to = *to});
             }
         }
@@ -334,6 +352,14 @@ void World::speculate(Speculation& out) const {
             speculate_dead(out);
         }
     });
+    // The desire for the next window reads both halves: the new field and the
+    // occupancy at the boundary. Built only when the Dead's seconds reached it.
+    if (out.to == (seconds_ / params_.update_period + 1) * params_.update_period) {
+        if (out.desire.width() != stage_.spec.width || out.desire.height() != stage_.spec.height) {
+            out.desire = DesireField(stage_.spec.width, stage_.spec.height); // cold: once a stage size
+        }
+        out.desire.build(out.scent, stage_.blocked, out.ahead.occupied, params_.draw, executor_);
+    }
 }
 
 void World::speculate_scent(Speculation& out) const {
@@ -395,7 +421,7 @@ bool World::equivalent(const World& a, const World& b) noexcept {
         a.scent_.values() != b.scent_.values() || !same_moves(da.landing, db.landing) ||
         !same_moves(da.deciding, db.deciding) || da.moving != db.moving || da.slot_begin != db.slot_begin ||
         da.slot_units != db.slot_units || !same_cells(da.occupied, db.occupied) ||
-        !same_cells(da.reserved, db.reserved)) {
+        !same_cells(da.reserved, db.reserved) || !(a.desire_ == b.desire_)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
