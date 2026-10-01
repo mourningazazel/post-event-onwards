@@ -303,6 +303,20 @@ Idle Dead with no scent anywhere keep a random 8-direction step (round 1). "Stay
 weight. All terms are integers and the draw comes from the unit's seeded stream, so the whole
 crowd is deterministic and replayable.
 
+**Built (PEO-009, D-038 B):** the `scent` and `company` terms and staying. A neighbour's log-odds
+(sixteenths of an octave) are lean x its scent above the unit's / distance_cost, where the lean
+rises from `lean_edge` (0) at the edge of reach to `lean_full` (3 octaves) at full strength, plus
+`company_gain` (a quarter octave) scaled by how full of Dead its box is (half-size 3, four cells
+out); staying weighs as a level neighbour. Walls and cut corners weigh nothing. Every term reads
+only the last update, so they are baked into a `DesireField` after each update (9 log-odds a
+cell, 16 bytes a cell with its counts, 16 MiB at 1024x1024; cells with no scent or company near
+skip the maths) and patched at commit round the deposit. The draw is a hash of (salt, second,
+unit); a drawn tile that is taken stays put (D-031). Measured (tests/core/test_swarm.cpp): of
+the draws that move, 96% climb within 10 cells of a standing source, 55% beyond 45, falling band
+by band between; a strong region's share of an even horde grows 4.5x; a packed cluster on flat
+scent covers 5.4x its area with never two to a tile. Waiting: `aggregate` (PEO-051), `attractor`
+and `stimulus` (PEO-010), `repellent`, `footing`; knobs per archetype.
+
 ### Triggers: general direction, not a path
 
 A unit becomes **triggered** only by its own stimulus: it **touched** the player, **saw** the
