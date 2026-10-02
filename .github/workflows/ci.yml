@@ -70,6 +70,27 @@ jobs:
       - run: ./build/headless-tsan/tests/peo_core_tests --no-intro -ts='executor'
       - run: ./build/headless-tsan/tests/peo_core_tests --no-intro -tc='serial*,the scent wave on the town*'
 
+  gpu-lavapipe:
+    # PEO-081 (ADR-0001, ADR-0014): peo_gpu built with its shaders and its tests run on
+    # Mesa's lavapipe (Vulkan on the CPU). A skipped run (no device) fails the job.
+    name: gpu field (lavapipe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build glslang-tools mesa-vulkan-drivers libvulkan1 libvulkan-dev
+      - uses: actions/cache@v4
+        with:
+          path: build/headless-release/_deps
+          key: sdl3-headless-${{ hashFiles('cmake/FindOrFetchSDL3.cmake') }}
+      - run: cmake --preset headless-release
+      - run: cmake --build --preset headless-release --target peo_gpu_tests
+      - run: |
+          ./build/headless-release/tests/gpu/peo_gpu_tests --no-intro -s | tee gpu.log
+          if grep -q "no Vulkan device" gpu.log; then echo "GPU tests were skipped"; exit 1; fi
+          grep -q "GPU ran" gpu.log
+
   core-release:
     name: core tests (release)
     runs-on: ubuntu-latest
