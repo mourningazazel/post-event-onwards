@@ -30,8 +30,9 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 - `src/app` is the SDL3 frontend and stays thin; logic in it is a bug.
 - Tests are headless: unit suite runs in under 1 s, scenario tests run in
   under 5 s (D-033, docs/testing.md); else a `manual` step.
-- Performance is a feature: no allocation in per-tick loops; measure with
-  `headless-release` before optimising.
+- Performance is a feature: no per-tick allocation; measure with
+  `headless-release` before optimising; per-update work checks
+  `docs/bottlenecks.md`.
 
 ## Code
 

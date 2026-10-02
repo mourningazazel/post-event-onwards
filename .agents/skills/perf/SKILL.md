@@ -16,6 +16,13 @@ updates before asking for a mechanics change.
   `suite_budget`; scenario tier (`scenario*` suites) under 5 s, enforced by
   `scenario_budget` (D-033).
 
+## Bottlenecks
+
+`docs/bottlenecks.md` lists the passes that dominate an update. Before
+changing one, or adding a per-update, per-second or per-Dead pass, measure
+the rows it touches before and after. Report a newly found one there with a
+`[perf]` item; update its row when a lever lands.
+
 ## Measure
 
 1. `python3 tools/verify.py --perf` builds `headless-release` and prints
