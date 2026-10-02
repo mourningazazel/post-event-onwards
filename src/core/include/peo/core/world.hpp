@@ -175,6 +175,10 @@ public:
     /// their pieces (D-035, PEO-080). Null, the default, is serial; every executor gives
     /// the same world. Not owned: it must outlive the World's use of it.
     void set_executor(Executor* executor) noexcept;
+    /// Where speculate() may run the scent's calm update (ADR-0014, PEO-081): a GPU
+    /// backend from the frontend; null, the default, is the CPU pull. Same world either
+    /// way. Live updates stay on the CPU, so a turn never waits on the device.
+    void set_field_backend(FieldBackend* backend) noexcept;
     /// This stage's wind (PEO-048), drawn from its seed.
     [[nodiscard]] const Wind& wind() const noexcept { return wind_; }
     [[nodiscard]] const ScentWave& scent() const noexcept { return scent_; }
@@ -221,6 +225,7 @@ private:
     Wind wind_{};
     DesireField desire_;
     Executor* executor_ = nullptr;
+    FieldBackend* field_backend_ = nullptr;
     ScentWave scent_{1, 1};
     HordeState dead_;
     /// Mixed into the slot hashes: the stage's own seed.

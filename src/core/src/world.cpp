@@ -226,7 +226,8 @@ void World::finish_from(Speculation& spec) {
                                 o.tile.x + reach + 1, o.tile.y + reach + 1);
         }
     }
-    std::swap(scent_, spec.scent); // swap, not move: spec keeps its buffers to reuse
+    std::swap(scent_, spec.scent);     // swap, not move: spec keeps its buffers to reuse
+    scent_.set_field_backend(nullptr); // the swap brought the speculation's backend over
     if (desire_ready) {
         std::swap(desire_, spec.desire);
     } else { // a second poll stopped the speculation early: the snapshot is now
@@ -335,6 +336,12 @@ Speculation World::speculate() const {
     return spec;
 }
 
+void World::set_field_backend(FieldBackend* backend) noexcept {
+    // Only the speculation's wave runs on it: the World's own updates (a live step when
+    // no speculation is ready) stay on the CPU, so a turn never waits on the GPU.
+    field_backend_ = backend;
+}
+
 void World::set_executor(Executor* executor) noexcept {
     executor_ = executor;
     scent_.set_executor(executor);
@@ -366,6 +373,7 @@ void World::speculate_scent(Speculation& out) const {
     // A partner wave (the one finish_from swapped out) copies only what changed.
     out.synced_tiles = out.scent.sync_from(scent_);
     out.scent.set_executor(executor_);
+    out.scent.set_field_backend(field_backend_);
     out.scent.update(stage_.blocked, &stage_.openness);
 }
 

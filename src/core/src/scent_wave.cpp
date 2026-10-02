@@ -104,6 +104,8 @@ ScentWave::ScentWave(int width, int height, WaveParams params)
     patch_buf_[1].assign(side * side, kUnreached);
     stale_mark_.assign(tiles, 0);
     pulled_.assign(tiles, 0);
+    backend_last_.assign(tiles, 0);
+    backend_any_.assign(tiles, 0);
     flow_tiles_.reserve(tiles);
     stale_.reserve(tiles);
     changed_.assign(tiles, 0);
@@ -409,6 +411,13 @@ void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* open
     }
     assert(updates_ < max_wave_updates(params_)); // the age line stays in int32 (PEO-077)
     ++updates_;
+    if (backend_ != nullptr && !windy_ && run_on_backend()) {
+        return;
+    }
+    if (other_behind_) {
+        buf_[cur_ ^ 1U] = buf_[cur_]; // same size: no allocation
+        other_behind_ = false;
+    }
     for (int r = 0; r < params_.speed; ++r) {
         round(Round::Full);
     }
@@ -427,6 +436,39 @@ void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* open
         changed_ = carry_;
     }
     refresh_stale_flow(first); // bytes written before the masks existed saw no open neighbour
+}
+
+bool ScentWave::run_on_backend() {
+    const FieldRounds rounds{.width = width_,
+                             .height = height_,
+                             .tiles_x = tiles_x_,
+                             .tiles_y = tiles_y_,
+                             .tile_width = kWaveTileWidth,
+                             .tile_height = kWaveTileHeight,
+                             .stage = partner_token_,
+                             .open = open_.data(),
+                             .diag = diag_.data(),
+                             .values = buf_[cur_].data(),
+                             .last_changed = backend_last_.data(),
+                             .any_changed = backend_any_.data(),
+                             .flow = flow_.data(),
+                             .distance_cost = params_.distance_cost,
+                             .age_line = age_line(),
+                             .rounds = params_.speed};
+    if (!backend_->run(rounds)) {
+        return false;
+    }
+    // The CPU pull's bookkeeping from the backend's flags: the last round's tiles are
+    // pulled next update, any round's are written for a partner; every byte is new.
+    for (std::size_t t = 0; t < changed_.size(); ++t) {
+        changed_[t] = backend_last_[t];
+        if (backend_any_[t] != 0 && written_mark_[t] == 0) {
+            written_mark_[t] = 1;
+            written_.push_back(static_cast<std::uint32_t>(t));
+        }
+    }
+    other_behind_ = true;
+    return true;
 }
 
 void ScentWave::refresh_stale_flow(bool all) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "peo/core/executor.hpp"
+#include "peo/core/field_backend.hpp"
 #include "peo/core/grid.hpp"
 #include "peo/core/types.hpp"
 #include "peo/core/wind.hpp"
@@ -130,6 +131,10 @@ public:
     /// Where the rounds' tiles and the direction-byte refresh run (D-035, PEO-080): any
     /// executor gives the same bits as none (serial), which is the default.
     void set_executor(Executor* executor) noexcept { executor_ = executor; }
+    /// Where a calm update may run instead of the CPU pull (ADR-0014, PEO-081): any
+    /// backend gives the same bits; null, the default, is the CPU pull. A windy wave
+    /// always runs on the CPU.
+    void set_field_backend(FieldBackend* backend) noexcept { backend_ = backend; }
     [[nodiscard]] const WindTable& wind() const noexcept { return wind_; }
 
     /// Make this wave equal to `source` (values, age line and what changes next round).
@@ -180,6 +185,12 @@ public:
     [[nodiscard]] std::uint32_t updates() const noexcept { return updates_; }
     /// Stored values, row-major, age folded in. For tests and equivalence.
     [[nodiscard]] const std::vector<std::int32_t>& values() const noexcept { return buf_[cur_]; }
+    /// What a field backend must reproduce beside the values (PEO-081), for tests: per
+    /// tile, changed in the last round and written since the last partner sync; per
+    /// cell, the direction byte.
+    [[nodiscard]] const std::vector<std::uint8_t>& changed_tiles() const noexcept { return changed_; }
+    [[nodiscard]] const std::vector<std::uint8_t>& written_tiles() const noexcept { return written_mark_; }
+    [[nodiscard]] const std::vector<std::uint8_t>& flow_bytes() const noexcept { return flow_; }
     /// Cells the next round will pull: those of the tiles that changed and their
     /// neighbours (PEO-078; before, the count of changed cells).
     [[nodiscard]] std::size_t active_cells() const noexcept;
@@ -219,6 +230,8 @@ private:
     /// Rewrite the direction bytes of every stale tile and the ring round it (all of
     /// them when `all`), split by tile so that no two pieces write one cell.
     void refresh_stale_flow(bool all);
+    /// One update's rounds on the backend; false when it declines (the CPU pull runs).
+    [[nodiscard]] bool run_on_backend();
     [[nodiscard]] bool pull_tile(std::size_t tile, Round kind);
     [[nodiscard]] bool pull_border_cell(int x, int y);
     [[nodiscard]] bool open_at(int x, int y) const noexcept;
@@ -261,6 +274,13 @@ private:
     std::vector<std::uint8_t> pulled_;
     std::vector<std::uint32_t> flow_tiles_;
     Executor* executor_ = nullptr;
+    FieldBackend* backend_ = nullptr;
+    /// Per tile, from the backend: changed in its last round, in any round.
+    std::vector<std::uint8_t> backend_last_;
+    std::vector<std::uint8_t> backend_any_;
+    /// A backend update left the second buffer behind: the next CPU round copies the
+    /// field into it first (a tile nobody pulls must hold the same values in both).
+    bool other_behind_ = false;
     /// Per tile: changed last round (or by a deposit or patch since); and scratch for
     /// building the active list.
     std::vector<std::uint8_t> changed_;
