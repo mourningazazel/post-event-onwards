@@ -227,6 +227,26 @@ change the next second's choices), the batches are small, and the flow grid make
 cheap. The GPU can feed them: it computes the fields and the flow grid, and the CPU reads a
 byte per unit.
 
+**Built (PEO-081), and measured: on the M1 it does not pay yet.** `peo_gpu` runs the calm update
+(one dense dispatch per round, one for the direction bytes, values, tile flags and bytes read
+back) and matches the CPU bit for bit. M1 Air, Honeykrisp, saturated field (emitters in most
+tiles), release, median of 30:
+
+| field | CPU, 1 thread | CPU, 4 workers | GPU, readback included |
+|---|---|---|---|
+| 512x512 | 0.62 ms | 0.25 ms | 0.78-0.80 ms |
+| 1024x1024 | 2.4 ms | 0.90 ms | 2.0-2.5 ms |
+| 2048x2048 | 10.1 ms | 4.0 ms | 8.8-10.2 ms |
+
+The GPU is about one CPU thread, never 4 workers, so the app's default never uses it
+(`--gpu-min-cells N` opts in). At 2048x2048 a GPU update is about 0.6 ms of upload, 0.8 ms of
+readback, 2-3 ms for the direction-byte pass and 3-4 ms per pull round; with the dispatches
+skipped a submit still costs about 0.5 ms. The estimate above (140 us at 1024x1024) assumed one
+fused pass; what is built is a dispatch per round from global memory. A speculate at 1024x1024
+with 50,000 Dead is no faster with it (10.9 ms both ways: the Dead's half bounds it), and commit
+stays at 0.13 ms. What could change that is PEO-087's fused rounds in shared memory, and an
+active-tile list; both are measured from here.
+
 ## 6. What this could let the game do
 
 Each idea is a direction, not a plan. Costs are rough and say which resource they lean on.

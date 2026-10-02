@@ -109,6 +109,14 @@ frontend's `ThreadPool` (`src/app/thread_pool.hpp`, `--threads N`) runs a run st
 piece, or beside another thread's, inline. Serial, shuffled and threaded runs are bit-identical
 (golden tests; the threaded ones also run under ThreadSanitizer in CI).
 
+The scent field can also run on a GPU (ADR-0014, PEO-081). Core holds only the seam,
+`peo/core/field_backend.hpp`: a calm update's rounds, handed back as values, per-tile changed
+flags and direction bytes; the CPU pull is the reference. `peo_gpu` (`src/gpu`, SDL_GPU on
+Vulkan, GLSL compiled to SPIR-V at build time and embedded) implements it bit for bit, and is
+built only when a shader compiler is found. Only `speculate()` uses it, so a turn never waits on
+the device; the frontend makes the device and picks the backend by stage size (`--gpu-min-cells`,
+`--no-gpu-compute`). Its tests (`tests/gpu`) run on the M1 and on lavapipe in CI.
+
 ### The clock (PEO-040, D-015)
 
 The world counts game seconds (`World::seconds()`). Each `Action` carries a duration (`kStepSeconds`
