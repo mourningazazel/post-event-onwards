@@ -23,6 +23,13 @@ target_include_directories(peo_core_tests PRIVATE ${CMAKE_SOURCE_DIR}/src/app)
 find_package(Threads REQUIRED)
 target_link_libraries(peo_core_tests PRIVATE Threads::Threads)
 
+# PEO-088: the siege suite's runner. Built with everything else so it never rots, but no
+# test runs it: it runs on demand (docs/testing.md), and in a manual CI workflow.
+add_executable(peo_siege siege/siege.cpp)
+target_link_libraries(peo_siege PRIVATE peo::core peo::options Threads::Threads)
+target_include_directories(peo_siege PRIVATE ${CMAKE_SOURCE_DIR}/src/app)
+target_compile_definitions(peo_siege PRIVATE PEO_SIEGE_BASELINE_DIR="${CMAKE_SOURCE_DIR}/tests/siege/baseline")
+
 add_test(NAME core COMMAND peo_core_tests --no-intro)
 set_tests_properties(core PROPERTIES TIMEOUT 30)
 
