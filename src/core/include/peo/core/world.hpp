@@ -138,6 +138,12 @@ public:
 
     /// Build stage `index` from the world seed; reset the turn count and the clock.
     void load_stage(std::uint32_t index);
+    /// Play a hand-built stage (PEO-088): the same reset as load_stage (scent, wind from
+    /// the seed, slots, desire field, clock) with `stage`, `player` and `horde` as given
+    /// instead of generated. The stage has no exit, so it never advances. Each of the
+    /// Dead must stand on its own open cell, not the player's; `stage.openness`, if not
+    /// the stage's size, is taken as outdoors on every open cell.
+    void load_layout(Stage stage, Vec2i player, std::vector<Dead> horde);
 
     /// Spend one action: apply it at once (the player is on the new tile for its
     /// whole duration), then run the clock forward second by second: the Dead in
@@ -214,6 +220,10 @@ private:
     void deposit_log(ScentWave& field) const noexcept;
     void run_update();
     void finish_from(Speculation& spec);
+    /// load_stage's and load_layout's shared parts: the field and wind for stage_, and
+    /// the reset of the clock and the Dead once dead_.horde and its occupancy stand.
+    void start_field(Seed stage_seed_value);
+    void start_horde(Seed stage_seed_value);
     void speculate_scent(Speculation& out) const;
     void speculate_dead(Speculation& out) const;
     void finish_turn();

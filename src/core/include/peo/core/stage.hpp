@@ -38,6 +38,10 @@ struct Stage {
     Vec2i exit{};
 };
 
+/// A stage's exit when it has none (a hand-built layout, PEO-088): off the map, so the
+/// player never reaches it.
+inline constexpr Vec2i kNoExit{-1, -1};
+
 /// Generate a stage. Deterministic for a given spec.
 [[nodiscard]] Stage generate_stage(const StageSpec& spec);
 

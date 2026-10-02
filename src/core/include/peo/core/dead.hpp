@@ -25,6 +25,15 @@ struct Dead {
     std::uint16_t step_seconds = kUpdatePeriodSeconds;
 };
 
+/// What one of the Dead is doing. Calm (scent, company and stay, D-038) is the only state
+/// today; alerted and following come with PEO-010. Readers that count states loop over
+/// kDeadStateNames, so a new state shows up in them without change (PEO-088's siege runner).
+enum class DeadState : std::uint8_t { Calm };
+inline constexpr std::array<const char*, 1> kDeadStateNames{"calm"};
+[[nodiscard]] constexpr DeadState state_of(const Dead& /*unit*/) noexcept {
+    return DeadState::Calm;
+}
+
 /// One unit's moves in one cycle (D-031): `count` slots, evenly spaced from `offset`.
 struct SlotPlan {
     Seconds offset = 0;

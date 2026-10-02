@@ -874,6 +874,97 @@ TEST_SUITE("world") {
         }
     }
 
+    namespace {
+    /// PEO-088's kind of layout, small: an open 40x30 stage with a border wall and a 7x5
+    /// walled building in the middle, open on its west wall; the player inside, a ring of
+    /// the Dead outside.
+    struct Layout {
+        Stage stage;
+        Vec2i player;
+        std::vector<Dead> horde;
+    };
+    Layout small_layout() {
+        constexpr int kW = 40;
+        constexpr int kH = 30;
+        constexpr int kX0 = 16;
+        constexpr int kY0 = 12;
+        constexpr int kX1 = 22; // inclusive outer walls
+        constexpr int kY1 = 16;
+        Layout l;
+        l.stage.blocked = Grid<bool>(kW, kH, false);
+        for (int y = 0; y < kH; ++y) {
+            for (int x = 0; x < kW; ++x) {
+                const bool border = x == 0 || y == 0 || x == kW - 1 || y == kH - 1;
+                const bool wall = (x == kX0 || x == kX1 || y == kY0 || y == kY1) && x >= kX0 && x <= kX1 &&
+                                  y >= kY0 && y <= kY1;
+                l.stage.blocked.at(x, y) = border || wall;
+            }
+        }
+        l.stage.blocked.at(kX0, (kY0 + kY1) / 2) = false; // the opening
+        l.player = {kX1 - 1, (kY0 + kY1) / 2};
+        for (int x = 3; x < kW - 3; x += 2) {
+            for (const int y : {3, kH - 4}) {
+                l.horde.push_back(
+                    {.pos = {x, y}, .step_seconds = static_cast<std::uint16_t>(kUpdatePeriodSeconds)});
+            }
+        }
+        return l;
+    }
+    } // namespace
+
+    TEST_CASE("a loaded layout keeps what it was given and never advances") {
+        // PEO-088: the stage, the player and every one of the Dead as given; no exit, so
+        // walking anywhere never loads another stage; calm Dead never share a tile.
+        constexpr int kWaits = 60;
+        const Layout l = small_layout();
+        World w(kSeed, {.initial_dead = 0, .stage_width = 40, .stage_height = 30});
+        w.load_layout(l.stage, l.player, l.horde);
+        CHECK(w.player() == l.player);
+        REQUIRE(w.horde().size() == l.horde.size());
+        bool same = true;
+        for (std::size_t i = 0; i < l.horde.size(); ++i) {
+            same = same && w.horde()[i].pos == l.horde[i].pos;
+        }
+        CHECK(same);
+        CHECK(w.stage().blocked.at(16, 12));
+        CHECK(w.stage().openness.at(1, 1) == kOpennessOutdoors);
+        for (int i = 0; i < kWaits; ++i) {
+            w.step(i % 3 == 0 ? Action::step({-1, 0}) : Action::wait());
+            Grid<std::uint8_t> on(40, 30, 0);
+            for (const Dead& d : w.horde()) {
+                CHECK(++on.at(d.pos) == 1);
+                CHECK_FALSE(w.stage().blocked.at(d.pos));
+            }
+        }
+        CHECK(w.stage_index() == 0);
+        CHECK(w.horde().size() == l.horde.size());
+    }
+
+    TEST_CASE("commit(speculate()) equals step() on a loaded layout" *
+              doctest::test_suite("scenario: world")) {
+        constexpr int kActions = 60;
+        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        const Layout l = small_layout();
+        const WorldParams params{.initial_dead = 0, .stage_width = 40, .stage_height = 30};
+        World a(kSeed, params);
+        World b(kSeed, params);
+        a.load_layout(l.stage, l.player, l.horde);
+        b.load_layout(l.stage, l.player, l.horde);
+        Speculation spec;
+        Rng pick(kSeed);
+        for (int i = 0; i < kActions; ++i) {
+            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Action act = pick.range(1, 3) == 1 ? Action::step(kNeighbours4[pick.range(0, 3)], secs)
+                                                     : Action::wait(secs);
+            b.speculate(spec);
+            a.step(act);
+            b.commit(spec, act);
+            if (!World::equivalent(a, b)) {
+                FAIL("diverged at action " << i);
+            }
+        }
+    }
+
     TEST_CASE("a warm speculate copies only the tiles that changed") {
         // PEO-078: on a 384x128 stage (48 tiles of 128x8) the first speculate copies the
         // field; once the World and the Speculation have swapped waves, a speculate

@@ -103,13 +103,7 @@ void World::load_stage(std::uint32_t index) {
     spec.width = params_.stage_width;
     spec.height = params_.stage_height;
     stage_ = generate_stage(spec);
-    scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
-    scent_.set_token(ScentWave::new_token());
-    Rng wind_rng(stage_seed(seed_, index) ^ kWindSeedSalt);
-    wind_.toward_degrees = wind_rng.range(0, kDegreesPerTurn - 1);
-    wind_.intensity = wind_rng.range(0, std::clamp(params_.wind_max, 0, kMaxWindStep));
-    scent_.set_wind(wind_);
-    scent_.set_executor(executor_);
+    start_field(stage_seed(seed_, index));
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
@@ -138,6 +132,47 @@ void World::load_stage(std::uint32_t index) {
              .step_seconds = static_cast<std::uint16_t>(
                  static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
+    start_horde(stage_seed(seed_, index));
+}
+
+void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
+    stage_ = std::move(stage);
+    stage_.exit = kNoExit;
+    const int w = stage_.blocked.width();
+    const int h = stage_.blocked.height();
+    stage_.spec.width = w;
+    stage_.spec.height = h;
+    if (stage_.openness.width() != w || stage_.openness.height() != h) {
+        stage_.openness = Grid<std::uint8_t>(w, h, kOpennessIndoors);
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                stage_.openness.at(x, y) = stage_.blocked.at(x, y) ? kOpennessIndoors : kOpennessOutdoors;
+            }
+        }
+    }
+    start_field(stage_seed(seed_, stage_index_));
+    player_ = player;
+    HordeState& d = dead_;
+    d.horde = std::move(horde);
+    d.occupied = Grid<std::uint8_t>(w, h, 0);
+    for (const Dead& unit : d.horde) {
+        ++d.occupied.at(unit.pos);
+    }
+    start_horde(stage_seed(seed_, stage_index_));
+}
+
+void World::start_field(Seed stage_seed_value) {
+    scent_ = ScentWave(stage_.spec.width, stage_.spec.height, params_.scent);
+    scent_.set_token(ScentWave::new_token());
+    Rng wind_rng(stage_seed_value ^ kWindSeedSalt);
+    wind_.toward_degrees = wind_rng.range(0, kDegreesPerTurn - 1);
+    wind_.intensity = wind_rng.range(0, std::clamp(params_.wind_max, 0, kMaxWindStep));
+    scent_.set_wind(wind_);
+    scent_.set_executor(executor_);
+}
+
+void World::start_horde(Seed stage_seed_value) {
+    HordeState& d = dead_;
     turn_ = 0;
     seconds_ = 0;
     updates_ = 0;
@@ -154,7 +189,7 @@ void World::load_stage(std::uint32_t index) {
     d.deciding.reserve(d.horde.size());
     d.landing.reserve(d.horde.size());
     d.intents.reserve(d.horde.size());
-    stage_salt_ = stage_seed(seed_, index);
+    stage_salt_ = stage_seed_value;
     desire_ = DesireField(stage_.spec.width, stage_.spec.height);
     desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
     dead_second(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
