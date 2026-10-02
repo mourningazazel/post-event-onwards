@@ -956,6 +956,11 @@
           "at": "2026-10-02",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-02",
+          "by": "architect",
+          "text": "rebriefed (Ryan, 2026-10-02): siege runs on demand only; no ctest smoke, no CI job on PRs, manual workflow_dispatch"
         }
       ],
       "references": [

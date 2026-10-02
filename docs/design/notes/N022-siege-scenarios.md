@@ -28,4 +28,7 @@ Follow-up: "5x5 not 15x5 enclosed buildings, sorry" (the first building is one 5
   few dozen updates; nothing runs the horde against a building for game hours.
 - Its own suite, `peo_siege`, outside the D-033 tiers: 3 buildings x 3 opening setups x 2
   densities, 48 game hours each, is minutes of CPU, not seconds. Queue PEO-088.
+- Run on demand only. Owner, 2026-10-02: "perhaps we only run this performance "seige scenario"
+  testing when we make changes that could affect those mechanics. I don't want it included in
+  the regular testing suite, as we are covering the basic mechanics already with other testing"
 - Horde and scent mechanics only; others stay out of it, as asked.
