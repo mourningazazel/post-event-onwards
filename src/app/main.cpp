@@ -29,6 +29,9 @@
 #include <thread>
 
 #include "thread_pool.hpp"
+#ifdef PEO_HAVE_GPU
+#include "gpu_field.hpp"
+#endif
 
 namespace {
 
@@ -44,6 +47,29 @@ constexpr int kGameWindGust = 2;
 /// Compass points, clockwise from east as Wind::toward_degrees runs (y down).
 constexpr std::array<const char*, 8> kCompass{"E", "SE", "S", "SW", "W", "NW", "N", "NE"};
 constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t>(kCompass.size());
+
+/// The stage size, in cells, from which the speculation's scent update runs on the GPU
+/// (PEO-081). Measured on the M1 (Honeykrisp), saturated field, readback included: the
+/// GPU takes 0.8 / 2.0-2.5 / 8.8-10.2 ms at 512, 1024 and 2048 square, about one CPU
+/// thread (0.6 / 2.4 / 10.1 ms) and never 4 workers (0.25 / 0.9 / 4.0 ms), so by default
+/// it never runs.
+/// `--gpu-min-cells N` opts in for a machine where it does; `--no-gpu-compute` forbids it.
+constexpr std::size_t kGpuFieldMinCells = std::numeric_limits<std::size_t>::max();
+
+#ifdef PEO_HAVE_GPU
+/// Owns the compute device; declared before the backend, so destroyed after it.
+struct GpuDevice {
+    SDL_GPUDevice* device = nullptr;
+    GpuDevice() = default;
+    GpuDevice(const GpuDevice&) = delete;
+    GpuDevice& operator=(const GpuDevice&) = delete;
+    ~GpuDevice() {
+        if (device != nullptr) {
+            SDL_DestroyGPUDevice(device);
+        }
+    }
+};
+#endif
 
 /// Threads that run core's pieces (PEO-080): the hardware's, less one for the main
 /// thread, at least one. `--threads N` overrides it; 1 is serial.
@@ -150,6 +176,12 @@ private:
 struct App {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
+#ifdef PEO_HAVE_GPU
+    /// The scent's GPU backend (PEO-081) and its device: before world and speculator, so
+    /// destroyed after the speculation worker has stopped using them.
+    GpuDevice gpu_device;
+    std::optional<peo::gpu::GpuFieldBackend> gpu;
+#endif
     /// Core's executor (D-035): before world and speculator, so destroyed after them.
     std::optional<peo::app::ThreadPool> pool;
     std::optional<World> world;
@@ -302,17 +334,18 @@ void drain(App& app) {
     }
 }
 
-/// `arg` as a count of threads, at least 1; anything else warns and keeps `fallback`.
-std::size_t parse_threads(const char* arg, std::size_t fallback) {
+/// `arg`, the value of option `option`, as a count of at least 1; anything else warns and
+/// keeps `fallback`.
+std::size_t parse_count(const char* option, const char* arg, std::size_t fallback) {
     const std::string_view text(arg);
-    std::size_t threads = 0;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), threads);
-    if (error != std::errc{} || end != text.data() + text.size() || threads == 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--threads \"%s\" is not a whole number from 1; using %zu",
-                    arg, fallback);
+    std::size_t count = 0;
+    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), count);
+    if (error != std::errc{} || end != text.data() + text.size() || count == 0) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s \"%s\" is not a whole number from 1; keeping %zu",
+                    option, arg, fallback);
         return fallback;
     }
-    return threads;
+    return count;
 }
 
 /// `arg` as a seed: decimal digits only, in range. Anything else (letters, trailing
@@ -337,31 +370,60 @@ Seed parse_seed(const char* arg) {
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
-    // Arguments: an optional seed, and `--threads N` anywhere (PEO-080).
+    // Arguments: an optional seed, and anywhere `--threads N` (PEO-080),
+    // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081).
     Seed seed = kDefaultSeed;
     std::size_t threads = default_threads();
+    bool gpu_compute = true;
+    std::size_t gpu_min_cells = kGpuFieldMinCells;
     for (int i = 1; i < argc; ++i) {
-        if (std::string_view(argv[i]) == "--threads") {
+        const std::string_view arg(argv[i]);
+        if (arg == "--threads" || arg == "--gpu-min-cells") {
+            std::size_t& value = arg == "--threads" ? threads : gpu_min_cells;
             if (i + 1 < argc) {
-                threads = parse_threads(argv[++i], threads);
+                value = parse_count(argv[i], argv[i + 1], value);
+                ++i;
             } else {
-                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--threads needs a number; using %zu", threads);
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s needs a number", argv[i]);
             }
             continue;
         }
+        if (arg == "--no-gpu-compute") {
+            gpu_compute = false;
+            continue;
+        }
         seed = parse_seed(argv[i]);
+    }
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        SDL_Log("SDL_Init failed: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
     }
     SDL_Log("seed %llu, %zu thread(s) for the simulation", static_cast<unsigned long long>(seed), threads);
     app->pool.emplace(threads);
     app->world.emplace(seed, game_params());
     app->world->set_executor(&*app->pool);
+#ifdef PEO_HAVE_GPU
+    // A device only when the GPU could run at all; without one the CPU runs, as before.
+    if (gpu_compute && gpu_min_cells != kGpuFieldMinCells) {
+        app->gpu_device.device = peo::gpu::create_compute_device();
+        if (app->gpu_device.device != nullptr) {
+            app->gpu.emplace(app->gpu_device.device, gpu_min_cells);
+        }
+    }
+    if (app->gpu && app->gpu->ready()) {
+        app->world->set_field_backend(&*app->gpu);
+        SDL_Log("GPU scent field from %zu cells (%s)", gpu_min_cells,
+                SDL_GetGPUDeviceDriver(app->gpu_device.device));
+    } else {
+        SDL_Log("scent field on the CPU%s", gpu_compute ? "" : " (--no-gpu-compute)");
+    }
+#else
+    (void)gpu_compute;
+    (void)gpu_min_cells;
+    SDL_Log("scent field on the CPU (built without peo_gpu)");
+#endif
     app->speculator.emplace(*app->world);
     app->speculator->request();
-
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
     const StageSpec& spec = app->world->stage().spec;
     const int win_w = spec.width * kCell * kScale;
     const int win_h = (spec.height + kHudRows) * kCell * kScale;
