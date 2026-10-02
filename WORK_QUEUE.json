@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 88,
+  "next_id": 89,
   "items": [
     {
       "id": "PEO-003",
@@ -934,6 +934,28 @@
         }
       ],
       "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-088",
+      "order": 757,
+      "type": "feature",
+      "title": "Siege suite: the horde round three buildings for 48 game hours, measured at six checkpoints (N022)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-10-02",
+      "notes": [
+        {
+          "at": "2026-10-02",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "docs/design/notes/N022-siege-scenarios.md"
+      ],
       "depends_on": []
     }
   ]
