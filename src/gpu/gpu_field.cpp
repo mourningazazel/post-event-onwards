@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "wave_flow_spv.hpp"
+#include "wave_fused_spv.hpp"
 #include "wave_pull_spv.hpp"
 
 namespace peo::gpu {
@@ -23,10 +24,19 @@ constexpr std::size_t kWordBytes = sizeof(std::uint32_t);
 constexpr std::uint32_t kOpenBit = 1;
 constexpr int kDiagShift = 1;
 constexpr int kReachShift = 5;
+constexpr int kOpennessShift = 13; // and from bit 13 its openness to the wind (wave_common.glsl)
+/// The fused shader's geometry (wave_fused.comp): a block of kFusedBlockW x kFusedBlockH
+/// cells inside one pull tile, a halo of at most kFusedMaxHalo rounds, kFusedThreads lanes.
+constexpr int kFusedBlockW = PEO_GPU_FUSED_BLOCK_W;
+constexpr int kFusedBlockH = 8;
+constexpr int kFusedMaxHalo = 6;
+constexpr Uint32 kFusedThreads = 256;
+/// A full round carries every neighbour slot.
+constexpr std::uint32_t kAllSlots = 0xFF;
 constexpr std::array<std::array<int, 2>, 8> kNeighbours{
     {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}}}; // kNeighbours8
 
-/// wave_pull.comp's uniform block (std140: eight 32-bit fields).
+/// wave_pull.comp's uniform block (std140: eight 32-bit fields, two ivec4, four more).
 struct PullParams {
     std::int32_t width;
     std::int32_t height;
@@ -36,7 +46,29 @@ struct PullParams {
     std::int32_t cost;
     std::int32_t line;
     std::uint32_t round_plus_one;
+    std::array<std::int32_t, 8> steps; // step_lo, step_hi
+    std::uint32_t allowed;
+    std::uint32_t need_open;
+    std::uint32_t windy;
+    std::uint32_t pad;
 };
+/// wave_fused.comp's (std140, laid out as PullParams).
+struct FusedParams {
+    std::int32_t width;
+    std::int32_t height;
+    std::int32_t tiles_x;
+    std::int32_t tile_width;
+    std::int32_t tile_height;
+    std::int32_t cost;
+    std::int32_t line;
+    std::int32_t halo;
+    std::array<std::int32_t, 8> steps;
+    std::int32_t full_rounds;
+    std::uint32_t gust_from;
+    std::uint32_t windy;
+    std::uint32_t pad;
+};
+static_assert(sizeof(PullParams) == 80 && sizeof(FusedParams) == 80, "std140 blocks");
 /// wave_flow.comp's, padded to a std140 block's 16 bytes.
 struct FlowParams {
     std::int32_t width;
@@ -46,7 +78,7 @@ struct FlowParams {
 };
 
 SDL_GPUComputePipeline* make_pipeline(SDL_GPUDevice* device, const unsigned char* code, std::size_t size,
-                                      Uint32 readonly, Uint32 readwrite) {
+                                      Uint32 readonly, Uint32 readwrite, Uint32 threads = kGroup) {
     SDL_GPUComputePipelineCreateInfo info{};
     info.code = code;
     info.code_size = size;
@@ -55,7 +87,7 @@ SDL_GPUComputePipeline* make_pipeline(SDL_GPUDevice* device, const unsigned char
     info.num_readonly_storage_buffers = readonly;
     info.num_readwrite_storage_buffers = readwrite;
     info.num_uniform_buffers = 1;
-    info.threadcount_x = kGroup;
+    info.threadcount_x = threads;
     info.threadcount_y = 1;
     info.threadcount_z = 1;
     return SDL_CreateGPUComputePipeline(device, &info);
@@ -78,13 +110,14 @@ SDL_GPUDevice* create_compute_device() {
     return SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV, false, nullptr);
 }
 
-GpuFieldBackend::GpuFieldBackend(SDL_GPUDevice* device, std::size_t min_cells)
-    : device_(device), min_cells_(min_cells) {
+GpuFieldBackend::GpuFieldBackend(SDL_GPUDevice* device, std::size_t min_cells, std::size_t windy_min_cells)
+    : device_(device), min_cells_(min_cells), windy_min_cells_(windy_min_cells) {
     if (device_ == nullptr) {
         return;
     }
     pull_ = make_pipeline(device_, k_wave_pull_spv, sizeof k_wave_pull_spv, 2, 2);
     flow_ = make_pipeline(device_, k_wave_flow_spv, sizeof k_wave_flow_spv, 2, 1);
+    fused_ = make_pipeline(device_, k_wave_fused_spv, sizeof k_wave_fused_spv, 2, 2, kFusedThreads);
 }
 
 GpuFieldBackend::~GpuFieldBackend() {
@@ -97,6 +130,9 @@ GpuFieldBackend::~GpuFieldBackend() {
     }
     if (flow_ != nullptr) {
         SDL_ReleaseGPUComputePipeline(device_, flow_);
+    }
+    if (fused_ != nullptr) {
+        SDL_ReleaseGPUComputePipeline(device_, fused_);
     }
 }
 
@@ -166,7 +202,7 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
     const std::lock_guard lock(mutex_);
     const std::size_t cells = static_cast<std::size_t>(r.width) * static_cast<std::size_t>(r.height);
     // A pull workgroup is one row's kGroup cells inside one tile (wave_pull.comp).
-    if (!ready() || cells < min_cells_ || cells == 0 || r.rounds < 1 ||
+    if (!ready() || cells < (r.windy ? windy_min_cells_ : min_cells_) || cells == 0 || r.rounds < 1 ||
         r.tile_width % static_cast<int>(kGroup) != 0 || !fit(r)) {
         return false;
     }
@@ -175,7 +211,9 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
     const std::size_t cell_bytes = cells * kWordBytes;
     const std::size_t tile_bytes = tiles * kWordBytes;
     const std::size_t word_bytes = words * kWordBytes;
-    const bool send_masks = !masks_sent_ || r.stage == 0 || r.stage != stage_;
+    const bool with_openness = r.windy && r.openness != nullptr;
+    const bool send_masks =
+        !masks_sent_ || r.stage == 0 || r.stage != stage_ || (with_openness && !masks_openness_);
 
     // Upload: the values, zeroed flags, and the masks when the stage is new.
     auto* up = static_cast<unsigned char*>(SDL_MapGPUTransferBuffer(device_, up_, true));
@@ -203,8 +241,9 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
                         reach |= 1U << d;
                     }
                 }
+                const std::uint32_t openness = with_openness ? r.openness[i] : 0U;
                 masks[i] = (r.open[i] != 0 ? kOpenBit : 0U) | (std::uint32_t{r.diag[i]} << kDiagShift) |
-                           (reach << kReachShift);
+                           (reach << kReachShift) | (openness << kOpennessShift);
             }
         }
     }
@@ -227,19 +266,55 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
     }
     SDL_EndGPUCopyPass(copy);
 
-    // The rounds: each reads one buffer and writes the other (ADR-0014's rule).
-    PullParams params{.width = r.width,
-                      .height = r.height,
-                      .tiles_x = r.tiles_x,
-                      .tile_width = r.tile_width,
-                      .tile_height = r.tile_height,
-                      .cost = r.distance_cost,
-                      .line = r.age_line,
-                      .round_plus_one = 0};
+    // The rounds: the full ones, then under a wind the gust ones. Each reads one buffer
+    // and writes the other (ADR-0014's rule); a tile's flag ends as the last round it
+    // changed in.
+    const int gusts = r.windy ? r.gust_rounds : 0;
+    const int total = r.rounds + gusts;
     SDL_GPUBuffer* in = a_;
     SDL_GPUBuffer* out = b_;
-    for (int k = 0; k < r.rounds; ++k) {
-        params.round_plus_one = static_cast<std::uint32_t>(k + 1);
+    const bool fused = use_fused_ && fused_ != nullptr && total <= kFusedMaxHalo &&
+                       r.tile_width % kFusedBlockW == 0 && r.tile_height == kFusedBlockH;
+    if (fused) {
+        FusedParams params{.width = r.width,
+                           .height = r.height,
+                           .tiles_x = r.tiles_x,
+                           .tile_width = r.tile_width,
+                           .tile_height = r.tile_height,
+                           .cost = r.distance_cost,
+                           .line = r.age_line,
+                           .halo = total,
+                           .steps = r.wind_step,
+                           .full_rounds = r.rounds,
+                           .gust_from = r.gust_from,
+                           .windy = r.windy ? 1U : 0U,
+                           .pad = 0};
+        SDL_PushGPUComputeUniformData(cmd, 0, &params, sizeof params);
+        const std::array<SDL_GPUStorageBufferReadWriteBinding, 2> writes{writes_to(out), writes_to(flags_)};
+        SDL_GPUComputePass* pass = SDL_BeginGPUComputePass(cmd, nullptr, 0, writes.data(), 2);
+        SDL_BindGPUComputePipeline(pass, fused_);
+        const std::array<SDL_GPUBuffer*, 2> reads{masks_, in};
+        SDL_BindGPUComputeStorageBuffers(pass, 0, reads.data(), 2);
+        SDL_DispatchGPUCompute(pass, static_cast<Uint32>((r.width + kFusedBlockW - 1) / kFusedBlockW),
+                               static_cast<Uint32>((r.height + kFusedBlockH - 1) / kFusedBlockH), 1);
+        SDL_EndGPUComputePass(pass);
+        std::swap(in, out);
+    }
+    for (int k = 0; !fused && k < total; ++k) {
+        const bool gust = k >= r.rounds;
+        PullParams params{.width = r.width,
+                          .height = r.height,
+                          .tiles_x = r.tiles_x,
+                          .tile_width = r.tile_width,
+                          .tile_height = r.tile_height,
+                          .cost = r.distance_cost,
+                          .line = r.age_line,
+                          .round_plus_one = static_cast<std::uint32_t>(k + 1),
+                          .steps = r.wind_step,
+                          .allowed = gust ? r.gust_from : kAllSlots,
+                          .need_open = gust ? 1U : 0U,
+                          .windy = r.windy ? 1U : 0U,
+                          .pad = 0};
         SDL_PushGPUComputeUniformData(cmd, 0, &params, sizeof params);
         const std::array<SDL_GPUStorageBufferReadWriteBinding, 2> writes{writes_to(out), writes_to(flags_)};
         SDL_GPUComputePass* pass = SDL_BeginGPUComputePass(cmd, nullptr, 0, writes.data(), 2);
@@ -283,7 +358,10 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
         return false;
     }
     stage_ = r.stage;
-    masks_sent_ = true;
+    if (send_masks) {
+        masks_sent_ = true;
+        masks_openness_ = with_openness;
+    }
 
     const auto* down = static_cast<const unsigned char*>(SDL_MapGPUTransferBuffer(device_, down_, false));
     if (down == nullptr) {
@@ -291,14 +369,16 @@ bool GpuFieldBackend::run(const core::FieldRounds& r) {
     }
     std::memcpy(r.values, down, cell_bytes);
     const auto* flags = reinterpret_cast<const std::uint32_t*>(down + cell_bytes);
+    // What the next update pulls: changed in the last full round or any gust round.
     const auto last = static_cast<std::uint32_t>(r.rounds);
     for (std::size_t t = 0; t < tiles; ++t) {
-        r.last_changed[t] = flags[t] == last ? 1 : 0;
+        r.last_changed[t] = flags[t] >= last ? 1 : 0;
         r.any_changed[t] = flags[t] != 0 ? 1 : 0;
     }
     std::memcpy(r.flow, down + cell_bytes + tile_bytes, cells); // bytes, little-endian words
     SDL_UnmapGPUTransferBuffer(device_, down_);
     ++runs_;
+    fused_runs_ += fused ? 1 : 0;
     return true;
 }
 

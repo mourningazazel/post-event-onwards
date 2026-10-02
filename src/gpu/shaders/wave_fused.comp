@@ -1,0 +1,142 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+// PEO-087: a whole update's rounds in one dispatch, by temporal blocking. A workgroup owns
+// a block of BLOCK_W x BLOCK_H cells inside one pull tile. It loads the block and a halo
+// of `halo` = full rounds + gust rounds cells round it (values and mask words) into shared
+// memory, runs every round there, and writes back only the block. Each round's result is
+// exact one cell further in from the loaded region's edge than the last, so after `halo`
+// rounds the block is exactly what one dispatch per round (wave_pull.comp) gives. Cells
+// off the map load as unreached and closed: they never offer anything that can be taken.
+// The rounds are the CPU's (pull_row, pull_row_wind): integer max and subtraction only.
+
+#include "wave_common.glsl"
+
+#ifndef BLOCK_W
+#define BLOCK_W 64
+#endif
+#define BLOCK_H 8
+#define MAX_HALO 6
+#define REGION_W (BLOCK_W + 2 * MAX_HALO)
+#define REGION_H (BLOCK_H + 2 * MAX_HALO)
+#define REGION (REGION_W * REGION_H)
+#define THREADS 256
+
+layout(local_size_x = THREADS) in;
+
+layout(std430, set = 0, binding = 0) readonly buffer Masks { uint masks[]; };
+layout(std430, set = 0, binding = 1) readonly buffer In { int a[]; };
+layout(std430, set = 1, binding = 0) writeonly buffer Out { int b[]; };
+layout(std430, set = 1, binding = 1) buffer Flags { uint flags[]; };
+layout(std140, set = 2, binding = 0) uniform Params {
+    int width;
+    int height;
+    int tiles_x;
+    int tile_width;
+    int tile_height;
+    int cost;
+    int line;
+    int halo;
+    ivec4 step_lo;
+    ivec4 step_hi;
+    int full_rounds;
+    uint gust_from; // neighbour slots that offer in a gust round
+    uint windy;
+    uint pad;
+};
+
+shared int values[2 * REGION]; // two buffers, flipped each round
+shared uint cell_masks[REGION];
+shared uint round_changed;
+
+void main() {
+    const int bx0 = int(gl_WorkGroupID.x) * BLOCK_W;
+    const int by0 = int(gl_WorkGroupID.y) * BLOCK_H;
+    const int rx0 = bx0 - halo;
+    const int ry0 = by0 - halo;
+    const int rw = BLOCK_W + 2 * halo;
+    const int rh = BLOCK_H + 2 * halo;
+    const uint lid = gl_LocalInvocationID.x;
+
+    for (int k = int(lid); k < rw * rh; k += THREADS) {
+        const int lx = k % rw;
+        const int ly = k / rw;
+        const int gx = rx0 + lx;
+        const int gy = ry0 + ly;
+        const int s = ly * REGION_W + lx;
+        if (gx >= 0 && gy >= 0 && gx < width && gy < height) {
+            values[s] = a[gy * width + gx];
+            cell_masks[s] = masks[gy * width + gx];
+        } else {
+            values[s] = kUnreached;
+            cell_masks[s] = 0u;
+        }
+    }
+    if (lid == 0u) {
+        round_changed = 0u;
+    }
+    barrier();
+
+    const int steps[8] = int[8](step_lo.x, step_lo.y, step_lo.z, step_lo.w, step_hi.x, step_hi.y, step_hi.z,
+                                step_hi.w);
+    const int offsets[8] = int[8](-REGION_W, -REGION_W + 1, 1, REGION_W + 1, REGION_W, REGION_W - 1, -1,
+                                  -REGION_W - 1);
+    const uint tile = uint((by0 / tile_height) * tiles_x + bx0 / tile_width);
+    int from = 0;
+    for (int r = 0; r < halo; ++r) {
+        const int to = REGION - from;
+        const bool gust = r >= full_rounds;
+        const uint allowed = gust ? gust_from : 0xFFu;
+        const uint need_open = gust ? 1u : 0u;
+        // Round r is exact r + 1 cells in from the region's edge, and the next round reads
+        // only cells that far in: compute just those.
+        const int cw = rw - 2 * (r + 1);
+        const int ch = rh - 2 * (r + 1);
+        for (int k = int(lid); k < cw * ch; k += THREADS) {
+            const int lx = r + 1 + k % cw;
+            const int ly = r + 1 + k / cw;
+            const int s = ly * REGION_W + lx;
+            const int old = values[from + s];
+            const uint m = cell_masks[s];
+            int v = old;
+            if ((m & 1u) != 0u) {
+                const uint corners = m >> kDiagShift;
+                int best = kUnreached;
+                for (int d = 0; d < 8; ++d) {
+                    if ((d & 1) == 1 && ((corners >> uint(d / 2)) & 1u) == 0u) {
+                        continue;
+                    }
+                    const int n = s + offsets[d];
+                    best = max(best, offer(values[from + n], cell_masks[n], d, cost, steps[d], allowed, need_open,
+                                           windy));
+                }
+                if (best > line && best > old) {
+                    v = best;
+                    const int gx = rx0 + lx;
+                    const int gy = ry0 + ly;
+                    if (lx >= halo && ly >= halo && lx < halo + BLOCK_W && ly < halo + BLOCK_H && gx < width &&
+                        gy < height) {
+                        atomicOr(round_changed, 1u);
+                    }
+                }
+            }
+            values[to + s] = v;
+        }
+        barrier();
+        if (lid == 0u && round_changed != 0u) {
+            atomicMax(flags[tile], uint(r + 1));
+            round_changed = 0u;
+        }
+        barrier();
+        from = to;
+    }
+
+    for (int k = int(lid); k < BLOCK_W * BLOCK_H; k += THREADS) {
+        const int lx = halo + k % BLOCK_W;
+        const int ly = halo + k / BLOCK_W;
+        const int gx = bx0 + k % BLOCK_W;
+        const int gy = by0 + k / BLOCK_W;
+        if (gx < width && gy < height) {
+            b[gy * width + gx] = values[from + ly * REGION_W + lx];
+        }
+    }
+}
