@@ -15,7 +15,8 @@ add_executable(peo_core_tests
     core/test_scent_wave.cpp
     core/test_turn_input.cpp
     core/test_executor.cpp
-    core/test_swarm.cpp)
+    core/test_swarm.cpp
+    siege/test_siege_layouts.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 # PEO-080: the executor tests also run the frontend's thread pool (header-only, no SDL).
 target_include_directories(peo_core_tests PRIVATE ${CMAKE_SOURCE_DIR}/src/app)
