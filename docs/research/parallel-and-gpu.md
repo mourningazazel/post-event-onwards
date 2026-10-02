@@ -247,6 +247,30 @@ with 50,000 Dead is no faster with it (10.9 ms both ways: the Dead's half bounds
 stays at 0.13 ms. What could change that is PEO-087's fused rounds in shared memory, and an
 active-tile list; both are measured from here.
 
+**Under wind it does pay (PEO-087).** A windy round costs the CPU about five calm ones (each
+offer carries its own cost), and the GPU does not mind. Full wind, gust 2, saturated, release,
+median of 30, GPU with one dispatch per round, readback included:
+
+| field | CPU, 1 thread | CPU, 4 workers | GPU, per round | GPU, fused |
+|---|---|---|---|---|
+| 256x256 | 0.90 ms | 0.34 ms | 0.53 ms | 0.62 ms |
+| 512x512 | 3.3 ms | 1.3 ms | 0.88 ms | 1.4 ms |
+| 1024x1024 | 13-16 ms | 5.8-7.5 ms | 2.6-3.5 ms | 3.4-3.7 ms |
+| 2048x2048 | 52-58 ms | 25-30 ms | 9.6-11 ms | 12.7 ms |
+
+So the app runs windy stages of 512x512 and up on the GPU and calm ones never. A windy World at
+1024x1024 with 50,000 Dead speculates in 13.4 ms instead of 22.5 ms; commit stays at 0.18 ms.
+
+The fused path (a whole update in one dispatch, temporal blocking in shared memory) gives the
+same bits and loses everywhere: 0.77x the per-round path at 1024 and 2048, 0.64x at 512. Why:
+its block must sit in one pull tile, so it is 8 rows tall, and a halo of speed + gust = 3 cells
+loads 70 x 14 cells for 64 x 8 outputs and computes 1.3x the cells of the per-round path even
+with each round shrinking to its exact cells. That trades memory traffic for arithmetic, and on
+the M1's unified memory the per-round traffic was not the cost: the rounds are compute-bound.
+Block width 64 (32 was the same within noise; 128 halved the speed). Lavapipe runs both paths in
+CI for equality only; its timings are a CPU emulating a GPU and say nothing about this choice. A
+taller block would need tile flags split per tile row; that is a measured next step, not done.
+
 ## 6. What this could let the game do
 
 Each idea is a direction, not a plan. Costs are rough and say which resource they lean on.
