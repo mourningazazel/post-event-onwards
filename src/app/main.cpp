@@ -55,6 +55,11 @@ constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t
 /// it never runs.
 /// `--gpu-min-cells N` opts in for a machine where it does; `--no-gpu-compute` forbids it.
 constexpr std::size_t kGpuFieldMinCells = std::numeric_limits<std::size_t>::max();
+/// Under a wind with gusts (PEO-087) the CPU's windy rounds cost about five calm ones and
+/// the GPU wins from 512x512: 0.9 against 1.3 ms on 4 CPU workers there, 2.6 against 6.6 at
+/// 1024, 9.8 against 28 at 2048 (full wind, gust 2, readback included); 256x256 is 0.53
+/// against 0.34 ms.
+constexpr std::size_t kGpuWindyMinCells = std::size_t{512} * 512;
 
 #ifdef PEO_HAVE_GPU
 /// Owns the compute device; declared before the backend, so destroyed after it.
@@ -376,10 +381,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     std::size_t threads = default_threads();
     bool gpu_compute = true;
     std::size_t gpu_min_cells = kGpuFieldMinCells;
+    bool gpu_min_given = false;
     for (int i = 1; i < argc; ++i) {
         const std::string_view arg(argv[i]);
         if (arg == "--threads" || arg == "--gpu-min-cells") {
             std::size_t& value = arg == "--threads" ? threads : gpu_min_cells;
+            gpu_min_given = gpu_min_given || arg == "--gpu-min-cells";
             if (i + 1 < argc) {
                 value = parse_count(argv[i], argv[i + 1], value);
                 ++i;
@@ -403,16 +410,20 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     app->world.emplace(seed, game_params());
     app->world->set_executor(&*app->pool);
 #ifdef PEO_HAVE_GPU
-    // A device only when the GPU could run at all; without one the CPU runs, as before.
-    if (gpu_compute && gpu_min_cells != kGpuFieldMinCells) {
+    // A device only when the GPU could run on this stage; without one the CPU runs, as
+    // before. --gpu-min-cells sets both thresholds.
+    const std::size_t windy_min_cells = gpu_min_given ? gpu_min_cells : kGpuWindyMinCells;
+    const StageSpec& stage = app->world->stage().spec;
+    const auto stage_cells = static_cast<std::size_t>(stage.width) * static_cast<std::size_t>(stage.height);
+    if (gpu_compute && stage_cells >= std::min(gpu_min_cells, windy_min_cells)) {
         app->gpu_device.device = peo::gpu::create_compute_device();
         if (app->gpu_device.device != nullptr) {
-            app->gpu.emplace(app->gpu_device.device, gpu_min_cells);
+            app->gpu.emplace(app->gpu_device.device, gpu_min_cells, windy_min_cells);
         }
     }
     if (app->gpu && app->gpu->ready()) {
         app->world->set_field_backend(&*app->gpu);
-        SDL_Log("GPU scent field from %zu cells (%s)", gpu_min_cells,
+        SDL_Log("GPU scent field from %zu cells calm, %zu windy (%s)", gpu_min_cells, windy_min_cells,
                 SDL_GetGPUDeviceDriver(app->gpu_device.device));
     } else {
         SDL_Log("scent field on the CPU%s", gpu_compute ? "" : " (--no-gpu-compute)");
