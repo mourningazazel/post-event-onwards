@@ -931,16 +931,21 @@
       "order": 747,
       "type": "feature",
       "title": "GPU wind and gust rounds fused in shared memory; direction bytes on the GPU under wind",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed; after PEO-081"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: 263167c..b463903; full report in the report commit. Both GPU paths bit-identical (M1, lavapipe). Windy GPU beats 4 workers from 512²; fused loses to per-round (0.77x), why in research 5."
         }
       ],
       "references": [],
