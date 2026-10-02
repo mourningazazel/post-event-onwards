@@ -815,10 +815,10 @@
       "order": 697,
       "type": "feature",
       "title": "GPU field backend matching the CPU pull bit for bit",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-01",
       "notes": [
         {
@@ -830,6 +830,11 @@
           "at": "2026-10-01",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-01",
+          "by": "builder",
+          "text": "commits: 8325103 core seam, 9355f3c peo_gpu+tests, a4045a4 app, 061d566 0fd2ffd ci, 81d3600 docs. tests: verify --full and CI green; GPU equals CPU (values, flags, bytes) every update, M1 and lavapipe; GPU World golden equal. perf (M1, GPU incl. readback / CPU 1 / CPU 4): 512 0.8/0.62/0.25 ms, 1024 2.0-2.5/2.4/0.9, 2048 8.8-10.2/10.1/4.0; commit 0.13 ms with it. open: acceptance missed, GPU never beats 4 workers here, so the default is off (--gpu-min-cells opts in); fused rounds (PEO-087) are the next lever. manual 1024 run not done: no stage-size option, desktop in use."
         }
       ],
       "references": [
