@@ -22,6 +22,9 @@ Turn an item into something the Builder can finish without asking.
      the wall".
    - Manual: what the Builder should do and what to look for, including
      one perf observation when the change touches a per-tick loop.
+   - Per-update, per-second or per-Dead work: name the
+     `docs/bottlenecks.md` rows it touches and its expected cost, and make
+     before-and-after `/perf` numbers for them an acceptance line.
 4. Split anything over effort L into several items with `depends_on`.
    If briefing needs a gameplay, abstraction or direction choice, or the
    right design is a big rewrite: add a `D-xxx` entry to

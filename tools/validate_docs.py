@@ -27,6 +27,7 @@ WORD_CAPS = {
     "CLAUDE.md": 300,
     "docs/README.md": 500,
     "docs/roles.md": 1200,
+    "docs/bottlenecks.md": 900,
     "docs/production/vision.md": 900,
     "docs/production/decisions.md": 1500,
     "docs/production/DECISIONS_NEEDED.md": 800,

@@ -27,6 +27,8 @@ Horde and active area are Ryan's "two different hardware limits". Horde size is
 limited by latency and core speed. Active area is limited by cache size, which is why a
 large L3 matters. Stage size is limited by bandwidth.
 
+*Current split per pass: [bottlenecks.md](../bottlenecks.md) (2026-10-02: the desire field now leads).*
+
 *Update 2026-10-01: PEO-078 made the scent field about 20x cheaper per active cell, so the horde
 axis now dominates: 512² with 50,000 Dead and a saturated field measures 5.5 ms, of which about
 5 ms is the Dead. The ceilings below were estimated with the old field and are now conservative on
