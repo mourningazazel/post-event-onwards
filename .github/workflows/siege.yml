@@ -1,0 +1,30 @@
+# PEO-088 (N022): the siege suite, on demand only. Run it by hand (Actions > siege > Run
+# workflow) after a change to horde or scent mechanics; never on push or PR (Ryan,
+# 2026-10-02). It builds peo_siege, checks a full run against the committed baseline and
+# uploads the fresh report and maps either way.
+name: siege
+
+on:
+  workflow_dispatch:
+
+jobs:
+  siege:
+    name: siege suite (--check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - run: cmake --preset headless-release -DPEO_BUILD_GPU=OFF
+      - run: cmake --build --preset headless-release --target peo_siege
+      - run: |
+          start=$(date +%s)
+          ./build/headless-release/tests/peo_siege --out siege-out --check
+          status=$?
+          echo "wall time: $(( $(date +%s) - start )) s"
+          exit $status
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: siege-report
+          path: siege-out/
