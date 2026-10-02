@@ -1,0 +1,52 @@
+#version 450
+// PEO-081: the direction bytes (PEO-079) of four cells per invocation, packed into one
+// word, as ScentWave's flow_row and refresh_flow_cell write them: the first neighbour in
+// kNeighbours8 order (N, NE, E, SE, S, SW, W, NW) holding the strict maximum stored
+// value above the cell's own, among those a step may reach; 0xFF when none. Which
+// neighbours a step may reach (on the map, open, and for a diagonal through the cell's
+// corner mask) is precomputed per stage into bits 5-12 of the cell's mask word, so this
+// pass reads only values.
+
+layout(local_size_x = 64) in;
+
+layout(std430, set = 0, binding = 0) readonly buffer Masks { uint masks[]; };
+layout(std430, set = 0, binding = 1) readonly buffer Values { int a[]; };
+layout(std430, set = 1, binding = 0) writeonly buffer Flow { uint flow[]; };
+layout(std140, set = 2, binding = 0) uniform Params {
+    int width;
+    int height;
+};
+
+const uint kReachShift = 5u;
+
+uint direction(int i) {
+    const uint reach = masks[i] >> kReachShift;
+    const int offset[8] = int[8](-width, -width + 1, 1, width + 1, width, width - 1, -1, -width - 1);
+    int best = a[i];
+    uint to = 0xFFu;
+    for (int d = 0; d < 8; ++d) {
+        if (((reach >> uint(d)) & 1u) != 0u) {
+            const int v = a[i + offset[d]];
+            if (v > best) {
+                best = v;
+                to = uint(d);
+            }
+        }
+    }
+    return to;
+}
+
+void main() {
+    const uint word = gl_GlobalInvocationID.x;
+    const int cells = width * height;
+    const int first = int(word) * 4;
+    if (first >= cells) {
+        return;
+    }
+    uint packed = 0u;
+    for (int k = 0; k < 4; ++k) {
+        const uint to = first + k < cells ? direction(first + k) : 0xFFu;
+        packed |= to << uint(8 * k);
+    }
+    flow[word] = packed;
+}

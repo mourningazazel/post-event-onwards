@@ -1,0 +1,71 @@
+#version 450
+// PEO-081: one round of the calm scent wave's pull (D-024, PEO-078) for every cell, as
+// ScentWave's CPU pull (pull_row for the interior, pull_border_cell on the map's edge)
+// does it: integer max and subtraction only, so every GPU gives the CPU's bits. A cell
+// takes the best of its neighbours' values less the distance cost, if that beats its
+// own and the age line. Orthogonal neighbours offer whenever they are on the map; a
+// diagonal only through the cell's corner mask (PEO-044).
+//
+// Dispatched in two dimensions: a workgroup is 64 cells of one row, which the backend
+// keeps inside one pull tile (the tile width is a multiple of 64). The group gathers
+// "something changed" in shared memory, and one lane records the round in the tile's
+// flag (atomicMax), so a saturated field costs one global atomic per group, not per cell.
+
+layout(local_size_x = 64) in;
+
+// Mask bits per cell: 1 open, then the diagonal corner mask (NE, SE, SW, NW) << 1.
+layout(std430, set = 0, binding = 0) readonly buffer Masks { uint masks[]; };
+layout(std430, set = 0, binding = 1) readonly buffer In { int a[]; };
+layout(std430, set = 1, binding = 0) writeonly buffer Out { int b[]; };
+layout(std430, set = 1, binding = 1) buffer Flags { uint flags[]; };
+layout(std140, set = 2, binding = 0) uniform Params {
+    int width;
+    int height;
+    int tiles_x;
+    int tile_width;
+    int tile_height;
+    int cost;
+    int line;
+    uint round_plus_one;
+};
+
+const int kUnreached = -1073741824; // INT32_MIN / 2, as kWaveUnreached
+
+shared uint group_changed;
+
+void main() {
+    if (gl_LocalInvocationID.x == 0u) {
+        group_changed = 0u;
+    }
+    barrier();
+    const int x = int(gl_GlobalInvocationID.x);
+    const int y = int(gl_GlobalInvocationID.y);
+    if (x < width && y < height) {
+        const uint i = uint(y * width + x);
+        const int old = a[i];
+        const uint m = masks[i];
+        int v = old;
+        if ((m & 1u) != 0u) {
+            int best = kUnreached;
+            if (y > 0) best = max(best, a[i - uint(width)]);
+            if (x < width - 1) best = max(best, a[i + 1u]);
+            if (y < height - 1) best = max(best, a[i + uint(width)]);
+            if (x > 0) best = max(best, a[i - 1u]);
+            const uint d = m >> 1;
+            if ((d & 1u) != 0u) best = max(best, a[i - uint(width) + 1u]); // NE
+            if ((d & 2u) != 0u) best = max(best, a[i + uint(width) + 1u]); // SE
+            if ((d & 4u) != 0u) best = max(best, a[i + uint(width) - 1u]); // SW
+            if ((d & 8u) != 0u) best = max(best, a[i - uint(width) - 1u]); // NW
+            const int candidate = best - cost;
+            if (candidate > line && candidate > old) {
+                v = candidate;
+                atomicOr(group_changed, 1u);
+            }
+        }
+        b[i] = v;
+    }
+    barrier();
+    if (gl_LocalInvocationID.x == 0u && group_changed != 0u) {
+        atomicMax(flags[uint((y / tile_height) * tiles_x + x / tile_width)], round_plus_one);
+    }
+}

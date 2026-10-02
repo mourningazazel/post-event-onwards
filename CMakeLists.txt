@@ -13,6 +13,7 @@ option(PEO_BUILD_FRONTEND "Build the SDL3 frontend (needs a display to run)" ON)
 option(PEO_BUILD_TESTS "Build the headless core test suite" ON)
 option(PEO_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(PEO_ENABLE_SANITIZERS "Enable ASan/UBSan (Debug, GCC/Clang only)" OFF)
+option(PEO_BUILD_GPU "Build peo_gpu, the scent field on the GPU (needs glslc or glslangValidator, and SDL3)" ON)
 option(PEO_ENABLE_TSAN "Enable ThreadSanitizer (GCC/Clang only; not with PEO_ENABLE_SANITIZERS)" OFF)
 option(PEO_FETCH_SDL "Fetch SDL3 from source when no system package is found" ON)
 
@@ -46,5 +47,28 @@ endif()
 # ---------------------------------------------------------------------------
 if(PEO_BUILD_FRONTEND)
     include(FindOrFetchSDL3)
+endif()
+
+# ---------------------------------------------------------------------------
+# peo_gpu: the scent field on the GPU (ADR-0014, PEO-081). Skipped, saying so, when no
+# shader compiler is found; core and the frontend never need it.
+# ---------------------------------------------------------------------------
+if(PEO_BUILD_GPU)
+    find_program(PEO_GLSLC glslc)
+    find_program(PEO_GLSLANG glslangValidator)
+    if(PEO_GLSLC OR PEO_GLSLANG)
+        if(NOT TARGET SDL3::SDL3)
+            include(FindOrFetchSDL3)
+        endif()
+        add_subdirectory(src/gpu)
+        if(PEO_BUILD_TESTS)
+            add_subdirectory(tests/gpu)
+        endif()
+    else()
+        message(STATUS "peo_gpu: skipped, no glslc or glslangValidator found")
+    endif()
+endif()
+
+if(PEO_BUILD_FRONTEND)
     add_subdirectory(src/app)
 endif()
