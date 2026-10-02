@@ -926,7 +926,7 @@
       "order": 747,
       "type": "feature",
       "title": "GPU wind and gust rounds fused in shared memory; direction bytes on the GPU under wind",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
