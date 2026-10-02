@@ -13,6 +13,9 @@ Turn an item into something the Builder can finish without asking.
    `tests/core/` that pins the behaviour. Leave the implementation as a
    stub only if it keeps the build green; otherwise leave the test red and
    say so in the brief.
+   A brief that changes horde or scent mechanics (the Dead's movement, draw or
+   knobs, the scent field or wind, the desire field, a new horde mechanic) lists
+   `peo_siege --check` under Tests (docs/testing.md, PEO-088).
 3. Write the brief JSON (fields: goal, context, units, acceptance, tests,
    manual, out_of_scope; see `docs/roles.md#handoff-formats`) and apply it:
    `python3 tools/work_queue.py brief <id> --file <path>`.

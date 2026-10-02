@@ -392,7 +392,8 @@ Every change to the movement rule or its knobs must keep these scenarios passing
 | `trample-damage` | A prone unit under a moving crowd takes blunt damage at the configured rate. |
 
 Each runs headlessly with the golden seed set and reports its metric, so a tuning change shows
-as a number, not a feeling.
+as a number, not a feeling. The siege suite (PEO-088, `peo_siege`, docs/testing.md) runs the horde
+round three buildings for 48 game hours on demand, against a committed baseline.
 
 ## Owner answers, round 4 ([N016](notes/N016-review-answers-wind-characters-sound-gpu-z-levels-speed-items.md)) and the design they lead to
 
