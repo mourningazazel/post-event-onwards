@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -24,14 +25,27 @@ struct FieldRounds {
     const std::uint8_t* diag = nullptr;
     /// In: the field before the rounds (deposits included). Out: after them.
     std::int32_t* values = nullptr;
-    /// Out, per tile: changed in the last round; changed in any round.
+    /// Out, per tile: changed in the last full round or any gust round after it (what
+    /// the next update pulls); changed in any round.
     std::uint8_t* last_changed = nullptr;
     std::uint8_t* any_changed = nullptr;
     /// Out, per cell: the direction byte for the new values (PEO-079).
     std::uint8_t* flow = nullptr;
     std::int32_t distance_cost = 0;
     std::int32_t age_line = 0;
+    /// Full rounds (the wave's speed).
     int rounds = 0;
+    /// Under a wind (PEO-087): per cell, how far the wind reaches it (0 indoors, 255
+    /// outdoors). Per neighbour k in kNeighbours8 order, for the offer from that neighbour
+    /// into a cell: the step taken off its cost, scaled by the sender's openness / 255
+    /// (positive cheaper, negative dearer); bit k of gust_from when it offers in a gust
+    /// round (it lies upwind). gust_rounds of those follow the full ones. Calm: windy is
+    /// false and the rest is ignored.
+    bool windy = false;
+    const std::uint8_t* openness = nullptr;
+    std::array<std::int32_t, 8> wind_step{};
+    std::uint8_t gust_from = 0;
+    int gust_rounds = 0;
 };
 
 /// Where a calm wave's update can run instead of ScentWave's own CPU pull, which is the

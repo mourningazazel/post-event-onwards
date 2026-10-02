@@ -132,8 +132,8 @@ public:
     /// executor gives the same bits as none (serial), which is the default.
     void set_executor(Executor* executor) noexcept { executor_ = executor; }
     /// Where a calm update may run instead of the CPU pull (ADR-0014, PEO-081): any
-    /// backend gives the same bits; null, the default, is the CPU pull. A windy wave
-    /// always runs on the CPU.
+    /// backend gives the same bits, calm or windy (PEO-087); null, the default, is the
+    /// CPU pull.
     void set_field_backend(FieldBackend* backend) noexcept { backend_ = backend; }
     [[nodiscard]] const WindTable& wind() const noexcept { return wind_; }
 

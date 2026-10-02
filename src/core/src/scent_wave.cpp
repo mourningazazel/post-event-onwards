@@ -411,7 +411,7 @@ void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* open
     }
     assert(updates_ < max_wave_updates(params_)); // the age line stays in int32 (PEO-077)
     ++updates_;
-    if (backend_ != nullptr && !windy_ && run_on_backend()) {
+    if (backend_ != nullptr && run_on_backend()) {
         return;
     }
     if (other_behind_) {
@@ -439,22 +439,35 @@ void ScentWave::update(const Grid<bool>& blocked, const Grid<std::uint8_t>* open
 }
 
 bool ScentWave::run_on_backend() {
-    const FieldRounds rounds{.width = width_,
-                             .height = height_,
-                             .tiles_x = tiles_x_,
-                             .tiles_y = tiles_y_,
-                             .tile_width = kWaveTileWidth,
-                             .tile_height = kWaveTileHeight,
-                             .stage = partner_token_,
-                             .open = open_.data(),
-                             .diag = diag_.data(),
-                             .values = buf_[cur_].data(),
-                             .last_changed = backend_last_.data(),
-                             .any_changed = backend_any_.data(),
-                             .flow = flow_.data(),
-                             .distance_cost = params_.distance_cost,
-                             .age_line = age_line(),
-                             .rounds = params_.speed};
+    FieldRounds rounds{.width = width_,
+                       .height = height_,
+                       .tiles_x = tiles_x_,
+                       .tiles_y = tiles_y_,
+                       .tile_width = kWaveTileWidth,
+                       .tile_height = kWaveTileHeight,
+                       .stage = partner_token_,
+                       .open = open_.data(),
+                       .diag = diag_.data(),
+                       .values = buf_[cur_].data(),
+                       .last_changed = backend_last_.data(),
+                       .any_changed = backend_any_.data(),
+                       .flow = flow_.data(),
+                       .distance_cost = params_.distance_cost,
+                       .age_line = age_line(),
+                       .rounds = params_.speed};
+    if (windy_) {
+        // The offer from neighbour k into a cell travels the opposite way, k + 4.
+        rounds.windy = true;
+        rounds.openness = openness_.data();
+        for (std::size_t k = 0; k < kDirections; ++k) {
+            const std::size_t travel = (k + kDirections / 2) % kDirections;
+            rounds.wind_step[k] = wind_.step[travel];
+            if (((static_cast<unsigned>(wind_.downwind) >> travel) & 1U) != 0) {
+                rounds.gust_from = static_cast<std::uint8_t>(rounds.gust_from | (1U << k));
+            }
+        }
+        rounds.gust_rounds = params_.gust > 0 && wind_.downwind != 0 ? params_.gust : 0;
+    }
     if (!backend_->run(rounds)) {
         return false;
     }
