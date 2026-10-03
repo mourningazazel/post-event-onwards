@@ -20,3 +20,5 @@
 
 - [ADR-0011](../../adr/0011-global-event-clock-and-world-event.md), item 4
 - [`purposes.md`](../purposes.md): P-WO-18
+
+> Superseded: D-040 A (2026-10-03, N023) removed the 30-day gate; revisited areas catch up on every reload (ADR-0019).

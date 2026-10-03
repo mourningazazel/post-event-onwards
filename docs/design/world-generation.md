@@ -217,7 +217,8 @@ All six N005 follow-up questions were answered in N007; see below.
 
 - **A 100 km geography square is generated whole** before anything inside it, at about 100 m
   cells: elevation, ranges, valleys, forests, lakes, coast and sea, river courses. It replaces
-  "L0 evaluated anywhere" as the parent of L1; what lies beyond one square is D-041.
+  "L0 evaluated anywhere" as the parent of L1. The world is endless: neighbouring squares
+  generate whole as the player nears an edge (D-041 A).
 - **Water bodies:** lakes and sea are polygons; towns may border them, and shores get their own
   buildings, rooms and items (docks, boat sheds, bait shops, lakeside houses, breakwaters).
 - **Towns are shaped by what they sit on:** a river through a town gets bridges where streets
@@ -236,7 +237,8 @@ All six N005 follow-up questions were answered in N007; see below.
   things** age on gentler curves from when they were last touched: barricades weaken and fail,
   seals get broken into, stashes get taken. Terrain, buildings and containers are not
   regenerated; unopened containers already resolve at the clock they are opened (D-023).
-- Whether a minimum time away (N009's 30 days) still applies is D-040.
+- **No gate** (D-040 A): any reload catches up, so a day away changes a little and a month a
+  lot. N009's 30-day gate is retired.
 
 ## No animals, and the crows ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
 
