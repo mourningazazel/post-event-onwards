@@ -227,6 +227,9 @@ rules** exist only for true transformations: cooking, boiling water, chemistry, 
 
 ## 4. How Claude authors content
 
+> **D-042 B (2026-10-03):** agents author data only. Descriptions, flavour text, notes and lore
+> are the owner's; existing agent-written strings are placeholders until he replaces them.
+
 1. **Registry first:** properties, features, capabilities, reactions and tags, with units and
    which systems read each.
 2. **Materials table.**

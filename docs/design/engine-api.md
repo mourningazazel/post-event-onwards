@@ -80,6 +80,12 @@ Cheap rules that keep the door open, applied in briefs and reviews:
 4. Public headers stay one concept per file with plain value types: they are the future
    binding surface.
 
+## The owner's authoring tool
+
+The owner will build a small terminal GUI to author the game's text (descriptions and the like)
+and much of the later game (D-042). Content stays in plain, documented data files so that tool
+can read and write them without going through agents.
+
 ## Open, for the owner later
 
 Lua tables or a custom markup; whether scripts can define new systems or only content and

@@ -21,8 +21,8 @@ Each ADR records **one** decision: its context, the decision itself, and its con
 | [0012](0012-speculative-turns.md) | Turn-based, with the next turn computed while waiting | Accepted (names and budgets proposed; point 5 superseded by 0014) |
 | [0013](0013-tile-scale-and-shared-occupancy.md) | One-metre tiles, one storey per z-level, shared tile occupancy | Accepted |
 | [0014](0014-threads-and-gpu-compute-in-core.md) | Core uses threads and GPU compute it does not own | Accepted (interface names proposed) |
-| [0015](0015-mit-compatible-dependencies-and-original-assets.md) | MIT-compatible dependencies; every asset original | Accepted |
-| [0016](0016-turn-substeps-and-three-second-walk.md) | Twelve substeps per walking turn; a walking turn is 3 game seconds | Accepted (long-action cost: D-039) |
+| [0015](0015-mit-compatible-dependencies-and-original-assets.md) | MIT-compatible dependencies; every asset original | Accepted (owner writes all text: D-042 B) |
+| [0016](0016-turn-substeps-and-three-second-walk.md) | Twelve substeps per walking turn; a walking turn is 3 game seconds | Accepted (long-action cost: D-039 A) |
 | [0017](0017-save-evolution-fallbacks-and-sync-scopes.md) | Saves survive content changes, keep two fallbacks, and know what syncs | Accepted |
-| [0018](0018-geography-first-water-and-fitted-towns.md) | Geography first; towns fit the land and water they sit on | Accepted (extent: D-041) |
-| [0019](0019-revisits-re-age-player-made-things.md) | Revisited areas catch up to the clock, player-made things included | Accepted (gate: D-040) |
+| [0018](0018-geography-first-water-and-fitted-towns.md) | Geography first; towns fit the land and water they sit on | Accepted (endless squares: D-041 A) |
+| [0019](0019-revisits-re-age-player-made-things.md) | Revisited areas catch up to the clock, player-made things included | Accepted (no gate: D-040 A) |

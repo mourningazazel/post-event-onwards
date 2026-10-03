@@ -11,8 +11,8 @@ survival actions, skills content, brands and descriptions.
 | [design/brands.md](../design/brands.md), [design/content-backlog.md](../design/content-backlog.md) | Names, open content work |
 | [../content/README.md](../../content/README.md) | The data format |
 
-- **Decisions:** D-003, D-005 (books), D-023 (items as seeds), D-026 to D-030. Open: D-042.
+- **Decisions:** D-003, D-005 (books), D-023 (items as seeds), D-026 to D-030, D-042.
 - **Owner notes:** N008, N010, N011, N012, N013, N015, N017, N018.
-- **Rule (ADR-0015):** every text and art asset is original; the owner writes detailed
-  descriptions and lore.
+- **Rule (ADR-0015, D-042 B):** agents author data only; every description, flavour line,
+  note and piece of lore is the owner's. Existing agent text is placeholder.
 - **Queue:** PEO-008, 012, 013, 015, 019, 020, 050, 053, 064.

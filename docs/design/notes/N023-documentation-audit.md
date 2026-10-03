@@ -155,4 +155,4 @@
 - [world-generation.md](../world-generation.md) "Geography first" and "Revisits"
 - [research/roguebasin-notes.md](../../research/roguebasin-notes.md) rewritten
 - [vision.md](../../production/vision.md) tone and succession; `docs/domains/`
-- Open: D-039 to D-042; deferred queue items PEO-090 to PEO-098
+- Answered 2026-10-03: D-039 A, D-040 A, D-041 A, D-042 B (decisions.md); deferred queue items PEO-090 to PEO-098

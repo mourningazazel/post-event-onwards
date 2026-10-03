@@ -9,5 +9,5 @@ logic in it is a bug (AGENTS.md).
 | [design/engine-api.md](../design/engine-api.md) "UI as data" | How menus will be described |
 | `src/app/` | The frontend |
 
-- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). Open: D-042 (font).
+- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's).
 - **Queue:** PEO-018 (crow text); deferred PEO-097.

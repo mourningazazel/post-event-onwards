@@ -12,6 +12,6 @@ speculating the next turn, and the executor that runs passes on threads or the G
 
 - **ADRs:** 0005, 0012, 0014, 0016.
 - **Decisions:** D-002, D-011, D-014/D-015 (clock; amended by ADR-0016), D-021 (budget),
-  D-031 (slots), D-032 (taps), D-035, D-036. Open: D-039.
+  D-031 (slots), D-032 (taps), D-035, D-036. D-039 A.
 - **Owner notes:** N014 (speculation), N020, N023.
 - **Queue:** PEO-006 (replay), 080, 081, 082, 083, 087; deferred PEO-090.

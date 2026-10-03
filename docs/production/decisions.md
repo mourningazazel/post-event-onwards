@@ -5,8 +5,36 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-024, D-032, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-029, D-032, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-10-03 · D-042 · The owner writes every player-facing line
+
+User decision: B. "I don't want you doing the more creative work that i can do myself." Agents
+author data only (properties, tags, numbers, structure) and write no new descriptions, flavour
+text, notes or lore. Existing agent-written `desc` and flavour strings stay as placeholders
+until the owner replaces them. The font, for now, is a free-use one: SDL3's built-in debug font
+(Zlib), later the owner's own. Later the owner will build a small terminal GUI to author the
+game's text and much of the later game; the content format should stay easy for a tool to
+read and write. Consequence: ADR-0015 point 2; content-model §4; PEO-008.
+
+## 2026-10-03 · D-041 · The world is endless, in 100 km geography squares
+
+User decision: A. Neighbouring squares generate whole when the player nears an edge, with coast
+and ranges continuous across them (ADR-0018, ADR-0007). Consequence: PEO-095.
+
+## 2026-10-03 · D-040 · Revisits have no gate
+
+User decision: A ("if that is easily accomplishable"; it is simpler than a gate, since the
+catch-up is closed form). Any area out of the active range catches up when reloaded, so a day
+away changes a little and a month a lot. Replaces N009's 30-day gate. Consequence: ADR-0019;
+PEO-094.
+
+## 2026-10-03 · D-039 · Long actions cost twice the updates under 3 s turns
+
+User decision: A. Every turn behaves as today; sleeping and waiting keep their hours, so a time
+skip runs twice today's updates per game hour, and fast time passing (PEO-082, threads and the
+GPU) absorbs it. Consequence: ADR-0016; PEO-090.
 
 ## 2026-10-03 · N023 · Owner's documentation audit
 
@@ -18,7 +46,7 @@ content to generic stand-ins or junk, and tag each section's sync scope for a fu
 clients (ADR-0017). Geography is generated first in 100 km squares with lakes and sea, and
 towns fit it; most towns have no river (ADR-0018). Revisited areas catch up lazily, the horde
 thinning and player-made things aging, with no global day pass (ADR-0019). Docs are loaded by
-domain (`docs/domains/`). Open: D-039 to D-042.
+domain (`docs/domains/`). D-039 to D-042 answered below.
 
 ## 2026-10-01 · D-038 · The Dead are surer on a trail as the scent gets stronger
 
@@ -100,34 +128,3 @@ hobby, a smoker, a trace) replaces items instead: its own table is blended into 
 pick from each in turn, so the container shows clear evidence of it. Nested containers inherit
 context. Why: predictable contents; unique finds placed precisely. Consequence: PEO-057 authors it;
 PEO-053 generates purpose, then the main fill, then extras, all from the compartment seed.
-
-## 2026-09-30 · D-029 · A stack's quality is a mean plus a spread
-
-User decision: B (N017). A line holds a mean quality and a spread; an item taken from it samples
-its quality from them with a counter-based hash of its address. Consequence: PEO-013.
-
-## 2026-09-30 · D-028 · Soak travels with portable absorbers
-
-User decision: B (N017). A portable absorber (mattress, cushion, clothing) keeps its soak as a value
-on the thing and takes it along when moved; floors and fixed furniture keep soak on the tile.
-Consequence: PEO-038 reads tile soak plus the soak of absorbers on the tile; PEO-055 derives rates.
-
-## 2026-09-30 · D-027 · Each compartment is searched on its own
-
-User decision: B (N017). A drawer or shelf costs its own search time, from its volume. The tedium is
-intended; the menus must make it quick to move through, so only game time is slow. Consequence:
-contents are generated per compartment (PEO-053).
-
-## 2026-09-30 · D-026 · A quantity is one kind; an item taken out gains its detail
-
-User decision, the owner's own rule (N017). A line in a container is one kind ("box of nails"). An
-item taken out instantiates with its details at that moment; put back, it lists as its own entry
-beside the nameless quantity, never merged. Entries get no unique names; an unexamined item is
-marked visually and gains details when examined, removed or modified. Consequence: amends D3.2's
-merge rule for instantiated items; PEO-050, PEO-053.
-
-## 2026-09-30 · D-025 · Rot scales the pull down, never zeroes it
-
-User decision: A (N017), amending D-012. In the integer field (D-024), whose values are log
-strength, a Dead subtracts rot times a scale from what it reads, which divides the linear
-pull. Why: a 1:1 subtraction zeroed every cell past about 12 cells. Consequence: PEO-039.
