@@ -251,9 +251,10 @@ def cmd_check(_: argparse.Namespace) -> int:
         for field in BRIEF_FIELDS:
             if again[field] != brief[field]:
                 errors.append(f"{item['id']}: brief field '{field}' does not survive a write/read cycle: {clip(brief[field])} -> {clip(again[field])}")
-    # Orphan brief files are noise, not breakage: report, never fail.
+    # Orphan brief files are noise, not breakage: report, never fail. A deferred
+    # item keeps its brief for when it is promoted, so it is not an orphan.
     for path in sorted(BRIEFS_DIR.glob(f"{ID_PREFIX}-*.md")):
-        if path.stem not in ids:
+        if path.stem not in seen:
             print(f"queue note: orphan brief {path.relative_to(ROOT)} (no live item {path.stem})")
     for e in errors:
         print("QUEUE ERROR:", e)
