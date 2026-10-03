@@ -6,8 +6,11 @@ description: Architect: turn a Pending item into a full brief with units, accept
 
 Turn an item into something the Builder can finish without asking.
 
-1. `python3 tools/work_queue.py show <id>`; read `docs/production/vision.md`
-   and the `docs/architecture.md` section for the system involved.
+1. `python3 tools/work_queue.py show <id>`; read `docs/production/vision.md`,
+   the item's domain page (`docs/domains/`: in its references, or the page
+   that lists its id) and the
+   `docs/architecture.md` section for the system involved. Load only what the
+   domain page lists for this item; other domains only where the work crosses.
 2. Decide the seam. If the item needs a new public interface, write the
    header in `src/core/include/peo/core/` with doc comments and a doctest in
    `tests/core/` that pins the behaviour. Leave the implementation as a
@@ -19,6 +22,7 @@ Turn an item into something the Builder can finish without asking.
 3. Write the brief JSON (fields: goal, context, units, acceptance, tests,
    manual, out_of_scope; see `docs/roles.md#handoff-formats`) and apply it:
    `python3 tools/work_queue.py brief <id> --file <path>`.
+   - Context: the domain page first, then only the docs this item needs.
    - Units: ordered, commit-sized, each named with its layer: `core:`,
      `test:`, `app:`, `docs:`.
    - Acceptance: observable. "`ctest` passes", "in game, the Dead stop at

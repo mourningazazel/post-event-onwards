@@ -9,7 +9,9 @@ Work the queue, earliest actionable item first, until told to stop.
 1. `git fetch origin main && git merge --ff-only origin/main`.
 2. `python3 tools/work_queue.py next --owner builder`. Nothing? Say so and
    stop; do not invent work.
-3. `show <id>`; read every path in `brief.context`. If the brief is missing
+3. `show <id>`; read every path in `brief.context` (it starts with the
+   item's `docs/domains/` page; load nothing from other domains unless the
+   brief points there). If the brief is missing
    `units` or `acceptance`, set `--status AwaitingUser --note "needs brief"`
    and move on to the next item.
 4. `set <id> --status InProgress --note "starting unit 1" --by builder`;
