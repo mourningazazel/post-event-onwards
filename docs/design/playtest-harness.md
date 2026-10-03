@@ -171,7 +171,7 @@ Playtests deliberately combine mechanics. Categories to probe:
 | **Detail levels × persistence** | Promote one of the Dead, loot half its pockets, walk away, return: are the same dead and pockets there? |
 | **Save × mid-action** | Save during an alert cascade or halfway through a dig: does the reload continue identically? |
 | **Aggregation × individuals** | A horde merges into aggregate population and spawns back: are counts and wounded units conserved? |
-| **Death × succession** | Does the heir spawn inside a horde? Does the old body rise with the right gear? |
+| **Death × succession** | Does the next character spawn inside a horde? Does the old body rise with the right gear? |
 | **Exploits** | Infinite items, trivial safety (e.g. standing in a doorway), scent tricks that remove all danger |
 | **Dead ends** | Can the player get permanently stuck (terrain, UI state, overload)? Is that acceptable in this realistic setting, or a bug? |
 

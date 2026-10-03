@@ -8,7 +8,9 @@ Decide whether finished work goes where the project is going.
 
 1. `git fetch origin main`. `python3 tools/work_queue.py list --status
    Validation`; take the lowest `order`.
-2. `show <id>`; read the Builder's report note. Collect the commits:
+2. `show <id>`; read the Builder's report note and the item's
+   `docs/domains/` page; review against that domain, the always set
+   (`docs/domains/README.md`) and the diff, not the whole corpus. Collect the commits:
    `git log origin/main --grep="\[<id>\]" --oneline`, then
    `git diff <first>^..<last>`.
 3. Check, in this order, and write one line per check in your notes:

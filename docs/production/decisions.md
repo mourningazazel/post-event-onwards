@@ -8,6 +8,18 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-024, D-032, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-10-03 · N023 · Owner's documentation audit
+
+User direction (N023). Dependencies must be MIT-compatible, and every asset is original; the
+owner supplies art, the default tileset, detailed descriptions and lore (ADR-0015). A walking
+turn becomes 12 substeps and reads as 3 game seconds, with today's behaviour on the even
+substeps (ADR-0016, amending D-014, D-015, D-031). Saves keep two fallback copies, migrate
+content to generic stand-ins or junk, and tag each section's sync scope for a future host and
+clients (ADR-0017). Geography is generated first in 100 km squares with lakes and sea, and
+towns fit it; most towns have no river (ADR-0018). Revisited areas catch up lazily, the horde
+thinning and player-made things aging, with no global day pass (ADR-0019). Docs are loaded by
+domain (`docs/domains/`). Open: D-039 to D-042.
+
 ## 2026-10-01 · D-038 · The Dead are surer on a trail as the scent gets stronger
 
 User decision: B ("good job on keeping to the gradient mindset"). The Dead's step is a weighted

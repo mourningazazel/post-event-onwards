@@ -30,7 +30,7 @@ owner's verbatim notes. In code: `Dead` is one unit, `horde` is any collection.
    Event. Early is harder and richer; late is easier and poorer. There is no going back. Runs
    end in hard permadeath, but the world persists: your last character rises as one of the
    Dead that can see, with your stats and gear, unless you made sure it could not. The next
-   one starts a mile or two away.
+   one, a son or daughter of the last or someone loosely tied to them, starts a mile or two away.
 5. **A mind under pressure.** Mood (Depressed ↔ Manic) and Sanity are main mechanics. Low
    sanity makes the world unreliable; drugs, including psychedelics, are real choices with
    real costs.
@@ -46,12 +46,20 @@ Turn-based: the world moves only when the player steps, waits or acts. The time 
 is used to compute the next turn ahead, and the player's action patches only what it touches
 (ADR-0012). The player never waits on the world.
 
+## Tone
+
+Horror and gore, on a gradient. Descriptions run from slightly unsettling to fully graphic ("a
+severed limb soaked in blood and reeking of rot. Several fingers have fallen or been bitten
+off"), scaled by what the thing is and how close you look.
+
 ## What it is not
 
 - Not a tactical grid game with unit stats and initiative.
 - Not a story game; the setting is told through what you find and the notes the dead survivors
-  left. No NPCs are ever met.
-- Not tile graphics. ASCII first, with swappable fonts and tilesets later.
+  left. No NPCs are ever met, and there are no quests.
+- Not high fantasy. Magic and its kin belong to the engine later, not to this game.
+- Not tile graphics first. ASCII first; tilesets use the Dwarf Fortress grid layout so players'
+  own tilesets fit, and every bundled asset is original (ADR-0015).
 - No wildlife. Every animal is inexplicably dead; crows are heard in text, never found.
 
 ## Performance target

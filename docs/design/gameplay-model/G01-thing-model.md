@@ -41,7 +41,7 @@ persistence) builds on the categories chosen here.
 - **Recommendation: B.**
 - **Future flexibility.** This makes these possible later, almost for free:
   - switching characters
-  - heir or succession on death (the research flagged this as a good fit for permadeath)
+  - succession on death: the next character is a son or daughter of, or loosely tied to, the last (N023)
   - companions using the same actions
   - the player **turning into one of the Dead** after infection (swap the controller and archetype)
   - NPCs doing everything the player can (looting, digging)

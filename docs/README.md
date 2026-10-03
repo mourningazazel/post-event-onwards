@@ -3,27 +3,22 @@
 Load what the task needs, nothing more. Rolling docs have word caps enforced by
 `tools/validate_docs.py`; archives are not indexed here.
 
+Docs are organised by problem domain: **[domains/](domains/README.md)** lists the set every
+session loads (role, vision, the brief, design checks, testing) and one page per domain
+(the Dead, time, world, items, characters, persistence, presentation, performance, engine API,
+process). Load the always set and the one domain your work names.
+
 | When you are… | Read |
 |---------------|------|
-| Starting any session | `../AGENTS.md`, then your role in [roles.md](roles.md) |
-| Deciding what the game should be | [production/vision.md](production/vision.md) |
-| Unsure why something is the way it is | [production/decisions.md](production/decisions.md) |
+| Starting any session | `../AGENTS.md`, your role in [roles.md](roles.md), then [domains/](domains/README.md) |
+| Working on a queue item | its brief, then the domain page in its references |
+| Unsure why something is the way it is | the domain page's decisions, then [production/decisions.md](production/decisions.md) |
 | Facing a gameplay / abstraction / direction choice, or a big rewrite | Add an entry to [production/DECISIONS_NEEDED.md](production/DECISIONS_NEEDED.md); set the item `AwaitingUser` |
-| Adding or changing a system | [architecture.md](architecture.md) and, for per-update work, [bottlenecks.md](bottlenecks.md), then the target map in [SYSTEMS.md](SYSTEMS.md) and the stack in [GAMEPLAN.md](GAMEPLAN.md) |
+| Adding or changing a system | [architecture.md](architecture.md), the target map in [SYSTEMS.md](SYSTEMS.md), the stack in [GAMEPLAN.md](GAMEPLAN.md) |
 | Touching an accepted architecture decision | [adr/](adr/README.md) (never edit; supersede) |
-| Working on the Dead, scent, sound, crowds | [design/scent-mobs.md](design/scent-mobs.md) (round 3 wins over earlier sections) |
-| Measuring performance, horde and map ceilings per machine | [bottlenecks.md](bottlenecks.md) (current choke points), [design/performance-targets.md](design/performance-targets.md), [design/scent-performance.md](design/scent-performance.md); threads and the GPU: [research/parallel-and-gpu.md](research/parallel-and-gpu.md) |
-| Working on world generation, the clock, buildings | [design/world-generation.md](design/world-generation.md), [design/world-catalog.md](design/world-catalog.md) |
-| Authoring or loading content | [content/README.md](../content/README.md), [design/content-model.md](design/content-model.md), [design/survival-actions.md](design/survival-actions.md) |
-| Deciding how a gameplay concept is represented | [design/gameplay-model/](design/gameplay-model/README.md) |
-| Asking what a mechanic is for, or adding a test that proves it | [design/purposes.md](design/purposes.md), [design/playtest-harness.md](design/playtest-harness.md) |
 | Reading what the owner actually said | [design/notes/](design/notes/README.md) (verbatim, never rewritten) |
-| Choosing a dependency | [LICENSING.md](LICENSING.md) |
-| Writing or running tests | [testing.md](testing.md) |
-| Writing or reviewing C++ | `../.agents/skills/cpp-core/SKILL.md` |
-| Measuring or optimising | `../.agents/skills/perf/SKILL.md` |
+| Checking which RogueBasin ideas we use | [research/roguebasin-notes.md](research/roguebasin-notes.md) |
 | Picking up a Blocked item | `production/handoffs/<id>.md` (index in [production/handoffs/README.md](production/handoffs/README.md)) |
-| Reading or writing a queue item's brief | `production/briefs/<id>.md` (see [production/briefs/README.md](production/briefs/README.md)) |
 | Checking what shipped | `COMPLETED_WORK/YYYY-MM-DD.md` |
 | Recording, briefing or reviewing work | the skills in `../.agents/skills/` |
 

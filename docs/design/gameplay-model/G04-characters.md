@@ -9,7 +9,7 @@ as compact mob records (G01 D1.3).
 
 | Component | Contains | Why it exists / what it enables later |
 |---|---|---|
-| **Identity** | Name, age, background/occupation, appearance notes | Backstory, NPC recognition, dead "former lives", heirs |
+| **Identity** | Name, age, background/occupation, appearance notes | Backstory, NPC recognition, dead "former lives", the next character's loose tie to the last (N023) |
 | **Body** | A body plan from a template (human, dog, …) with per-part state | Injuries, bites, amputations, wearing and holding (G05) |
 | **Attributes** | Physical and mental capacities | Checks and contests (pushing, carrying, climbing) |
 | **Skills** | Learned proficiencies | Actions succeed faster or better (G06) |
