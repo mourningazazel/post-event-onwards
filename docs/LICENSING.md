@@ -1,16 +1,28 @@
 # Licensing
 
-Policy: see [ADR-0004](adr/0004-open-source-and-dependency-licensing.md). In short: open source,
-permissive dependencies only, every dependency verified and recorded here.
+Policy: [ADR-0004](adr/0004-open-source-and-dependency-licensing.md) as amended by
+[ADR-0015](adr/0015-mit-compatible-dependencies-and-original-assets.md). In short: open source,
+MIT-compatible dependencies only, every dependency verified and recorded here, every asset
+original.
+
+## Allowed dependency licenses (MIT-compatible)
+
+`MIT`, `BSD-2-Clause`, `BSD-3-Clause`, `Zlib`, `BSL-1.0`, `Apache-2.0`, `ISC`, `CC0-1.0`,
+`Unlicense`, public domain. Anything else is refused, including GPL, LGPL, AGPL, MPL, EPL,
+CC-BY-SA and non-commercial terms. Known traps: libssh is LGPL (use libssh2, BSD-3-Clause, or
+the system `ssh`, for ADR-0017's future transport).
 
 ## Project license: MIT
 
 The code is MIT-licensed ([ADR-0008](adr/0008-project-license-mit.md), `LICENSE`). All candidate
 dependencies below are compatible.
 
+Assets: every asset is original (ADR-0015). The owner supplies the art, the default tileset,
+detailed descriptions and lore-bearing items. Their license is still open for later (usually
+separate from the code, e.g. CC-BY-4.0 or CC0).
+
 Still open for later:
 
-- **Original art and text assets** are usually licensed separately, e.g. CC-BY-4.0 or CC0.
 - **Outside contributions** would come in under MIT through a DCO sign-off, if contributions are
   accepted.
 
@@ -69,5 +81,6 @@ All game and engine code in this repository is **our own construction**.
 - **RogueBasin page text.** Its copyright status is unclear, and
   <https://roguebasin.com/index.php/RogueBasin:Copyrights> asks that large blocks not be copied.
   We keep our own summaries with links and short quotes.
-- **Community Dwarf Fortress tilesets and fonts.** Mixed or unspecified licenses. We ship only
-  CC0-licensed, self-made or explicitly permitted assets.
+- **Community Dwarf Fortress tilesets and fonts.** None is bundled. Our tilesets use the same
+  16 x 16 code page 437 grid layout, so players can load their own (ADR-0015). We ship only
+  original assets.

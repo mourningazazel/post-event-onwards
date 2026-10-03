@@ -19,7 +19,7 @@ design of the Generation, Streaming/LOD and Persistence systems.
 
 | Level | Scale (example) | Contents | Lifetime |
 |---|---|---|---|
-| **L0 Macro** | Evaluated anywhere, on demand | Continuous fields from world-coordinate noise (elevation, moisture, temperature), mountain ranges (no drainage simulation; rivers come later, see "Rivers (N006)") | Never stored; always regenerable |
+| **L0 Macro** | A 100 km geography square, generated whole (ADR-0018) | Elevation, ranges, valleys, forests, lakes, coast and sea, river courses; landmarks named in game by direction | Stored as its seed; regenerable |
 | **L1 Region** | e.g. 1024×1024 tiles | Biomes, rivers (lazy long features, ADR-0010), lakes, road network, **settlement sites and their identities** (size, culture, faction, era), points of interest | Small; cached widely |
 | **L2 Settlement** | One city | Outline, districts, street graph, blocks, lots, **building identities** (type, footprint, floors, owner, condition) | Medium; kept for the cities near the player |
 | **L3 Structure** | One building or site | Floor plans, rooms, doors, stairs, basements, z-levels | Materialized near the player |
@@ -123,6 +123,8 @@ entities carry **stable IDs** (see ADR-0002).
   seed produces the same rivers **in any exploration order and at every stage**.
 - **Terrain follows the river:** at tile detail the river carves its bed and banks. A river
   reaching another river joins it as a tributary.
+- **Courses come from the geography map (ADR-0018):** the river generator refines a course the
+  geography square already placed. Most towns have no river through or beside them.
 
 ## Aftermath model: the three stages ([N005](notes/N005-the-event-and-aftermath-stages.md), [ADR-0009](../adr/0009-baseline-plus-aftermath-generation.md))
 
@@ -178,7 +180,7 @@ All six N005 follow-up questions were answered in N007; see below.
 - **Environmental damage:** weathering, water damage through broken windows and roofs, rust,
   collapse risk rising with time.
 - **Areas generate at the current clock.** Revisited stored areas catch up from the clock they
-  were last updated at (ADR-0011, item 4).
+  were last updated at (ADR-0011 item 4, refined by ADR-0019; see "Revisits" below).
 
 ### Utilities
 
@@ -210,6 +212,31 @@ All six N005 follow-up questions were answered in N007; see below.
   appendages become easier to damage and sever (walkthrough G05).
 - Combined with falling supplies, this gives the difficulty ↔ reward gradient: **early is harder
   and richer; late is easier and poorer.**
+
+## Geography first ([N023](notes/N023-documentation-audit.md), [ADR-0018](../adr/0018-geography-first-water-and-fitted-towns.md))
+
+- **A 100 km geography square is generated whole** before anything inside it, at about 100 m
+  cells: elevation, ranges, valleys, forests, lakes, coast and sea, river courses. It replaces
+  "L0 evaluated anywhere" as the parent of L1; what lies beyond one square is D-041.
+- **Water bodies:** lakes and sea are polygons; towns may border them, and shores get their own
+  buildings, rooms and items (docks, boat sheds, bait shops, lakeside houses, breakwaters).
+- **Towns are shaped by what they sit on:** a river through a town gets bridges where streets
+  cross it, riverside streets and river trades; a shore bends the grid along it. Site scoring
+  (above) still picks the landmark.
+- **Far geography is words only:** landmarks named by direction and distance.
+
+## Revisits ([N023](notes/N023-documentation-audit.md), [ADR-0019](../adr/0019-revisits-re-age-player-made-things.md))
+
+- An area out of the active range is brought forward to the current clock **only when it is
+  loaded again**, as a streaming job split across frames. There is no world-wide daily pass, so
+  cost never grows with the number of places visited or the length of a run.
+- Catch-up is closed form: per-object thresholds against the curves, the same work for a day
+  away or ten years.
+- **The horde thins** by each unit's attrition threshold. **Player-made and player-changed
+  things** age on gentler curves from when they were last touched: barricades weaken and fail,
+  seals get broken into, stashes get taken. Terrain, buildings and containers are not
+  regenerated; unopened containers already resolve at the clock they are opened (D-023).
+- Whether a minimum time away (N009's 30 days) still applies is D-040.
 
 ## No animals, and the crows ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
 
