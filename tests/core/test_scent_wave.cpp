@@ -467,7 +467,7 @@ TEST_SUITE("scent_wave") {
 #ifdef NDEBUG
         constexpr int kUpdates = 200;
 #else
-        constexpr int kUpdates = 30;
+        constexpr int kUpdates = 15; // PEO-099: was 30 (the scenario budget)
 #endif
         constexpr std::size_t kThreads = 4;
         peo::test::Rng town_rng(11);

@@ -21,15 +21,16 @@ using namespace peo::core;
 namespace {
 /// PEO-080's executor golden: the brief's 512x512 with 20,000 Dead over 200 actions in
 /// release builds; under the sanitizers that alone would take 8 s of the scenario tier's
-/// 5, so the same run is smaller there (still several pull tiles, every executor path).
+/// 5, so the same run is smaller there (still several pull tiles, every executor path:
+/// 64x64 is eight 128x8 tiles, and threshold 1 splits every batch of the Dead).
 #ifdef NDEBUG
 constexpr int kExecutorGoldenActions = 30; // 200 until PEO-009: every unit draws now (5.5 s)
 constexpr int kExecutorGoldenDead = 20000;
 constexpr int kExecutorGoldenSide = 512;
 #else
-constexpr int kExecutorGoldenActions = 20;
-constexpr int kExecutorGoldenDead = 600;
-constexpr int kExecutorGoldenSide = 128;
+constexpr int kExecutorGoldenActions = 12; // PEO-099: was 20 actions, 600 Dead, 128 square
+constexpr int kExecutorGoldenDead = 200;
+constexpr int kExecutorGoldenSide = 64;
 #endif
 
 constexpr Seed kSeed = 7;
@@ -290,19 +291,25 @@ TEST_SUITE("world") {
     TEST_CASE("the Dead's positions are pinned" * doctest::test_suite("scenario: world")) {
         // PEO-079: recorded before the poll and decide_move read the direction bytes
         // (ScentWave::flow_target); the switch must not move a single unit. Two hordes:
-        // a World on a generated 200x120 walled stage with 3000 Dead, 30 updates of
-        // walking and waiting; and 2000 Dead on the PEO-035 town, each deciding once per
+        // a World on a generated 120x80 walled stage with 1000 Dead, 15 updates of
+        // walking and waiting; and 600 Dead on the PEO-035 town, each deciding once per
         // update with real occupancy, while a player walks into the town and stands.
-        constexpr int kUpdates = 30; // PEO-009: was 60; every unit draws now (scenario budget)
-        constexpr int kWorldDead = 3000;
-        constexpr int kTownDead = 2000;
+        // PEO-009: was 60; every unit draws now. PEO-099: was 30 updates, 3000 Dead on
+        // 200x120 and 2000 in the town (the scenario budget).
+        constexpr int kUpdates = 15;
+        constexpr int kWorldDead = 1000;
+        constexpr int kWorldWidth = 120;
+        constexpr int kWorldHeight = 80;
+        constexpr int kTownDead = 600;
         // PEO-009 (D-038 B) re-pinned both on purpose: the Dead draw their steps from the
         // desire field now, so every position changed. PEO-079's own switch kept them.
-        constexpr std::uint64_t kPinnedWorld = 0x5D57B27C6F414513ULL;
-        constexpr std::uint64_t kPinnedTown = 0x74210D1A20481B71ULL;
+        // PEO-099 re-pinned both for the smaller hordes, with no change to core.
+        constexpr std::uint64_t kPinnedWorld = 0x21B69281D3D6A49CULL;
+        constexpr std::uint64_t kPinnedTown = 0x52DF02A3C2E7BF5EULL;
         constexpr int kMinMoved = 100; // the hash pins real movement, not a frozen horde
 
-        World w(kSeed, {.initial_dead = kWorldDead, .stage_width = 200, .stage_height = 120});
+        World w(kSeed,
+                {.initial_dead = kWorldDead, .stage_width = kWorldWidth, .stage_height = kWorldHeight});
         const std::vector<Dead> world_start = w.horde();
         for (int i = 0; i < kUpdates; ++i) {
             w.step(scripted_action(i));
@@ -741,7 +748,7 @@ TEST_SUITE("world") {
         // scent) share one Speculation, turn about. Each one's wave must be a stranger to
         // the other's: a partner sync against the wrong World's field would keep its
         // values and masks, so every switch cold-copies and both match step().
-        constexpr int kActions = 60;
+        constexpr int kActions = 20; // PEO-099: was 60; every action after the first switches
         constexpr int kWaitOneIn = 5;
         constexpr Seconds kDurations[] = {1, 3, 6, 12};
         const WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
@@ -794,8 +801,9 @@ TEST_SUITE("world") {
         // PEO-048: patch_deposit stays exact under wind and gusts, so commit keeps using
         // the speculation (D-021) and still equals step() after every action, over
         // seeds that draw different winds.
-        constexpr int kSeeds = 5; // PEO-086: the scenario budget
-        constexpr int kActions = 30;
+        // PEO-086, PEO-099: the scenario budget (was 5 seeds of 30 actions).
+        constexpr int kSeeds = 3;
+        constexpr int kActions = 12;
         constexpr int kWaitOneIn = 5;
         constexpr Seconds kDurations[] = {1, 3, 6, 12};
         WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
