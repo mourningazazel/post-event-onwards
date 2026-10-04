@@ -33,3 +33,5 @@ roguebasin-raw/
 # Local agent state (never committed). .claude/skills and settings.json ARE committed.
 .claude/settings.local.json
 .claude/worktrees/
+# open-codebase-index search index (Builder laptop only; config is committed)
+.claude/index/
