@@ -1,0 +1,5 @@
+{
+  "embeddingProvider": "ollama",
+  "embeddingModel": "nomic-embed-text",
+  "scope": "project"
+}
