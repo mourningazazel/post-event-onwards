@@ -848,16 +848,21 @@
       "order": 777,
       "type": "chore",
       "title": "Scenario tier back under 2.5 s again: it regrew to 4.6 s of 5 s in CI after PEO-080 and PEO-009",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
           "at": "2026-10-04",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-04",
+          "by": "builder",
+          "text": "commits: 9180f0e (start) 825c599 (shrink the five; every assertion kept). tests: verify.py --frontend --full passed (Arch aarch64 M1; gcc debug+sanitizers, release, clang). Sanitizer build on arm64, before -> after: executor golden 730 -> 149 ms (12 actions, 200 Dead, 64x64 = 8 pull tiles, threshold 1, windy); pinned 432 -> 156 (15 updates, 1000 Dead on 120x80, town 600; both hashes re-pinned, moved >= 100 still holds); wind+gusts 318 -> 84 (3 seeds x 12, windy > 0 holds); shared Speculation 255 -> 89 (20 actions); town wave 182 -> 82 (15 updates). Tier 3580 -> 2196 ms. manual: none. perf: no core change. open: no x86 here. CI read 1.3x this machine before, so this projects to about 2.85 s on CI g++-13, likely still over 2500: the other 22 cases are ~1.64 s here (~2.1 s CI; by your figures ~2.56 s on the 4-core container), so 2.5 s cannot be reached by these five alone. Please measure on x86; reaching it means shrinking more cases than the brief names."
         }
       ],
       "references": [],
