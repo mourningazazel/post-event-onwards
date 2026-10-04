@@ -536,20 +536,26 @@ int main(int argc, char** argv) {
         }
         r << "\n### " << kSetupNames[static_cast<std::size_t>(cf.setup)] << ", "
           << kDensityNames[static_cast<std::size_t>(cf.density)] << "\n\n";
+        // Building A is one room: its floor counts as the west room, and it has no east room,
+        // hallway or doorways, so it gets one "room" column in place of those four.
+        const bool one_room = cf.building == Building::A;
         r << "Where the Dead are (counts; distance bands are cells from the building's outer wall):\n\n"
-          << "| hours | west room | east room | hallway | doorways | on openings | at west opening | at east "
-             "opening |";
+          << "| hours |" << (one_room ? " room |" : " west room | east room | hallway | doorways |")
+          << " on openings | at west opening | at east opening |";
         for (const Band& b : kBands) {
             r << " out " << b.name << " |";
         }
-        r << " mean distance | sd |\n|---|---|---|---|---|---|---|---|";
+        r << " mean distance | sd |\n|---|" << (one_room ? "---|" : "---|---|---|---|") << "---|---|---|";
         for (std::size_t b = 0; b < kBands.size(); ++b) {
             r << "---|";
         }
         r << "---|---|\n";
         for (std::size_t row = 0; row < kCheckpointHours.size(); ++row) {
             r << "| " << kCheckpointHours[row] << " |";
-            for (std::size_t col = kWestRoom; col <= kBand6; ++col) {
+            if (one_room) {
+                r << " " << cell(column(c, row, kWestRoom), 1) << " |";
+            }
+            for (std::size_t col = one_room ? kOnOpenings : kWestRoom; col <= kBand6; ++col) {
                 r << " " << cell(column(c, row, col), 1) << " |";
             }
             r << " " << cell(column(c, row, kMeanDist), 1) << " | " << cell(column(c, row, kSdDist), 1)
