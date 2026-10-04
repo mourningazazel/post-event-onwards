@@ -43,7 +43,8 @@ namespace {
 constexpr std::array<int, 6> kCheckpointHours{1, 2, 6, 12, 24, 48};
 constexpr int kSecondsPerHour = 3600;
 constexpr Seed kSeedBase = 1;
-constexpr int kDefaultSeeds = 3;
+/// Two, not three: three took 766 s on the x86 CI runner, over the 10 min budget (PEO-088 rework).
+constexpr int kDefaultSeeds = 2;
 /// The maps: this many cells square round the building's centre.
 constexpr int kMapSide = 41;
 /// Cells "at" an opening: within this Chebyshev distance of it, outside the footprint.
