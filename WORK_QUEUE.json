@@ -785,10 +785,10 @@
       "order": 757,
       "type": "feature",
       "title": "Siege suite: the horde round three buildings for 48 game hours, measured at six checkpoints (N022)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-02",
       "notes": [
         {
@@ -815,6 +815,11 @@
           "at": "2026-10-04",
           "by": "builder",
           "text": "rework: unit 1 (2 seeds)"
+        },
+        {
+          "at": "2026-10-04",
+          "by": "builder",
+          "text": "rework commits: 59b9ed8 (start) 4071c8a (2 seeds, baseline rewritten) 5a0d52f (A: one room column, baseline rewritten). tests: verify.py --frontend --full passed after each unit (Arch aarch64, M1, clang 22). 1: dropped to 2 seeds per the brief, stage stays 161 x 161; M1 full matrix 36 runs in 190 s and 268 s on two runs (was 342 s with 3 seeds), so x86 should land near 430 s; please re-run the siege workflow to confirm under 600 s. 2: building A's where-tables carry one 'room' column; the baseline diff is exactly A's 6 tables, no values moved. manual: none (brief). perf: no core change. open: x86 timing needs the manual workflow re-run."
         }
       ],
       "references": [
