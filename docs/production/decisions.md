@@ -5,8 +5,18 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-029, D-032, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-030, D-032, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-10-04 · D-043 · The player's tile is taken; a Dead tripped onto it trips the player
+
+User decision: A, with a note. One of the Dead never steps onto the player's tile by choice: the
+tile counts as taken, so the Dead stop beside the player (seen in the PEO-088 siege maps, where
+one stood on the player's tile with nothing happening). "Since [the Dead] can trip over each
+other and be ejected into a different space, let that interplay and have [one] fall onto the
+player, also trip the player." So the trip rule (PEO-011, PEO-022) may throw a falling Dead onto
+the player's tile, and that knocks the player down too. Consequence: PEO-102 builds the taken
+tile now; PEO-011/022 carry the fall-onto-player trip when they are briefed.
 
 ## 2026-10-03 · D-042 · The owner writes every player-facing line
 
@@ -116,15 +126,3 @@ player; the one-slot delay makes a crowd fan out and file through, and jams a on
 Consequence: each Dead decides once per cycle, not once per update; replaces PEO-042's burst of
 steps at each update (held). Between updates the Dead read only the last update's scent, so they
 run live and exact; speculation keeps only the scent sweep. Calm Dead never share a tile. PEO-058.
-
-## 2026-09-30 · D-030 · Every container has a purpose and three tags
-
-User decision (N018), refining D-027. A compartment's purpose is rolled from its seed before its
-contents: it picks the main loot table and names the compartment once examined ("cutlery drawer").
-Each container carries three tags. Kind (the purpose) and context (building type and room: a
-maintenance cabinet holds paper and pens in an office, store supplies in a shop) link to "may
-randomly appear" tables of rare, useful, dangerous or negative extras. Detail (a rare modifier: a
-hobby, a smoker, a trace) replaces items instead: its own table is blended into the main fill, one
-pick from each in turn, so the container shows clear evidence of it. Nested containers inherit
-context. Why: predictable contents; unique finds placed precisely. Consequence: PEO-057 authors it;
-PEO-053 generates purpose, then the main fill, then extras, all from the compartment seed.

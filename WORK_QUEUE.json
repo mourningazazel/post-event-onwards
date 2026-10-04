@@ -111,6 +111,11 @@
           "at": "2026-09-28",
           "by": "architect",
           "text": "Scope folds into shared occupancy (ADR-0013): contests happen on and between shared tiles, not only swaps."
+        },
+        {
+          "at": "2026-10-04",
+          "by": "architect",
+          "text": "D-043 (2026-10-04): a Dead thrown by a trip may land on the player's tile; that trips the player too."
         }
       ],
       "references": [
@@ -308,7 +313,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-04",
+          "by": "architect",
+          "text": "D-043 (2026-10-04): the player's tile is never chosen by a Dead, but a trip may throw one onto it, which trips the player."
+        }
+      ],
       "references": [
         "docs/adr/0013-tile-scale-and-shared-occupancy.md"
       ],
@@ -871,16 +882,21 @@
       "order": 807,
       "type": "design",
       "title": "Whether one of the Dead may step onto the player's tile (D-043)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "S",
-      "owner": "user",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
           "at": "2026-10-03",
           "by": "architect",
           "text": "D-043 raised from the PEO-088 siege report"
+        },
+        {
+          "at": "2026-10-04",
+          "by": "architect",
+          "text": "D-043 answered: A, and a Dead tripped onto the player trips the player (PEO-011/022)"
         }
       ],
       "references": [
