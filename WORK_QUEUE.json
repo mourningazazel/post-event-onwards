@@ -785,7 +785,7 @@
       "order": 757,
       "type": "feature",
       "title": "Siege suite: the horde round three buildings for 48 game hours, measured at six checkpoints (N022)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -810,6 +810,11 @@
           "at": "2026-10-03",
           "by": "architect",
           "text": "Rework: 1. The manual x86 siege run (actions run 37152415609) passed --check, byte-identical to the arm64 baseline, but took 766 s, over the 10 min budget: per the brief drop to 2 seeds (then 141x141 only if still over), rewrite the baseline, say which in the commit. 2. Building A's tables carry west room/east room/hallway/doorways columns it has no use for; give A one 'room' column. Everything else passes: invariants, determinism, report reads plainly, siege stays out of ctest and CI."
+        },
+        {
+          "at": "2026-10-04",
+          "by": "builder",
+          "text": "rework: unit 1 (2 seeds)"
         }
       ],
       "references": [
