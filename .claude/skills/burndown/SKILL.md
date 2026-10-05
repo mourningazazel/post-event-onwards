@@ -1,6 +1,6 @@
 ---
 name: burndown
-description: Builder: work the queue in effort order S → M → L → XL until stopped, skipping items that need a decision.
+description: Builder: work the queue in effort order S → M → L → XL until stopped, skipping items that need a decision. Each item runs in a fresh subagent context.
 ---
 Canonical instructions live in `.agents/skills/burndown/SKILL.md`. Read that file
 now and follow it exactly. Do not duplicate its content here; edit the
