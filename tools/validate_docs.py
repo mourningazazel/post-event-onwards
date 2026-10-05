@@ -5,6 +5,7 @@ Checks (all fast, no network):
   * word caps on rolling docs and the queue files
   * queue schema (delegates to work_queue.py check)
   * every canonical skill in .agents/skills has a Claude wrapper in .claude/skills
+  * every canonical subagent in .agents/agents has a Claude wrapper in .claude/agents
   * every Blocked queue item has a handoff doc
   * docs/README.md links resolve
 
@@ -74,6 +75,19 @@ def main() -> int:
     for name in sorted(wrappers - canonical):
         errors.append(f"skill {name}: .claude/skills wrapper has no canonical .agents/skills source")
     for p in (ROOT / ".agents" / "skills").glob("*/SKILL.md"):
+        n = words_in_markdown(p.read_text(encoding="utf-8"))
+        if n > SKILL_WORD_CAP:
+            errors.append(f"{p.relative_to(ROOT)}: {n} words, cap is {SKILL_WORD_CAP}")
+        if not p.read_text(encoding="utf-8").startswith("---"):
+            errors.append(f"{p.relative_to(ROOT)}: needs YAML front matter with name and description")
+
+    canonical = {p.stem for p in (ROOT / ".agents" / "agents").glob("*.md")}
+    wrappers = {p.stem for p in (ROOT / ".claude" / "agents").glob("*.md")}
+    for name in sorted(canonical - wrappers):
+        errors.append(f"agent {name}: canonical .agents/agents/{name}.md has no .claude/agents wrapper")
+    for name in sorted(wrappers - canonical):
+        errors.append(f"agent {name}: .claude/agents wrapper has no canonical .agents/agents source")
+    for p in (ROOT / ".agents" / "agents").glob("*.md"):
         n = words_in_markdown(p.read_text(encoding="utf-8"))
         if n > SKILL_WORD_CAP:
             errors.append(f"{p.relative_to(ROOT)}: {n} words, cap is {SKILL_WORD_CAP}")
