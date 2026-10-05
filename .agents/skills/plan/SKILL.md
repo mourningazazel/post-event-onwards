@@ -6,6 +6,13 @@ description: Architect: turn a Pending item into a full brief with units, accept
 
 Turn an item into something the Builder can finish without asking.
 
+A batch is one thread, one item per subagent (D-044): the thread checks out
+`origin/main` on its branch and starts one general-purpose subagent per
+item, in order, with: "Architect. Read `.agents/skills/plan/SKILL.md` and
+follow it for `<id>` only; commit; finish with one line: id, briefed or the
+D-xxx it raised, commit." It keeps those lines, pushes once (step 7) and
+replies once. When handed one item, do that item only.
+
 1. `python3 tools/work_queue.py show <id>`; read `docs/production/vision.md`,
    the item's domain page (`docs/domains/`: in its references, or the page
    that lists its id) and the
@@ -23,6 +30,9 @@ Turn an item into something the Builder can finish without asking.
    manual, out_of_scope; see `docs/roles.md#handoff-formats`) and apply it:
    `python3 tools/work_queue.py brief <id> --file <path>`.
    - Context: the domain page first, then only the docs this item needs.
+     Code by symbol, section or line range (`world.cpp: advance,
+     dead_second`), never a whole file over about 300 lines; the Builder
+     reads only what is named.
    - Units: ordered, commit-sized, each named with its layer: `core:`,
      `test:`, `app:`, `docs:`.
    - Acceptance: observable. "`ctest` passes", "in game, the Dead stop at
@@ -41,5 +51,9 @@ Turn an item into something the Builder can finish without asking.
 5. `set <id> --owner builder --note "briefed" --by architect`.
 6. If it needs a decision, add it to `docs/production/decisions.md` in the
    same commit.
-7. `python3 tools/verify.py`, then commit the queue file, any headers, tests
-   and docs: `[PEO-xxx] brief: <title>`.
+7. `python3 tools/verify.py` (`--skip-build` when no code changed), then
+   commit the queue file, any headers, tests and docs: `[PEO-xxx] brief:
+   <title>`. The batch thread pushes fast-forward to `main` (`git push
+   origin HEAD:main`; on rejection fetch, rebase its own commits, re-run the
+   tool on a queue conflict, push again). A batch that wrote headers or
+   tests goes through a pull request instead.

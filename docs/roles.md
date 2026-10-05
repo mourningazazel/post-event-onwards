@@ -20,16 +20,21 @@ Owns:
 - **Headless tests and tooling.** Writes doctests that encode acceptance
   criteria before the Builder starts; maintains `tools/`, CI, presets.
 - **Review.** For each `Validation` item: read the diff on `origin/main` for
-  commits tagged `[PEO-xxx]`, run `tools/verify.py`, check the brief's
-  acceptance list and the vision/architecture docs. Then either `complete`
+  commits tagged `[PEO-xxx]`, read CI's result for its last commit, check the
+  brief's acceptance list and the vision/architecture docs. Then either `complete`
   the item or set it back to `Pending` with a note that says exactly what to
   change. Reviews are about direction and correctness, not style; the
   formatter owns style.
-- **Integration.** Opens a pull request per unit of work, drives CI green and
-  merges it once the checks pass. Stops only for a decision (see below).
+- **Integration.** Fast-forwards queue, brief, decision and docs-only commits
+  to `main` (D-044); opens a pull request for code, tests, tooling, CI or
+  skills, drives CI green and merges it once the checks pass. Stops only for
+  a decision (see below).
+- **Batches.** A review or brief batch is one thread. Each item runs in its
+  own subagent, which follows `/review` or `/plan` for that id and returns
+  one line; the thread records, pushes once and replies once.
 
 Never: claims to have run the game, tunes feel without Builder numbers,
-edits the queue by hand, pushes to `main` directly.
+edits the queue by hand, pushes code to `main` without a pull request.
 
 ## Builder · Claude Code on the developer's machine
 
@@ -115,11 +120,13 @@ with commit shas, or `Pending` with a numbered list of concrete changes.
 
 - `main` is the integration branch and holds the queue of record.
 - Builder pushes fast-forward commits to `main`.
-- Architect works on its harness-assigned `claude/*` branch, opens a pull
-  request for the work, drives CI green and merges it itself once the checks
-  pass; merges are merge commits. Architect queue edits are small, so merge
-  conflicts are resolved by taking `origin/main` and re-running the same
-  `work_queue.py` command.
+- Architect works on its harness-assigned `claude/*` branch, started from
+  `origin/main`. Commits that touch only the queue, briefs, decisions or docs
+  are pushed fast-forward to `main` (`git push origin HEAD:main`, D-044);
+  anything else goes through a pull request it drives green and merges
+  itself, as a merge commit. On a rejected push or a conflict: fetch, rebase
+  its own unpushed commits, re-run the same `work_queue.py` command, push
+  again.
 - Subagents and experiments use `git worktree`, never the main checkout.
   Read-only subagents (`core-checker`) are the exception: they change nothing.
   So is `/burndown`'s per-item subagent, which is the only thing working the

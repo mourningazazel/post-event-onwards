@@ -11,17 +11,21 @@ one-line result.
 1. `git fetch origin main && git merge --ff-only origin/main`.
 2. `python3 tools/work_queue.py next --owner builder`. Nothing? Say so and
    stop; do not invent work.
-3. `show <id>`; read every path in `brief.context` (it starts with the
-   item's `docs/domains/` page; load nothing from other domains unless the
-   brief points there). If the brief is missing
-   `units` or `acceptance`, set `--status AwaitingUser --note "needs brief"`
-   and move on to the next item.
+3. `show <id>`; read `brief.context` in order (it starts with the item's
+   `docs/domains/` page; load nothing from other domains unless the brief
+   points there). Read the docs it names whole; read code by the symbols
+   or ranges it names: `grep -n` them, then the lines around each hit, or
+   the code index. Never read a whole source file to find one function.
+   If the brief is missing `units` or `acceptance`, set `--status
+   AwaitingUser --note "needs brief"` and move on to the next item.
 4. `set <id> --status InProgress --note "starting unit 1" --by builder`;
    commit the queue file `[PEO-xxx] start`.
 5. For each unit, in order:
-   - implement in the named layer only, then read the diff against
-     `/cpp-core`; a hot path changed means `/perf` numbers in the report,
-     before and after, for every `docs/bottlenecks.md` row it touches;
+   - implement in the named layer only, then hand the unit's diff to the
+     `core-checker` subagent and fix what it returns (the checklist and the
+     diff stay out of this session); a hot path changed means
+     `perf-runner` numbers in the report, before and after, for every
+     `docs/bottlenecks.md` row it touches;
    - `python3 tools/verify.py --frontend --full` (the whole thing, every
      time; `--full` because each unit is pushed to main);
    - `git add <explicit paths>`; `git commit -m "[PEO-xxx] <unit summary>"`;

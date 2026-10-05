@@ -5,8 +5,21 @@ its cap, move the oldest entries to `decisions-archive/`.
 
 Format: date · title · decision · why · consequences.
 
-Older decisions (settled infrastructure, D-007 to D-030, D-032, superseded D-010, N014-N015) live in
+Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
+
+## 2026-10-05 · D-044 · Usage rules: metadata lands on main, one subagent per item, review on demand
+
+User decision (thread "Context usage audit"; every recommended option). The Architect
+fast-forwards queue, brief, decision and docs-only commits straight to `main`, as the Builder
+does; pull requests remain for code, tests, tooling, CI and skills, and CI's build jobs skip
+pushes that change none of those. A review or brief batch is one thread that runs each item in
+its own subagent and keeps one line per item. Reviews start when the owner says "review" in the
+project chat, with a 12 h safety poll behind it. Thread effort follows the task: high for
+reviews and L/XL briefs, medium for recording decisions, promotions and small briefs. Why:
+every model call re-reads the whole session, and nine of the twelve PRs before this carried no
+code. Consequence: roles.md, CLAUDE.md, the review, plan, start-work and burndown skills,
+`verify.py` tails, `next --by-effort`, `docs.yml`.
 
 ## 2026-10-04 · D-043 · The player's tile is taken; a Dead tripped onto it trips the player
 
@@ -99,30 +112,3 @@ parallel-for; core still creates no thread. Tests run it serially, and a golden 
 serial and threaded runs give the same world bit for bit, beside speculate/commit's. Why: the
 scent field, the flow grid and the Dead's intents split by tile or unit with results combined by
 maximum or minimum, so threads cannot change them. Consequence: ADR-0014; PEO-080.
-
-## 2026-09-30 · D-034 · Horde size and active map size are set per machine, continuously
-
-User decision (N019), extending D-021. Beside the M1 Air, one target PC per tier: low (i5-8400
-class, GTX 1080), medium (i5-12400F or Ryzen 5 5600X, RTX 3060/4060), high (i7-14700K, RTX
-4070 Super). Horde size and active map size are two separate limits (latency and core speed;
-cache and bandwidth). An auto-config calibrates each axis on the machine and sets both as real
-numbers inside D-021's budget; no presets, and a PC may run hordes past what fits on the Mac.
-Why: the game is gradients, and the horde should grow as far as a typical PC allows.
-Consequence: design/performance-targets.md; PEO-070 to PEO-074; the benchmarks stay outside the
-unit suite.
-
-## 2026-09-30 · D-031 · The Dead move in staggered slots over a 9 s cycle
-
-User decision, amending D-022 and refining ADR-0013. Every 9 game seconds the world polls which
-of the Dead can move and gives each mover a slot (a second within the cycle) from a hash of
-(seed, cycle, index), so who moves when differs every cycle. At its slot a unit re-checks its
-target and decides; the move lands one slot later. A tile a unit leaves stays blocked until then,
-so the next unit in line cannot step into it. A calm Dead whose chosen tile holds another Dead,
-or one about to leave it, does not move and does not pick another direction; only an alerted
-Dead pushes past, which is where ADR-0013's shared tiles, trips and trampling apply. Speed is
-slots per cycle: 9 / step_seconds, the integer part guaranteed and the fraction a hashed chance
-(D-022's rule, per cycle). Why: 9 s against the 6 s scent update keeps moves out of step with the
-player; the one-slot delay makes a crowd fan out and file through, and jams a one-wide hallway.
-Consequence: each Dead decides once per cycle, not once per update; replaces PEO-042's burst of
-steps at each update (held). Between updates the Dead read only the last update's scent, so they
-run live and exact; speculation keeps only the scent sweep. Calm Dead never share a tile. PEO-058.

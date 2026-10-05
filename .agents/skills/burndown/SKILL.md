@@ -14,7 +14,8 @@ diffs or logs itself. Every turn re-reads the whole session, so an item's
 reading must not outlive the item.
 
 1. `git fetch origin main && git merge --ff-only origin/main`, then
-   `python3 tools/work_queue.py list` to pick the next item by effort.
+   `python3 tools/work_queue.py next --owner builder --by-effort` (one
+   line; never `list`, which prints the whole queue).
 2. Start one general-purpose subagent for that item, in the main checkout
    (nothing else touches it while the item runs), with this prompt:
    "Builder. Read `.agents/skills/start-work/SKILL.md` and follow it for

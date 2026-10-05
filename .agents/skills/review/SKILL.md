@@ -6,6 +6,14 @@ description: Architect: review a Validation item against its brief, the vision a
 
 Decide whether finished work goes where the project is going.
 
+A batch is one thread, one item per subagent (D-044): the thread runs
+`git fetch origin main && git checkout -B <branch> origin/main`, lists
+`--status Validation`, and starts one general-purpose subagent per item,
+in order, with: "Architect. Read `.agents/skills/review/SKILL.md` and
+follow it for `<id>` only; commit; finish with one line: id, verdict,
+commit." It keeps those lines, pushes once (step 6) and replies once.
+When handed one item, do that item only.
+
 1. `git fetch origin main`. `python3 tools/work_queue.py list --status
    Validation`; take the lowest `order`.
 2. `show <id>`; read the Builder's report note and the item's
@@ -24,8 +32,10 @@ Decide whether finished work goes where the project is going.
      changed hot path. A `docs/bottlenecks.md` row made worse without a
      lever or a `[perf]` item is a finding; a new one the numbers show gets
      its row.
-   - **Tests:** `git checkout origin/main -- .` in a worktree, run
-     `python3 tools/verify.py`. Behaviours added without a test are a
+   - **Tests:** read the CI result for the item's last commit on `main`
+     (every push runs it); a red run, or none, is a finding. Rebuild here
+     only when it is red and the cause is unclear, or when the brief asked
+     for numbers (`perf-runner`). Behaviours added without a test are a
      finding unless the brief listed them as `manual`.
    - **Report:** `manual` results are specific; perf numbers present when
      asked.
@@ -39,4 +49,8 @@ Decide whether finished work goes where the project is going.
 5. Fail: `set <id> --status Pending --owner builder --note "1. … 2. …" --by
    architect`. Findings are concrete edits, not opinions. If the failure is a
    direction change, also add a decision entry.
-6. Commit queue and docs: `[PEO-xxx] review: pass|rework`.
+6. Commit queue and docs: `[PEO-xxx] review: pass|rework`. The batch
+   thread pushes fast-forward to `main` (`git push origin HEAD:main`); on
+   rejection, fetch, rebase its own commits, re-run the tool on a queue
+   conflict, push again. A batch whose commits touch `src/`, `tests/`,
+   `tools/`, `cmake/` or `.github/` goes through a pull request instead.

@@ -7,7 +7,7 @@ CI) imports or shells out to it; nobody edits WORK_QUEUE.json by hand.
 Usage:
   python3 tools/work_queue.py summary
   python3 tools/work_queue.py list [--status S] [--owner O]
-  python3 tools/work_queue.py next [--owner builder|architect]
+  python3 tools/work_queue.py next [--owner builder|architect] [--by-effort]
   python3 tools/work_queue.py show PEO-001
   python3 tools/work_queue.py check
   python3 tools/work_queue.py add --type feature --title "..." [--severity S3] [--effort M] [--owner builder]
@@ -302,13 +302,20 @@ def cmd_next(args: argparse.Namespace) -> int:
     q = load(QUEUE)
     active_ids = {i["id"] for i in q["items"]}
     # A dependency that is no longer in the queue has been completed.
-    for item in q["items"]:
-        if args.owner and item["owner"] != args.owner:
-            continue
-        unmet = [d for d in item["depends_on"] if d in active_ids]
-        if item["status"] == "Pending" and not unmet:
-            print(status_line(item))
-            return 0
+    ready = [
+        item
+        for item in q["items"]
+        if (not args.owner or item["owner"] == args.owner)
+        and item["status"] == "Pending"
+        and not any(d in active_ids for d in item["depends_on"])
+    ]
+    if args.by_effort:
+        # /burndown's order: S before M before L before XL, queue order within an
+        # effort. One line here replaces a whole `list` in the picking session.
+        ready.sort(key=lambda i: EFFORTS.index(i["effort"]))
+    if ready:
+        print(status_line(ready[0]))
+        return 0
     print("nothing actionable")
     return 2
 
@@ -467,6 +474,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sp = sub.add_parser("next")
     sp.add_argument("--owner", choices=OWNERS)
+    sp.add_argument("--by-effort", action="store_true", help="smallest effort first (the /burndown order)")
     sp.set_defaults(fn=cmd_next)
 
     sp = sub.add_parser("show")

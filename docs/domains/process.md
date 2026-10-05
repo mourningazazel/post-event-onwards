@@ -11,6 +11,6 @@ The queue, skills, CI, verify, docs caps, git rules and licensing.
 | `../../.agents/agents/` | Subagent text (core-checker, perf-runner, sim-debugger, docs-drift) |
 
 - **ADRs:** 0004, 0008, 0015.
-- **Decisions:** D-009 (briefs as files), D-033 (test tiers), and the archive's process
-  entries.
+- **Decisions:** D-009 (briefs as files), D-033 (test tiers), D-044 (usage rules: metadata
+  on main, a subagent per item, review on demand), and the archive's process entries.
 - **Queue:** PEO-059, 068, 069; deferred PEO-093.

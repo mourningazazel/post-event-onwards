@@ -1,0 +1,24 @@
+# Docs, queue and content checks: on every push and PR, including the ones ci.yml
+# skips because they changed no code (D-044). About twenty seconds.
+name: docs
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  docs:
+    name: docs, queue & content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python3 tools/validate_docs.py
+      - run: python3 tools/content/lint.py
+      - run: python3 tools/content/test.py

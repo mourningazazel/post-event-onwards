@@ -10,12 +10,17 @@ Run `python3 tools/bootstrap.py`. It prints `ARCHITECT (cloud)` when
 `CLAUDE_CODE_REMOTE` is set, otherwise `BUILDER (local)`. Then read the
 matching section of `docs/roles.md` before touching anything.
 
-- Architect sessions land on a `claude/*` branch the harness assigns; open a
-  pull request for the work, drive CI green and merge it yourself. Gameplay,
-  abstraction, direction and big-rewrite calls still stop in
-  `DECISIONS_NEEDED.md`. Use the `headless` preset only; there is no display.
-- Builder sessions commit to `main` directly (fast-forward). Run the game with
-  `cmake --build --preset dev && ./build/dev/bin/peo` and follow the brief's
+- Architect sessions land on a `claude/*` branch the harness assigns. Queue,
+  brief, decision and docs-only commits fast-forward straight to `main`
+  (D-044); code, tests, tooling, CI and skills go through a pull request you
+  drive green and merge yourself. A review or brief batch is one thread with
+  one subagent per item (`/review`, `/plan`). Gameplay, abstraction,
+  direction and big-rewrite calls still stop in `DECISIONS_NEEDED.md`. Use
+  the `headless` preset only; there is no display.
+- In a project thread: one opening line, status refreshes only beside a real
+  tool call, one closing reply under 80 words, never re-read your thread.
+- Builder sessions commit to `main` directly (fast-forward). Run the game
+  (`cmake --build --preset dev && ./build/dev/bin/peo`) and follow the brief's
   `manual` steps before reporting.
 
 ## Skills

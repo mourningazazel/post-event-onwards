@@ -1,9 +1,36 @@
 name: CI
 
+# The build jobs only. A push or PR that changes nothing the build reads (docs, the
+# queue, briefs, skills, agents, content tables) skips this workflow; docs.yml still
+# runs for it (D-044). tools/ stays in: ctest runs tools/suite_budget.py.
 on:
   push:
     branches: [main, "claude/**"]
+    paths-ignore:  # keep both lists identical; workflow YAML has no anchors
+      - "docs/**"
+      - "**/*.md"
+      - "WORK_QUEUE.json"
+      - "DEFERRED_WORK.json"
+      - ".agents/**"
+      - ".claude/**"
+      - ".githooks/**"
+      - "content/**"
+      - ".gitignore"
+      - ".editorconfig"
+      - ".gitattributes"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "WORK_QUEUE.json"
+      - "DEFERRED_WORK.json"
+      - ".agents/**"
+      - ".claude/**"
+      - ".githooks/**"
+      - "content/**"
+      - ".gitignore"
+      - ".editorconfig"
+      - ".gitattributes"
 
 # Pull requests and claude/** branches: a newer push supersedes the older run.
 # main: every push gets its own result (PEO-032). The Builder pushes one unit at
@@ -14,17 +41,6 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  docs:
-    name: docs, queue & content
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: python3 tools/validate_docs.py
-      - run: python3 tools/content/lint.py
-      - run: python3 tools/content/test.py
-
   format:
     name: clang-format
     runs-on: ubuntu-latest
