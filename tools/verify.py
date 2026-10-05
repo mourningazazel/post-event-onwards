@@ -13,6 +13,8 @@ marking a queue item Validation or complete; add --full before a push to main.
 Exit code is non-zero on the first failing stage so agents can act on it. A
 stage that cannot run here (no clang-format, no clang sanitizer runtime) is
 reported as skipped, and the summary then says so instead of "all stages passed".
+Each stage prints only its last lines (3 on success, 60 on failure); the whole
+output is in build/verify.log for the rare case the tail is not enough.
 """
 from __future__ import annotations
 
@@ -42,6 +44,11 @@ SANITIZE = "-fsanitize=address,undefined"
 # later -Wpedantic re-enables a plain -Wno-.
 NEWER_CLANG_ONLY = ("-Wno-error=c2y-extensions", "-Wno-error=#warnings")
 
+# Every stage's full output; the terminal only gets a tail (see run()).
+LOG = ROOT / "build" / "verify.log"
+TAIL_OK = 3
+TAIL_FAIL = 60
+
 PERF_TESTS = "build/headless-release/tests"
 PERF_FILTER = "-tc=perf*"
 PERF_LINE = re.compile(r"MESSAGE: (perf .*)$")
@@ -50,11 +57,26 @@ skipped: list[str] = []
 
 
 def run(label: str, cmd: list[str], **kw) -> None:
-    print(f"\n=== {label}: {' '.join(cmd)}")
+    """Run one stage. Its full output goes to LOG; the terminal gets the last
+    TAIL_OK lines on success and the last TAIL_FAIL on failure, so an agent's
+    session is not filled with a compiler's or a test's whole output."""
+    shown = " ".join(cmd)
+    if len(shown) > 160:  # clang-format lists every source; the log keeps the whole line
+        shown = f"{shown[:160]}... ({len(cmd)} args)"
+    print(f"\n=== {label}: {shown}")
     t = time.time()
-    r = subprocess.run(cmd, cwd=ROOT, **kw)
-    print(f"=== {label}: {'ok' if r.returncode == 0 else 'FAILED'} ({time.time() - t:.1f}s)")
-    if r.returncode != 0:
+    r = subprocess.run(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **kw)
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    with LOG.open("a", encoding="utf-8") as f:
+        f.write(f"=== {label}: {' '.join(cmd)}\n{r.stdout}")
+    lines = r.stdout.splitlines()
+    ok = r.returncode == 0
+    tail = lines[-(TAIL_OK if ok else TAIL_FAIL):]
+    if len(lines) > len(tail):
+        print(f"... ({len(lines) - len(tail)} earlier lines in {LOG.relative_to(ROOT)})")
+    print("\n".join(tail))
+    print(f"=== {label}: {'ok' if ok else 'FAILED'} ({time.time() - t:.1f}s)")
+    if not ok:
         sys.exit(r.returncode)
 
 
@@ -147,6 +169,8 @@ def main() -> int:
     p.add_argument("--skip-build", action="store_true")
     args = p.parse_args()
 
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    LOG.write_text("", encoding="utf-8")
     run("docs", [sys.executable, "tools/validate_docs.py"])
     run("content-lint", [sys.executable, "tools/content/lint.py"])
     run("content-tests", [sys.executable, "tools/content/test.py"])
