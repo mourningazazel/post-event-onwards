@@ -121,3 +121,4 @@ with commit shas, or `Pending` with a numbered list of concrete changes.
   conflicts are resolved by taking `origin/main` and re-running the same
   `work_queue.py` command.
 - Subagents and experiments use `git worktree`, never the main checkout.
+  Read-only subagents (`core-checker`) are the exception: they change nothing.

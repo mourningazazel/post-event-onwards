@@ -25,6 +25,11 @@ Canonical skill text lives in `.agents/skills/<name>/SKILL.md`. The files in
 Available: `/work`, `/bug`, `/plan`, `/start-work`, `/review`, `/handoff`,
 `/burndown`, `/status`, `/decisions`, `/cpp-core`, `/perf`.
 
+Subagents follow the same pattern: canonical `.agents/agents/<name>.md`,
+wrappers in `.claude/agents/`. Hand one a read-heavy job so its logs stay out
+of your context: `core-checker` (diff vs `/cpp-core`), `perf-runner`,
+`sim-debugger`, `docs-drift`. Small tasks are cheaper done directly.
+
 ## Working style
 
 - Prefer editing files with the Edit tool over shell heredocs; keep shell

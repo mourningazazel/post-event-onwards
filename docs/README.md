@@ -40,4 +40,4 @@ topic page → `AGENTS.md`. Within `design/`, a later "round" section wins over 
 | WORK_QUEUE.json | 2500 content words (metadata only; briefs are files) |
 | production/briefs/`<id>`.md | uncapped, like handoffs |
 | DEFERRED_WORK.json | 1500 content words |
-| any SKILL.md | 600 words |
+| any SKILL.md or `.agents/agents/*.md` | 600 words |
