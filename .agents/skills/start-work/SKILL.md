@@ -5,6 +5,8 @@ description: Builder: take the next actionable queue item, implement it unit by 
 # /start-work (Builder)
 
 Work the queue, earliest actionable item first, until told to stop.
+When `/burndown` hands you one item, do that item only and return its
+one-line result.
 
 1. `git fetch origin main && git merge --ff-only origin/main`.
 2. `python3 tools/work_queue.py next --owner builder`. Nothing? Say so and

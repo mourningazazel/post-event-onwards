@@ -122,3 +122,5 @@ with commit shas, or `Pending` with a numbered list of concrete changes.
   `work_queue.py` command.
 - Subagents and experiments use `git worktree`, never the main checkout.
   Read-only subagents (`core-checker`) are the exception: they change nothing.
+  So is `/burndown`'s per-item subagent, which is the only thing working the
+  checkout while it runs.
