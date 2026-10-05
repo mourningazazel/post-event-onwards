@@ -844,6 +844,33 @@
       "depends_on": []
     },
     {
+      "id": "PEO-090",
+      "order": 777,
+      "type": "feature",
+      "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [
+        {
+          "at": "2026-10-03",
+          "by": "architect",
+          "text": "D-039"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "architect",
+          "text": "D-039 answered: A"
+        }
+      ],
+      "references": [
+        "docs/domains/time.md"
+      ],
+      "depends_on": []
+    },
+    {
       "id": "PEO-099",
       "order": 777,
       "type": "chore",
@@ -869,6 +896,22 @@
       "depends_on": []
     },
     {
+      "id": "PEO-091",
+      "order": 787,
+      "type": "feature",
+      "title": "Save file: scoped sections, two fallbacks (ADR-0017)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [],
+      "references": [
+        "docs/domains/persistence.md"
+      ],
+      "depends_on": []
+    },
+    {
       "id": "PEO-100",
       "order": 787,
       "type": "perf",
@@ -885,6 +928,24 @@
       "depends_on": []
     },
     {
+      "id": "PEO-092",
+      "order": 797,
+      "type": "feature",
+      "title": "Content migration on load (ADR-0017)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [],
+      "references": [
+        "docs/domains/persistence.md"
+      ],
+      "depends_on": [
+        "PEO-091"
+      ]
+    },
+    {
       "id": "PEO-101",
       "order": 797,
       "type": "chore",
@@ -896,6 +957,28 @@
       "created": "2026-10-03",
       "notes": [],
       "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-093",
+      "order": 807,
+      "type": "chore",
+      "title": "verify refuses non-MIT-compatible licenses (ADR-0015)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "builder",
+      "created": "2026-10-03",
+      "notes": [
+        {
+          "at": "2026-10-05",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
+      "references": [
+        "docs/domains/process.md"
+      ],
       "depends_on": []
     },
     {
@@ -922,6 +1005,94 @@
       ],
       "references": [
         "docs/design/scent-mobs.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-094",
+      "order": 817,
+      "type": "design",
+      "title": "Lazy revisit catch-up (ADR-0019)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [
+        {
+          "at": "2026-10-03",
+          "by": "architect",
+          "text": "D-040"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "architect",
+          "text": "D-040 answered: A"
+        }
+      ],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-095",
+      "order": 827,
+      "type": "design",
+      "title": "Geography square, 100 km (ADR-0018)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [
+        {
+          "at": "2026-10-03",
+          "by": "architect",
+          "text": "D-041"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "architect",
+          "text": "D-041 answered: A"
+        }
+      ],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-096",
+      "order": 837,
+      "type": "design",
+      "title": "Towns fitted to geography (ADR-0018)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-095"
+      ]
+    },
+    {
+      "id": "PEO-097",
+      "order": 847,
+      "type": "feature",
+      "title": "Dwarf Fortress grid tileset loader (ADR-0015)",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-03",
+      "notes": [],
+      "references": [
+        "docs/domains/presentation.md"
       ],
       "depends_on": []
     }
