@@ -851,7 +851,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
@@ -863,6 +863,11 @@
           "at": "2026-10-05",
           "by": "architect",
           "text": "D-039 answered: A"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "architect",
+          "text": "briefed"
         }
       ],
       "references": [
