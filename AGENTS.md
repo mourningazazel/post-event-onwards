@@ -1,6 +1,6 @@
 # AGENTS.md · shared policy
 
-Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
+Rules every coding agent follows here. Harness deltas: `CLAUDE.md`.
 `docs/README.md` says where everything else is; load context on demand.
 
 ## Two roles, one queue
@@ -9,11 +9,11 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
   Owns direction (`docs/production/`), queue briefs, headless tests, tooling
   and review. Never claims to have run the game.
 - **Builder** runs on the developer's machine. Owns implementation, running
-  the game, manual test steps and real-hardware perf numbers.
+  the game, manual steps and real-hardware perf numbers.
 - The contract is `docs/roles.md`. Work moves only through
   `WORK_QUEUE.json` via `tools/work_queue.py`; never edit the JSON by hand.
-- Precedence when sources disagree: user → `docs/production/decisions.md` →
-  topic docs → this file.
+- Precedence: user → `docs/production/decisions.md` → topic docs → this
+  file.
 - Gameplay, abstraction, direction and big rewrites are the user's call:
   add a `docs/production/DECISIONS_NEEDED.md` entry, set the item
   `AwaitingUser`, move on. Technical method is yours.
@@ -23,7 +23,7 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 
 - `python3 tools/bootstrap.py` once per checkout (installs git hooks).
 - `python3 tools/verify.py` before every commit (docs caps, clang-format,
-  headless build, tests); `--frontend` on a machine with a display;
+  headless build, tests); `--frontend` with a display;
   `--full` before pushing to main.
 - `src/core` is the simulation: no SDL, I/O or globals; deterministic from
   a seed. Every mechanic lands here first, with a doctest under `tests/`.
@@ -37,7 +37,7 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 ## Code
 
 - C++20, warnings are errors, `.clang-format` is law (run `verify.py --fix`).
-- No magic numbers: name constants (`kTickMs`); tunables live in structs.
+- No magic numbers: name constants (`kTickMs`); tunables in structs.
 - Public headers under `src/core/include/peo/core/`; one concept per file.
 - Comments say why; names say what.
 
@@ -45,10 +45,11 @@ Rules every coding agent follows here. Harness deltas live in `CLAUDE.md`.
 
 - Commit explicit paths. Never `git add -A`, stash, or `--no-verify`.
 - Message `[PEO-123] imperative summary`; one queue unit per commit.
-- `main` is integration: the Builder fast-forwards, the Architect merges PRs;
-  no force-push, no squash.
+- `main` is integration: code lands by Builder fast-forward or Architect PR;
+  queue and doc commits fast-forward from either role (D-044). No force-push,
+  no squash.
 - Read queue state from `origin/main` before choosing work. On a conflict,
-  take theirs and re-apply your change with the tool.
+  take theirs and re-apply yours with the tool.
 
 ## Queue lifecycle
 
