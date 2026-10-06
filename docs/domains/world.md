@@ -12,4 +12,4 @@ global clock, utilities and fires, revisits.
 - **ADRs:** 0007, 0009, 0010, 0011, 0013 (tile scale), 0018, 0019.
 - **Decisions:** D-004 (persistent world), D-006 (scale). D-040 A (no gate), D-041 A (endless).
 - **Owner notes:** N005, N006, N007, N009, N013 (no animals), N023.
-- **Queue:** PEO-005, 014, 017, 064, 094 (revisit catch-up), 095, 096, 109, 110.
+- **Queue:** PEO-005, 014, 017, 064, 094 (revisit catch-up), 095 (geography square), 096, 109, 110, 111 (river courses).
