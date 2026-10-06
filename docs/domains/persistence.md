@@ -11,4 +11,4 @@ sync.
 - **ADRs:** 0002, 0007 (freeze policy), 0017.
 - **Owner notes:** N023 (net sync, SSH, two fallbacks, junk and generic stand-ins).
 - **Rule:** nothing in core assumes one player.
-- **Queue:** PEO-006 (replay); deferred PEO-091, 092.
+- **Queue:** PEO-006 (replay); PEO-091 (save image, scopes), then PEO-107 (fallbacks, crash flag) and PEO-108 (zstd); deferred PEO-092 (migration).
