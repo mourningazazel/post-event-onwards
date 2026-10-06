@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 112,
+  "next_id": 116,
   "items": [
     {
       "id": "PEO-003",
@@ -969,13 +969,18 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
           "at": "2026-10-06",
           "by": "architect",
           "text": "Also needs PEO-111 (river courses, split from PEO-095) for river towns; shore fitting can start after PEO-095"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed: sites on the geography with sea and lake relation; split to PEO-112 (rivers and river-town share, needs PEO-111), PEO-113 (shore and river content, needs PEO-014), PEO-114 (L2 layout generator, XL), PEO-115 (layouts fitted to water)"
         }
       ],
       "references": [
@@ -983,6 +988,83 @@
       ],
       "depends_on": [
         "PEO-095"
+      ]
+    },
+    {
+      "id": "PEO-112",
+      "order": 838,
+      "type": "design",
+      "title": "Settlement sites know their rivers; river-town share as data (ADR-0018 point 4)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-096",
+        "PEO-111"
+      ]
+    },
+    {
+      "id": "PEO-113",
+      "order": 839,
+      "type": "research",
+      "title": "Shore and river buildings, rooms and items in the census (ADR-0018 point 2)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "docs/design/world-catalog.md",
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-014"
+      ]
+    },
+    {
+      "id": "PEO-114",
+      "order": 840,
+      "type": "design",
+      "title": "Settlement layout generator (L2): outline, streets, blocks and lots on a site",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "XL",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "docs/domains/world.md",
+        "docs/design/world-generation.md"
+      ],
+      "depends_on": [
+        "PEO-096"
+      ]
+    },
+    {
+      "id": "PEO-115",
+      "order": 841,
+      "type": "design",
+      "title": "Town layouts fitted to rivers and shores: bridges, riverside streets, shore-bent grid (ADR-0018 point 3)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-114",
+        "PEO-112",
+        "PEO-113"
       ]
     },
     {
