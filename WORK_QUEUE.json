@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 103,
+  "next_id": 104,
   "items": [
     {
       "id": "PEO-003",
@@ -848,10 +848,10 @@
       "order": 777,
       "type": "feature",
       "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -873,6 +873,11 @@
           "at": "2026-10-05",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "commits: 51bde98..6d0a464 (core e6b1570, tests de36ad0, siege ebf008a, docs 6d0a464); full report in the report commit. tests: verify --frontend --full each unit; pins unchanged; unit 442 ms, scenario 2.2 s. perf 512/50k: speculate 6575->6593 us, commit 124.6->124.5 us. manual: walk/run/wait and exit match the pre-change build glyph for glyph; stage 1 turn 0 after the exit. open: siege 412 s M1 at 141x141, ~920 s x86 projected: PEO-103. ms rounding is ms_to_substeps."
         }
       ],
       "references": [
@@ -1103,6 +1108,24 @@
       "notes": [],
       "references": [
         "docs/domains/presentation.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-103",
+      "order": 857,
+      "type": "perf",
+      "title": "Siege suite over its 10 min CI budget after ADR-0016 doubled updates per game hour",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-05",
+      "notes": [],
+      "references": [
+        "PEO-090",
+        "PEO-082",
+        "PEO-088"
       ],
       "depends_on": []
     }
