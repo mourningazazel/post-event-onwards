@@ -858,10 +858,10 @@
       "order": 777,
       "type": "chore",
       "title": "Scenario tier back under 2.5 s again: it regrew to 4.6 s of 5 s in CI after PEO-080 and PEO-009",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
