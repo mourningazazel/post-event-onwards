@@ -797,63 +797,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-090",
-      "order": 777,
-      "type": "feature",
-      "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-03",
-          "by": "architect",
-          "text": "D-039"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "architect",
-          "text": "D-039 answered: A"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "commits: 51bde98..6d0a464 (core e6b1570, tests de36ad0, siege ebf008a, docs 6d0a464); full report in the report commit. tests: verify --frontend --full each unit; pins unchanged; unit 442 ms, scenario 2.2 s. perf 512/50k: speculate 6575->6593 us, commit 124.6->124.5 us. manual: walk/run/wait and exit match the pre-change build glyph for glyph; stage 1 turn 0 after the exit. open: siege 412 s M1 at 141x141, ~920 s x86 projected: PEO-103. ms rounding is ms_to_substeps."
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "1. tests/core/test_world.cpp: add 'requested times round up to whole slots': World(kSeed, small_world() with update_period=7, dead_cycle=17) after wait(8) has updates()==1 and is World::equivalent to update_period=8, dead_cycle=18 after the same actions; wait(0) advances substeps() by kSlotSubsteps; load_layout with Dead step_substeps 13 and 0 stores 14 and 2; update_period=UINT32_MAX constructs, and every spawned step_substeps is even and <=65534. An odd period would otherwise never fire an update, since boundaries are checked only on even substeps. 2. docs/bottlenecks.md: refresh refs to current origin/main lines: B2 world.cpp:244 -> :297 (dead_slot), poll :42 -> :55; B4 copy :374 -> :442; commit :411 -> :471. 3. verify.py --full, push, re-report."
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "rework"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "rework: c60a3d2 test 'requested times round up to whole slots' (7/17 runs as 8/18, wait(0) one slot, layout steps 13 and 0 -> 14 and 2, UINT32_MAX period: steps even, <=65534); 80e68b7 bottlenecks refs (:297, :55, :442, :432 for the stale :384, :471). verify --frontend --full passes. open: none."
-        }
-      ],
-      "references": [
-        "docs/domains/time.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-099",
       "order": 777,
       "type": "chore",
