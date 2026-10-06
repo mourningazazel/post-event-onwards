@@ -10,4 +10,4 @@ logic in it is a bug (AGENTS.md).
 | `src/app/` | The frontend |
 
 - **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's).
-- **Queue:** PEO-018 (crow text); deferred PEO-097.
+- **Queue:** PEO-018 (crow text); PEO-097 (DF-grid tileset loader).
