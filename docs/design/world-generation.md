@@ -218,7 +218,8 @@ All six N005 follow-up questions were answered in N007; see below.
 - **A 100 km geography square is generated whole** before anything inside it, at about 100 m
   cells: elevation, ranges, valleys, forests, lakes, coast and sea, river courses. It replaces
   "L0 evaluated anywhere" as the parent of L1. The world is endless: neighbouring squares
-  generate whole as the player nears an edge (D-041 A).
+  generate whole as the player nears an edge (D-041 A). Built (PEO-095): elevation, sea, forest
+  and lakes in `peo/core/geography.hpp`; rivers are PEO-111.
 - **Water bodies:** lakes and sea are polygons; towns may border them, and shores get their own
   buildings, rooms and items (docks, boat sheds, bait shops, lakeside houses, breakwaters).
 - **Towns are shaped by what they sit on:** a river through a town gets bridges where streets

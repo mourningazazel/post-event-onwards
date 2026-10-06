@@ -37,6 +37,8 @@ today. The renderer reads only a committed world snapshot, so swapping it later 
                               ├─ grid.hpp   dense row-major Grid<T>; Grid<bool> is bytes
                               ├─ scent_wave.hpp  ScentWave: deposit / update / patch_deposit / strongest_neighbour
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
+                              ├─ noise.hpp  integer value noise, fbm, ridged (Q16)
+                              ├─ geography.hpp  terrain_at, generate_geography / generate_square
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
@@ -77,6 +79,22 @@ hierarchical generation levels of `docs/design/world-generation.md` (macro → r
 settlement → structure → tile → contents), baseline + Event + aftermath on the global clock
 (ADR-0009, ADR-0011), the building census and persona houses (`world-catalog.md` §10). The
 `generate_stage` signature is the seam; generators are plug-ins behind it.
+
+### Geography (ADR-0018, PEO-095)
+
+The map under everything, generated before anything inside it: 100 m cells in 100 km squares
+(`kSquareCells` 1000), from the world seed alone. `terrain_at(seed, params, x, y)` is the source
+of truth for a cell's elevation and forest: integer value noise (`noise.hpp`, Q16) for
+continents and seas, ridged ranges inside a low-frequency band mask, hills, and forest on land
+below the treeline; sea is every cell below sea level. `generate_geography` fills any rect cell
+for cell equal to `terrain_at` (it evaluates by row for speed), so squares join without seams in
+any order (D-041). Lakes come from sites on a jittered 6.4 km grid, each disc kept inside its
+grid square so no two overlap; a lake fills the hollow round its site's lowest cell and never
+reaches its disc's rim or the sea, and is found whole from `terrain_at`, so it is the same lake
+from every square it touches. Lakes and seas carry their outlines as cell-corner rings
+(ADR-0018 point 2). `tests/geo/geo_dump.cpp` (`peo_geo`) draws squares for review. Not built:
+river courses (PEO-111), towns fitted to the map (PEO-096), keeping neighbouring squares
+resident; no stage reads the map yet.
 
 ### The Dead (`dead.hpp`)
 

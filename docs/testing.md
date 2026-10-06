@@ -12,6 +12,7 @@
 | Frontend build | Builder, CI (Linux) | `cmake --build --preset dev` | n/a |
 | Manual in-game | Builder only | brief's `manual` steps | n/a |
 | Siege suite (PEO-088) | on demand only: Builder, or the manual `siege` CI workflow | `peo_siege --check` (headless-release) | minutes; never in verify, ctest or regular CI |
+| Geography images (PEO-095) | on demand: whoever changes the map | `peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] --out f.ppm` | about 0.1 s a square (release); the headless way to look at the map |
 
 **When to run the siege suite.** After a change to the Dead's movement, draw or knobs, the
 scent field or wind, the desire field, or a new horde mechanic (PEO-010, 022, 038, 039, 051,
