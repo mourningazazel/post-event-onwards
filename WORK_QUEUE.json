@@ -990,10 +990,10 @@
       "order": 807,
       "type": "chore",
       "title": "verify refuses non-MIT-compatible licenses (ADR-0015)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -1005,6 +1005,11 @@
           "at": "2026-10-05",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "commits: ca7fea8 (tools, units 1-3), 7e8486e (docs). tests: verify --frontend --full and --skip-build pass; self-test runs in every docs stage; a GPL-3.0-only foo row and FetchContent_Declare(bar) each fail naming them. Docs stage 59 ms. manual: none. open: none."
         }
       ],
       "references": [
