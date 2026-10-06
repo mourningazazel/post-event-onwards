@@ -905,10 +905,10 @@
       "order": 817,
       "type": "design",
       "title": "Lazy revisit catch-up (ADR-0019)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -925,6 +925,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "briefed; split: PEO-109 (player-made aging), PEO-110 (streaming job). Land after PEO-091 if it is still open"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "builder",
+          "text": "commits: b01977d core+save, de2e1f8 tests, f33ca17 docs; report in the report commit. verify --full passes; siege --check matches. open: manual second exit owed (desktop came back into use)."
         }
       ],
       "references": [
