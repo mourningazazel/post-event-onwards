@@ -23,7 +23,11 @@ struct Dead {
     /// Substeps a step takes this unit: slow vs fast Dead. Speed is slots per cycle,
     /// dead_cycle / step_substeps (D-031). World keeps it a multiple of kSlotSubsteps.
     std::uint16_t step_substeps = kUpdatePeriodSubsteps;
+    /// The unit's attrition threshold (ADR-0009, PEO-094): it is gone once the
+    /// attrition curve passes it (aftermath.hpp, revisit.hpp). It travels with the unit.
+    std::uint16_t fate = 0;
 };
+static_assert(sizeof(Dead) == 12, "fate fills the padding: thousands of these step per turn");
 
 /// What one of the Dead is doing. Calm (scent, company and stay, D-038) is the only state
 /// today; alerted and following come with PEO-010. Readers that count states loop over

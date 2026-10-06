@@ -37,11 +37,14 @@ constexpr int kMaxRestoreCompanyRadius = 64;
 /// value must be refused before a World is built from it.
 constexpr Substeps kMaxRestorePeriod = 240;
 constexpr Substeps kMaxRestoreCycle = 360;
+/// The substeps a save may say ran on earlier stages: far past centuries of play, and
+/// low enough that since_event() cannot overflow.
+constexpr EventSubsteps kMaxRestoreEarlier = EventSubsteps{1} << 60;
 /// One character today (CHAR is written as a count so a second is a second record).
 constexpr std::uint32_t kCharacters = 1;
 /// Bytes per record, so a count is checked against what is left before allocating.
 constexpr std::uint64_t kLogRecordBytes = 12;  // Vec2i, u32
-constexpr std::uint64_t kDeadRecordBytes = 10; // Vec2i, u16
+constexpr std::uint64_t kDeadRecordBytes = 12; // Vec2i, u16 step, u16 fate
 constexpr std::uint64_t kMoveRecordBytes = 12; // u32, Vec2i
 constexpr std::uint16_t kMaxStep = std::numeric_limits<std::uint16_t>::max() / kSlotSubsteps * kSlotSubsteps;
 
@@ -64,6 +67,12 @@ void write_params(ByteWriter& w, const WorldParams& p) {
     w.i32(p.draw.stay);
     w.i32(p.draw.company_gain);
     w.i32(p.draw.company_radius);
+    w.u32(p.start_day);
+    w.u8(p.attrition.count);
+    for (const CurveKnot& k : p.attrition.knots) {
+        w.u32(k.day);
+        w.u32(k.affected);
+    }
 }
 
 WorldParams read_params(ByteReader& r) {
@@ -86,6 +95,14 @@ WorldParams read_params(ByteReader& r) {
     p.draw.stay = r.i32();
     p.draw.company_gain = r.i32();
     p.draw.company_radius = r.i32();
+    p.start_day = r.u32();
+    p.attrition.count = r.u8();
+    for (CurveKnot& k : p.attrition.knots) {
+        k.day = r.u32();
+        k.affected = r.u32();
+    }
+    // Knots past the count mean nothing; a World keeps them zero, so a save that says
+    // otherwise fails the kept-parameters comparison below.
     return p;
 }
 
@@ -127,6 +144,7 @@ SaveImage World::save(std::string_view build) const {
     world.u64(turn_);
     world.u32(substeps_);
     world.u64(updates_);
+    world.u64(earlier_substeps_);
     for (const std::uint64_t word : rng_.state()) {
         world.u64(word);
     }
@@ -155,6 +173,7 @@ SaveImage World::save(std::string_view build) const {
     for (const Dead& d : dead_.horde) {
         horde.vec2i(d.pos);
         horde.u16(d.step_substeps);
+        horde.u16(d.fate);
     }
     horde.u32(static_cast<std::uint32_t>(dead_.landing.size()));
     for (const DeadMove& m : dead_.landing) {
@@ -233,6 +252,7 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     const Tick turn = wr.u64();
     const Substeps substeps = wr.u32();
     const Tick updates = wr.u64();
+    const EventSubsteps earlier = wr.u64();
     Rng::State rng{};
     for (std::uint64_t& word : rng) {
         word = wr.u64();
@@ -263,6 +283,12 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     }
     if (params.draw.company_radius < 0 || params.draw.company_radius > kMaxRestoreCompanyRadius) {
         return world_field("company_radius out of range");
+    }
+    if (!valid(params.attrition)) {
+        return world_field("attrition curve not valid");
+    }
+    if (earlier > kMaxRestoreEarlier) {
+        return world_field("event clock past any game's");
     }
     if (hand_built > 1) {
         return world_field("hand-built flag not 0 or 1");
@@ -408,6 +434,7 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     for (Dead& d : horde) {
         d.pos = hr.vec2i();
         d.step_substeps = hr.u16();
+        d.fate = hr.u16();
         if (!open_cell(w.stage_, d.pos) || d.step_substeps == 0 || d.step_substeps % kSlotSubsteps != 0 ||
             d.step_substeps > kMaxStep || count.at(d.pos) == std::numeric_limits<std::uint8_t>::max()) {
             return horde_field("one of the Dead off the stage, walled, crowded or with a bad step");
@@ -445,6 +472,7 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     w.turn_ = turn;
     w.substeps_ = substeps;
     w.updates_ = updates;
+    w.earlier_substeps_ = earlier;
     w.rng_ = Rng::from_state(rng);
     w.player_ = player;
     w.log_.assign(log.begin(), log.end()); // keeps the constructor's reservation: no allocation per step

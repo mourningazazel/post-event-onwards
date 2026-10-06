@@ -1,9 +1,11 @@
 #pragma once
 
 #include "peo/core/action.hpp"
+#include "peo/core/aftermath.hpp"
 #include "peo/core/dead.hpp"
 #include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
+#include "peo/core/revisit.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/save.hpp"
 #include "peo/core/scent_wave.hpp"
@@ -54,6 +56,11 @@ struct WorldParams {
     std::size_t parallel_decide_min = kParallelDecideMin;
     /// The calm Dead's weighted draw (D-038 B, PEO-009).
     DeadDrawParams draw{};
+    /// The day since the Event play starts on: the one-week preset (ADR-0009, PEO-094).
+    std::uint32_t start_day = kAttritionWeekDay;
+    /// The Dead gone by each day since the Event (ADR-0019). An invalid curve becomes
+    /// kDefaultAttrition.
+    Curve attrition = kDefaultAttrition;
 };
 
 /// Substeps the player spent on one tile since the last update. The log of these is
@@ -196,6 +203,8 @@ public:
     [[nodiscard]] SaveStatus restore(const SaveImage& image, std::vector<SaveIssue>& issues);
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
+    /// The parameters as this World keeps them (rounded, clamped, an invalid curve replaced).
+    [[nodiscard]] const WorldParams& params() const noexcept { return params_; }
     /// What the calm Dead draw from until the next update (PEO-009).
     [[nodiscard]] const DesireField& desire() const noexcept { return desire_; }
     /// Where speculate(), the scent updates and big batches of the Dead's decisions run
@@ -213,6 +222,21 @@ public:
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
     /// Actions taken on this stage (the HUD's turn counter).
     [[nodiscard]] Tick turn() const noexcept { return turn_; }
+    /// Substeps since the Event (ADR-0009, PEO-094): the start day, every earlier stage
+    /// and this one. Never decreases; substeps() resets per stage, this does not.
+    [[nodiscard]] EventSubsteps since_event() const noexcept {
+        return EventSubsteps{params_.start_day} * kSubstepsPerDay + earlier_substeps_ + substeps_;
+    }
+    /// This generated stage as a record to resume later (ADR-0019): its index, the event
+    /// clock and the Dead. None for a load_layout stage, which cannot be regenerated.
+    [[nodiscard]] std::optional<AreaRecord> store_area() const;
+    /// Go back to a stored area: its stage rebuilt as load_stage builds it (stage, wind,
+    /// a cold scent field, the player at the entry, the stage clock reset), its horde
+    /// thinned to the attrition curve at since_event() and taken in place of a spawn. A
+    /// unit on the entry, or anywhere it cannot stand, moves to the nearest free open
+    /// cell (a ring scan, rows then columns). The event clock keeps running.
+    void resume_area(AreaRecord record);
+
     /// Substeps elapsed on this stage.
     [[nodiscard]] Substeps substeps() const noexcept { return substeps_; }
     /// Game milliseconds elapsed on this stage, for display.
@@ -256,6 +280,12 @@ private:
     /// last slot (they land next), this cycle's slots polled again from the clock, and
     /// the desire snapshot. Call after the clock is restored.
     void restore_horde(std::vector<Dead> horde, std::vector<DeadMove> landing);
+    /// Every unit's fate, drawn from the stage seed at since_event() (PEO-094): a hash,
+    /// never the spawn stream, so no other draw moves.
+    void draw_fates(Seed stage_seed_value) noexcept;
+    /// load_stage's and resume_area's shared start: the generated stage, its wind and a
+    /// cold field, the player at the entry, the spawn stream reseeded.
+    void enter_stage(std::uint32_t index);
 
     Seed seed_;
     WorldParams params_;
@@ -276,6 +306,8 @@ private:
     Tick updates_ = 0;
     /// The stage came from load_layout, not generate_stage: a save carries it whole.
     bool hand_built_ = false;
+    /// Substeps run on every earlier stage of this World (since_event()).
+    EventSubsteps earlier_substeps_ = 0;
     /// Bumped by every load and restore; never saved (Speculation::epoch).
     std::uint64_t epoch_ = 0;
     std::vector<Occupancy> log_;

@@ -17,6 +17,8 @@ constexpr Seed kHordeSeedSalt = 0xABCDULL;
 constexpr Seed kWindSeedSalt = 0x5EEDULL;
 /// And so the Dead's draws never reuse a word of plan_slots' (PEO-009).
 constexpr std::uint64_t kDrawSalt = 0xD8A3ULL;
+/// And so each unit's fate is a hash of its own (PEO-094): the spawn stream never moves.
+constexpr std::uint64_t kFateSalt = 0xFA7EULL;
 /// Range of the spawn draw: updates between a spawned Dead's steps. Stored in
 /// substeps as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
@@ -111,11 +113,12 @@ World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
     params_.update_period = std::min(whole_slots(params_.update_period), kMaxUpdatePeriod);
     params_.dead_cycle = std::min(whole_slots(params_.dead_cycle), kMaxStepSubsteps);
+    params_.attrition = valid(params_.attrition) ? normalized(params_.attrition) : kDefaultAttrition;
     log_.reserve(std::min(params_.update_period, kMaxLogReserve));
     load_stage(0);
 }
 
-void World::load_stage(std::uint32_t index) {
+void World::enter_stage(std::uint32_t index) {
     stage_index_ = index;
     StageSpec spec = stage_spec(seed_, index);
     spec.width = params_.stage_width;
@@ -125,6 +128,10 @@ void World::load_stage(std::uint32_t index) {
     start_field(stage_seed(seed_, index));
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
+}
+
+void World::load_stage(std::uint32_t index) {
+    enter_stage(index);
     // Cap the spawn at the open cells a Dead may start on, so the placement loop
     // below always terminates. The draws for those placed are unchanged.
     int open = 0;
@@ -152,6 +159,85 @@ void World::load_stage(std::uint32_t index) {
                  static_cast<Substeps>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
     start_horde(stage_seed(seed_, index));
+    draw_fates(stage_seed(seed_, index));
+}
+
+std::optional<AreaRecord> World::store_area() const {
+    if (hand_built_) {
+        return std::nullopt;
+    }
+    return AreaRecord{.stage_index = stage_index_, .updated_at = since_event(), .horde = dead_.horde};
+}
+
+void World::resume_area(AreaRecord record) {
+    // The clock at the return, read before start_horde moves the stage counters into
+    // the event clock.
+    const EventSubsteps now = since_event();
+    enter_stage(record.stage_index);
+    const int w = stage_.spec.width;
+    const int h = stage_.spec.height;
+    // Make room before thinning, against the whole stored horde: where a unit is moved
+    // then depends only on the record, never on when it is resumed, so several short
+    // absences still leave exactly what one long one does. A unit moves when it stands
+    // on the player's entry or where it cannot stand, to the nearest free open cell,
+    // ring by ring, rows then columns; a stage with none left drops it rather than put
+    // two on a tile (D-031).
+    Grid<std::uint8_t> taken(w, h, 0);
+    const auto standable = [&](Vec2i p) {
+        return stage_.blocked.in_bounds(p) && !stage_.blocked.at(p) && p != player_ && taken.at(p) == 0;
+    };
+    std::vector<std::uint8_t> placed(record.horde.size(), 0);
+    for (std::size_t i = 0; i < record.horde.size(); ++i) {
+        if (standable(record.horde[i].pos)) {
+            ++taken.at(record.horde[i].pos);
+            placed[i] = 1;
+        }
+    }
+    for (std::size_t i = 0; i < record.horde.size(); ++i) {
+        if (placed[i] != 0) {
+            continue;
+        }
+        const Vec2i at = record.horde[i].pos;
+        const Vec2i from{std::clamp(at.x, 0, w - 1), std::clamp(at.y, 0, h - 1)};
+        for (int r = 1; r < std::max(w, h) && placed[i] == 0; ++r) {
+            for (int dy = -r; dy <= r && placed[i] == 0; ++dy) {
+                // The ring's perimeter only: its top and bottom rows whole, else its two ends.
+                const int stride = std::abs(dy) == r ? 1 : 2 * r;
+                for (int dx = -r; dx <= r; dx += stride) {
+                    const Vec2i c = from + Vec2i{dx, dy};
+                    if (standable(c)) {
+                        record.horde[i].pos = c;
+                        ++taken.at(c);
+                        placed[i] = 1;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    std::size_t kept = 0;
+    for (std::size_t i = 0; i < record.horde.size(); ++i) {
+        if (placed[i] != 0) {
+            record.horde[kept++] = record.horde[i];
+        }
+    }
+    record.horde.resize(kept);
+    // Closed form: one comparison a unit (ADR-0019 point 2).
+    thin_horde(record.horde, params_.attrition, now);
+    HordeState& d = dead_;
+    d.horde = std::move(record.horde);
+    d.occupied = Grid<std::uint8_t>(w, h, 0);
+    for (const Dead& unit : d.horde) {
+        ++d.occupied.at(unit.pos);
+    }
+    start_horde(stage_seed(seed_, stage_index_));
+}
+
+void World::draw_fates(Seed stage_seed_value) noexcept {
+    const EventSubsteps now = since_event();
+    for (std::size_t i = 0; i < dead_.horde.size(); ++i) {
+        dead_.horde[i].fate = draw_fate(params_.attrition, now, hash_u64(stage_seed_value ^ kFateSalt, i, 0));
+    }
 }
 
 void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
@@ -181,6 +267,7 @@ void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
         ++d.occupied.at(unit.pos);
     }
     start_horde(stage_seed(seed_, stage_index_));
+    draw_fates(stage_seed(seed_, stage_index_));
 }
 
 void World::start_field(Seed stage_seed_value) {
@@ -196,6 +283,7 @@ void World::start_field(Seed stage_seed_value) {
 void World::start_horde(Seed stage_seed_value) {
     HordeState& d = dead_;
     ++epoch_;
+    earlier_substeps_ += substeps_; // the event clock keeps running (PEO-094)
     turn_ = 0;
     substeps_ = 0;
     updates_ = 0;
@@ -520,12 +608,14 @@ bool World::equivalent(const World& a, const World& b) noexcept {
     const HordeState& da = a.dead_;
     const HordeState& db = b.dead_;
     if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.substeps_ != b.substeps_ ||
-        a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
-        da.horde.size() != db.horde.size() || a.scent_.updates() != b.scent_.updates() ||
-        a.scent_.values() != b.scent_.values() || !same_moves(da.landing, db.landing) ||
-        !same_moves(da.deciding, db.deciding) || da.moving != db.moving || da.slot_begin != db.slot_begin ||
-        da.slot_units != db.slot_units || !same_cells(da.occupied, db.occupied) ||
-        !same_cells(da.reserved, db.reserved) || !(a.desire_ == b.desire_)) {
+        a.earlier_substeps_ != b.earlier_substeps_ || a.params_.start_day != b.params_.start_day ||
+        !(a.params_.attrition == b.params_.attrition) || a.updates_ != b.updates_ || a.player_ != b.player_ ||
+        a.log_.size() != b.log_.size() || da.horde.size() != db.horde.size() ||
+        a.scent_.updates() != b.scent_.updates() || a.scent_.values() != b.scent_.values() ||
+        !same_moves(da.landing, db.landing) || !same_moves(da.deciding, db.deciding) ||
+        da.moving != db.moving || da.slot_begin != db.slot_begin || da.slot_units != db.slot_units ||
+        !same_cells(da.occupied, db.occupied) || !same_cells(da.reserved, db.reserved) ||
+        !(a.desire_ == b.desire_)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
@@ -534,7 +624,8 @@ bool World::equivalent(const World& a, const World& b) noexcept {
         }
     }
     for (std::size_t i = 0; i < da.horde.size(); ++i) {
-        if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_substeps != db.horde[i].step_substeps) {
+        if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_substeps != db.horde[i].step_substeps ||
+            da.horde[i].fate != db.horde[i].fate) {
             return false;
         }
     }

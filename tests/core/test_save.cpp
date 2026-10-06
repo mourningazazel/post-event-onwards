@@ -19,9 +19,10 @@ constexpr Seed kSeed = 31;
 constexpr std::string_view kBuild = "test-build";
 constexpr std::size_t kMagicBytes = 8;
 constexpr std::size_t kSectionHeaderBytes = 20; // id, version, scope, codec, length, crc
-// HORD's layout: u32 count, per Dead Vec2i + u16, u32 count, per move u32 + Vec2i, u64 count.
+// HORD's layout: u32 count, per Dead Vec2i + u16 step + u16 fate, u32 count, per move u32 +
+// Vec2i, u64 count.
 constexpr std::size_t kCountBytes = 4;
-constexpr std::size_t kDeadBytes = 10;
+constexpr std::size_t kDeadBytes = 12;
 constexpr std::size_t kMoveBytes = 12;
 constexpr std::size_t kVectorCountBytes = 8;
 
