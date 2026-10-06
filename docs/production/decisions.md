@@ -8,6 +8,14 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-10-06 · D-045 · The far Dead's lean stays subtle
+
+User decision (review thread, A, recommended). The D-038 knobs stay as they are: at the edge of
+scent reach the Dead lean only slightly toward the trail, so in play at seed 1 density the lean
+is not visible by eye. The headless swarm test shows it is there (55% of moving draws climb
+beyond 45 cells). Why: raised by the PEO-101 playtest; a faint pull at the edge of reach is the
+intended gradient. Consequence: no tuning item; the swarm test stays the check.
+
 ## 2026-10-05 · D-044 · Usage rules: metadata lands on main, one subagent per item, review on demand
 
 User decision (thread "Context usage audit"; every recommended option). The Architect
