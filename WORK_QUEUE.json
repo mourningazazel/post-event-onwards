@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 104,
+  "next_id": 106,
   "items": [
     {
       "id": "PEO-003",
@@ -781,53 +781,6 @@
       ]
     },
     {
-      "id": "PEO-088",
-      "order": 757,
-      "type": "feature",
-      "title": "Siege suite: the horde round three buildings for 48 game hours, measured at six checkpoints (N022)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-02",
-      "notes": [
-        {
-          "at": "2026-10-02",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-02",
-          "by": "architect",
-          "text": "rebriefed (Ryan, 2026-10-02): siege runs on demand only; no ctest smoke, no CI job on PRs, manual workflow_dispatch"
-        },
-        {
-          "at": "2026-10-03",
-          "by": "builder",
-          "text": "commits: d107289..794984b. --check, determinism, verify pass. Full report in the report commit."
-        },
-        {
-          "at": "2026-10-03",
-          "by": "architect",
-          "text": "Rework: 1. The manual x86 siege run (actions run 37152415609) passed --check, byte-identical to the arm64 baseline, but took 766 s, over the 10 min budget: per the brief drop to 2 seeds (then 141x141 only if still over), rewrite the baseline, say which in the commit. 2. Building A's tables carry west room/east room/hallway/doorways columns it has no use for; give A one 'room' column. Everything else passes: invariants, determinism, report reads plainly, siege stays out of ctest and CI."
-        },
-        {
-          "at": "2026-10-04",
-          "by": "builder",
-          "text": "rework: unit 1 (2 seeds)"
-        },
-        {
-          "at": "2026-10-04",
-          "by": "builder",
-          "text": "rework commits: 59b9ed8 (start) 4071c8a (2 seeds, baseline rewritten) 5a0d52f (A: one room column, baseline rewritten). tests: verify.py --frontend --full passed after each unit (Arch aarch64, M1, clang 22). 1: dropped to 2 seeds per the brief, stage stays 161 x 161; M1 full matrix 36 runs in 190 s and 268 s on two runs (was 342 s with 3 seeds), so x86 should land near 430 s; please re-run the siege workflow to confirm under 600 s. 2: building A's where-tables carry one 'room' column; the baseline diff is exactly A's 6 tables, no values moved. manual: none (brief). perf: no core change. open: x86 timing needs the manual workflow re-run."
-        }
-      ],
-      "references": [
-        "docs/design/notes/N022-siege-scenarios.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-089",
       "order": 767,
       "type": "perf",
@@ -848,10 +801,10 @@
       "order": 777,
       "type": "feature",
       "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "Validation",
+      "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
@@ -878,6 +831,11 @@
           "at": "2026-10-05",
           "by": "builder",
           "text": "commits: 51bde98..6d0a464 (core e6b1570, tests de36ad0, siege ebf008a, docs 6d0a464); full report in the report commit. tests: verify --frontend --full each unit; pins unchanged; unit 442 ms, scenario 2.2 s. perf 512/50k: speculate 6575->6593 us, commit 124.6->124.5 us. manual: walk/run/wait and exit match the pre-change build glyph for glyph; stage 1 turn 0 after the exit. open: siege 412 s M1 at 141x141, ~920 s x86 projected: PEO-103. ms rounding is ms_to_substeps."
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "1. tests/core/test_world.cpp: add 'requested times round up to whole slots': World(kSeed, small_world() with update_period=7, dead_cycle=17) after wait(8) has updates()==1 and is World::equivalent to update_period=8, dead_cycle=18 after the same actions; wait(0) advances substeps() by kSlotSubsteps; load_layout with Dead step_substeps 13 and 0 stores 14 and 2; update_period=UINT32_MAX constructs, and every spawned step_substeps is even and <=65534. An odd period would otherwise never fire an update, since boundaries are checked only on even substeps. 2. docs/bottlenecks.md: refresh refs to current origin/main lines: B2 world.cpp:244 -> :297 (dead_slot), poll :42 -> :55; B4 copy :374 -> :442; commit :411 -> :471. 3. verify.py --full, push, re-report."
         }
       ],
       "references": [
@@ -890,10 +848,10 @@
       "order": 777,
       "type": "chore",
       "title": "Scenario tier back under 2.5 s again: it regrew to 4.6 s of 5 s in CI after PEO-080 and PEO-009",
-      "status": "Validation",
+      "status": "Pending",
       "severity": "S2",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
@@ -905,6 +863,11 @@
           "at": "2026-10-04",
           "by": "builder",
           "text": "commits: 9180f0e (start) 825c599 (shrink the five; every assertion kept). tests: verify.py --frontend --full passed (Arch aarch64 M1; gcc debug+sanitizers, release, clang). Sanitizer build on arm64, before -> after: executor golden 730 -> 149 ms (12 actions, 200 Dead, 64x64 = 8 pull tiles, threshold 1, windy); pinned 432 -> 156 (15 updates, 1000 Dead on 120x80, town 600; both hashes re-pinned, moved >= 100 still holds); wind+gusts 318 -> 84 (3 seeds x 12, windy > 0 holds); shared Speculation 255 -> 89 (20 actions); town wave 182 -> 82 (15 updates). Tier 3580 -> 2196 ms. manual: none. perf: no core change. open: no x86 here. CI read 1.3x this machine before, so this projects to about 2.85 s on CI g++-13, likely still over 2500: the other 22 cases are ~1.64 s here (~2.1 s CI; by your figures ~2.56 s on the 4-core container), so 2.5 s cannot be reached by these five alone. Please measure on x86; reaching it means shrinking more cases than the brief names."
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "1. CI g++-13 at 90d5d97 (run 37237745470) reads scenario_budget 3.30 s, over the 2500 ms acceptance. The M1 reads about 1.5x faster than CI, so aim for 1600 ms or less on the M1. 2. The brief now covers every scenario* case, not just the five. Rank them with ./build/headless/tests/peo_core_tests --test-suite='scenario*' -d and shrink the slowest (stage, horde, actions, seeds, updates) until the tier meets 1. 3. The same rules hold: keep every assertion, keep the executor golden split (parallel_decide_min 1) and windy, keep several pull tiles, re-pin a hash only when its inputs change, no move to the unit tier, no budget change. 4. Fix tests/core/test_world.cpp:25: 64x64 makes eight 64x8 tiles (the 128-wide tile is clipped), not 128x8. 5. Report each changed case before and after, plus the CI scenario_budget time from your push."
         }
       ],
       "references": [],
@@ -959,63 +922,6 @@
       "depends_on": [
         "PEO-091"
       ]
-    },
-    {
-      "id": "PEO-101",
-      "order": 797,
-      "type": "chore",
-      "title": "Playtest the manual steps PEO-009 and PEO-080 left unrun",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "manual, seed 1, keys via wtype, full report in the report commit. 080: pool (7) vs --threads 1, 154 turns: screens identical at 3 points; spec:hit, 0 misses; frontend shows no speculate time. 009 vs 1696348: within 3 cells at 80 waits 15 vs 11; within 10: 19 vs 21; packed group a 2-3 wide block, no line. No bugs."
-        }
-      ],
-      "references": [],
-      "depends_on": []
-    },
-    {
-      "id": "PEO-093",
-      "order": 807,
-      "type": "chore",
-      "title": "verify refuses non-MIT-compatible licenses (ADR-0015)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-05",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "builder",
-          "text": "commits: ca7fea8 (tools, units 1-3), 7e8486e (docs). tests: verify --frontend --full and --skip-build pass; self-test runs in every docs stage; a GPL-3.0-only foo row and FetchContent_Declare(bar) each fail naming them. Docs stage 59 ms. manual: none. open: none."
-        }
-      ],
-      "references": [
-        "docs/domains/process.md"
-      ],
-      "depends_on": []
     },
     {
       "id": "PEO-102",
@@ -1142,11 +1048,52 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-05",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "From the PEO-090 review: PEO-082 is the wrong lever (it batches updates, it does not cut per-update work, and it is an L design item). Brief plan: first dispatch the siege workflow on x86 to replace the 920 s projection with a real number; then either split siege.yml into 3 jobs, one per building, each running --check on its share (~5 min each), or record a 20 min on-demand budget in testing.md and the PEO-088 brief. Drop the PEO-082 reference. Do not cut hours, buildings or seeds (that changes N022, the user's call)."
+        }
+      ],
       "references": [
         "PEO-090",
         "PEO-082",
         "PEO-088"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-104",
+      "order": 867,
+      "type": "feature",
+      "title": "Status line shows the last speculate time (ms) beside spec:hit/miss, so the pool and --threads 1 can be compared in game",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "PEO-080",
+        "PEO-101",
+        "docs/domains/time.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-105",
+      "order": 877,
+      "type": "bug",
+      "title": "verify's license check splits SPDX expressions case-sensitively, so 'MIT OR GPL-2.0' is wrongly refused",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "PEO-093",
+        "docs/domains/process.md"
       ],
       "depends_on": []
     }
