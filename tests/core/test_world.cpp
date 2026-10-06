@@ -389,8 +389,9 @@ TEST_SUITE("world") {
     TEST_CASE("commit(speculate()) is bit-identical to step()" * doctest::test_suite("scenario: world")) {
         // PEO-007 golden test, extended for D-015 and D-031. Random seeds and action
         // sequences, biased east so runs cross stage exits; walls make some steps into
-        // waits. Durations are 1, 3, 6 or 12 s, so some actions cross no update
-        // boundary, some one and some two, and the Dead's slots fall at every offset;
+        // waits. Durations are 1, 2, 3, 6, 12 or 24 substeps, so some actions cross no
+        // update boundary, some one and some two, the Dead's slots fall at every offset,
+        // and recorded windows start and end on odd substeps too (PEO-090, ADR-0016);
         // B re-speculates either like the frontend, only when the update or stage
         // moved on, so one speculation serves several short actions, or after every
         // action, so recorded windows of the Dead's seconds also start mid-update
@@ -404,7 +405,8 @@ TEST_SUITE("world") {
         constexpr int kGoldenDead = 16; // fills the 6x6 interior (capped at open cells)
         constexpr int kWaitOneIn = 5;
         constexpr int kEastOneIn = 3; // two in three steps go east
-        constexpr Substeps kDurations[] = {2, 6, 12, 24};
+        constexpr Substeps kDurations[] = {1, 2, 3, 6, 12, 24};
+        constexpr int kLastDuration = static_cast<int>(std::size(kDurations)) - 1;
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
@@ -417,7 +419,7 @@ TEST_SUITE("world") {
             Speculation spec; // reused every turn, as the frontend does
             b.speculate(spec);
             for (int t = 0; t < kTurns; ++t) {
-                const Substeps secs = kDurations[pick.range(0, 3)];
+                const Substeps secs = kDurations[pick.range(0, kLastDuration)];
                 Action act = Action::wait(secs);
                 if (pick.range(1, kWaitOneIn) != 1) {
                     act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
@@ -439,6 +441,49 @@ TEST_SUITE("world") {
             }
         }
         CHECK(transitions > 0); // the sequences really do cross stages
+    }
+
+    TEST_CASE("a walk is 12 substeps and reads as 3 game seconds") {
+        // ADR-0016: a walk and a wait are 12 substeps, a run 6; a substep is 250 ms.
+        constexpr std::uint64_t kWalkMs = 3000;
+        World w(kSeed, small_world(0));
+        w.step(Action::step({1, 0}));
+        CHECK(w.substeps() == kSubstepsPerWalk);
+        CHECK(w.game_ms() == kWalkMs);
+        w.step(Action::step({1, 0}, kRunStepSubsteps));
+        CHECK(w.substeps() == kSubstepsPerWalk + kSubstepsPerWalk / 2);
+        w.step(Action::wait());
+        CHECK(w.substeps() == 2 * kSubstepsPerWalk + kSubstepsPerWalk / 2);
+        CHECK(w.updates() == 2);
+    }
+
+    TEST_CASE("stopping on an odd substep changes nothing") {
+        // ADR-0016: odd substeps only pass, so two waits of k and 12 - k substeps end
+        // in the world two half-walk waits do, for every split.
+        World even(kSeed, small_world());
+        even.step(Action::wait(kSubstepsPerWalk / 2));
+        even.step(Action::wait(kSubstepsPerWalk / 2));
+        for (Substeps k = 1; k < kSubstepsPerWalk; ++k) {
+            CAPTURE(k);
+            World split(kSeed, small_world());
+            split.step(Action::wait(k));
+            split.step(Action::wait(kSubstepsPerWalk - k));
+            CHECK(World::equivalent(split, even));
+        }
+    }
+
+    TEST_CASE("durations authored in real time convert to substeps") {
+        // ADR-0016 section 5: content keeps its hours; to_substeps is the load hook.
+        constexpr Substeps kHourSubsteps = 14400;
+        constexpr std::uint64_t kWalkMs = 3000;
+        CHECK(to_substeps(3) == kSubstepsPerWalk);
+        CHECK(to_substeps(kSecondsPerHour) == kHourSubsteps);
+        CHECK(kSubstepsPerHour == kHourSubsteps);
+        CHECK(ms_to_substeps(1) == 1); // a non-zero duration never becomes 0
+        CHECK(ms_to_substeps(kSubstepMs) == 1);
+        CHECK(ms_to_substeps(kSubstepMs + 1) == 2);
+        CHECK(ms_to_substeps(0) == 0);
+        CHECK(to_ms(kSubstepsPerWalk) == kWalkMs);
     }
 
     TEST_CASE("two half-period steps each deposit a little less than a walking step") {
