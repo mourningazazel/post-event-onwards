@@ -990,7 +990,7 @@
       "order": 807,
       "type": "chore",
       "title": "verify refuses non-MIT-compatible licenses (ADR-0015)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
@@ -1000,6 +1000,11 @@
           "at": "2026-10-05",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
