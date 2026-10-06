@@ -29,7 +29,8 @@ Still open for later:
 ## Candidate dependencies
 
 The license of each was verified on 2026-09-27 via the GitHub license API (the `LICENSE` file was
-read where GitHub reported `NOASSERTION`).
+read where GitHub reported `NOASSERTION`). `tools/verify.py` enforces this table (PEO-093): every
+row's license must be on the allowed list, and every library the build pulls in needs a row.
 
 | Library | Use | License (SPDX) |
 |---|---|---|
