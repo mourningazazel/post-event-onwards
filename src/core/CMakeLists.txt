@@ -10,7 +10,9 @@ add_library(peo_core STATIC
     src/desire.cpp
     src/world.cpp
     src/world_save.cpp
-    src/save.cpp)
+    src/save.cpp
+    src/noise.cpp
+    src/geography.cpp)
 add_library(peo::core ALIAS peo_core)
 
 # PEO-085: GCC and Clang mark the AVX2 copy of the scent wave's row kernels with a target
