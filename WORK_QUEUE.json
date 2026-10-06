@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 106,
+  "next_id": 107,
   "items": [
     {
       "id": "PEO-003",
@@ -1018,6 +1018,20 @@
         "PEO-093",
         "docs/domains/process.md"
       ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-106",
+      "order": 887,
+      "type": "chore",
+      "title": "Warn before WORK_QUEUE.json hits its word cap",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [],
       "depends_on": []
     }
   ]
