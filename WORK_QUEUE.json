@@ -797,33 +797,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-091",
-      "order": 787,
-      "type": "feature",
-      "title": "Save file: scoped sections, two fallbacks (ADR-0017)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed: core image + World::save/restore; fallbacks split to PEO-107, zstd to PEO-108"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "builder",
-          "text": "commits: ac20664 core, 23c42b1 tests, 7612a9e docs; report in the report commit. tests: verify --frontend --full passes; 12 save cases, scenario 106 ms; unit 436 ms, scenario tier 1.62 s M1. perf 512x512 20k Dead: image 3.63 MB, save 11.6 ms, restore 24.7 ms. manual: walk 40, wait 60 identical to d0619da. open: none."
-        }
-      ],
-      "references": [
-        "docs/domains/persistence.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-100",
       "order": 787,
       "type": "perf",
@@ -869,9 +842,7 @@
       "references": [
         "docs/domains/persistence.md"
       ],
-      "depends_on": [
-        "PEO-091"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-102",
@@ -1258,9 +1229,7 @@
       "references": [
         "docs/domains/persistence.md"
       ],
-      "depends_on": [
-        "PEO-091"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-108",
@@ -1276,9 +1245,7 @@
       "references": [
         "docs/domains/persistence.md"
       ],
-      "depends_on": [
-        "PEO-091"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-109",
