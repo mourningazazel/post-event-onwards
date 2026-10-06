@@ -1,7 +1,7 @@
 #pragma once
 
 // PEO-088 (N022): the siege suite's buildings, opening setups and densities, as data built
-// from the brief's rules. A building sits centred on a 161 x 161 stage with a border wall;
+// from the brief's rules. A building sits centred on a 141 x 141 stage with a border wall;
 // every other cell is open ground, outdoors. Walls are one cell thick round every floor and
 // hallway cell (the cells 8-adjacent to them), so no step cuts a corner into the building.
 //
@@ -37,7 +37,9 @@ using core::Seed;
 using core::Stage;
 using core::Vec2i;
 
-inline constexpr int kStageSide = 161;
+/// 141, not 161: ADR-0016 doubled the updates per game hour, and PEO-088's budget ladder
+/// (10 min on the x86 CI run) takes the stage down a step (PEO-090).
+inline constexpr int kStageSide = 141;
 
 enum class Building : std::uint8_t { A, B, C };
 enum class Setup : std::uint8_t { Enclosed, OneOpening, TwoOpenings };
