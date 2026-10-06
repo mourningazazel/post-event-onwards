@@ -23,15 +23,15 @@ alone, then the whole `speculate`.
 | | Pass | Cost | Grows with | Levers |
 |---|---|---|---|---|
 | B1 | **Desire field build** (`desire.cpp:66`): nine log-odds for every stage cell, every update, including the flat ones | 7.9 of 14.1 ms at 512² with 50k Dead (56%); 30 of 36 ms at 1024²; 123 of 149 ms at 2048², over D-021's 100 ms by itself. 30 ns per cell, 23 ns even when flat | stage area | Rebuild only cells within reach of scent or company and keep flat cells as built (PEO-089); threads already split it |
-| B2 | **The Dead's seconds** (`world.cpp:244`, `poll` at `:42`): every unit draws at its slots since PEO-009, with scattered reads of desire, occupancy and reservations | 90 to 110 ns per Dead per update: 5.2 ms at 50k, 9.3 ms at 100k, 24 ms at 200k (1024²). M1: 512² with 50k went 2.6 to 7.7 ms with B1 | horde | Keep each decision a lookup and a draw (D-037); intents split across threads only for batches of 16,384 or more (PEO-080); PEO-074 |
+| B2 | **The Dead's slots** (`world.cpp:244`, `poll` at `:42`): every unit draws at its slots since PEO-009, with scattered reads of desire, occupancy and reservations | 90 to 110 ns per Dead per update: 5.2 ms at 50k, 9.3 ms at 100k, 24 ms at 200k (1024²). M1: 512² with 50k went 2.6 to 7.7 ms with B1 | horde | Keep each decision a lookup and a draw (D-037); intents split across threads only for batches of 16,384 or more (PEO-080); PEO-074 |
 | B3 | **Scent update** (`scent_wave.cpp:407`): the pull over active tiles | 4 ns per active cell: 1.1 ms at 512², 4.1 ms at 1024², 15 ms at 2048². Wind doubles it (2.1 ms at 512²). A standing emitter keeps its whole reach active | active area | Reach radius (PEO-047), standing emitters as a static layer (PEO-074). GPU: windy stages of 512² up run there (PEO-087; M1 with gust 2: 0.9 / 2.6 / 9.8 ms at 512² / 1024² / 2048² against 1.3 / 6.6 / 28 ms on 4 workers); calm stays on the CPU, where the GPU only matches one thread (PEO-081) |
 | B4 | **Speculate's copies** (`world.cpp:374`, `:384`): the horde state with its map-sized grids, and the wave sync | 0.2 to 0.4 ms at 512², 1.6 ms at 1024² | stage, horde | Copy only dirty cells (PEO-074) |
 
 Commit (`world.cpp:411`) is not one: under 0.35 ms at 50k Dead against its 1 ms budget.
 It is the input path, so any work added to it is suspect.
 
-**Multipliers.** Time passing multiplies every row: one slept game hour is 600 updates,
-about 8.5 s here at 512² with 50k (PEO-082). Stages of 1024² to 2048² (D-036)
+**Multipliers.** Time passing multiplies every row: one slept game hour is 1200 updates (D-039, ADR-0016),
+about 17 s here at 512² with 50k (PEO-082). Stages of 1024² to 2048² (D-036)
 multiply every per-cell row by 4 to 16.
 
 ## Rules

@@ -81,14 +81,15 @@ settlement → structure → tile → contents), baseline + Event + aftermath on
 ### The Dead (`dead.hpp`)
 
 `Dead` is deliberately tiny; thousands must step per turn. They move in staggered slots
-(D-031): every `dead_cycle` (9 s) the world polls the horde, and each unit with a stronger
-neighbour gets `plan_slots`: 9 / `step_seconds` slots, the whole part always and the fraction a
+(D-031): a slot is two substeps, the even ones (ADR-0016). Every `dead_cycle` (18 substeps, 9
+slots) the world polls the horde, and each unit gets `plan_slots`: 9 / (`step_substeps` / 2)
+slots, the whole part always and the fraction a
 hashed chance, evenly spaced from a hashed offset. Hashes of (stage seed, cycle, index), never a
 shared stream, so who moves when changes each cycle. At its slot a unit `decide_move`s: its
 strongest neighbour, only if no Dead stands there and no pending move reserved it; a calm Dead
-never sidesteps or climbs over another, it stays put. The move lands one second later; in each
-second the slot's units decide before last second's moves land, so a vacated tile is free only
-from the next second and a crowd files through gaps, jamming a one-wide corridor. Target: the **weighted draw** of scent-mobs round 3 (scent, aggregate, company,
+never sidesteps or climbs over another, it stays put. The move lands one slot later; in each
+slot the slot's units decide before last slot's moves land, so a vacated tile is free only
+from the next slot and a crowd files through gaps, jamming a one-wide corridor. Target: the **weighted draw** of scent-mobs round 3 (scent, aggregate, company,
 attractor, stimulus, repellent, footing terms), triggers by general direction, sound events,
 trips and trample, population aggregates beyond the detailed radius. Struct-of-arrays when the
 profiler asks.
@@ -103,7 +104,7 @@ Core does use threads it is lent (D-035, ADR-0014, PEO-080): `peo/core/executor.
 parallel-for over N pieces, null meaning serial. `World::set_executor` hands it to the scent
 wave, whose rounds pull active tiles as pieces and whose direction bytes refresh by tile (no
 two pieces write one cell); `speculate()` runs the scent half and the Dead's half as two
-pieces; a second's batch of the Dead's decisions at least `WorldParams::parallel_decide_min`
+pieces; a slot's batch of the Dead's decisions at least `WorldParams::parallel_decide_min`
 long splits by unit, each into its own slot, with claims resolved after in slot order. The
 frontend's `ThreadPool` (`src/app/thread_pool.hpp`, `--threads N`) runs a run started inside a
 piece, or beside another thread's, inline. Serial, shuffled and threaded runs are bit-identical
@@ -117,29 +118,35 @@ built only when a shader compiler is found. Only `speculate()` uses it, so a tur
 the device; the frontend makes the device and picks the backend by stage size (`--gpu-min-cells`,
 `--no-gpu-compute`). Its tests (`tests/gpu`) run on the M1 and on lavapipe in CI.
 
-### The clock (PEO-040, D-015)
+### The clock (PEO-040, D-015, ADR-0016)
 
-The world counts game seconds (`World::seconds()`). Each `Action` carries a duration (`kStepSeconds`
-and `kWaitSeconds`, both 6). Scent and the Dead update on their own cadence, once every
-`WorldParams::update_period` (6 s), whatever the player does. An action applies at once, then
-its seconds are logged on the player's tile (`occupancy()`, merged per tile). At each period
-boundary one scent update runs: each logged tile deposits `strength - age_cost × (period -
-seconds) / period` (a full period exactly `strength`, a runner's tiles a little less, never more),
-then the wave updates. The Dead run every second, on their own 9 s cycle (above). Speculation is per update:
-an action that crosses no boundary leaves it valid. `turn()` still counts actions.
+The world counts substeps (`World::substeps()`; `game_ms()` for display): a substep is 250 ms
+and a walking step is 12, so a walk reads as 3 game seconds. Each `Action` carries a duration
+(`kStepSubsteps` and `kWaitSubsteps`, both 12; `kRunStepSubsteps` 6). Scent and the Dead update
+on their own cadence, once every `WorldParams::update_period` (12 substeps), whatever the player
+does. An action applies at once, then its substeps are logged on the player's tile
+(`occupancy()`, merged per tile). At each period boundary one scent update runs: each logged tile
+deposits `strength - age_cost × (period - held) / period` (a full period exactly `strength`, a
+runner's tiles a little less, never more), then the wave updates. Everything runs on the even
+substeps, which carry the Dead's slots (above); the odd ones are the between layer, which passes
+unused until the owner designates something for it. So every seed and action list gives the same
+world as with whole seconds. Durations authored in real time (sleep, crafting, rot) convert once
+with `to_substeps` / `ms_to_substeps`, keeping their hours: a game hour is 1200 updates (D-039).
+Speculation is per update: an action that crosses no boundary leaves it valid. `turn()` still
+counts actions.
 
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
-the next update of the scent wave with no deposit, and the Dead's seconds up to
-and including that boundary, recorded per second with any poll (PEO-060). Between updates the
-Dead read only the last update's scent, never the player, so those seconds are fixed once an
+the next update of the scent wave with no deposit, and the Dead's slots up to
+and including that boundary, recorded per slot with any poll (PEO-060). Between updates the
+Dead read only the last update's scent, never the player, so those slots are fixed once an
 update commits. On input, `World::commit(Speculation&, Action)` applies the action and runs its
-seconds, replaying the recorded ones; at the boundary it adds the logged deposits with
+substeps, replaying the recorded slots; at the boundary it adds the logged deposits with
 `ScentWave::patch_deposit` (the min-plus patch, exact for one round per update; a faster wave
-commits live). A stale speculation, or a second outside the record, runs live, exactly as
+commits live). A stale speculation, or a slot outside the record, runs live, exactly as
 `step()`. The field is integer, so equal means equal. `Speculation` buffers are reused, so a
-turn allocates nothing. Measured on the Builder's M1 (release, one 6 s step, 300 samples,
+turn allocates nothing. Measured on the Builder's M1 (release, one walking step, 300 samples,
 PEO-030): 200x120 with 5000 Dead, `commit` 0–1 µs, `speculate` 28–277 µs; 512x512 with 50,000,
 `commit` 0–3 µs, `speculate` 0.1–1.5 ms.
 
@@ -148,7 +155,7 @@ waits in a queue of up to 3 and the queue plays out no faster than 3 turns a sec
 auto-repeat is taken only when the cap allows and nothing waits, so it never builds lag and stops
 the moment the key is released. While taps wait, one SDL timer wakes the loop at the next due time;
 with none waiting nothing wakes it. Depth and rate are tunables in `TurnInputParams`.
-R toggles running (steps of `kRunStepSeconds`, 3 s, D-015); the cap limits key presses, not game
+R toggles running (steps of `kRunStepSubsteps`, 6 substeps, D-015); the cap limits key presses, not game
 time, so a runner covers two cells per update.
 
 ## Boundaries that tests protect
