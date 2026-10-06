@@ -151,6 +151,14 @@ public:
     /// one, so a Speculation moved between them cold-copies. Never 0.
     [[nodiscard]] static std::uint64_t new_token() noexcept;
 
+    /// Take a saved field (PEO-091) into a freshly built wave (no update, no partner
+    /// sync yet: the World restores into a new stage's wave): the values, the update
+    /// count and the tiles that change next round (changed_tiles()). The rest is derived, as for a cold start
+    /// of the same stage: the masks and every direction byte are built by the next update(), and the partner
+    /// bookkeeping starts empty. False, with nothing changed, when a size does not match this wave or a value
+    /// could not have been written by it (above the strongest deposit, below unreached, past the age bound).
+    bool restore(std::vector<std::int32_t> values, std::uint32_t updates, std::vector<std::uint8_t> changed);
+
     /// Whether this process can run `kernel`: Plain always, Avx2 on a CPU that has it.
     [[nodiscard]] static bool kernel_available(WaveKernel kernel) noexcept;
     /// Run this wave's rounds and direction bytes on `kernel` (for tests: the plain and

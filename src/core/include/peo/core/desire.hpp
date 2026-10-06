@@ -8,6 +8,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace peo::core {
@@ -67,6 +68,14 @@ public:
         return log_odds_[index(at) * kDrawChoices + choice];
     }
     static constexpr std::int8_t kNoChoice = -128;
+    /// Every cell's nine log-odds, row-major: all a field holds between builds that the
+    /// draw reads (PEO-091 saves it; the scratch is rebuilt by the next build()).
+    [[nodiscard]] const std::vector<std::int8_t>& all_log_odds() const noexcept { return log_odds_; }
+    /// Take saved log-odds into a field built for `blocked` (build() has run, so its
+    /// moves are known). False, and nothing changed, when the count does not match, an
+    /// open cell offers a closed move (a Dead could be drawn into a wall), or a value is
+    /// past what build() writes.
+    bool restore_log_odds(std::vector<std::int8_t> log_odds, const Grid<bool>& blocked);
 
     [[nodiscard]] int width() const noexcept { return width_; }
     [[nodiscard]] int height() const noexcept { return height_; }

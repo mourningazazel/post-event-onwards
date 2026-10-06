@@ -2,6 +2,8 @@
 
 #include "peo/core/types.hpp"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 
@@ -39,6 +41,19 @@ constexpr float hash_unit(std::uint64_t a, std::uint64_t b, std::uint64_t c) noe
 class Rng {
 public:
     explicit Rng(Seed seed) noexcept { reseed(seed); }
+
+    /// The four state words, for a save (PEO-091); from_state() rebuilds the stream.
+    using State = std::array<std::uint64_t, 4>;
+    [[nodiscard]] State state() const noexcept { return {state_[0], state_[1], state_[2], state_[3]}; }
+    /// The stream a state() came from. An all-zero state is no stream (it would yield
+    /// zeros forever); a reader validates against that before calling this.
+    [[nodiscard]] static Rng from_state(const State& s) noexcept {
+        Rng r(0);
+        for (std::size_t i = 0; i < s.size(); ++i) {
+            r.state_[i] = s[i];
+        }
+        return r;
+    }
 
     void reseed(Seed seed) noexcept {
         // splitmix64 expands the seed into four non-zero state words.

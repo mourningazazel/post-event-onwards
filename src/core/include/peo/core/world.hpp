@@ -5,6 +5,7 @@
 #include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
 #include "peo/core/rng.hpp"
+#include "peo/core/save.hpp"
 #include "peo/core/scent_wave.hpp"
 #include "peo/core/stage.hpp"
 #include "peo/core/types.hpp"
@@ -12,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 namespace peo::core {
@@ -114,6 +116,9 @@ struct Speculation {
     std::size_t synced_tiles = 0;
     Tick update = 0;
     std::uint32_t stage_index = 0;
+    /// The World's epoch it was made in: a load or a restore starts a new one, so a
+    /// speculation from before never commits after (PEO-091).
+    std::uint64_t epoch = 0;
     /// The Dead's substeps (from, to] are recorded; only the even ones carry a slot.
     /// The slot at substep t (even) has its decisions in
     /// decided[decided_begin[i], decided_begin[i + 1]) with i = t / 2 - from / 2 - 1.
@@ -177,6 +182,19 @@ public:
     /// Dead's pending moves, reservations and slots. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
+    /// This world as a save image (PEO-091, ADR-0002, ADR-0017), tagged with `build`.
+    /// One section per system, each with its sync scope: WRLD (seed, params, stage,
+    /// clock, the spawn stream), STAG (a hand-built stage only; a generated one is
+    /// regenerated), SCNT (the field), HORD (the Dead, their pending moves and the
+    /// desire snapshot), OCCL (the occupancy log), all World; CHAR (the player),
+    /// Character. Deterministic: the same world gives the same bytes.
+    [[nodiscard]] SaveImage save(std::string_view build) const;
+    /// Become the world `image` holds, so that it continues bit-identical to the one
+    /// saved. Every value is checked against the stage it builds; on anything but Ok
+    /// this World is untouched and `issues` says what and where. Unknown sections are
+    /// skipped with an issue. The executor and field backend are kept, never saved.
+    [[nodiscard]] SaveStatus restore(const SaveImage& image, std::vector<SaveIssue>& issues);
+
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
     /// What the calm Dead draw from until the next update (PEO-009).
     [[nodiscard]] const DesireField& desire() const noexcept { return desire_; }
@@ -234,6 +252,10 @@ private:
     void speculate_scent(Speculation& out) const;
     void speculate_dead(Speculation& out) const;
     void finish_turn();
+    /// The Dead as a save left them (PEO-091): positions and steps, the moves decided
+    /// last slot (they land next), this cycle's slots polled again from the clock, and
+    /// the desire snapshot. Call after the clock is restored.
+    void restore_horde(std::vector<Dead> horde, std::vector<DeadMove> landing);
 
     Seed seed_;
     WorldParams params_;
@@ -252,6 +274,10 @@ private:
     Tick turn_ = 0;
     Substeps substeps_ = 0;
     Tick updates_ = 0;
+    /// The stage came from load_layout, not generate_stage: a save carries it whole.
+    bool hand_built_ = false;
+    /// Bumped by every load and restore; never saved (Speculation::epoch).
+    std::uint64_t epoch_ = 0;
     std::vector<Occupancy> log_;
 };
 

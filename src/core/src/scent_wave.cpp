@@ -731,6 +731,48 @@ std::size_t ScentWave::sync_from(const ScentWave& source) {
     return copied;
 }
 
+bool ScentWave::restore(std::vector<std::int32_t> values, std::uint32_t updates,
+                        std::vector<std::uint8_t> changed) {
+    // At the bound the next update() would break the age line (it asserts), so a wave
+    // can only have been saved below it.
+    if (values.size() != buf_[0].size() || changed.size() != changed_.size() ||
+        updates >= max_wave_updates(params_)) {
+        return false;
+    }
+    // A stored value is a deposit's strength less its route, plus the age line it was
+    // laid at, so none exceeds strength plus today's line.
+    const std::int64_t top =
+        static_cast<std::int64_t>(params_.strength) + static_cast<std::int64_t>(params_.age_cost) * updates;
+    for (const std::int32_t v : values) {
+        if (v < kUnreached || v > top) {
+            return false;
+        }
+    }
+    for (const std::uint8_t c : changed) {
+        if (c > 1) {
+            return false;
+        }
+    }
+    buf_[1] = values; // both buffers equal: every tile the next round leaves alone must be
+    buf_[0] = std::move(values);
+    cur_ = 0;
+    other_behind_ = false;
+    updates_ = updates;
+    changed_ = std::move(changed);
+    std::fill(carry_.begin(), carry_.end(), 0);
+    for (const std::uint32_t t : written_) {
+        written_mark_[t] = 0;
+    }
+    written_.clear();
+    for (const std::uint32_t t : stale_) {
+        stale_mark_[t] = 0;
+    }
+    stale_.clear();
+    std::fill(flow_.begin(), flow_.end(), kNoFlow);
+    masks_built_ = false; // the next update() builds them and rewrites every byte
+    return true;
+}
+
 std::size_t ScentWave::active_cells() const noexcept {
     std::size_t cells = 0;
     for (int ty = 0; ty < tiles_y_; ++ty) {

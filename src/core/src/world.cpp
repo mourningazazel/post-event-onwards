@@ -28,10 +28,15 @@ constexpr Substeps kMaxLogReserve = 64;
 /// `s` rounded up to a whole number of slots, at least one (ADR-0016): the Dead and
 /// the update run on even substeps only.
 constexpr Substeps whole_slots(Substeps s) noexcept {
-    const Substeps slots = s / kSlotSubsteps + (s % kSlotSubsteps != 0 ? 1 : 0); // no wrap near the max
-    return std::max<Substeps>(slots, 1) * kSlotSubsteps;
+    // In 64 bits and saturating: the largest Substeps rounds down to the largest even one
+    // rather than wrapping to 0.
+    const std::uint64_t slots =
+        std::max<std::uint64_t>((std::uint64_t{s} + kSlotSubsteps - 1) / kSlotSubsteps, 1);
+    constexpr std::uint64_t kMaxSlots = std::numeric_limits<Substeps>::max() / kSlotSubsteps;
+    return static_cast<Substeps>(std::min(slots, kMaxSlots) * kSlotSubsteps);
 }
-/// The largest step a Dead's uint16 holds that is a whole number of slots.
+/// The largest step a Dead's uint16 holds that is a whole number of slots. Also the
+/// longest cycle a World keeps: a unit's buckets reserve one entry per slot of it.
 constexpr Substeps kMaxStepSubsteps =
     std::numeric_limits<std::uint16_t>::max() / kSlotSubsteps * kSlotSubsteps;
 /// The largest update period whose slowest spawned step (kMaxDeadSpeed x it) still fits.
@@ -105,7 +110,7 @@ World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_width = std::max(params_.stage_width, kMinStageSide);
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
     params_.update_period = std::min(whole_slots(params_.update_period), kMaxUpdatePeriod);
-    params_.dead_cycle = whole_slots(params_.dead_cycle);
+    params_.dead_cycle = std::min(whole_slots(params_.dead_cycle), kMaxStepSubsteps);
     log_.reserve(std::min(params_.update_period, kMaxLogReserve));
     load_stage(0);
 }
@@ -116,6 +121,7 @@ void World::load_stage(std::uint32_t index) {
     spec.width = params_.stage_width;
     spec.height = params_.stage_height;
     stage_ = generate_stage(spec);
+    hand_built_ = false;
     start_field(stage_seed(seed_, index));
     player_ = stage_.entry;
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
@@ -151,6 +157,7 @@ void World::load_stage(std::uint32_t index) {
 void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
     stage_ = std::move(stage);
     stage_.exit = kNoExit;
+    hand_built_ = true;
     const int w = stage_.blocked.width();
     const int h = stage_.blocked.height();
     stage_.spec.width = w;
@@ -188,6 +195,7 @@ void World::start_field(Seed stage_seed_value) {
 
 void World::start_horde(Seed stage_seed_value) {
     HordeState& d = dead_;
+    ++epoch_;
     turn_ = 0;
     substeps_ = 0;
     updates_ = 0;
@@ -208,6 +216,33 @@ void World::start_horde(Seed stage_seed_value) {
     desire_ = DesireField(stage_.spec.width, stage_.spec.height);
     desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
     dead_slot(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
+}
+
+void World::restore_horde(std::vector<Dead> horde, std::vector<DeadMove> landing) {
+    HordeState& d = dead_;
+    const std::size_t units = horde.size();
+    d.horde = std::move(horde);
+    d.occupied = Grid<std::uint8_t>(stage_.spec.width, stage_.spec.height, 0);
+    for (const Dead& unit : d.horde) {
+        ++d.occupied.at(unit.pos);
+    }
+    d.reserved = Grid<bool>(stage_.spec.width, stage_.spec.height, false);
+    d.moving.assign(units, 0);
+    d.plans.resize(units);
+    d.slot_units.reserve(units * cycle_slots());
+    d.deciding.clear();
+    d.deciding.reserve(units);
+    d.landing = std::move(landing);
+    d.landing.reserve(units);
+    d.intents.reserve(units);
+    for (const DeadMove& m : d.landing) {
+        d.reserved.at(m.to) = true;
+        d.moving[m.unit] = 1;
+    }
+    // The buckets are a pure hash of (salt, cycle, index, step): the last poll ran at
+    // the start of the cycle the clock is in, so polling that cycle again rebuilds them.
+    const Slot len = cycle_slots();
+    poll(d, stage_salt_, (substeps_ / kSlotSubsteps) / len, len);
 }
 
 void World::apply_action(Action action) noexcept {
@@ -407,6 +442,7 @@ void World::set_executor(Executor* executor) noexcept {
 
 void World::speculate(Speculation& out) const {
     out.update = updates_;
+    out.epoch = epoch_;
     out.stage_index = stage_index_;
     // Two independent halves (PEO-080): the update writes out.scent, the Dead's slots
     // read only scent_ and write out.ahead and the record, so they run as two pieces.
@@ -470,8 +506,8 @@ void World::speculate_dead(Speculation& out) const {
 }
 void World::commit(Speculation& spec, Action action) {
     // patch_deposit is exact for one round per update; faster waves run live.
-    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > substeps_ ||
-        params_.scent.speed != 1) {
+    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.epoch != epoch_ ||
+        spec.from > substeps_ || params_.scent.speed != 1) {
         step(action);
         return;
     }

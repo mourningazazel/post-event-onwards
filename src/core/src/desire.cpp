@@ -179,6 +179,31 @@ void DesireField::build_rows(const ScentWave& scent, const DeadDrawParams& param
     }
 }
 
+bool DesireField::restore_log_odds(std::vector<std::int8_t> log_odds, const Grid<bool>& blocked) {
+    if (log_odds.size() != log_odds_.size() || !moves_built_ || blocked.width() != width_ ||
+        blocked.height() != height_) {
+        return false;
+    }
+    // build_rows writes kNoChoice exactly for the moves a cell's walls close, and a
+    // clamped value (never kNoChoice) for the rest: anything else no build wrote.
+    for (int y = 0; y < height_; ++y) {
+        for (int x = 0; x < width_; ++x) {
+            if (blocked.at(x, y)) {
+                continue; // no Dead stands on a wall, so its choices are never drawn
+            }
+            const std::size_t i = index({x, y});
+            for (std::size_t d = 0; d < std::size(kNeighbours8); ++d) {
+                const bool open = ((static_cast<unsigned>(moves_[i]) >> d) & 1U) != 0;
+                if (open == (log_odds[i * kDrawChoices + d] == kNoChoice)) {
+                    return false;
+                }
+            }
+        }
+    }
+    log_odds_ = std::move(log_odds);
+    return true;
+}
+
 std::array<std::uint32_t, kDrawChoices> DesireField::weights(Vec2i at) const noexcept {
     std::array<std::uint32_t, kDrawChoices> w{};
     const std::int8_t* in = &log_odds_[index(at) * kDrawChoices];
