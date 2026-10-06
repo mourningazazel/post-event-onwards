@@ -78,7 +78,7 @@ TEST_SUITE("noise") {
         }
         NoiseRow row;
         FbmRow fbm_row;
-        for (const auto [x0, width] : {std::pair{-kSpan, 2 * kSpan}, std::pair{-17, 41}}) {
+        for (const auto& [x0, width] : {std::pair{-kSpan, 2 * kSpan}, std::pair{-17, 41}}) {
             row.reset(kSeed, 4, x0, width);
             fbm_row.reset(kSeed, p.forest, x0, width);
             for (int y = -kSpan; y < kSpan; y += 3) {

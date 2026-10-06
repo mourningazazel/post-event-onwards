@@ -267,7 +267,7 @@ std::optional<Lake> lake_at_site(Seed world, const GeographyParams& p, std::int6
     std::int64_t y0 = x0;
     std::int64_t x1 = std::numeric_limits<std::int64_t>::min();
     std::int64_t y1 = x1;
-    for (const auto [dx, dy] : found) {
+    for (const auto& [dx, dy] : found) {
         const CellCorner c{cx + dx, cy + dy};
         lake.cells.push_back(c);
         x0 = std::min(x0, c.x);
