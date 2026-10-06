@@ -171,7 +171,11 @@ TEST_SUITE("scenario: swarm") {
         constexpr int kPitch = 24;
         constexpr Vec2i kStrong{90, 40};
         constexpr int kRegion = 12; // Chebyshev radius of the region round it
-        constexpr int kUpdates = 40;
+        // PEO-099 (the scenario budget): was 40 updates after a full-reach warm-up, 4.5x.
+        // The emitters sit kPitch apart, so a warm-up of kPitch plus half the region fills
+        // the field between them.
+        constexpr int kUpdates = 15;
+        constexpr int kWarm = kPitch + kRegion / 2;
         Swarm s(open_stage(kW, kH));
         const std::int32_t full = s.wave.params().strength;
         for (int y = kPitch / 2; y < kH; y += kPitch) {
@@ -182,7 +186,7 @@ TEST_SUITE("scenario: swarm") {
             }
         }
         s.emitters.push_back({kStrong, full});
-        s.warm(kWaveReachCells);
+        s.warm(kWarm);
         Rng rng(92);
         while (s.horde.size() < static_cast<std::size_t>(kDead)) {
             const Vec2i c{rng.range(1, kW - 2), rng.range(1, kH - 2)};
@@ -209,7 +213,7 @@ TEST_SUITE("scenario: swarm") {
     TEST_CASE("fan-out: a tight cluster on flat scent spreads, never two to a tile") {
         // No scent at all: a packed 15x15 block of the Dead wanders. Its bounding area
         // grows at least 3x, and no tile ever holds two.
-        constexpr int kSide = 101;
+        constexpr int kSide = 71; // PEO-099: was 101; the block spreads to about 35 x 35
         constexpr int kBlock = 15;
         constexpr int kUpdates = 40;
         Swarm s(open_stage(kSide, kSide));

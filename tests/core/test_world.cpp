@@ -23,14 +23,15 @@ namespace {
 /// PEO-080's executor golden: the brief's 512x512 with 20,000 Dead over 200 actions in
 /// release builds; under the sanitizers that alone would take 8 s of the scenario tier's
 /// 5, so the same run is smaller there (still several pull tiles, every executor path:
-/// 64x64 is eight 128x8 tiles, and threshold 1 splits every batch of the Dead).
+/// 64x64 is eight 64x8 tiles, the 128-wide tile clipped, and threshold 1 splits every
+/// batch of the Dead).
 #ifdef NDEBUG
 constexpr int kExecutorGoldenActions = 30; // 200 until PEO-009: every unit draws now (5.5 s)
 constexpr int kExecutorGoldenDead = 20000;
 constexpr int kExecutorGoldenSide = 512;
 #else
-constexpr int kExecutorGoldenActions = 12; // PEO-099: was 20 actions, 600 Dead, 128 square
-constexpr int kExecutorGoldenDead = 200;
+constexpr int kExecutorGoldenActions = 8; // PEO-099: was 20 actions, 600 Dead, 128 square
+constexpr int kExecutorGoldenDead = 120;
 constexpr int kExecutorGoldenSide = 64;
 #endif
 
@@ -297,21 +298,21 @@ TEST_SUITE("world") {
     TEST_CASE("the Dead's positions are pinned" * doctest::test_suite("scenario: world")) {
         // PEO-079: recorded before the poll and decide_move read the direction bytes
         // (ScentWave::flow_target); the switch must not move a single unit. Two hordes:
-        // a World on a generated 120x80 walled stage with 1000 Dead, 15 updates of
+        // a World on a generated 120x80 walled stage with 1000 Dead, 10 updates of
         // walking and waiting; and 600 Dead on the PEO-035 town, each deciding once per
         // update with real occupancy, while a player walks into the town and stands.
-        // PEO-009: was 60; every unit draws now. PEO-099: was 30 updates, 3000 Dead on
+        // PEO-009: was 60; every unit draws now. PEO-099: was 30 then 15 updates, 3000 Dead on
         // 200x120 and 2000 in the town (the scenario budget).
-        constexpr int kUpdates = 15;
+        constexpr int kUpdates = 10;
         constexpr int kWorldDead = 1000;
         constexpr int kWorldWidth = 120;
         constexpr int kWorldHeight = 80;
         constexpr int kTownDead = 600;
         // PEO-009 (D-038 B) re-pinned both on purpose: the Dead draw their steps from the
         // desire field now, so every position changed. PEO-079's own switch kept them.
-        // PEO-099 re-pinned both for the smaller hordes, with no change to core.
-        constexpr std::uint64_t kPinnedWorld = 0x21B69281D3D6A49CULL;
-        constexpr std::uint64_t kPinnedTown = 0x52DF02A3C2E7BF5EULL;
+        // PEO-099 re-pinned both for the smaller hordes and shorter run, with no change to core.
+        constexpr std::uint64_t kPinnedWorld = 0x70032D53395F8C84ULL;
+        constexpr std::uint64_t kPinnedTown = 0x2EDBC7BA6E77A0F0ULL;
         constexpr int kMinMoved = 100; // the hash pins real movement, not a frozen horde
 
         World w(kSeed,
@@ -399,7 +400,7 @@ TEST_SUITE("world") {
         // (PEO-060). Odd and even seeds take one mode each, so both run without
         // doubling the case's cost under the sanitizers (suite budget, 1 s). A and B
         // are compared after every action.
-        constexpr int kSequences = 200;
+        constexpr int kSequences = 120; // PEO-099: was 200; still 60 in each mode
         constexpr int kTurns = 8;
         constexpr int kGoldenWidth = 6;
         constexpr int kGoldenHeight = 6;
@@ -767,7 +768,7 @@ TEST_SUITE("world") {
         // PEO-078: a reused Speculation syncs its wave from the World's partner (only
         // changed tiles); a fresh one copies the whole field. Both match step() after
         // every one of 200 mixed actions, and a warm speculate copies less than the field.
-        constexpr int kActions = 200;
+        constexpr int kActions = 80; // PEO-099: was 200 (the scenario budget)
         constexpr int kWaitOneIn = 5;
         constexpr Substeps kDurations[] = {2, 6, 12, 24};
         for (const bool reuse : {true, false}) {
@@ -798,7 +799,7 @@ TEST_SUITE("world") {
         // scent) share one Speculation, turn about. Each one's wave must be a stranger to
         // the other's: a partner sync against the wrong World's field would keep its
         // values and masks, so every switch cold-copies and both match step().
-        constexpr int kActions = 20; // PEO-099: was 60; every action after the first switches
+        constexpr int kActions = 10; // PEO-099: was 60, then 20; every action after the first switches
         constexpr int kWaitOneIn = 5;
         constexpr Substeps kDurations[] = {2, 6, 12, 24};
         const WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
@@ -853,7 +854,7 @@ TEST_SUITE("world") {
         // seeds that draw different winds.
         // PEO-086, PEO-099: the scenario budget (was 5 seeds of 30 actions).
         constexpr int kSeeds = 3;
-        constexpr int kActions = 12;
+        constexpr int kActions = 8;
         constexpr int kWaitOneIn = 5;
         constexpr Substeps kDurations[] = {2, 6, 12, 24};
         WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};

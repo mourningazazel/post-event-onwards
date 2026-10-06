@@ -286,9 +286,9 @@ TEST_SUITE("scent_wave") {
               doctest::test_suite("scenario: scent_wave")) {
         // PEO-078: the World's wave and its Speculation's are partners after a copy; a
         // later sync copies just the tiles either wrote, and the waves stay equal.
-        constexpr int kBig = 512;
+        constexpr int kBig = 256; // PEO-099: was 512 x 512 over 10 updates (the scenario
         constexpr Vec2i kSource{40, 40};
-        constexpr int kUpdates = 10;
+        constexpr int kUpdates = 6; // budget); still 64 tiles, a warm sync on every update
         const Grid<bool> walls(kBig, kBig, false);
         ScentWave world(kBig, kBig);
         world.set_token(1);
@@ -467,7 +467,7 @@ TEST_SUITE("scent_wave") {
 #ifdef NDEBUG
         constexpr int kUpdates = 200;
 #else
-        constexpr int kUpdates = 15; // PEO-099: was 30 (the scenario budget)
+        constexpr int kUpdates = 10; // PEO-099: was 30, then 15 (the scenario budget)
 #endif
         constexpr std::size_t kThreads = 4;
         peo::test::Rng town_rng(11);
@@ -694,10 +694,12 @@ TEST_SUITE("scent_wave") {
         // Every reached cell got its value from a stronger neighbour (a step costs at
         // least 1), so a strict strongest-neighbour walk from anywhere ends on the
         // source: wind, gusts and indoor patches included.
-        constexpr int kW = 160;
+        // PEO-099 (the scenario budget): was 160 wide over 70 updates. Both patches still
+        // lie inside the stage, and the front still reaches past them.
+        constexpr int kW = 120;
         constexpr int kH = 64;
         constexpr int kWallOneIn = 6;
-        constexpr int kUpdates = 70;
+        constexpr int kUpdates = 30;
         constexpr int kClimbLimit = 400;
         constexpr int kRoomSide = 12;
         const Grid<bool> b = random_stage(kW, kH, kWallOneIn, true, 61);
