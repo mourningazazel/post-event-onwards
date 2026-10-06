@@ -839,7 +839,7 @@
       "order": 797,
       "type": "feature",
       "title": "Content migration on load (ADR-0017)",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S3",
       "effort": "M",
       "owner": "architect",
@@ -849,6 +849,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "D-046: stand-in kind undefined; build after PEO-008 whatever the answer"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "D-046 answered: A"
         }
       ],
       "references": [

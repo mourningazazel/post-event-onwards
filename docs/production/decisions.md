@@ -8,6 +8,13 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`. They still hold.
 
+## 2026-10-06 · D-046 · A removed item's stand-in is its nearest parent kind
+
+User decision: A (decision card, PEO-092 thread). On load, an item whose ID is gone becomes the
+nearest spawnable ancestor on its `parent` chain that is still present; item families gain a plain
+generic archetype (`hammer`) as parent. Consequence: PEO-092 is briefed on the parent chain and
+needs a content pass adding generic parents; it still waits on PEO-008 (content registry).
+
 ## 2026-10-06 · D-045 · The far Dead's lean stays subtle
 
 User decision (review thread, A, recommended). The D-038 knobs stay as they are: at the edge of
