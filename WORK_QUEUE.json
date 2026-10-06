@@ -1022,9 +1022,15 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-06",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "PEO-093",
         "docs/domains/process.md"
