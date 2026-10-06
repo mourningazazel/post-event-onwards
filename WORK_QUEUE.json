@@ -801,7 +801,7 @@
       "order": 787,
       "type": "feature",
       "title": "Save file: scoped sections, two fallbacks (ADR-0017)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
