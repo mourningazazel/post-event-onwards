@@ -169,12 +169,21 @@ time, so a runner covers two cells per update.
 | Turn model | `world: commit(speculate()) is bit-identical to step()`, `scent_wave: patch_deposit after update equals deposit then update` |
 | Content | `tools/content/lint.py`, `tools/content/test.py` (374 expectations, 109 chains) |
 | Swarm behaviour | the scenario table in scent-mobs round 3 (harness, queued) |
+| Persistence | `save: a restored world continues bit-identical to the one never saved` |
 
 ## Planned seams (not built)
 
 - `World`: **built (PEO-002)** in `peo/core/world.hpp` + `src/core/src/world.cpp`, with
   `peo/core/action.hpp`. Owns stage, scent, horde, player; `step(Action)` is the single
   entry point; `speculate` / `commit` built (PEO-007).
+- `Save`: **built (PEO-091)**. `peo/core/save.hpp` is the container (ADR-0002, ADR-0017): a
+  versioned image of sections, each with its id, version, sync scope and crc32, written and
+  read as bytes in memory; `read_save` never trusts a length and names what it refuses.
+  `peo/core/byte_io.hpp` reads and writes payloads little-endian. `World::save` /
+  `World::restore` own the sections: WRLD, STAG (hand-built stages only), SCNT, HORD, OCCL
+  in the World scope, CHAR in the Character scope. Restore checks every value against the
+  stage it builds and changes nothing unless the image is Ok. Files, the two fallbacks and
+  zstd are the app's and PEO-107 / PEO-108.
 - `Content`: loads `content/` (registry, materials, items, modifiers) into runtime tables;
   the derivation rules in `tools/content/derive.py` are the executable spec to port.
 - `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for
