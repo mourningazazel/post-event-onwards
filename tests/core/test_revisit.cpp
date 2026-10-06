@@ -200,8 +200,15 @@ TEST_SUITE("revisit") {
         World a(kSeed, small_params());
         AreaRecord record = *a.store_area();
         const Vec2i entry = a.stage().entry;
-        std::erase_if(record.horde, [&](const Dead& d) { return d.pos == entry; });
-        record.horde.insert(record.horde.begin(), Dead{.pos = entry, .fate = 0xFFFF});
+        // The unit on the entry first, then everyone else not on it.
+        std::vector<Dead> horde{Dead{.pos = entry, .fate = 0xFFFF}};
+        horde.reserve(record.horde.size() + 1);
+        for (const Dead& d : record.horde) {
+            if (d.pos != entry) {
+                horde.push_back(d);
+            }
+        }
+        record.horde = std::move(horde);
         const World b = resumed(small_params(), 7, record);
         REQUIRE(!b.horde().empty());
         const Vec2i moved = b.horde().front().pos;
