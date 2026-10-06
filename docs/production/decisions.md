@@ -6,7 +6,17 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`. They still hold.
+`decisions-archive/2026-09.md`; D-035 onward as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-06 · D-047 to D-050 · The screen follows the player; sight bounds what shows
+
+User decisions (camera thread). D-047 A: the view is as many whole cells as fit the resizable
+window, letterboxed when it does not divide evenly. D-048 A: it jumps one cell a step, the player
+always centred. D-049 (own answer): what shows is what the player can see; optical range is about
+500 ft (152 tiles), binoculars extend it later; a Look key moves a cursor over the visible field;
+within 20 ft (6 tiles) signs read and items show generic labels ("hammer"), containers only their
+kind; details and contents need examining. D-050: no zoom yet (zooming out shrinks tiles), but
+build for it. Consequence: PEO-117; sight, Look and range labels get queue items.
 
 ## 2026-10-06 · D-046 · A removed item's stand-in is its nearest parent kind
 
@@ -119,11 +129,3 @@ spawning at a border; scent that reaches far and builds up, instead of aggregate
 spawns; and fast time passing, because players sleep and pass time often. Every GPU kernel is
 integer, has a CPU reference, and an equivalence test checks them bit for bit (SYSTEMS R11).
 Consequence: ADR-0014; PEO-081 to PEO-083; stage size stays per machine (D-034).
-
-## 2026-10-01 · D-035 · Core uses threads it does not own
-
-User decision: B (N020), amending ADR-0012's "core spawns no threads". The frontend passes core a
-parallel-for; core still creates no thread. Tests run it serially, and a golden test checks
-serial and threaded runs give the same world bit for bit, beside speculate/commit's. Why: the
-scent field, the flow grid and the Dead's intents split by tile or unit with results combined by
-maximum or minimum, so threads cannot change them. Consequence: ADR-0014; PEO-080.

@@ -1098,7 +1098,7 @@
       "order": 846,
       "type": "feature",
       "title": "Player-centred scrolling view; stages bigger than the window",
-      "status": "AwaitingUser",
+      "status": "Pending",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
