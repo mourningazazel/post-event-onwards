@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 116,
+  "next_id": 117,
   "items": [
     {
       "id": "PEO-003",
@@ -842,7 +842,7 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
@@ -854,6 +854,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "D-046 answered: A"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed (D-046 A): CDIC dictionary + resolve(); blocked on PEO-008 and PEO-116 too (tool cannot add depends_on)"
         }
       ],
       "references": [
@@ -1206,7 +1211,13 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "PEO-092: on load, show migration_summary once and warn before a lossy migration (ADR-0002)"
+        }
+      ],
       "references": [
         "docs/domains/persistence.md"
       ],
@@ -1284,6 +1295,23 @@
       "depends_on": [
         "PEO-094"
       ]
+    },
+    {
+      "id": "PEO-116",
+      "order": 937,
+      "type": "chore",
+      "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "content/README.md",
+        "docs/production/decisions.md"
+      ],
+      "depends_on": []
     }
   ]
 }
