@@ -848,7 +848,7 @@
       "order": 777,
       "type": "feature",
       "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -868,6 +868,11 @@
           "at": "2026-10-05",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
