@@ -18,6 +18,8 @@ add_executable(peo_core_tests
     core/test_swarm.cpp
     core/test_save.cpp
     core/test_revisit.cpp
+    core/test_noise.cpp
+    core/test_geography.cpp
     siege/test_siege_layouts.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 # PEO-080: the executor tests also run the frontend's thread pool (header-only, no SDL).
@@ -31,6 +33,11 @@ add_executable(peo_siege siege/siege.cpp)
 target_link_libraries(peo_siege PRIVATE peo::core peo::options Threads::Threads)
 target_include_directories(peo_siege PRIVATE ${CMAKE_SOURCE_DIR}/src/app)
 target_compile_definitions(peo_siege PRIVATE PEO_SIEGE_BASELINE_DIR="${CMAKE_SOURCE_DIR}/tests/siege/baseline")
+
+# PEO-095: draws geography squares as an image for review (docs/testing.md). Built with
+# everything else so it never rots; no test runs it.
+add_executable(peo_geo geo/geo_dump.cpp)
+target_link_libraries(peo_geo PRIVATE peo::core peo::options)
 
 add_test(NAME core COMMAND peo_core_tests --no-intro)
 set_tests_properties(core PROPERTIES TIMEOUT 30)
