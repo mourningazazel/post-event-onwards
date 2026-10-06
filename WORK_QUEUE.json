@@ -965,12 +965,18 @@
       "order": 797,
       "type": "chore",
       "title": "Playtest the manual steps PEO-009 and PEO-080 left unrun",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
       "created": "2026-10-03",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "starting unit 1"
+        }
+      ],
       "references": [],
       "depends_on": []
     },
