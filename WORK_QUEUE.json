@@ -858,7 +858,7 @@
       "order": 777,
       "type": "chore",
       "title": "Scenario tier back under 2.5 s again: it regrew to 4.6 s of 5 s in CI after PEO-080 and PEO-009",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "S",
       "owner": "builder",
@@ -878,6 +878,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "1. CI g++-13 at 90d5d97 (run 37237745470) reads scenario_budget 3.30 s, over the 2500 ms acceptance. The M1 reads about 1.5x faster than CI, so aim for 1600 ms or less on the M1. 2. The brief now covers every scenario* case, not just the five. Rank them with ./build/headless/tests/peo_core_tests --test-suite='scenario*' -d and shrink the slowest (stage, horde, actions, seeds, updates) until the tier meets 1. 3. The same rules hold: keep every assertion, keep the executor golden split (parallel_decide_min 1) and windy, keep several pull tiles, re-pin a hash only when its inputs change, no move to the unit tier, no budget change. 4. Fix tests/core/test_world.cpp:25: 64x64 makes eight 64x8 tiles (the 128-wide tile is clipped), not 128x8. 5. Report each changed case before and after, plus the CI scenario_budget time from your push."
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "rework"
         }
       ],
       "references": [],
