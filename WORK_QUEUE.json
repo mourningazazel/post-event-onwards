@@ -998,9 +998,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-06",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "PEO-080",
         "PEO-101",
