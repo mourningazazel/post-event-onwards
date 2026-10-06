@@ -928,10 +928,10 @@
       "order": 827,
       "type": "design",
       "title": "Geography square, 100 km (ADR-0018)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -948,6 +948,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "briefed; rivers split to PEO-111"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "builder",
+          "text": "Report in commit; CI 37528609928 green."
         }
       ],
       "references": [
