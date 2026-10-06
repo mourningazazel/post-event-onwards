@@ -801,7 +801,7 @@
       "order": 777,
       "type": "feature",
       "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
@@ -836,6 +836,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "1. tests/core/test_world.cpp: add 'requested times round up to whole slots': World(kSeed, small_world() with update_period=7, dead_cycle=17) after wait(8) has updates()==1 and is World::equivalent to update_period=8, dead_cycle=18 after the same actions; wait(0) advances substeps() by kSlotSubsteps; load_layout with Dead step_substeps 13 and 0 stores 14 and 2; update_period=UINT32_MAX constructs, and every spawned step_substeps is even and <=65534. An odd period would otherwise never fire an update, since boundaries are checked only on even substeps. 2. docs/bottlenecks.md: refresh refs to current origin/main lines: B2 world.cpp:244 -> :297 (dead_slot), poll :42 -> :55; B4 copy :374 -> :442; commit :411 -> :471. 3. verify.py --full, push, re-report."
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "rework"
         }
       ],
       "references": [
