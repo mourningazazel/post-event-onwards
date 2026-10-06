@@ -905,7 +905,7 @@
       "order": 817,
       "type": "design",
       "title": "Lazy revisit catch-up (ADR-0019)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
