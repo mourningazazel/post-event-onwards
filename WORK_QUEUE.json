@@ -801,10 +801,10 @@
       "order": 777,
       "type": "feature",
       "title": "Clock in substeps: 12 per walk, walk is 3 s (ADR-0016)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -841,6 +841,11 @@
           "at": "2026-10-05",
           "by": "builder",
           "text": "rework"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "rework: c60a3d2 test 'requested times round up to whole slots' (7/17 runs as 8/18, wait(0) one slot, layout steps 13 and 0 -> 14 and 2, UINT32_MAX period: steps even, <=65534); 80e68b7 bottlenecks refs (:297, :55, :442, :432 for the stale :384, :471). verify --frontend --full passes. open: none."
         }
       ],
       "references": [
