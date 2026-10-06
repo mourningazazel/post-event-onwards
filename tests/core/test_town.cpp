@@ -105,7 +105,7 @@ struct Follower {
     Grid<std::uint8_t> occupied{kTownWidth, kTownHeight, 0};
     Grid<bool> reserved{kTownWidth, kTownHeight, false};
     DesireField desire{kTownWidth, kTownHeight};
-    Seconds decisions = 0;
+    Slot decisions = 0;
     void decide(const ScentWave& f, const Grid<bool>& b) {
         constexpr std::uint64_t kFollowerSalt = 0xF0;
         // Alone, it needs only its own cell's choices (nobody's company to count).

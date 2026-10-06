@@ -105,7 +105,7 @@ TEST_SUITE("turn_input") {
 
     TEST_CASE("taps keep their order and walk or run is fixed at press time") {
         Driver d;
-        const Action run_east = Action::step({1, 0}, kRunStepSeconds);
+        const Action run_east = Action::step({1, 0}, kRunStepSubsteps);
         d.press(kEast, false, 0);
         d.press(kNorth, false, 10 * kMs);
         d.press(run_east, false, 20 * kMs);
@@ -113,7 +113,7 @@ TEST_SUITE("turn_input") {
         REQUIRE(d.actions.size() == 3);
         CHECK(d.actions[1].dir == kNorth.dir);
         CHECK(d.actions[2].dir == run_east.dir);
-        CHECK(d.actions[2].seconds == kRunStepSeconds);
+        CHECK(d.actions[2].substeps == kRunStepSubsteps);
     }
 
     TEST_CASE("clear forgets waiting taps") {

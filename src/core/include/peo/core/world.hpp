@@ -38,29 +38,30 @@ struct WorldParams {
     /// costs O(width * height); tests use a small stage to stay in budget.
     int stage_width = StageSpec{}.width;
     int stage_height = StageSpec{}.height;
-    /// Game seconds between scent updates (D-015). WaveParams are per update.
-    Seconds update_period = kUpdatePeriodSeconds;
-    /// Game seconds in one cycle of the Dead's slots (D-031).
-    Seconds dead_cycle = kDeadCycleSeconds;
+    /// Substeps between scent updates (D-015, ADR-0016). WaveParams are per update.
+    /// World rounds it up to a multiple of kSlotSubsteps.
+    Substeps update_period = kUpdatePeriodSubsteps;
+    /// Substeps in one cycle of the Dead's slots (D-031). Rounded as update_period.
+    Substeps dead_cycle = kDeadCycleSubsteps;
     /// The strongest wind a stage can draw (PEO-048): each stage blows its own way at an
     /// intensity in [0, wind_max], from its seed. 0, the default, is always calm, and
     /// then nothing differs from a world without wind. Clamped to kMaxWindStep.
     std::int32_t wind_max = 0;
-    /// The smallest batch of the Dead deciding in one second that is split across the
+    /// The smallest batch of the Dead deciding in one slot that is split across the
     /// executor (PEO-080): below it, waking workers costs more than the decisions.
     std::size_t parallel_decide_min = kParallelDecideMin;
     /// The calm Dead's weighted draw (D-038 B, PEO-009).
     DeadDrawParams draw{};
 };
 
-/// Game seconds the player spent on one tile since the last update. The log of
-/// these is applied as scent at the next update (D-015).
+/// Substeps the player spent on one tile since the last update. The log of these is
+/// applied as scent at the next update (D-015).
 struct Occupancy {
     Vec2i tile{};
-    Seconds seconds = 0;
+    Substeps substeps = 0;
 };
 
-/// A move one of the Dead decided: it lands one second later (D-031).
+/// A move one of the Dead decided: it lands one slot later (D-031).
 struct DeadMove {
     std::uint32_t unit = 0;
     Vec2i to{};
@@ -68,25 +69,25 @@ struct DeadMove {
 
 /// The Dead between updates (D-031): where they stand, the tiles pending moves
 /// have reserved, who is moving, this cycle's slots, and the moves decided this
-/// second and last. World owns one; speculate() runs a copy ahead.
+/// slot and last. World owns one; speculate() runs a copy ahead.
 struct HordeState {
     std::vector<Dead> horde;
     /// Dead per tile: at most 1 for calm Dead.
     Grid<std::uint8_t> occupied{1, 1};
-    /// Tiles a decided move will land on next second.
+    /// Tiles a decided move will land on next slot.
     Grid<bool> reserved{1, 1};
     /// Per unit: 1 while it has a move pending (it skips its slots until it lands).
     std::vector<std::uint8_t> moving;
-    /// This cycle's slots bucketed by second: the units in second s are
+    /// This cycle's slots bucketed: the units in slot s of the cycle are
     /// slot_units[slot_begin[s], slot_begin[s + 1]), in ascending index.
     std::vector<std::uint32_t> slot_begin;
     std::vector<std::uint32_t> slot_units;
     /// Scratch for the poll: each unit's plan this cycle.
     std::vector<SlotPlan> plans;
-    /// Moves decided this second, and those decided last second, which land now.
+    /// Moves decided this slot, and those decided last slot, which land now.
     std::vector<DeadMove> deciding;
     std::vector<DeadMove> landing;
-    /// Scratch for a split second (PEO-080): each deciding unit's target, by slot. Empty
+    /// Scratch for a split slot (PEO-080): each deciding unit's target, in order. Empty
     /// between uses, so copying the horde costs nothing for it.
     std::vector<std::optional<Vec2i>> intents;
 };
@@ -94,9 +95,9 @@ struct HordeState {
 /// The next update computed ahead (PEO-007, D-015, PEO-060). The scent: the wave's
 /// update with no deposit, so commit() only patches the logged deposits in
 /// (ScentWave::patch_deposit, PEO-030). The Dead: between updates they read only the
-/// last update's scent, never the player, so their seconds up to and including the
+/// last update's scent, never the player, so their slots up to and including the
 /// next boundary are fixed once an update commits; speculate() runs them ahead and
-/// records each second's decisions and any poll, and commit() replays them. Valid
+/// records each slot's decisions and any poll, and commit() replays them. Valid
 /// for the update and stage it was made on, across any number of actions that
 /// cross no update boundary.
 /// Reusable: speculate(out) and commit() recycle its buffers, so a frontend that
@@ -107,20 +108,21 @@ struct HordeState {
 struct Speculation {
     ScentWave scent{1, 1};
     /// The desire field for the update after the boundary (PEO-009), from `scent` and
-    /// the occupancy the Dead's seconds reach the boundary with.
+    /// the occupancy the Dead's slots reach the boundary with.
     DesireField desire;
     /// Tiles the last speculate copied into `scent`: all of them when cold. Diagnostic.
     std::size_t synced_tiles = 0;
     Tick update = 0;
     std::uint32_t stage_index = 0;
-    /// The Dead's seconds (from, to] are recorded: second t's decisions are
-    /// decided[decided_begin[t - from - 1], decided_begin[t - from]).
-    Seconds from = 0;
-    Seconds to = 0;
+    /// The Dead's substeps (from, to] are recorded; only the even ones carry a slot.
+    /// The slot at substep t (even) has its decisions in
+    /// decided[decided_begin[i], decided_begin[i + 1]) with i = t / 2 - from / 2 - 1.
+    Substeps from = 0;
+    Substeps to = 0;
     std::vector<std::uint32_t> decided_begin;
     std::vector<DeadMove> decided;
-    /// The poll at second poll_at, if one falls in (from, to]; 0 when none.
-    Seconds poll_at = 0;
+    /// The poll at substep poll_at, if one falls in (from, to]; 0 when none.
+    Substeps poll_at = 0;
     std::vector<std::uint32_t> poll_begin;
     std::vector<std::uint32_t> poll_units;
     /// Scratch: the World's HordeState, run ahead.
@@ -129,7 +131,7 @@ struct Speculation {
 
 /// Owns the whole simulation: stage, scent, the Dead and the player. Time moves
 /// only through step() (D-002: the world waits for the player). Game time is kept
-/// in seconds; each action takes some, and scent and the Dead update once per
+/// in substeps (ADR-0016); each action takes some, and scent and the Dead update once per
 /// update_period (D-015). No wall clock, no thread, no SDL: deterministic from the
 /// seed and the actions.
 class World {
@@ -146,12 +148,13 @@ public:
     void load_layout(Stage stage, Vec2i player, std::vector<Dead> horde);
 
     /// Spend one action: apply it at once (the player is on the new tile for its
-    /// whole duration), then run the clock forward second by second: the Dead in
-    /// that second's slot decide, last second's moves land, and at each
-    /// update_period boundary the scent updates with the logged seconds (D-031).
+    /// whole duration), then run the clock forward substep by substep: on each even
+    /// one the Dead in that slot decide and last slot's moves land, and at each
+    /// update_period boundary the scent updates with the logged substeps (D-031).
+    /// Odd substeps only pass (ADR-0016).
     void step(Action action);
 
-    /// Compute the next update ahead: the scent sweep and the Dead's seconds up to
+    /// Compute the next update ahead: the scent sweep and the Dead's slots up to
     /// the boundary. Pure: safe to run on another thread while nothing mutates this
     /// World.
     [[nodiscard]] Speculation speculate() const;
@@ -192,31 +195,35 @@ public:
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
     /// Actions taken on this stage (the HUD's turn counter).
     [[nodiscard]] Tick turn() const noexcept { return turn_; }
-    /// Game seconds elapsed on this stage.
-    [[nodiscard]] Seconds seconds() const noexcept { return seconds_; }
+    /// Substeps elapsed on this stage.
+    [[nodiscard]] Substeps substeps() const noexcept { return substeps_; }
+    /// Game milliseconds elapsed on this stage, for display.
+    [[nodiscard]] std::uint64_t game_ms() const noexcept { return to_ms(substeps_); }
     /// Scent updates run on this stage.
     [[nodiscard]] Tick updates() const noexcept { return updates_; }
-    /// Seconds per tile since the last update, in first-visit order.
+    /// Substeps per tile since the last update, in first-visit order.
     [[nodiscard]] const std::vector<Occupancy>& occupancy() const noexcept { return log_; }
     [[nodiscard]] std::uint32_t stage_index() const noexcept { return stage_index_; }
 
 private:
     void apply_action(Action action) noexcept;
-    /// Run the clock forward `duration` seconds, one second at a time. The Dead
-    /// replay `spec`'s recorded seconds where it has them and run live elsewhere; at
-    /// the first update boundary the update finishes from `spec` if given; any other
-    /// boundary runs run_update().
-    void advance(Seconds duration, Speculation* spec);
-    /// The Dead's part of one second, live: the poll at a cycle start, the slot's
-    /// decisions, then last second's landings. With `record`, also append what was
+    /// Run the clock forward `duration` substeps, one at a time. On the even ones the
+    /// Dead replay `spec`'s recorded slots where it has them and run live elsewhere;
+    /// at the first update boundary the update finishes from `spec` if given; any
+    /// other boundary runs run_update().
+    void advance(Substeps duration, Speculation* spec);
+    /// The Dead's part of one slot, live: the poll at a cycle start, the slot's
+    /// decisions, then last slot's landings. With `record`, also append what was
     /// decided (speculate() running ahead).
-    void dead_second(HordeState& dead, Seconds t, Speculation* record) const;
-    /// The Dead's part of second t from `spec`'s record: its poll, its decisions,
-    /// then the same landings as live.
-    void replay_second(Seconds t, const Speculation& spec);
-    void log_seconds(Seconds s);
-    /// Scent a tile logged for `seconds` of the period deposits (D-015).
-    [[nodiscard]] std::int32_t logged_strength(Seconds seconds) const noexcept;
+    void dead_slot(HordeState& dead, Slot slot, Speculation* record) const;
+    /// The Dead's part of the slot at substep t from `spec`'s record: its poll, its
+    /// decisions, then the same landings as live.
+    void replay_slot(Substeps t, const Speculation& spec);
+    void log_substeps(Substeps s);
+    /// Scent a tile logged for `held` substeps of the period deposits (D-015).
+    [[nodiscard]] std::int32_t logged_strength(Substeps held) const noexcept;
+    /// Slots in one cycle of the Dead's moves.
+    [[nodiscard]] Slot cycle_slots() const noexcept { return params_.dead_cycle / kSlotSubsteps; }
     void deposit_log(ScentWave& field) const noexcept;
     void run_update();
     void finish_from(Speculation& spec);
@@ -243,7 +250,7 @@ private:
     Vec2i player_{};
     Rng rng_{1};
     Tick turn_ = 0;
-    Seconds seconds_ = 0;
+    Substeps substeps_ = 0;
     Tick updates_ = 0;
     std::vector<Occupancy> log_;
 };

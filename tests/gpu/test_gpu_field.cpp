@@ -235,7 +235,7 @@ TEST_SUITE("gpu") {
             return;
         }
         constexpr int kActions = 200;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         for (const bool windy : {false, true}) {
             CAPTURE(windy);
             peo::gpu::GpuFieldBackend gpu(device(), 0);
@@ -250,7 +250,7 @@ TEST_SUITE("gpu") {
             Speculation spec;
             Rng pick(17);
             for (int i = 0; i < kActions; ++i) {
-                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Substeps secs = kDurations[pick.range(0, 3)];
                 const Action act = pick.range(1, 4) == 1 ? Action::wait(secs)
                                                          : Action::step(kNeighbours4[pick.range(0, 3)], secs);
                 cpu.step(act);

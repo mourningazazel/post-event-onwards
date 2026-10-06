@@ -33,6 +33,11 @@ constexpr int kExecutorGoldenDead = 200;
 constexpr int kExecutorGoldenSide = 64;
 #endif
 
+/// D-031's cycle and the update period in slots (ADR-0016): the slot tests keep the
+/// whole-second numbers they had.
+constexpr Slot kCycleSlots = kDeadCycleSubsteps / kSlotSubsteps;
+constexpr Slot kPeriodSlots = kUpdatePeriodSubsteps / kSlotSubsteps;
+
 constexpr Seed kSeed = 7;
 constexpr int kDeterminismTurns = 100;
 constexpr int kWaitTurns = 30;
@@ -356,7 +361,7 @@ TEST_SUITE("world") {
             for (std::size_t i = 0; i < horde.size(); ++i) {
                 Dead& d = horde[i];
                 if (const auto to = decide_move(d, desire, occupied, reserved,
-                                                draw_word(kTownDrawSalt, static_cast<Seconds>(u), i))) {
+                                                draw_word(kTownDrawSalt, static_cast<Slot>(u), i))) {
                     --occupied.at(d.pos);
                     d.pos = *to;
                     ++occupied.at(d.pos);
@@ -399,7 +404,7 @@ TEST_SUITE("world") {
         constexpr int kGoldenDead = 16; // fills the 6x6 interior (capped at open cells)
         constexpr int kWaitOneIn = 5;
         constexpr int kEastOneIn = 3; // two in three steps go east
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         const WorldParams params{
             .initial_dead = kGoldenDead, .stage_width = kGoldenWidth, .stage_height = kGoldenHeight};
         int transitions = 0;
@@ -412,7 +417,7 @@ TEST_SUITE("world") {
             Speculation spec; // reused every turn, as the frontend does
             b.speculate(spec);
             for (int t = 0; t < kTurns; ++t) {
-                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Substeps secs = kDurations[pick.range(0, 3)];
                 Action act = Action::wait(secs);
                 if (pick.range(1, kWaitOneIn) != 1) {
                     act = pick.range(1, kEastOneIn) != 1 ? Action::step({1, 0}, secs)
@@ -436,11 +441,11 @@ TEST_SUITE("world") {
         CHECK(transitions > 0); // the sequences really do cross stages
     }
 
-    TEST_CASE("two 3 s steps each deposit a little less than a walking step") {
+    TEST_CASE("two half-period steps each deposit a little less than a walking step") {
         // D-015 on the geodesic field (PEO-030): a tile held for part of the period
         // deposits as if the scent were that much older, strength less age_cost x the
         // empty share, never more than a walking step's strength.
-        constexpr Seconds kHalf = kUpdatePeriodSeconds / 2;
+        constexpr Substeps kHalf = kUpdatePeriodSubsteps / 2;
         const WorldParams params = small_world(0);
         World w(kSeed, params);
         const Grid<bool>& blocked = w.stage().blocked;
@@ -459,7 +464,7 @@ TEST_SUITE("world") {
         CHECK(w.updates() == 0);
         REQUIRE(w.occupancy().size() == 1);
         CHECK(w.occupancy()[0].tile == start + dir);
-        CHECK(w.occupancy()[0].seconds == kHalf);
+        CHECK(w.occupancy()[0].substeps == kHalf);
 
         w.step(Action::step(Vec2i{} - dir, kHalf)); // back to the start tile
         CHECK(w.updates() == 1);
@@ -474,11 +479,11 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("a runner moves two cells per update") {
-        // D-015 / PEO-041: a running step takes kRunStepSeconds, so two fit in one
+        // D-015 / PEO-041: a running step takes kRunStepSubsteps, so two fit in one
         // update. Scent follows time: each cell deposits as a tile held half the
         // period, a little less than a walking step's strength (PEO-030).
         constexpr int kRunSteps = 4;
-        constexpr int kStepsPerUpdate = static_cast<int>(kUpdatePeriodSeconds / kRunStepSeconds);
+        constexpr int kStepsPerUpdate = static_cast<int>(kUpdatePeriodSubsteps / kRunStepSubsteps);
         static_assert(kStepsPerUpdate == 2);
         const WorldParams params = small_world(0);
         // Find a seed whose entry has kRunSteps open cells in a straight line.
@@ -509,13 +514,13 @@ TEST_SUITE("world") {
         const std::int32_t part = params.scent.strength - params.scent.age_cost / 2;
 
         for (int i = 1; i <= kRunSteps; ++i) {
-            runner.step(Action::step(dir, kRunStepSeconds));
+            runner.step(Action::step(dir, kRunStepSubsteps));
             const Vec2i at = start + Vec2i{dir.x * i, dir.y * i};
             CHECK(runner.player() == at);
             CHECK(runner.updates() == static_cast<Tick>(i / kStepsPerUpdate));
             if (i % kStepsPerUpdate == 1) {
                 REQUIRE(runner.occupancy().size() == 1);
-                CHECK(runner.occupancy()[0].seconds == kRunStepSeconds);
+                CHECK(runner.occupancy()[0].substeps == kRunStepSubsteps);
             } else {
                 // The update just ran on this cell and the one before, half a period each.
                 expected.deposit(at - dir, part);
@@ -528,25 +533,25 @@ TEST_SUITE("world") {
         CHECK(scent_mismatches(runner.scent(), expected) == 0);
         CHECK(part < params.scent.strength); // a runner never deposits more than a walker
 
-        // A walker spends the same 12 s on two cells: the same seconds, so the Dead
-        // (who move in slots per second, D-031) get no more moves against a runner.
+        // A walker spends the same 24 substeps on two cells: the same slots, so the Dead
+        // (D-031) get no more moves against a runner.
         walker.step(Action::step(dir));
         walker.step(Action::step(dir));
-        CHECK(walker.seconds() == runner.seconds());
+        CHECK(walker.substeps() == runner.substeps());
         CHECK(walker.updates() == runner.updates());
         CHECK(walker.player() == start + Vec2i{dir.x * kStepsPerUpdate, dir.y * kStepsPerUpdate});
     }
 
-    TEST_CASE("a 12 s action runs two updates") {
-        constexpr Seconds kTwoPeriods = 2 * kUpdatePeriodSeconds;
+    TEST_CASE("a two-period action runs two updates") {
+        constexpr Substeps kTwoPeriods = 2 * kUpdatePeriodSubsteps;
         World once(kSeed, small_world());
         World twice(kSeed, small_world());
         once.step(Action::wait(kTwoPeriods));
         twice.step(Action::wait());
         twice.step(Action::wait());
         CHECK(once.updates() == 2);
-        CHECK(once.seconds() == kTwoPeriods);
-        // The Dead lived the same twelve seconds: the same as two 6 s waits.
+        CHECK(once.substeps() == kTwoPeriods);
+        // The Dead lived the same two periods: the same as two plain waits.
         REQUIRE(once.horde().size() == twice.horde().size());
         for (std::size_t i = 0; i < once.horde().size(); ++i) {
             CHECK(once.horde()[i].pos == twice.horde()[i].pos);
@@ -555,18 +560,18 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("an action that does not reach a boundary changes no scent") {
-        // The scent moves only at updates; the Dead live every second (D-031), so a
-        // 3 s wait leaves them exactly where three 1 s waits do.
-        constexpr Seconds kShort = kUpdatePeriodSeconds / 2;
+        // The scent moves only at updates; the Dead live every slot (D-031), so a
+        // half-period wait leaves them exactly where three one-slot waits do.
+        constexpr Substeps kShort = kUpdatePeriodSubsteps / 2;
         World w(kSeed, small_world());
         World seconds(kSeed, small_world());
         const ScentWave scent_before = w.scent();
         w.step(Action::wait(kShort));
-        for (Seconds s = 0; s < kShort; ++s) {
-            seconds.step(Action::wait(1));
+        for (Substeps s = 0; s < kShort; s += kSlotSubsteps) {
+            seconds.step(Action::wait(kSlotSubsteps));
         }
         CHECK(w.updates() == 0);
-        CHECK(w.seconds() == kShort);
+        CHECK(w.substeps() == kShort);
         CHECK(w.turn() == 1);
         CHECK(scent_mismatches(w.scent(), scent_before) == 0);
         REQUIRE(w.horde().size() == seconds.horde().size());
@@ -576,7 +581,7 @@ TEST_SUITE("world") {
     }
 
     TEST_CASE("calm Dead never share a tile") {
-        // D-031: 300 one-second waits on the small stage and on a crowded 6x6 one
+        // D-031: 300 one-slot waits on the small stage and on a crowded 6x6 one
         // (16 Dead in 16 open cells, so every move is into a just-vacated tile).
         constexpr int kSeconds = 300;
         constexpr int kCrowdSide = 6;
@@ -590,7 +595,7 @@ TEST_SUITE("world") {
             Grid<std::uint8_t> count(w.stage().spec.width, w.stage().spec.height, 0);
             int shared = 0;
             for (int t = 0; t < kSeconds; ++t) {
-                w.step(Action::wait(1));
+                w.step(Action::wait(kSlotSubsteps));
                 count.fill(0);
                 for (const Dead& d : w.horde()) {
                     shared += ++count.at(d.pos) > 1 ? 1 : 0;
@@ -616,7 +621,7 @@ TEST_SUITE("world") {
             Grid<int> left_by(kTestStageWidth, kTestStageHeight, -1);
             for (int t = 1; t <= kSeconds && w.stage_index() == 0; ++t) {
                 const std::vector<Dead> before = w.horde();
-                w.step(Action::wait(1));
+                w.step(Action::wait(kSlotSubsteps));
                 if (w.stage_index() != 0) {
                     break; // a new stage: positions no longer compare
                 }
@@ -646,47 +651,46 @@ TEST_SUITE("world") {
         constexpr int kCycles = 100;
         constexpr std::uint64_t kSalt = 7;
         constexpr std::size_t kUnit = 3;
-        std::vector<bool> seen(kDeadCycleSeconds, false);
-        std::vector<Seconds> first;
+        std::vector<bool> seen(kCycleSlots, false);
+        std::vector<Slot> first;
         for (int c = 0; c < kCycles; ++c) {
-            const SlotPlan plan = plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit,
-                                             kUpdatePeriodSeconds, kDeadCycleSeconds);
+            const SlotPlan plan =
+                plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, kPeriodSlots, kCycleSlots);
             REQUIRE(plan.count > 0);
-            first.push_back(slot_second(plan, 0, kDeadCycleSeconds));
+            first.push_back(slot_second(plan, 0, kCycleSlots));
             seen[first.back()] = true;
         }
-        for (Seconds s = 0; s < kDeadCycleSeconds; ++s) {
+        for (Slot s = 0; s < kCycleSlots; ++s) {
             CAPTURE(s);
             CHECK(seen[s]);
         }
         for (int c = 0; c < kCycles; ++c) {
-            const SlotPlan again = plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit,
-                                              kUpdatePeriodSeconds, kDeadCycleSeconds);
-            CHECK(slot_second(again, 0, kDeadCycleSeconds) == first[static_cast<std::size_t>(c)]);
+            const SlotPlan again =
+                plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, kPeriodSlots, kCycleSlots);
+            CHECK(slot_second(again, 0, kCycleSlots) == first[static_cast<std::size_t>(c)]);
         }
     }
 
     TEST_CASE("speed is slots per cycle") {
-        // D-031: dead_cycle / step_seconds slots, the whole part every cycle and the
+        // D-031: dead_cycle / step_substeps slots, the whole part every cycle and the
         // fraction as a hashed chance.
         constexpr int kCycles = 1000;
         constexpr double kTolerance = 0.05;
         constexpr std::uint64_t kSalt = 11;
         constexpr std::size_t kUnit = 5;
-        const auto mean_slots = [&](Seconds step) {
+        const auto mean_slots = [&](Slot step) {
             double sum = 0.0;
             for (int c = 0; c < kCycles; ++c) {
-                sum += plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, step, kDeadCycleSeconds).count;
+                sum += plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, step, kCycleSlots).count;
             }
             return sum / kCycles;
         };
-        constexpr Seconds kFast = 3;
-        constexpr Seconds kSlow = 18;
+        constexpr Slot kFast = 3;
+        constexpr Slot kSlow = 18;
         for (int c = 0; c < kCycles; ++c) {
-            CHECK(plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, kFast, kDeadCycleSeconds).count ==
-                  3);
+            CHECK(plan_slots(kSalt, static_cast<std::uint64_t>(c), kUnit, kFast, kCycleSlots).count == 3);
         }
-        CHECK(std::abs(mean_slots(kUpdatePeriodSeconds) - 1.5) < kTolerance);
+        CHECK(std::abs(mean_slots(kPeriodSlots) - 1.5) < kTolerance);
         CHECK(std::abs(mean_slots(kSlow) - 0.5) < kTolerance);
     }
 
@@ -708,7 +712,7 @@ TEST_SUITE("world") {
         }
         REQUIRE(a.stage_index() == 1);
         for (int i = 0; i < kAfterExit; ++i) {
-            both(Action::wait(i % 2 == 0 ? 1 : kUpdatePeriodSeconds));
+            both(Action::wait(i % 2 == 0 ? kSlotSubsteps : kUpdatePeriodSubsteps));
         }
     }
 
@@ -719,14 +723,14 @@ TEST_SUITE("world") {
         // every one of 200 mixed actions, and a warm speculate copies less than the field.
         constexpr int kActions = 200;
         constexpr int kWaitOneIn = 5;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         for (const bool reuse : {true, false}) {
             Rng pick(kSeed);
             World a(kSeed, small_world());
             World b(kSeed, small_world());
             Speculation kept;
             for (int i = 0; i < kActions; ++i) {
-                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Substeps secs = kDurations[pick.range(0, 3)];
                 const Action act = pick.range(1, kWaitOneIn) == 1
                                        ? Action::wait(secs)
                                        : Action::step(kNeighbours4[pick.range(0, 3)], secs);
@@ -750,7 +754,7 @@ TEST_SUITE("world") {
         // values and masks, so every switch cold-copies and both match step().
         constexpr int kActions = 20; // PEO-099: was 60; every action after the first switches
         constexpr int kWaitOneIn = 5;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         const WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
         World a(kSeed, params);
         World b(kSeed + 1, params);
@@ -759,7 +763,7 @@ TEST_SUITE("world") {
         Speculation shared;
         Rng pick(kSeed);
         for (int i = 0; i < kActions; ++i) {
-            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Substeps secs = kDurations[pick.range(0, 3)];
             const Action act = pick.range(1, kWaitOneIn) == 1
                                    ? Action::wait(secs)
                                    : Action::step(kNeighbours4[pick.range(0, 3)], secs);
@@ -805,7 +809,7 @@ TEST_SUITE("world") {
         constexpr int kSeeds = 3;
         constexpr int kActions = 12;
         constexpr int kWaitOneIn = 5;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         WorldParams params{.initial_dead = 30, .stage_width = 60, .stage_height = 40};
         params.wind_max = kWindFull;
         params.scent.gust = 2;
@@ -818,7 +822,7 @@ TEST_SUITE("world") {
             Speculation spec;
             Rng pick(seed);
             for (int i = 0; i < kActions; ++i) {
-                const Seconds secs = kDurations[pick.range(0, 3)];
+                const Substeps secs = kDurations[pick.range(0, 3)];
                 const Action act = pick.range(1, kWaitOneIn) == 1
                                        ? Action::wait(secs)
                                        : Action::step(kNeighbours4[pick.range(0, 3)], secs);
@@ -841,7 +845,7 @@ TEST_SUITE("world") {
         // after every action.
         constexpr int kActions = kExecutorGoldenActions;
         constexpr int kWaitOneIn = 4;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         constexpr std::size_t kThreads = 4;
         WorldParams params{.initial_dead = kExecutorGoldenDead,
                            .stage_width = kExecutorGoldenSide,
@@ -864,7 +868,7 @@ TEST_SUITE("world") {
         Speculation pooled_spec;
         Rng pick(kSeed);
         for (int i = 0; i < kActions; ++i) {
-            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Substeps secs = kDurations[pick.range(0, 3)];
             const Action act = pick.range(1, kWaitOneIn) == 1
                                    ? Action::wait(secs)
                                    : Action::step(kNeighbours4[pick.range(0, 3)], secs);
@@ -913,7 +917,7 @@ TEST_SUITE("world") {
         for (int x = 3; x < kW - 3; x += 2) {
             for (const int y : {3, kH - 4}) {
                 l.horde.push_back(
-                    {.pos = {x, y}, .step_seconds = static_cast<std::uint16_t>(kUpdatePeriodSeconds)});
+                    {.pos = {x, y}, .step_substeps = static_cast<std::uint16_t>(kUpdatePeriodSubsteps)});
             }
         }
         return l;
@@ -951,7 +955,7 @@ TEST_SUITE("world") {
     TEST_CASE("commit(speculate()) equals step() on a loaded layout" *
               doctest::test_suite("scenario: world")) {
         constexpr int kActions = 60;
-        constexpr Seconds kDurations[] = {1, 3, 6, 12};
+        constexpr Substeps kDurations[] = {2, 6, 12, 24};
         const Layout l = small_layout();
         const WorldParams params{.initial_dead = 0, .stage_width = 40, .stage_height = 30};
         World a(kSeed, params);
@@ -961,7 +965,7 @@ TEST_SUITE("world") {
         Speculation spec;
         Rng pick(kSeed);
         for (int i = 0; i < kActions; ++i) {
-            const Seconds secs = kDurations[pick.range(0, 3)];
+            const Substeps secs = kDurations[pick.range(0, 3)];
             const Action act = pick.range(1, 3) == 1 ? Action::step(kNeighbours4[pick.range(0, 3)], secs)
                                                      : Action::wait(secs);
             b.speculate(spec);

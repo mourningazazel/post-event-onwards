@@ -6,22 +6,22 @@
 
 namespace peo::core {
 
-SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, Seconds step_seconds,
-                    Seconds dead_cycle) noexcept {
+SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, Slot step_slots,
+                    Slot cycle_slots) noexcept {
     // Two words per unit, so the offset and the chance are independent draws.
     const auto key = static_cast<std::uint64_t>(index) * 2;
-    const Seconds step = std::max<Seconds>(step_seconds, 1);
-    Seconds count = dead_cycle / step;
-    const float fraction = static_cast<float>(dead_cycle % step) / static_cast<float>(step);
+    const Slot step = std::max<Slot>(step_slots, 1);
+    Slot count = cycle_slots / step;
+    const float fraction = static_cast<float>(cycle_slots % step) / static_cast<float>(step);
     if (hash_unit(salt, cycle, key + 1) < fraction) {
         ++count;
     }
-    return {.offset = static_cast<Seconds>(hash_u64(salt, cycle, key) % dead_cycle),
-            .count = std::min(count, dead_cycle)};
+    return {.offset = static_cast<Slot>(hash_u64(salt, cycle, key) % cycle_slots),
+            .count = std::min(count, cycle_slots)};
 }
 
-std::uint64_t draw_word(std::uint64_t salt, Seconds second, std::size_t index) noexcept {
-    return hash_u64(salt, second, static_cast<std::uint64_t>(index));
+std::uint64_t draw_word(std::uint64_t salt, Slot slot, std::size_t index) noexcept {
+    return hash_u64(salt, slot, static_cast<std::uint64_t>(index));
 }
 
 std::size_t draw_choice(const std::array<std::uint32_t, kDrawChoices>& weights, std::uint64_t word) noexcept {

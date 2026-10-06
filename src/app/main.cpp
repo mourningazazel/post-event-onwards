@@ -192,7 +192,7 @@ struct App {
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
-    /// R toggles it (D-015): steps take kRunStepSeconds. Kept across stages.
+    /// R toggles it (D-015): steps take kRunStepSubsteps. Kept across stages.
     bool running = false;
     /// Redraw only when something changed (a turn, a view toggle, an expose).
     bool dirty = true;
@@ -292,9 +292,9 @@ void draw(App& app) {
 }
 
 /// Map a key to the action it spends a turn on, if any. Running shortens steps
-/// only; a wait lasts kWaitSeconds either way.
+/// only; a wait lasts kWaitSubsteps either way.
 std::optional<Action> action_for(SDL_Keycode key, bool running) {
-    const Seconds step = running ? kRunStepSeconds : kStepSeconds;
+    const Substeps step = running ? kRunStepSubsteps : kStepSubsteps;
     switch (key) {
     case SDLK_UP:
     case SDLK_W:

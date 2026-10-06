@@ -47,7 +47,7 @@ struct Swarm {
     Grid<std::uint8_t> occupied;
     std::vector<Dead> horde;
     std::vector<std::pair<Vec2i, std::int32_t>> emitters; // where, and how strong
-    Seconds updates = 0;
+    Slot updates = 0;
 
     explicit Swarm(Grid<bool> b)
         : blocked(std::move(b)), wave(blocked.width(), blocked.height()),

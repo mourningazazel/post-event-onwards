@@ -41,7 +41,6 @@ using namespace peo::siege;
 namespace {
 
 constexpr std::array<int, 6> kCheckpointHours{1, 2, 6, 12, 24, 48};
-constexpr int kSecondsPerHour = 3600;
 constexpr Seed kSeedBase = 1;
 /// Two, not three: three took 766 s on the x86 CI runner, over the 10 min budget (PEO-088 rework).
 constexpr int kDefaultSeeds = 2;
@@ -151,7 +150,7 @@ RunResult run(const Config& c, Seed seed, bool keep_maps) {
     for (std::size_t i = 0; i < size; ++i) {
         start[i] = last[i] = w.horde()[i].pos;
     }
-    const int per_hour = kSecondsPerHour / static_cast<int>(params.update_period);
+    const int per_hour = static_cast<int>(kSecondsPerHour * kSlotSubsteps / params.update_period);
     const int total = kCheckpointHours.back() * per_hour;
     std::size_t next = 0;
     Grid<std::uint8_t> on(kStageSide, kStageSide, 0);
@@ -490,7 +489,7 @@ int main(int argc, char** argv) {
             ++failures;
         }
     }
-    const int per_hour = kSecondsPerHour / static_cast<int>(kUpdatePeriodSeconds);
+    const int per_hour = static_cast<int>(kSecondsPerHour * kSlotSubsteps / kUpdatePeriodSubsteps);
 
     // ---- the report ----
     std::ostringstream r;

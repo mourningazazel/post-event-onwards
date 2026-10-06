@@ -4,6 +4,7 @@
 #include <bit>
 #include <cstdint>
 #include <cstdlib>
+#include <limits>
 #include <utility>
 
 namespace peo::core {
@@ -17,12 +18,24 @@ constexpr Seed kWindSeedSalt = 0x5EEDULL;
 /// And so the Dead's draws never reuse a word of plan_slots' (PEO-009).
 constexpr std::uint64_t kDrawSalt = 0xD8A3ULL;
 /// Range of the spawn draw: updates between a spawned Dead's steps. Stored in
-/// seconds as draw * update_period, so the draw sequence is unchanged (D-015).
+/// substeps as draw * update_period, so the draw sequence is unchanged (D-015).
 constexpr int kMinDeadSpeed = 1;
 constexpr int kMaxDeadSpeed = 3;
 /// Cap on the occupancy log's up-front reservation. At most update_period distinct
-/// tiles fit in one update (each action spends at least a second on one tile).
-constexpr Seconds kMaxLogReserve = 64;
+/// tiles fit in one update (each action spends at least a substep on one tile).
+constexpr Substeps kMaxLogReserve = 64;
+
+/// `s` rounded up to a whole number of slots, at least one (ADR-0016): the Dead and
+/// the update run on even substeps only.
+constexpr Substeps whole_slots(Substeps s) noexcept {
+    const Substeps slots = s / kSlotSubsteps + (s % kSlotSubsteps != 0 ? 1 : 0); // no wrap near the max
+    return std::max<Substeps>(slots, 1) * kSlotSubsteps;
+}
+/// The largest step a Dead's uint16 holds that is a whole number of slots.
+constexpr Substeps kMaxStepSubsteps =
+    std::numeric_limits<std::uint16_t>::max() / kSlotSubsteps * kSlotSubsteps;
+/// The largest update period whose slowest spawned step (kMaxDeadSpeed x it) still fits.
+constexpr Substeps kMaxUpdatePeriod = kMaxStepSubsteps / kMaxDeadSpeed / kSlotSubsteps * kSlotSubsteps;
 
 /// A spent speculation's update number: never equal to a live World's.
 constexpr Tick kSpentUpdate = ~Tick{0};
@@ -37,30 +50,30 @@ bool same_moves(const std::vector<DeadMove>& a, const std::vector<DeadMove>& b) 
                       [](const DeadMove& x, const DeadMove& y) { return x.unit == y.unit && x.to == y.to; });
 }
 
-/// Give every unit with a stronger neighbour its slots for cycle `cycle` (D-031),
-/// bucketed by second in ascending unit order.
-void poll(HordeState& d, std::uint64_t salt, std::uint64_t cycle, Seconds len) {
+/// Give every unit its slots for cycle `cycle` (D-031), bucketed by slot in
+/// ascending unit order. `len` is the cycle in slots.
+void poll(HordeState& d, std::uint64_t salt, std::uint64_t cycle, Slot len) {
     d.slot_begin.assign(static_cast<std::size_t>(len) + 1, 0);
     for (std::size_t i = 0; i < d.horde.size(); ++i) {
         // Every unit draws at its slots (PEO-009): one with nowhere better to go
         // wanders or stays, by the draw.
-        d.plans[i] = plan_slots(salt, cycle, i, d.horde[i].step_seconds, len);
-        for (Seconds j = 0; j < d.plans[i].count; ++j) {
+        d.plans[i] = plan_slots(salt, cycle, i, d.horde[i].step_substeps / kSlotSubsteps, len);
+        for (Slot j = 0; j < d.plans[i].count; ++j) {
             ++d.slot_begin[slot_second(d.plans[i], j, len) + 1];
         }
     }
-    for (Seconds s = 0; s < len; ++s) {
+    for (Slot s = 0; s < len; ++s) {
         d.slot_begin[s + 1] += d.slot_begin[s];
     }
     d.slot_units.resize(d.slot_begin[len]);
     // Fill each bucket in ascending unit order; slot_begin[s] walks up to the
     // bucket's end as it fills, and is walked back after.
     for (std::size_t i = 0; i < d.horde.size(); ++i) {
-        for (Seconds j = 0; j < d.plans[i].count; ++j) {
+        for (Slot j = 0; j < d.plans[i].count; ++j) {
             d.slot_units[d.slot_begin[slot_second(d.plans[i], j, len)]++] = static_cast<std::uint32_t>(i);
         }
     }
-    for (Seconds s = len; s > 0; --s) {
+    for (Slot s = len; s > 0; --s) {
         d.slot_begin[s] = d.slot_begin[s - 1];
     }
     d.slot_begin[0] = 0;
@@ -73,7 +86,7 @@ void decided(HordeState& d, DeadMove m) {
     d.deciding.push_back(m);
 }
 
-/// Last second's moves land; this second's become next second's landings.
+/// Last slot's moves land; this slot's become next slot's landings.
 void land(HordeState& d) {
     for (const DeadMove& m : d.landing) {
         Dead& unit = d.horde[m.unit];
@@ -91,8 +104,8 @@ void land(HordeState& d) {
 World::World(Seed seed, WorldParams params) : seed_(seed), params_(params) {
     params_.stage_width = std::max(params_.stage_width, kMinStageSide);
     params_.stage_height = std::max(params_.stage_height, kMinStageSide);
-    params_.update_period = std::max<Seconds>(params_.update_period, 1);
-    params_.dead_cycle = std::max<Seconds>(params_.dead_cycle, 1);
+    params_.update_period = std::min(whole_slots(params_.update_period), kMaxUpdatePeriod);
+    params_.dead_cycle = whole_slots(params_.dead_cycle);
     log_.reserve(std::min(params_.update_period, kMaxLogReserve));
     load_stage(0);
 }
@@ -129,8 +142,8 @@ void World::load_stage(std::uint32_t index) {
         d.occupied.at(p) = 1;
         d.horde.push_back(
             {.pos = p,
-             .step_seconds = static_cast<std::uint16_t>(
-                 static_cast<Seconds>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
+             .step_substeps = static_cast<std::uint16_t>(
+                 static_cast<Substeps>(rng_.range(kMinDeadSpeed, kMaxDeadSpeed)) * params_.update_period)});
     }
     start_horde(stage_seed(seed_, index));
 }
@@ -155,7 +168,9 @@ void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
     HordeState& d = dead_;
     d.horde = std::move(horde);
     d.occupied = Grid<std::uint8_t>(w, h, 0);
-    for (const Dead& unit : d.horde) {
+    for (Dead& unit : d.horde) {
+        unit.step_substeps =
+            static_cast<std::uint16_t>(std::min(whole_slots(unit.step_substeps), kMaxStepSubsteps));
         ++d.occupied.at(unit.pos);
     }
     start_horde(stage_seed(seed_, stage_index_));
@@ -174,16 +189,16 @@ void World::start_field(Seed stage_seed_value) {
 void World::start_horde(Seed stage_seed_value) {
     HordeState& d = dead_;
     turn_ = 0;
-    seconds_ = 0;
+    substeps_ = 0;
     updates_ = 0;
     log_.clear();
 
     d.reserved = Grid<bool>(stage_.spec.width, stage_.spec.height, false);
     d.moving.assign(d.horde.size(), 0);
     d.plans.resize(d.horde.size());
-    // At most one slot per unit per second of the cycle: reserve the bound once so
+    // At most one slot per unit per slot of the cycle: reserve the bound once so
     // no poll allocates, however the hashes fall.
-    d.slot_units.reserve(d.horde.size() * params_.dead_cycle);
+    d.slot_units.reserve(d.horde.size() * cycle_slots());
     d.deciding.clear();
     d.landing.clear();
     d.deciding.reserve(d.horde.size());
@@ -192,7 +207,7 @@ void World::start_horde(Seed stage_seed_value) {
     stage_salt_ = stage_seed_value;
     desire_ = DesireField(stage_.spec.width, stage_.spec.height);
     desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
-    dead_second(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
+    dead_slot(dead_, 0, nullptr); // instant 0: the first poll and slot 0's decisions
 }
 
 void World::apply_action(Action action) noexcept {
@@ -212,29 +227,30 @@ void World::finish_turn() {
     }
 }
 
-void World::log_seconds(Seconds s) {
+void World::log_substeps(Substeps s) {
     for (Occupancy& o : log_) {
         if (o.tile == player_) {
-            o.seconds += s;
+            o.substeps += s;
             return;
         }
     }
-    log_.push_back({.tile = player_, .seconds = s});
+    log_.push_back({.tile = player_, .substeps = s});
 }
 
 // A tile held for the whole period deposits strength; one held for part of it
 // deposits as if the scent were that much older: strength less age_cost x the
 // share of the period it was empty, never more (a runner's tiles read a little
-// less than a walker's, D-015). Integer, so the port is exact.
-std::int32_t World::logged_strength(Seconds seconds) const noexcept {
+// less than a walker's, D-015). Integer, so the port is exact; for an even `held`
+// age_cost x (12 - held) / 12 is exactly the old age_cost x (6 - held / 2) / 6.
+std::int32_t World::logged_strength(Substeps held) const noexcept {
     const auto period = static_cast<std::int32_t>(params_.update_period);
-    const auto held = static_cast<std::int32_t>(std::min(seconds, params_.update_period));
-    return params_.scent.strength - params_.scent.age_cost * (period - held) / period;
+    const auto in = static_cast<std::int32_t>(std::min(held, params_.update_period));
+    return params_.scent.strength - params_.scent.age_cost * (period - in) / period;
 }
 
 void World::deposit_log(ScentWave& field) const noexcept {
     for (const Occupancy& o : log_) {
-        field.deposit(o.tile, logged_strength(o.seconds));
+        field.deposit(o.tile, logged_strength(o.substeps));
     }
 }
 
@@ -252,9 +268,9 @@ void World::finish_from(Speculation& spec) {
     // A deposit raises cells within speed + gust of it, so the desire it can move is
     // that block and the ring round it (PEO-009).
     const int reach = params_.scent.speed + std::max(params_.scent.gust, 0) + 1;
-    const bool desire_ready = spec.to == seconds_; // the Dead's seconds reached the boundary
+    const bool desire_ready = spec.to == substeps_; // the Dead's slots reached the boundary
     for (const Occupancy& o : log_) {
-        spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.seconds), stage_.blocked,
+        spec.scent.patch_deposit(scent_, o.tile, logged_strength(o.substeps), stage_.blocked,
                                  &stage_.openness);
         if (desire_ready) {
             spec.desire.rebuild(spec.scent, stage_.blocked, params_.draw, o.tile.x - reach, o.tile.y - reach,
@@ -265,7 +281,7 @@ void World::finish_from(Speculation& spec) {
     scent_.set_field_backend(nullptr); // the swap brought the speculation's backend over
     if (desire_ready) {
         std::swap(desire_, spec.desire);
-    } else { // a second poll stopped the speculation early: the snapshot is now
+    } else { // a second poll stopped the speculation early: build the snapshot now
         desire_.build(scent_, stage_.blocked, dead_.occupied, params_.draw, executor_);
     }
     spec.update = kSpentUpdate;
@@ -273,24 +289,26 @@ void World::finish_from(Speculation& spec) {
     ++updates_;
 }
 
-// D-031's order within one second t: the slot's units decide first, so a unit
+// D-031's order within one slot t: the slot's units decide first, so a unit
 // that decided at t-1 still stands on its old tile while they look; then the
 // moves decided at t-1 land. A vacated tile is therefore free only from t+1.
-void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
-    const Seconds len = params_.dead_cycle;
+// Slots are today's whole seconds on the even substeps (ADR-0016), so every
+// hash below sees the numbers it always did.
+void World::dead_slot(HordeState& d, Slot t, Speculation* record) const {
+    const Slot len = cycle_slots();
     if (t % len == 0) {
         poll(d, stage_salt_, t / len, len);
         if (record != nullptr) {
-            record->poll_at = t;
+            record->poll_at = t * kSlotSubsteps;
             record->poll_begin = d.slot_begin; // copy-assign reuses capacity
             record->poll_units = d.slot_units;
         }
     }
-    const Seconds s = t % len;
+    const Slot s = t % len;
     const std::uint32_t first = d.slot_begin[s];
     const std::uint32_t batch = d.slot_begin[s + 1] - first;
     if (executor_ != nullptr && executor_->width() > 1 && batch >= params_.parallel_decide_min) {
-        // Intents, then claims (PEO-080): every unit's choice reads only the second's
+        // Intents, then claims (PEO-080): every unit's choice reads only the slot's
         // starting occupancy and reservations, so the units decide as pieces, each into
         // its own slot. A calm unit whose tile is taken stays put, so resolving claims in
         // slot order (ascending unit index) gives each tile to the lowest index that
@@ -329,27 +347,32 @@ void World::dead_second(HordeState& d, Seconds t, Speculation* record) const {
     land(d);
 }
 
-void World::replay_second(Seconds t, const Speculation& spec) {
+void World::replay_slot(Substeps t, const Speculation& spec) {
     if (t == spec.poll_at) {
         dead_.slot_begin = spec.poll_begin; // the poll's buckets, as it would have made them
         dead_.slot_units = spec.poll_units;
     }
-    const std::size_t i = t - spec.from - 1;
+    // The record starts at the first even substep after `from`.
+    const std::size_t i = t / kSlotSubsteps - spec.from / kSlotSubsteps - 1;
     for (std::uint32_t k = spec.decided_begin[i]; k < spec.decided_begin[i + 1]; ++k) {
         decided(dead_, spec.decided[k]);
     }
     land(dead_);
 }
-void World::advance(Seconds duration, Speculation* spec) {
-    for (Seconds left = std::max<Seconds>(duration, 1); left > 0; --left) {
-        log_seconds(1);
-        ++seconds_;
-        if (spec != nullptr && seconds_ > spec->from && seconds_ <= spec->to) {
-            replay_second(seconds_, *spec);
-        } else {
-            dead_second(dead_, seconds_, nullptr);
+void World::advance(Substeps duration, Speculation* spec) {
+    // An odd substep (the between layer, ADR-0016) costs the counter and the log only.
+    for (Substeps left = duration == 0 ? kSlotSubsteps : duration; left > 0; --left) {
+        log_substeps(1);
+        ++substeps_;
+        if (substeps_ % kSlotSubsteps != 0) {
+            continue;
         }
-        if (seconds_ % params_.update_period == 0) {
+        if (spec != nullptr && substeps_ > spec->from && substeps_ <= spec->to) {
+            replay_slot(substeps_, *spec);
+        } else {
+            dead_slot(dead_, substeps_ / kSlotSubsteps, nullptr);
+        }
+        if (substeps_ % params_.update_period == 0) {
             if (spec != nullptr) {
                 finish_from(*spec);
                 spec = nullptr;
@@ -361,7 +384,7 @@ void World::advance(Seconds duration, Speculation* spec) {
 }
 void World::step(Action action) {
     apply_action(action);
-    advance(action.seconds, nullptr);
+    advance(action.substeps, nullptr);
     finish_turn();
 }
 
@@ -385,7 +408,7 @@ void World::set_executor(Executor* executor) noexcept {
 void World::speculate(Speculation& out) const {
     out.update = updates_;
     out.stage_index = stage_index_;
-    // Two independent halves (PEO-080): the update writes out.scent, the Dead's seconds
+    // Two independent halves (PEO-080): the update writes out.scent, the Dead's slots
     // read only scent_ and write out.ahead and the record, so they run as two pieces.
     run_pieces(executor_, 2, [&](std::size_t half) {
         if (half == 0) {
@@ -395,8 +418,8 @@ void World::speculate(Speculation& out) const {
         }
     });
     // The desire for the next window reads both halves: the new field and the
-    // occupancy at the boundary. Built only when the Dead's seconds reached it.
-    if (out.to == (seconds_ / params_.update_period + 1) * params_.update_period) {
+    // occupancy at the boundary. Built only when the Dead's slots reached it.
+    if (out.to == (substeps_ / params_.update_period + 1) * params_.update_period) {
         if (out.desire.width() != stage_.spec.width || out.desire.height() != stage_.spec.height) {
             out.desire = DesireField(stage_.spec.width, stage_.spec.height); // cold: once a stage size
         }
@@ -413,52 +436,54 @@ void World::speculate_scent(Speculation& out) const {
 }
 
 void World::speculate_dead(Speculation& out) const {
-    // The Dead's seconds up to and including the boundary read only scent_, which
+    // The Dead's slots up to and including the boundary read only scent_, which
     // cannot change before it, so they are fixed now. A second poll in the window
     // (only when update_period > dead_cycle) is left to run live.
     out.ahead = dead_;
     // Bounds, reserved once so no speculate allocates when warm: one pending move
-    // per unit; a unit decides at most every other second (it is moving the next);
+    // per unit; a unit decides at most every other slot (it is moving the next);
     // one poll's slots, as HordeState's own bound.
     const std::size_t units = dead_.horde.size();
+    const Slot period_slots = params_.update_period / kSlotSubsteps;
     out.ahead.deciding.reserve(units);
     out.ahead.landing.reserve(units);
     out.ahead.intents.reserve(units);
-    out.decided.reserve(units * ((params_.update_period + 1) / 2));
-    out.ahead.slot_units.reserve(units * params_.dead_cycle);
-    out.poll_units.reserve(units * params_.dead_cycle);
-    out.poll_begin.reserve(static_cast<std::size_t>(params_.dead_cycle) + 1);
-    out.decided_begin.reserve(static_cast<std::size_t>(params_.update_period) + 1);
-    out.from = seconds_;
+    out.decided.reserve(units * ((period_slots + 1) / 2));
+    out.ahead.slot_units.reserve(units * cycle_slots());
+    out.poll_units.reserve(units * cycle_slots());
+    out.poll_begin.reserve(static_cast<std::size_t>(cycle_slots()) + 1);
+    out.decided_begin.reserve(static_cast<std::size_t>(period_slots) + 1);
+    out.from = substeps_;
     out.poll_at = 0;
     out.decided.clear();
     out.decided_begin.assign(1, 0);
-    const Seconds boundary = (seconds_ / params_.update_period + 1) * params_.update_period;
-    Seconds t = seconds_ + 1;
-    for (; t <= boundary; ++t) {
+    const Substeps boundary = (substeps_ / params_.update_period + 1) * params_.update_period;
+    // Even substeps only, from the first after `from`; the boundary is even.
+    Substeps t = (substeps_ / kSlotSubsteps + 1) * kSlotSubsteps;
+    for (; t <= boundary; t += kSlotSubsteps) {
         if (t % params_.dead_cycle == 0 && out.poll_at != 0) {
             break;
         }
-        dead_second(out.ahead, t, &out);
+        dead_slot(out.ahead, t / kSlotSubsteps, &out);
     }
-    out.to = t - 1;
+    out.to = std::min(t - 1, boundary);
 }
 void World::commit(Speculation& spec, Action action) {
     // patch_deposit is exact for one round per update; faster waves run live.
-    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > seconds_ ||
+    if (spec.update != updates_ || spec.stage_index != stage_index_ || spec.from > substeps_ ||
         params_.scent.speed != 1) {
         step(action);
         return;
     }
     apply_action(action);
-    advance(action.seconds, &spec);
+    advance(action.substeps, &spec);
     finish_turn();
 }
 
 bool World::equivalent(const World& a, const World& b) noexcept {
     const HordeState& da = a.dead_;
     const HordeState& db = b.dead_;
-    if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.seconds_ != b.seconds_ ||
+    if (a.stage_index_ != b.stage_index_ || a.turn_ != b.turn_ || a.substeps_ != b.substeps_ ||
         a.updates_ != b.updates_ || a.player_ != b.player_ || a.log_.size() != b.log_.size() ||
         da.horde.size() != db.horde.size() || a.scent_.updates() != b.scent_.updates() ||
         a.scent_.values() != b.scent_.values() || !same_moves(da.landing, db.landing) ||
@@ -468,12 +493,12 @@ bool World::equivalent(const World& a, const World& b) noexcept {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
-        if (a.log_[i].tile != b.log_[i].tile || a.log_[i].seconds != b.log_[i].seconds) {
+        if (a.log_[i].tile != b.log_[i].tile || a.log_[i].substeps != b.log_[i].substeps) {
             return false;
         }
     }
     for (std::size_t i = 0; i < da.horde.size(); ++i) {
-        if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_seconds != db.horde[i].step_seconds) {
+        if (da.horde[i].pos != db.horde[i].pos || da.horde[i].step_substeps != db.horde[i].step_substeps) {
             return false;
         }
     }

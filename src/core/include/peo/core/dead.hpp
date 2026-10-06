@@ -11,18 +11,18 @@
 
 namespace peo::core {
 
-/// Game seconds in one cycle of the Dead's moves (D-031). Nine against the 6 s
-/// scent update keeps the moves out of step with the field they climb.
-inline constexpr Seconds kDeadCycleSeconds = 9;
+/// Substeps in one cycle of the Dead's moves (D-031, ADR-0016): nine slots against
+/// the six of a scent update keeps the moves out of step with the field they climb.
+inline constexpr Substeps kDeadCycleSubsteps = 18;
 
 /// One of the Dead: a walking corpse that cannot see but never stops smelling.
 /// Deliberately tiny (struct-of-arrays comes later if the profiler asks for
 /// it); thousands of these should step per turn. A large group is a horde.
 struct Dead {
     Vec2i pos{};
-    /// Game seconds a step takes this unit: slow vs fast Dead. Speed is slots per
-    /// cycle, dead_cycle / step_seconds (D-031).
-    std::uint16_t step_seconds = kUpdatePeriodSeconds;
+    /// Substeps a step takes this unit: slow vs fast Dead. Speed is slots per cycle,
+    /// dead_cycle / step_substeps (D-031). World keeps it a multiple of kSlotSubsteps.
+    std::uint16_t step_substeps = kUpdatePeriodSubsteps;
 };
 
 /// What one of the Dead is doing. Calm (scent, company and stay, D-038) is the only state
@@ -35,27 +35,29 @@ inline constexpr std::array<const char*, 1> kDeadStateNames{"calm"};
 }
 
 /// One unit's moves in one cycle (D-031): `count` slots, evenly spaced from `offset`.
+/// Everything here counts slots (one per kSlotSubsteps substeps, ADR-0016), which
+/// keeps D-031's arithmetic, and so every draw, as it was in whole seconds.
 struct SlotPlan {
-    Seconds offset = 0;
-    Seconds count = 0;
+    Slot offset = 0;
+    Slot count = 0;
 };
 
-/// Slots for unit `index` in cycle `cycle`: floor(dead_cycle / step_seconds) of them,
-/// one more with a chance equal to the fraction left over, at most dead_cycle. The
+/// Slots for unit `index` in cycle `cycle`: floor(cycle_slots / step_slots) of them,
+/// one more with a chance equal to the fraction left over, at most cycle_slots. The
 /// offset and the chance are hashes of (salt, cycle, index), never a shared stream,
 /// so who moves when changes every cycle and does not depend on any other draw.
-[[nodiscard]] SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index,
-                                  Seconds step_seconds, Seconds dead_cycle) noexcept;
+[[nodiscard]] SlotPlan plan_slots(std::uint64_t salt, std::uint64_t cycle, std::size_t index, Slot step_slots,
+                                  Slot cycle_slots) noexcept;
 
-/// The second within the cycle of slot `j` of `plan`, in [0, dead_cycle).
-[[nodiscard]] constexpr Seconds slot_second(SlotPlan plan, Seconds j, Seconds dead_cycle) noexcept {
-    return (plan.offset + j * dead_cycle / plan.count) % dead_cycle;
+/// The slot within the cycle of move `j` of `plan`, in [0, cycle_slots).
+[[nodiscard]] constexpr Slot slot_second(SlotPlan plan, Slot j, Slot cycle_slots) noexcept {
+    return (plan.offset + j * cycle_slots / plan.count) % cycle_slots;
 }
 
-/// The draw's random word for unit `index` deciding at second `second` (PEO-009): a
+/// The draw's random word for unit `index` deciding at slot `slot` (PEO-009): a
 /// counter-based hash with its own salt, never a shared stream, so a unit's draw does
 /// not depend on any other unit or on the order they decide in.
-[[nodiscard]] std::uint64_t draw_word(std::uint64_t salt, Seconds second, std::size_t index) noexcept;
+[[nodiscard]] std::uint64_t draw_word(std::uint64_t salt, Slot slot, std::size_t index) noexcept;
 
 /// The choice `word` picks from nine weights (kNeighbours8 order, then staying): each
 /// in proportion to its weight. Staying when every weight is 0.

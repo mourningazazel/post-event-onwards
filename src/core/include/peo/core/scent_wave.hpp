@@ -72,15 +72,16 @@ inline constexpr std::int32_t kWaveUnreached = std::numeric_limits<std::int32_t>
     return static_cast<std::uint32_t>(line / params.age_cost);
 }
 
-/// The default numbers' bound: 2^27 updates, about 25 game years at one update per 6 s.
+/// The default numbers' bound: 2^27 updates, about 12 game years at one update per 3 s
+/// (ADR-0016).
 inline constexpr std::uint32_t kMaxWaveUpdates = max_wave_updates(WaveParams{});
 /// The least game time a wave must be able to live: one year, ample for a stage.
-inline constexpr std::uint64_t kSecondsPerDay = 24ULL * 60 * 60;
+inline constexpr std::uint64_t kMsPerDay = 24ULL * 60 * 60 * 1000;
 inline constexpr std::uint64_t kDaysPerYear = 365;
-inline constexpr std::uint64_t kMinWaveLifeSeconds = kDaysPerYear * kSecondsPerDay;
-static_assert(std::uint64_t{kMaxWaveUpdates} * kUpdatePeriodSeconds >= kMinWaveLifeSeconds,
+inline constexpr std::uint64_t kMinWaveLifeMs = kDaysPerYear * kMsPerDay;
+static_assert(to_ms(std::uint64_t{kMaxWaveUpdates} * kUpdatePeriodSubsteps) >= kMinWaveLifeMs,
               "kMaxWaveUpdates: with these WaveParams defaults the scent wave's int32 age line breaks "
-              "within kMinWaveLifeSeconds; lower age_cost or strength, or rebase the line (PEO-077)");
+              "within kMinWaveLifeMs; lower age_cost or strength, or rebase the line (PEO-077)");
 
 /// The world's scent (D-024): an integer geodesic field. Each cell holds the best
 /// strength - distance_cost x route - age_cost x age over the deposits that reached

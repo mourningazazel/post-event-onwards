@@ -222,7 +222,7 @@ inline SiegeLayout build_layout(Building building, Setup setup) {
 /// The horde for `density`: that share of the outdoor open cells, drawn uniformly from
 /// `seed`, never in the footprint; each a speed as World::load_stage draws one.
 inline std::vector<Dead> place_horde(const SiegeLayout& l, Density density, Seed seed,
-                                     core::Seconds update_period = core::kUpdatePeriodSeconds) {
+                                     core::Substeps update_period = core::kUpdatePeriodSubsteps) {
     constexpr int kPercent = 100;
     constexpr int kMinSpeed = 1; // updates per step, as load_stage's kMinDeadSpeed..kMaxDeadSpeed
     constexpr int kMaxSpeed = 3;
@@ -247,8 +247,8 @@ inline std::vector<Dead> place_horde(const SiegeLayout& l, Density density, Seed
     horde.reserve(count);
     for (std::size_t i = 0; i < count; ++i) {
         horde.push_back({.pos = ground[i],
-                         .step_seconds = static_cast<std::uint16_t>(
-                             static_cast<core::Seconds>(rng.range(kMinSpeed, kMaxSpeed)) * update_period)});
+                         .step_substeps = static_cast<std::uint16_t>(
+                             static_cast<core::Substeps>(rng.range(kMinSpeed, kMaxSpeed)) * update_period)});
     }
     return horde;
 }

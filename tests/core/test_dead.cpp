@@ -27,7 +27,7 @@ struct Alone {
     }
 
     /// One decision with the draw word for (second, 0); moves the unit if it decided.
-    bool step(Dead& unit, Seconds second) const {
+    bool step(Dead& unit, Slot second) const {
         if (const auto to = decide_move(unit, desire, occupied, reserved, draw_word(kSalt, second, 0))) {
             unit.pos = *to;
             return true;
@@ -153,7 +153,7 @@ TEST_SUITE("dead") {
         const Alone alone(f, walls);
         int moved = 0;
         int nearer = 0;
-        for (Seconds t = 0; t < kDraws; ++t) {
+        for (Slot t = 0; t < kDraws; ++t) {
             Dead unit{.pos = {1, 4}};
             if (alone.step(unit, t)) {
                 ++moved;
@@ -183,7 +183,7 @@ TEST_SUITE("dead") {
         const Alone alone(f, walls);
         CHECK(alone.desire.weights({2, 2})[choice_to({2, 2}, {3, 3})] == 0);
         Dead unit{.pos = {2, 2}};
-        for (Seconds t = 0; t < kDecisions; ++t) {
+        for (Slot t = 0; t < kDecisions; ++t) {
             const Vec2i before = unit.pos;
             alone.step(unit, t);
             const Vec2i d = unit.pos - before;
@@ -229,7 +229,7 @@ TEST_SUITE("dead") {
         f.deposit({2, 2}, f.params().strength); // scent inside a wall cell: nothing should walk in
         f.update(walls);
         const Alone alone(f, walls);
-        for (Seconds t = 0; t < 200; ++t) {
+        for (Slot t = 0; t < 200; ++t) {
             Dead unit{.pos = {1, 2}};
             alone.step(unit, t);
             CHECK(unit.pos != Vec2i{2, 2});
@@ -291,7 +291,7 @@ TEST_SUITE("dead") {
         const ScentWave f = standing(34, 11, kSource, walls, kWarmupSteps);
         const Alone alone(f, walls);
         Dead unit{.pos = kStart};
-        for (Seconds t = 0; t < kCalls; ++t) {
+        for (Slot t = 0; t < kCalls; ++t) {
             alone.step(unit, t);
         }
         CHECK(kStart.x - unit.pos.x >= kMinClosed);
