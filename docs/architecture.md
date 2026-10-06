@@ -135,6 +135,20 @@ with `to_substeps` / `ms_to_substeps`, keeping their hours: a game hour is 1200 
 Speculation is per update: an action that crosses no boundary leaves it valid. `turn()` still
 counts actions.
 
+### Revisits (ADR-0019, PEO-094)
+
+Beside the stage clock runs one clock since the Event, `World::since_event()`: the start day
+(`WorldParams::start_day`, the one-week preset) plus the substeps of every earlier stage and
+this one; it never decreases. Each of the Dead carries a `fate`, a threshold drawn from a hash
+of the stage seed when it spawns (no spawn draw moves), uniform above the attrition curve at
+that clock (`peo/core/aftermath.hpp`: integer, piecewise linear, saturating). `store_area()`
+copies a generated stage's index, clock and horde into an `AreaRecord`; `resume_area()`
+rebuilds the stage as `load_stage` does, moves any unit off the entry (before thinning, so
+where it lands never depends on when), then `thin_horde` drops every unit whose fate the curve
+has passed: one comparison a unit, reading only the clock now, so several short absences
+equal one long one. Nothing in play calls these yet; aging player-made things is PEO-109 and
+the streaming catch-up job PEO-110.
+
 ### Computing while waiting (PEO-007)
 
 While the player thinks, a worker in `src/app/main.cpp` runs `World::speculate(Speculation&)`:
@@ -170,6 +184,7 @@ time, so a runner covers two cells per update.
 | Content | `tools/content/lint.py`, `tools/content/test.py` (374 expectations, 109 chains) |
 | Swarm behaviour | the scenario table in scent-mobs round 3 (harness, queued) |
 | Persistence | `save: a restored world continues bit-identical to the one never saved` |
+| Revisits | `revisit: one long absence equals several short ones` |
 
 ## Planned seams (not built)
 

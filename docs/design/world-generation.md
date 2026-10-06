@@ -239,6 +239,9 @@ All six N005 follow-up questions were answered in N007; see below.
   regenerated; unopened containers already resolve at the clock they are opened (D-023).
 - **No gate** (D-040 A): any reload catches up, so a day away changes a little and a month a
   lot. N009's 30-day gate is retired.
+- **Built so far** (PEO-094): the event clock, each unit's fate and the closed-form thinning
+  in `peo/core/aftermath.hpp` and `peo/core/revisit.hpp` (`World::store_area` /
+  `resume_area`); player-made aging is PEO-109, the streaming job PEO-110.
 
 ## No animals, and the crows ([N013](notes/N013-bikes-guns-bites-locks-animals-words.md))
 
