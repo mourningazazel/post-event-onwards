@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 109,
+  "next_id": 111,
   "items": [
     {
       "id": "PEO-003",
@@ -887,7 +887,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-03",
       "notes": [
         {
@@ -899,6 +899,11 @@
           "at": "2026-10-05",
           "by": "architect",
           "text": "D-040 answered: A"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed; split: PEO-109 (player-made aging), PEO-110 (streaming job). Land after PEO-091 if it is still open"
         }
       ],
       "references": [
@@ -1097,6 +1102,54 @@
       ],
       "depends_on": [
         "PEO-091"
+      ]
+    },
+    {
+      "id": "PEO-109",
+      "order": 917,
+      "type": "design",
+      "title": "Player-made things age on revisit from last_touched (ADR-0019 point 4)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "Brief once the first player-made thing (barricade, seal or stash) has a queue item; extends AreaRecord and resume_area from PEO-094"
+        }
+      ],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-094"
+      ]
+    },
+    {
+      "id": "PEO-110",
+      "order": 927,
+      "type": "design",
+      "title": "Revisit catch-up as a streaming job when an area reloads (ADR-0019 points 1-2)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "Needs area streaming (no item yet; PEO-095/096 bring the continuous world). Carries scent across an absence or starts it cold: decide then"
+        }
+      ],
+      "references": [
+        "docs/domains/world.md"
+      ],
+      "depends_on": [
+        "PEO-094"
       ]
     }
   ]
