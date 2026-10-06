@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <deque>
+#include <limits>
 #include <optional>
 #include <vector>
 
@@ -1019,6 +1020,50 @@ TEST_SUITE("world") {
             if (!World::equivalent(a, b)) {
                 FAIL("diverged at action " << i);
             }
+        }
+    }
+
+    TEST_CASE("requested times round up to whole slots") {
+        // ADR-0016: updates and the Dead's slots fall on even substeps only, so an odd
+        // period would never fire an update. World rounds each time up to whole slots.
+        constexpr Substeps kOddPeriod = 7;
+        constexpr Substeps kOddCycle = 17;
+        constexpr Substeps kWait = 8;
+        constexpr std::uint16_t kOddStep = 13;
+        constexpr std::uint16_t kMaxEvenStep = 65534;
+        WorldParams odd = small_world();
+        odd.update_period = kOddPeriod;
+        odd.dead_cycle = kOddCycle;
+        WorldParams even = small_world();
+        even.update_period = kOddPeriod + 1;
+        even.dead_cycle = kOddCycle + 1;
+        World a(kSeed, odd);
+        World b(kSeed, even);
+        a.step(Action::wait(kWait));
+        b.step(Action::wait(kWait));
+        CHECK(a.updates() == 1);
+        CHECK(World::equivalent(a, b));
+
+        World zero(kSeed, small_world());
+        zero.step(Action::wait(0));
+        CHECK(zero.substeps() == kSlotSubsteps);
+
+        Layout l = small_layout();
+        REQUIRE(l.horde.size() >= 2);
+        l.horde[0].step_substeps = kOddStep;
+        l.horde[1].step_substeps = 0;
+        World loaded(kSeed, small_world(0));
+        loaded.load_layout(l.stage, l.player, l.horde);
+        CHECK(loaded.horde()[0].step_substeps == kOddStep + 1);
+        CHECK(loaded.horde()[1].step_substeps == kSlotSubsteps);
+
+        WorldParams huge = small_world();
+        huge.update_period = std::numeric_limits<Substeps>::max();
+        const World big(kSeed, huge);
+        REQUIRE_FALSE(big.horde().empty());
+        for (const Dead& d : big.horde()) {
+            CHECK(d.step_substeps % kSlotSubsteps == 0);
+            CHECK(d.step_substeps <= kMaxEvenStep);
         }
     }
 
