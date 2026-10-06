@@ -965,16 +965,21 @@
       "order": 797,
       "type": "chore",
       "title": "Playtest the manual steps PEO-009 and PEO-080 left unrun",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
           "at": "2026-10-05",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-05",
+          "by": "builder",
+          "text": "manual, seed 1, keys via wtype, full report in the report commit. 080: pool (7) vs --threads 1, 154 turns: screens identical at 3 points; spec:hit, 0 misses; frontend shows no speculate time. 009 vs 1696348: within 3 cells at 80 waits 15 vs 11; within 10: 19 vs 21; packed group a 2-3 wide block, no line. No bugs."
         }
       ],
       "references": [],
