@@ -876,10 +876,10 @@
       "order": 817,
       "type": "design",
       "title": "Lazy revisit catch-up (ADR-0019)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -911,6 +911,11 @@
           "at": "2026-10-06",
           "by": "builder",
           "text": "rework"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "builder",
+          "text": "rework 983978f; CI 37524438414 green; both exits match 7c5b276. Report in commit."
         }
       ],
       "references": [
