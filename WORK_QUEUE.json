@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 117,
+  "next_id": 119,
   "items": [
     {
       "id": "PEO-003",
@@ -1094,8 +1094,30 @@
       ]
     },
     {
+      "id": "PEO-117",
+      "order": 846,
+      "type": "feature",
+      "title": "Player-centred scrolling view; stages bigger than the window",
+      "status": "AwaitingUser",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-10-06",
+      "notes": [
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "briefed to D-047..050 defaults"
+        }
+      ],
+      "references": [
+        "docs/domains/presentation.md"
+      ],
+      "depends_on": []
+    },
+    {
       "id": "PEO-097",
-      "order": 847,
+      "order": 848,
       "type": "feature",
       "title": "Dwarf Fortress grid tileset loader (ADR-0015)",
       "status": "Pending",
@@ -1108,6 +1130,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-06",
+          "by": "architect",
+          "text": "rebased on PEO-117; take it first"
         }
       ],
       "references": [
@@ -1322,6 +1349,24 @@
         "docs/production/decisions.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-118",
+      "order": 947,
+      "type": "design",
+      "title": "One continuous map: no stage jumps (ADR-0007, D-041)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "XL",
+      "owner": "architect",
+      "created": "2026-10-06",
+      "notes": [],
+      "references": [
+        "docs/adr/0007-endless-staged-world.md"
+      ],
+      "depends_on": [
+        "PEO-117"
+      ]
     }
   ]
 }
