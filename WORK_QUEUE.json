@@ -872,58 +872,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-094",
-      "order": 817,
-      "type": "design",
-      "title": "Lazy revisit catch-up (ADR-0019)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-03",
-          "by": "architect",
-          "text": "D-040"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "architect",
-          "text": "D-040 answered: A"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed; split: PEO-109 (player-made aging), PEO-110 (streaming job). Land after PEO-091 if it is still open"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "builder",
-          "text": "commits: b01977d core+save, de2e1f8 tests, f33ca17 docs; report in the report commit. verify --full passes; siege --check matches. open: manual second exit owed (desktop came back into use)."
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "rework: code reads correct; CI red. 1. CI run 37517010779 on f33ca17: GCC 13.3 -O3 -Werror=null-dereference fails test_revisit.cpp:204 (vector insert at begin); main red since. Build the horde as a new vector (push_back the entry unit, append the rest), no pragma or flag; check with GCC 13 headless-release and confirm CI green. 2. Walk the owed second exit on seed 1 against 7c5b276; report it."
-        },
-        {
-          "at": "2026-10-06",
-          "by": "builder",
-          "text": "rework"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "builder",
-          "text": "rework 983978f; CI 37524438414 green; both exits match 7c5b276. Report in commit."
-        }
-      ],
-      "references": [
-        "docs/domains/world.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-095",
       "order": 827,
       "type": "design",
@@ -1287,9 +1235,7 @@
       "references": [
         "docs/domains/world.md"
       ],
-      "depends_on": [
-        "PEO-094"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-110",
@@ -1316,9 +1262,7 @@
       "references": [
         "docs/domains/world.md"
       ],
-      "depends_on": [
-        "PEO-094"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-116",
