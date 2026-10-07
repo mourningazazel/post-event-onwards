@@ -872,43 +872,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-095",
-      "order": 827,
-      "type": "design",
-      "title": "Geography square, 100 km (ADR-0018)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-03",
-          "by": "architect",
-          "text": "D-041"
-        },
-        {
-          "at": "2026-10-05",
-          "by": "architect",
-          "text": "D-041 answered: A"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed; rivers split to PEO-111"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "builder",
-          "text": "Report in commit; CI 37528609928 green."
-        }
-      ],
-      "references": [
-        "docs/domains/world.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-111",
       "order": 828,
       "type": "design",
@@ -922,9 +885,7 @@
       "references": [
         "docs/domains/world.md"
       ],
-      "depends_on": [
-        "PEO-095"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-096",
@@ -951,9 +912,7 @@
       "references": [
         "docs/domains/world.md"
       ],
-      "depends_on": [
-        "PEO-095"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-112",
