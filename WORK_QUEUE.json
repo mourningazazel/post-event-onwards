@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 119,
+  "next_id": 122,
   "items": [
     {
       "id": "PEO-003",
@@ -1256,6 +1256,54 @@
       ],
       "depends_on": [
         "PEO-117"
+      ]
+    },
+    {
+      "id": "PEO-119",
+      "order": 957,
+      "type": "design",
+      "title": "Sight: 500 ft optical range in core (D-049)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-07",
+      "notes": [],
+      "references": [],
+      "depends_on": [
+        "PEO-117"
+      ]
+    },
+    {
+      "id": "PEO-120",
+      "order": 967,
+      "type": "feature",
+      "title": "Look key: a movable cursor over the seen field (D-049)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-07",
+      "notes": [],
+      "references": [],
+      "depends_on": [
+        "PEO-119"
+      ]
+    },
+    {
+      "id": "PEO-121",
+      "order": 977,
+      "type": "design",
+      "title": "What can be made out at range: labels within 20 ft (D-049)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-07",
+      "notes": [],
+      "references": [],
+      "depends_on": [
+        "PEO-120"
       ]
     }
   ]
