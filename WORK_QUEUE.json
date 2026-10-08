@@ -967,38 +967,6 @@
       ]
     },
     {
-      "id": "PEO-097",
-      "order": 848,
-      "type": "feature",
-      "title": "Dwarf Fortress grid tileset loader (ADR-0015)",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "rebased on PEO-117; take it first"
-        },
-        {
-          "at": "2026-10-08",
-          "by": "builder",
-          "text": "starting unit 1"
-        }
-      ],
-      "references": [
-        "docs/domains/presentation.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-103",
       "order": 857,
       "type": "perf",
