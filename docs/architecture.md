@@ -27,6 +27,7 @@ the current code are marked below; the rest apply as each system lands.
 The stack decisions in `docs/GAMEPLAN.md` §2 (SDL_GPU grid renderer, ECS, jobs, noise,
 profiling) are targets; the prototype uses `SDL_Renderer` debug text so the loop is playable
 today. The renderer reads only a committed world snapshot, so swapping it later is contained.
+The window shows a player-centred view (`src/app/camera.hpp`, PEO-117) over a stage larger than it.
 
 ## Current code
 
