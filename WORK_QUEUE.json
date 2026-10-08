@@ -888,38 +888,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-096",
-      "order": 837,
-      "type": "design",
-      "title": "Towns fitted to geography (ADR-0018)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "Also needs PEO-111 (river courses, split from PEO-095) for river towns; shore fitting can start after PEO-095"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed: sites on the geography with sea and lake relation; split to PEO-112 (rivers and river-town share, needs PEO-111), PEO-113 (shore and river content, needs PEO-014), PEO-114 (L2 layout generator, XL), PEO-115 (layouts fitted to water)"
-        },
-        {
-          "at": "2026-10-07",
-          "by": "builder",
-          "text": "Done 9b04df7..ba051aa; report in queue commit. place_sites 0.6-1.6 ms/square. Bands case release-only (g++-13 scenario 5985 ms; reverted, relanded). Game unchanged. See PEO-122."
-        }
-      ],
-      "references": [
-        "docs/domains/world.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-112",
       "order": 838,
       "type": "design",
@@ -934,7 +902,6 @@
         "docs/domains/world.md"
       ],
       "depends_on": [
-        "PEO-096",
         "PEO-111"
       ]
     },
@@ -972,9 +939,7 @@
         "docs/domains/world.md",
         "docs/design/world-generation.md"
       ],
-      "depends_on": [
-        "PEO-096"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-115",
@@ -1321,7 +1286,13 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-10-07",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "also: g++-13 scenario tier 4.91 s of 5 s on run 37708805376 attempt 1 (2.94 s on attempt 2); plan headroom for both tiers. Levers: geography share-band stride 10->20, the site any-region case's four one-cell regions."
+        }
+      ],
       "references": [
         "D-033"
       ],
