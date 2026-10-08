@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 125,
+  "next_id": 126,
   "items": [
     {
       "id": "PEO-003",
@@ -12,13 +12,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "title: Blood scent layer on contact with the Dead"
-        }
-      ],
       "references": [
         "docs/production/vision.md"
       ],
@@ -34,7 +27,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "src/core/include/peo/core/stage.hpp"
       ],
@@ -50,7 +42,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/architecture.md"
       ],
@@ -66,13 +57,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Item-system review (2026-09-29): bake resolved archetypes and intern variants (archetype, modifier set, brand) into a table at load, so generation never deep-merges at runtime; add a golden test that it does not."
-        }
-      ],
       "references": [
         "content/README.md",
         "tools/content/derive.py",
@@ -90,7 +74,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -106,18 +89,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-28",
-          "by": "architect",
-          "text": "Scope folds into shared occupancy (ADR-0013): contests happen on and between shared tiles, not only swaps."
-        },
-        {
-          "at": "2026-10-04",
-          "by": "architect",
-          "text": "D-043 (2026-10-04): a Dead thrown by a trip may land on the player's tile; that trips the player too."
-        }
-      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -133,7 +104,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/survival-actions.md",
         "content/registry/actions.toml"
@@ -152,13 +122,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-029 answered: B. A stack line holds mean quality plus a spread; an item taken samples its quality from them with a hash of its address."
-        }
-      ],
       "references": [
         "docs/design/content-model.md"
       ],
@@ -176,7 +139,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/world-catalog.md"
       ],
@@ -192,7 +154,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/survival-actions.md"
       ],
@@ -208,7 +169,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
       ],
@@ -224,7 +184,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/world-catalog.md"
       ],
@@ -242,7 +201,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/production/vision.md"
       ],
@@ -258,7 +216,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/survival-actions.md",
         "content/registry/features.toml"
@@ -277,7 +234,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/survival-actions.md"
       ],
@@ -295,7 +251,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [],
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
       ],
@@ -313,13 +268,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-28",
-      "notes": [
-        {
-          "at": "2026-10-04",
-          "by": "architect",
-          "text": "D-043 (2026-10-04): the player's tile is never chosen by a Dead, but a trip may throw one onto it, which trips the player."
-        }
-      ],
       "references": [
         "docs/adr/0013-tile-scale-and-shared-occupancy.md"
       ],
@@ -335,23 +283,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Walls: Ryan asked whether keeping 10% of wall-bound scent would help buildup. Probe: a 10% bounce raises indoor values only 2-10% (camp tile 1110 to 1130), and soak is fed by contact, not the field, so walls stay fully absorbing."
-        },
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "D-015: soak charges and leaks per game second, so it runs on the one-second world clock (PEO-040)."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-028 answered: B. Portable absorbers (mattress, cushion, clothing) carry soak as a value on the thing and take it with them; floors and fixed furniture keep it on the tile. D-024: the field is integer log strength, so express soak in the same units and have the Dead read the larger of field and soak (a log-sum approximation); PEO-055 derives the per-object soak rate."
-        }
-      ],
       "references": [
         "docs/production/decisions.md"
       ],
@@ -367,18 +298,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "D-025 (open) asks whether rot masks by scaling instead of 1:1 subtraction; the pathfinding review measured subtraction zeroing every cell past about 12 cells. Fold the answer into the draw formula before starting. PEO-051 may supply the section grid."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-025 answered: A. In the geodesic field (D-024, PEO-030) values are log strength, so a Dead subtracts rot x a named scale from the value it reads; it dulls the pull and never zeroes a distant trail. Replaces D-012's 1:1 subtraction. Build on ScentWave, after PEO-030."
-        }
-      ],
       "references": [
         "docs/production/decisions.md"
       ],
@@ -394,7 +313,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -412,7 +330,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
       "references": [
         "docs/design/gameplay-model/G04-characters.md"
       ],
@@ -431,28 +348,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "Held: the pull already bounds work by reach while only the player emits. Brief with the first other emitter (PEO-039 or PEO-003); sealed buildings wait on a generator with buildings."
-        },
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "Ryan 2026-10-01 (thread): detailed per-tile scent and wind only inside a window round the player; past it, generic aggregate spread with cheap wind drift (N021). Window size = D-034's active-area slider."
-        }
-      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -468,18 +363,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-29",
-          "by": "architect",
-          "text": "Waits on D-024 and a multi-z stage."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-024 answered: A. Brief after PEO-030 lands: this becomes a setting or a neighbour rule in ScentWave (pathfinding review section 8)."
-        }
-      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -495,18 +378,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-026 (owner's rule): a line is one kind; an item taken out instantiates with details; put back it lists beside the nameless quantity, not merged; unexamined entries are marked visually. D-027 B: search per compartment, time from volume, menus fast to traverse. The item review's model is implied -> line -> thing; lines are arrays, things are entities."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Scope split with PEO-053 recorded on PEO-053: 050 is read-through, instantiate, put-back, quality sampling and the cap; 053 is generation."
-        }
-      ],
       "references": [
         "docs/design/gameplay-model/G03-items-and-belongings.md",
         "docs/design/gameplay-model/G02-templates-generation-detail.md"
@@ -525,13 +396,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "N021 (2026-10-01): the far aggregates carry wind. Fuse spread and upwind drift in one pass from the same buffer (additive splitting); the layer runs beside the detailed field and exchanges at the boundary once per update."
-        }
-      ],
       "references": [
         "src/core/include/peo/core/grid.hpp"
       ],
@@ -547,18 +411,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Split with PEO-050, so the two briefs do not overlap: PEO-053 owns generation (line records per compartment, per-compartment seeds, independent picks, fill until full with packed_dims from PEO-052, counts drawn in proportion to the rolled room area as PEO-054's fit rule assumes, aftermath sampled from the address, freeze on search). PEO-050 owns what happens after (read-through the seed, instantiate on take or change, D-026 put-back as its own entry, the unexamined mark, D-029 quality sampling, the hidden cap). Brief both once PEO-008 is briefed; they share its baked variant table."
-        },
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "D-030 (N018): generation order per compartment is purpose, then main loot, then extras for the kind, ctx and detail tags, all from the compartment seed with the salts in PEO-057's brief; port tools/content/generate.py and pin C++ against its roll cases. The purpose name is stored on the compartment and shown once examined; D-026's unexamined mark applies to the compartment's name as well as its lines. Nested containers inherit ctx."
-        }
-      ],
       "references": [
         "docs/design/gameplay-model/G02-templates-generation-detail.md",
         "docs/design/gameplay-model/G03-items-and-belongings.md"
@@ -577,7 +429,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-29",
-      "notes": [],
       "references": [
         "tools/verify.py"
       ],
@@ -593,7 +444,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         "content/world/rooms/home.toml"
       ],
@@ -609,7 +459,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         ".clang-tidy"
       ],
@@ -625,7 +474,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         "tools/"
       ],
@@ -641,7 +489,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -657,13 +504,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-09-30",
-          "by": "architect",
-          "text": "Hand to the Builder once PEO-070 lands (kept on architect so the Builder's ready list stays accurate)."
-        }
-      ],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -681,7 +521,6 @@
       "effort": "S",
       "owner": "user",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -699,7 +538,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -717,13 +555,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-09-30",
-      "notes": [
-        {
-          "at": "2026-10-01",
-          "by": "architect",
-          "text": "2026-10-01: the copy lever is PEO-078 (two buffers), parallel decisions are PEO-080 (D-035). Commit swap and the static emitter layer stay here."
-        }
-      ],
       "references": [
         "docs/design/performance-targets.md"
       ],
@@ -739,7 +570,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-01",
-      "notes": [],
       "references": [
         "docs/research/parallel-and-gpu.md"
       ],
@@ -755,7 +585,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-01",
-      "notes": [],
       "references": [
         "docs/research/parallel-and-gpu.md",
         "docs/design/performance-targets.md"
@@ -772,7 +601,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-01",
-      "notes": [],
       "references": [
         "docs/research/parallel-and-gpu.md"
       ],
@@ -790,7 +618,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-02",
-      "notes": [],
       "references": [
         "docs/bottlenecks.md"
       ],
@@ -806,7 +633,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-10-03",
-      "notes": [],
       "references": [
         "docs/bottlenecks.md"
       ],
@@ -822,28 +648,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "D-046: stand-in kind undefined; build after PEO-008 whatever the answer"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "D-046 answered: A"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed (D-046 A): CDIC dictionary + resolve(); blocked on PEO-008 and PEO-116 too (tool cannot add depends_on)"
-        },
-        {
-          "at": "2026-10-08",
-          "by": "builder",
-          "text": "skipped 2026-10-08: PEO-008 and PEO-116 still Pending"
-        }
-      ],
       "references": [
         "docs/domains/persistence.md"
       ],
@@ -859,18 +663,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-10-03",
-      "notes": [
-        {
-          "at": "2026-10-03",
-          "by": "architect",
-          "text": "D-043 raised from the PEO-088 siege report"
-        },
-        {
-          "at": "2026-10-04",
-          "by": "architect",
-          "text": "D-043 answered: A, and a Dead tripped onto the player trips the player (PEO-011/022)"
-        }
-      ],
       "references": [
         "docs/design/scent-mobs.md"
       ],
@@ -886,7 +678,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/domains/world.md"
       ],
@@ -902,7 +693,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/domains/world.md"
       ],
@@ -920,7 +710,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/design/world-catalog.md",
         "docs/domains/world.md"
@@ -939,7 +728,6 @@
       "effort": "XL",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/domains/world.md",
         "docs/design/world-generation.md"
@@ -956,7 +744,6 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/domains/world.md"
       ],
@@ -976,18 +763,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-05",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "From the PEO-090 review: PEO-082 is the wrong lever (it batches updates, it does not cut per-update work, and it is an L design item). Brief plan: first dispatch the siege workflow on x86 to replace the 920 s projection with a real number; then either split siege.yml into 3 jobs, one per building, each running --check on its share (~5 min each), or record a 20 min on-demand budget in testing.md and the PEO-088 brief. Drop the PEO-082 reference. Do not cut hours, buildings or seeds (that changes N022, the user's call)."
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed: split siege.yml into one --check job per building (per-building baseline). x86 real number 704 s (run 37494258700), replaces the 920 s projection."
-        }
-      ],
       "references": [
         "PEO-090",
         "PEO-082",
@@ -1005,13 +780,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
       "references": [
         "PEO-080",
         "PEO-101",
@@ -1029,13 +797,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
       "references": [
         "PEO-093",
         "docs/domains/process.md"
@@ -1052,13 +813,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
       "references": [],
       "depends_on": []
     },
@@ -1072,13 +826,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "PEO-092: on load, show migration_summary once and warn before a lossy migration (ADR-0002)"
-        }
-      ],
       "references": [
         "docs/domains/persistence.md"
       ],
@@ -1094,7 +841,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/domains/persistence.md"
       ],
@@ -1110,13 +856,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "Brief once the first player-made thing (barricade, seal or stash) has a queue item; extends AreaRecord and resume_area from PEO-094"
-        }
-      ],
       "references": [
         "docs/domains/world.md"
       ],
@@ -1132,18 +871,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "Needs area streaming (no item yet; PEO-095/096 bring the continuous world). Carries scent across an absence or starts it cold: decide then"
-        },
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "PEO-095 makes any geography square generate alone and join its neighbours; neighbour residency is still unowned and lands with area streaming"
-        }
-      ],
       "references": [
         "docs/domains/world.md"
       ],
@@ -1159,7 +886,6 @@
       "effort": "M",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "content/README.md",
         "docs/production/decisions.md"
@@ -1176,7 +902,6 @@
       "effort": "XL",
       "owner": "architect",
       "created": "2026-10-06",
-      "notes": [],
       "references": [
         "docs/adr/0007-endless-staged-world.md"
       ],
@@ -1192,18 +917,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-07",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "briefed"
-        },
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "D-051 answered A: map memory is PEO-124, after this item; build this brief as written"
-        }
-      ],
       "references": [],
       "depends_on": []
     },
@@ -1217,18 +930,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-07",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "briefed; app unit 'the view while looking' waits on D-052, the rest does not"
-        },
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "D-052 answered B: build 'the view while looking' as answer B (follow_origin); skip answer A"
-        }
-      ],
       "references": [],
       "depends_on": [
         "PEO-119"
@@ -1244,18 +945,6 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-07",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "briefed; blocked by PEO-008, PEO-116, PEO-050 besides PEO-120 (tool cannot add depends_on; listed in context); unit 'beyond 20 ft' waits on D-053; only units 1-2 can start once PEO-120 is done"
-        },
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "D-053 answered A: unit 'beyond 20 ft' builds nothing; past 6 cells things stay unlabelled"
-        }
-      ],
       "references": [],
       "depends_on": [
         "PEO-120"
@@ -1271,18 +960,6 @@
       "effort": "S",
       "owner": "architect",
       "created": "2026-10-07",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "also: g++-13 scenario tier 4.91 s of 5 s on run 37708805376 attempt 1 (2.94 s on attempt 2); plan headroom for both tiers. Levers: geography share-band stride 10->20, the site any-region case's four one-cell regions."
-        },
-        {
-          "at": "2026-10-07",
-          "by": "builder",
-          "text": "S1: main red on rerun too (run 37731420471: unit 1098 ms, scenario 5520 ms on g++-13)"
-        }
-      ],
       "references": [
         "D-033"
       ],
@@ -1298,13 +975,6 @@
       "effort": "S",
       "owner": "builder",
       "created": "2026-10-08",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
       "references": [
         "docs/domains/presentation.md"
       ],
@@ -1320,19 +990,25 @@
       "effort": "M",
       "owner": "builder",
       "created": "2026-10-08",
-      "notes": [
-        {
-          "at": "2026-10-08",
-          "by": "architect",
-          "text": "briefed"
-        }
-      ],
       "references": [
         "docs/domains/presentation.md"
       ],
       "depends_on": [
         "PEO-119"
       ]
+    },
+    {
+      "id": "PEO-125",
+      "order": 1017,
+      "type": "chore",
+      "title": "Notes move out of WORK_QUEUE.json into per-item files so reports never hit the queue cap",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-08",
+      "references": [],
+      "depends_on": []
     }
   ]
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "briefed; blocked by PEO-008, PEO-116, PEO-050 besides PEO-120 (tool cannot add depends_on; listed in context); unit 'beyond 20 ft' waits on D-053; only units 1-2 can start once PEO-120 is done"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "D-053 answered A: unit 'beyond 20 ft' builds nothing; past 6 cells things stay unlabelled"
+  }
+]

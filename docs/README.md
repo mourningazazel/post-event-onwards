@@ -37,7 +37,7 @@ topic page → `AGENTS.md`. Within `design/`, a later "round" section wins over 
 | production/vision.md | 900 words |
 | production/decisions.md | 1500 words (archive old ones to `production/decisions-archive/`) |
 | production/DECISIONS_NEEDED.md | 800 words (answer some before adding more) |
-| WORK_QUEUE.json | 2500 content words (metadata only; briefs are files) |
-| production/briefs/`<id>`.md | uncapped, like handoffs |
+| WORK_QUEUE.json | 2500 content words (metadata only; briefs and notes are files) |
+| production/briefs/`<id>`.md, production/notes/`<id>`.json | uncapped, like handoffs |
 | DEFERRED_WORK.json | 1500 content words |
 | any SKILL.md or `.agents/agents/*.md` | 600 words |

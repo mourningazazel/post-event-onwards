@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "briefed; app unit 'the view while looking' waits on D-052, the rest does not"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "D-052 answered B: build 'the view while looking' as answer B (follow_origin); skip answer A"
+  }
+]

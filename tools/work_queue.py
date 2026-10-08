@@ -15,8 +15,9 @@ Usage:
   python3 tools/work_queue.py note PEO-001 --by builder --text "..."
   python3 tools/work_queue.py brief PEO-001 --file brief.json      (architect fills the brief)
 
-Briefs are not in the queue JSON: each lives in docs/production/briefs/<id>.md,
-written and read only through `brief` / `show` here. A list entry that spans
+Briefs and notes are not in the queue JSON: a brief lives in
+docs/production/briefs/<id>.md and an item's notes in docs/production/notes/<id>.json,
+written through `brief` / `note` / `set --note` and read back by `show` here. A list entry that spans
 lines indents its continuations two spaces; an unknown `## ` heading is an
 error, not a silently dropped section; `check` round-trips every brief.
   python3 tools/work_queue.py complete PEO-001 [--by architect] [--commit abc123]
@@ -36,6 +37,9 @@ DEFERRED = ROOT / "DEFERRED_WORK.json"
 COMPLETED_DIR = ROOT / "docs" / "COMPLETED_WORK"
 HANDOFFS_DIR = ROOT / "docs" / "production" / "handoffs"
 BRIEFS_DIR = ROOT / "docs/production/briefs"
+# Notes grow with every report and review, so they live beside the briefs and
+# the queue stays metadata only: a full queue must never block a report.
+NOTES_DIR = ROOT / "docs/production/notes"
 
 SCHEMA_VERSION = 1
 ID_PREFIX = "PEO"
@@ -75,6 +79,11 @@ def load(path: Path) -> dict:
 
 
 def save(path: Path, data: dict) -> None:
+    # Notes written inline by an older copy of this tool move to their file here.
+    for item in data["items"]:
+        inline = item.pop("notes", None)
+        if inline:
+            write_notes(item["id"], read_notes(item["id"]) + inline)
     data["items"].sort(key=lambda i: (i["order"], i["id"]))
     with path.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -94,6 +103,25 @@ def empty_brief() -> dict:
 
 def brief_path(item_id: str) -> Path:
     return BRIEFS_DIR / f"{item_id}.md"
+
+
+def notes_path(item_id: str) -> Path:
+    return NOTES_DIR / f"{item_id}.json"
+
+
+def read_notes(item_id: str) -> list[dict]:
+    path = notes_path(item_id)
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def write_notes(item_id: str, notes: list[dict]) -> None:
+    NOTES_DIR.mkdir(parents=True, exist_ok=True)
+    with notes_path(item_id).open("w", encoding="utf-8") as f:
+        json.dump(notes, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
 
 def _escape_goal_line(line: str) -> str:
@@ -194,7 +222,7 @@ def validate_item(item: dict, errors: list[str], seen: set[str]) -> None:
     if iid in seen:
         errors.append(f"{iid}: duplicate id")
     seen.add(iid)
-    required = ("id", "order", "type", "title", "status", "severity", "effort", "owner", "notes", "references", "depends_on", "created")
+    required = ("id", "order", "type", "title", "status", "severity", "effort", "owner", "references", "depends_on", "created")
     for key in required:
         if key not in item:
             errors.append(f"{iid}: missing field '{key}'")
@@ -256,6 +284,19 @@ def cmd_check(_: argparse.Namespace) -> int:
     for path in sorted(BRIEFS_DIR.glob(f"{ID_PREFIX}-*.md")):
         if path.stem not in seen:
             print(f"queue note: orphan brief {path.relative_to(ROOT)} (no live item {path.stem})")
+    for path in sorted(NOTES_DIR.glob(f"{ID_PREFIX}-*.json")):
+        if path.stem not in seen:
+            print(f"queue note: orphan notes {path.relative_to(ROOT)} (no live item {path.stem})")
+        else:
+            try:
+                notes = json.loads(path.read_text(encoding="utf-8"))
+                if not isinstance(notes, list) or not all(isinstance(n, dict) and {"at", "by", "text"} <= n.keys() for n in notes):
+                    errors.append(f"{path.stem}: {path.relative_to(ROOT)} must be a list of {{at, by, text}}")
+            except json.JSONDecodeError as e:
+                errors.append(f"{path.stem}: {path.relative_to(ROOT)} is not valid JSON: {e}")
+    inline = [i["id"] for i in q["items"] if i.get("notes")]
+    if inline:
+        print(f"queue note: inline notes on {', '.join(inline)}; the next work_queue.py write moves them to {NOTES_DIR.relative_to(ROOT)}/")
     for e in errors:
         print("QUEUE ERROR:", e)
     if not errors:
@@ -322,7 +363,8 @@ def cmd_next(args: argparse.Namespace) -> int:
 
 def cmd_show(args: argparse.Namespace) -> int:
     item = find(load(QUEUE), args.id)
-    print(json.dumps({**item, "brief": read_brief(args.id)}, indent=2, ensure_ascii=False))
+    notes = read_notes(args.id) + item.get("notes", [])
+    print(json.dumps({**item, "notes": notes, "brief": read_brief(args.id)}, indent=2, ensure_ascii=False))
     return 0
 
 
@@ -341,7 +383,6 @@ def cmd_add(args: argparse.Namespace) -> int:
         "effort": args.effort,
         "owner": args.owner,
         "created": today(),
-        "notes": [],
         "references": args.ref or [],
         "depends_on": args.depends_on or [],
     }
@@ -354,7 +395,7 @@ def cmd_add(args: argparse.Namespace) -> int:
 
 
 def add_note(item: dict, by: str, text: str) -> None:
-    item["notes"].append({"at": today(), "by": by, "text": text})
+    write_notes(item["id"], read_notes(item["id"]) + item.pop("notes", []) + [{"at": today(), "by": by, "text": text}])
 
 
 def cmd_set(args: argparse.Namespace) -> int:
@@ -417,7 +458,7 @@ def cmd_complete(args: argparse.Namespace) -> int:
         goal = read_brief(args.id).get("goal")
         if goal:
             f.write(f"- goal: {goal}\n")
-        for n in item["notes"][-3:]:
+        for n in (read_notes(args.id) + item.get("notes", []))[-3:]:
             f.write(f"- {n['at']} {n['by']}: {n['text']}\n")
         f.write("\n")
     q["items"] = [i for i in q["items"] if i["id"] != args.id]
@@ -432,6 +473,9 @@ def cmd_complete(args: argparse.Namespace) -> int:
     if brief.exists():
         brief.unlink()
         print(f"{args.id}: brief file removed")
+    if notes_path(args.id).exists():
+        notes_path(args.id).unlink()
+        print(f"{args.id}: notes file removed (its last three are in the log)")
     return 0
 
 

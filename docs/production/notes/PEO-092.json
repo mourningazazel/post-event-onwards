@@ -1,0 +1,22 @@
+[
+  {
+    "at": "2026-10-06",
+    "by": "architect",
+    "text": "D-046: stand-in kind undefined; build after PEO-008 whatever the answer"
+  },
+  {
+    "at": "2026-10-06",
+    "by": "architect",
+    "text": "D-046 answered: A"
+  },
+  {
+    "at": "2026-10-06",
+    "by": "architect",
+    "text": "briefed (D-046 A): CDIC dictionary + resolve(); blocked on PEO-008 and PEO-116 too (tool cannot add depends_on)"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "builder",
+    "text": "skipped 2026-10-08: PEO-008 and PEO-116 still Pending"
+  }
+]

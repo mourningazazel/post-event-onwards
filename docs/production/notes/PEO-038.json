@@ -1,0 +1,17 @@
+[
+  {
+    "at": "2026-09-29",
+    "by": "architect",
+    "text": "Walls: Ryan asked whether keeping 10% of wall-bound scent would help buildup. Probe: a 10% bounce raises indoor values only 2-10% (camp tile 1110 to 1130), and soak is fed by contact, not the field, so walls stay fully absorbing."
+  },
+  {
+    "at": "2026-09-29",
+    "by": "architect",
+    "text": "D-015: soak charges and leaks per game second, so it runs on the one-second world clock (PEO-040)."
+  },
+  {
+    "at": "2026-09-30",
+    "by": "architect",
+    "text": "D-028 answered: B. Portable absorbers (mattress, cushion, clothing) carry soak as a value on the thing and take it with them; floors and fixed furniture keep it on the tile. D-024: the field is integer log strength, so express soak in the same units and have the Dead read the larger of field and soak (a log-sum approximation); PEO-055 derives the per-object soak rate."
+  }
+]
