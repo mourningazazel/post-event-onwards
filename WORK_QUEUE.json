@@ -811,7 +811,7 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-06",
       "references": [],
       "depends_on": []

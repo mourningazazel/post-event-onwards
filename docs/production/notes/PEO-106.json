@@ -3,5 +3,10 @@
     "at": "2026-10-06",
     "by": "architect",
     "text": "briefed"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "builder",
+    "text": "rebrief: PEO-125 moved notes to docs/production/notes/, so a note no longer adds queue words and the note refusal can never fire. Still valid: a cap warning in check/summary for item and title growth, and the stale '200 mixed actions' comment in test_world.cpp"
   }
 ]
