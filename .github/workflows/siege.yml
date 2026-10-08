@@ -1,7 +1,8 @@
 # PEO-088 (N022): the siege suite, on demand only. Run it by hand (Actions > siege > Run
 # workflow) after a change to horde or scent mechanics; never on push or PR (Ryan,
-# 2026-10-02). It builds peo_siege, checks a full run against the committed baseline and
-# uploads the fresh report and maps either way.
+# 2026-10-02). One job per building (PEO-103), in parallel: each builds peo_siege, checks
+# that building's share against its committed baseline (tests/siege/baseline/<B>/) and
+# uploads the fresh report and maps either way. Budget: 10 min per job.
 name: siege
 
 on:
@@ -9,9 +10,13 @@ on:
 
 jobs:
   siege:
-    name: siege suite (--check)
+    name: siege suite, building ${{ matrix.building }} (--check)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        building: [A, B, C]
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update && sudo apt-get install -y ninja-build
@@ -19,12 +24,12 @@ jobs:
       - run: cmake --build --preset headless-release --target peo_siege
       - run: |
           start=$(date +%s)
-          ./build/headless-release/tests/peo_siege --out siege-out --check
-          status=$?
+          status=0
+          ./build/headless-release/tests/peo_siege --building ${{ matrix.building }} --out siege-out --check || status=$?
           echo "wall time: $(( $(date +%s) - start )) s"
           exit $status
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: siege-report
+          name: siege-report-${{ matrix.building }}
           path: siege-out/
