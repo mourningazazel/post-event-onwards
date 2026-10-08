@@ -758,7 +758,7 @@
       "order": 857,
       "type": "perf",
       "title": "Siege suite over its 10 min CI budget after ADR-0016 doubled updates per game hour",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
