@@ -10,4 +10,5 @@ logic in it is a bug (AGENTS.md).
 | `src/app/` | The frontend |
 
 - **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's).
-- **Queue:** PEO-018 (crow text); PEO-117 (player-centred view, first); PEO-097 (DF-grid tileset loader).
+- **Done:** PEO-117 (player-centred view over a larger stage, `src/app/camera.hpp`).
+- **Queue:** PEO-018 (crow text); PEO-097 (DF-grid tileset loader); PEO-123 (HUD under the minimum width).

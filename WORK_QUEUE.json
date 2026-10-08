@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 123,
+  "next_id": 124,
   "items": [
     {
       "id": "PEO-003",
@@ -962,38 +962,6 @@
       ]
     },
     {
-      "id": "PEO-117",
-      "order": 846,
-      "type": "feature",
-      "title": "Player-centred scrolling view; stages bigger than the window",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-06",
-      "notes": [
-        {
-          "at": "2026-10-06",
-          "by": "architect",
-          "text": "briefed to D-047..050 defaults"
-        },
-        {
-          "at": "2026-10-07",
-          "by": "builder",
-          "text": "starting unit 1"
-        },
-        {
-          "at": "2026-10-07",
-          "by": "builder",
-          "text": "commits eb56afa d29db4f c2fba52; manual all pass (@ centred every shot, 1024x1024 33 turns 0 miss); open: Hyprland tiling ignores min size (609 px, HUD clipped). Report in queue commit."
-        }
-      ],
-      "references": [
-        "docs/domains/presentation.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-097",
       "order": 848,
       "type": "feature",
@@ -1234,9 +1202,7 @@
       "references": [
         "docs/adr/0007-endless-staged-world.md"
       ],
-      "depends_on": [
-        "PEO-117"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-119",
@@ -1250,9 +1216,7 @@
       "created": "2026-10-07",
       "notes": [],
       "references": [],
-      "depends_on": [
-        "PEO-117"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-120",
@@ -1310,6 +1274,22 @@
       ],
       "references": [
         "D-033"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-123",
+      "order": 997,
+      "type": "bug",
+      "title": "HUD lines clip when a tiling WM ignores the window's minimum size",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-08",
+      "notes": [],
+      "references": [
+        "docs/domains/presentation.md"
       ],
       "depends_on": []
     }
