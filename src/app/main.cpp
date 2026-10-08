@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <stop_token>
@@ -29,6 +30,7 @@
 #include <thread>
 
 #include "camera.hpp"
+#include "glyph_atlas.hpp"
 #include "thread_pool.hpp"
 #ifdef PEO_HAVE_GPU
 #include "gpu_field.hpp"
@@ -37,6 +39,10 @@
 namespace {
 
 using namespace peo::core;
+using peo::app::atlas_cell;
+using peo::app::atlas_glyph_px;
+using peo::app::AtlasCell;
+using peo::app::display_scale;
 using peo::app::layout_view;
 using peo::app::View;
 using peo::app::view_origin;
@@ -116,8 +122,9 @@ WorldParams game_params(int stage_width, int stage_height) noexcept {
 }
 constexpr int kScale = 2;
 constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
-/// The HUD's height in window pixels.
-constexpr int kHudPx = kHudRows * kCell * kScale;
+/// DF-grid tilesets mark their background magenta instead of alpha (PEO-097); keying it out
+/// keeps those drop-in tilesets from drawing magenta boxes.
+constexpr SDL_Color kAtlasColourKey{255, 0, 255, SDL_ALPHA_OPAQUE};
 /// The window opens on this many map cells (today's size on the old default stage) and
 /// cannot shrink below the minimum: the HUD lines are written to fit 80 columns, and 21
 /// map rows (PEO-117's brief) still show ten cells either side of the player.
@@ -226,6 +233,13 @@ struct App {
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
+    /// The DF-grid tileset every glyph is drawn from (PEO-097), or null in ASCII mode (the
+    /// debug font). SDL_AppQuit destroys it before the renderer.
+    SDL_Texture* atlas = nullptr;
+    /// One glyph's side in the atlas, in its own pixels.
+    int glyph_px = kCell;
+    /// The HUD's cell in window pixels: the glyph at its display scale (ADR-0003).
+    int hud_cell_px = kCell * kScale;
     /// The map layer's cell in window pixels: equal to the HUD's until zoom (D-050), which
     /// changes only this.
     int map_cell_px = kCell * kScale;
@@ -244,6 +258,47 @@ struct App {
     Uint32 wake_event = 0;
     SDL_TimerID wake_timer = 0;
 };
+
+/// The HUD's height in window pixels.
+int hud_px(const App& app) noexcept {
+    return kHudRows * app.hud_cell_px;
+}
+
+/// Back to the debug font's cells (ASCII mode), as before PEO-097.
+void use_ascii_cells(App& app) noexcept {
+    app.glyph_px = kCell;
+    app.hud_cell_px = kCell * kScale;
+    app.map_cell_px = app.hud_cell_px;
+}
+
+/// The window size that shows `cols` by `rows` map cells and the HUD, in window pixels.
+SDL_Point window_px(const App& app, int cols, int rows) noexcept {
+    return {cols * app.map_cell_px, rows * app.map_cell_px + hud_px(app)};
+}
+
+/// Draw `text` from window pixel (`x_px`, `y_px`), one glyph per `cell_px`, in one colour.
+/// Tileset mode copies each non-space byte's atlas glyph; ASCII mode is the debug font
+/// under draw()'s render scale of kScale, whose glyphs advance kCell, so `cell_px` there
+/// is always kCell * kScale.
+void draw_text(App& app, float x_px, float y_px, float cell_px, const char* text, Uint8 r, Uint8 g, Uint8 b) {
+    if (app.atlas == nullptr) {
+        SDL_SetRenderDrawColor(app.renderer, r, g, b, SDL_ALPHA_OPAQUE);
+        SDL_RenderDebugText(app.renderer, x_px / kScale, y_px / kScale, text);
+        return;
+    }
+    SDL_SetTextureColorMod(app.atlas, r, g, b);
+    const auto glyph = static_cast<float>(app.glyph_px);
+    for (const char* c = text; *c != '\0'; ++c, x_px += cell_px) {
+        if (*c == ' ') {
+            continue;
+        }
+        const AtlasCell at = atlas_cell(static_cast<unsigned char>(*c));
+        const SDL_FRect src{static_cast<float>(at.col) * glyph, static_cast<float>(at.row) * glyph, glyph,
+                            glyph};
+        const SDL_FRect dst{x_px, y_px, cell_px, cell_px};
+        SDL_RenderTexture(app.renderer, app.atlas, &src, &dst);
+    }
+}
 
 /// Spend one turn on `action`: commit the speculation if there is one, else step.
 /// A speculation is per update (D-015): an action that crosses no update boundary
@@ -272,17 +327,19 @@ void draw(App& app) {
     SDL_SetRenderDrawColor(app.renderer, 8, 8, 12, 255);
     SDL_RenderClear(app.renderer);
     // The view (PEO-117): whole map cells of the window below the HUD, centred on the
-    // player. Laid out in window pixels, drawn at the render scale.
+    // player. Laid out and drawn in window pixels; ASCII mode's debug font draws under a
+    // render scale of kScale (draw_text divides by it), a tileset at 1.
     int out_w = 0;
     int out_h = 0;
     SDL_GetCurrentRenderOutputSize(app.renderer, &out_w, &out_h);
-    SDL_SetRenderScale(app.renderer, kScale, kScale);
-    const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, kHudPx);
+    const float render_scale = app.atlas == nullptr ? static_cast<float>(kScale) : 1.0F;
+    SDL_SetRenderScale(app.renderer, render_scale, render_scale);
+    const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, hud_px(app));
     const View view = layout.view;
     const Vec2i origin = view_origin(world.player(), view);
-    const float cell = static_cast<float>(app.map_cell_px) / kScale;
-    const float left = static_cast<float>(layout.left_px) / kScale;
-    const float top = static_cast<float>(layout.top_px) / kScale + static_cast<float>(kHudRows * kCell);
+    const auto cell = static_cast<float>(app.map_cell_px);
+    const auto left = static_cast<float>(layout.left_px);
+    const auto top = static_cast<float>(layout.top_px + hud_px(app));
     if (app.row.size() < static_cast<std::size_t>(view.cols) + 1) {
         app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
     }
@@ -302,7 +359,6 @@ void draw(App& app) {
             }
         }
     }
-    SDL_SetRenderDrawColor(app.renderer, 90, 90, 100, 255);
     for (int vy = 0; vy < view.rows; ++vy) {
         const int y = origin.y + vy;
         for (int vx = 0; vx < view.cols; ++vx) {
@@ -317,7 +373,7 @@ void draw(App& app) {
             row[static_cast<std::size_t>(vx)] = c;
         }
         row[static_cast<std::size_t>(view.cols)] = '\0';
-        SDL_RenderDebugText(app.renderer, left, top + static_cast<float>(vy) * cell, row.c_str());
+        draw_text(app, left, top + static_cast<float>(vy) * cell, cell, row.c_str(), 90, 90, 100);
     }
 
     auto glyph = [&](Vec2i p, const char* s, Uint8 r, Uint8 g, Uint8 b) {
@@ -325,9 +381,8 @@ void draw(App& app) {
         if (!at) {
             return;
         }
-        SDL_SetRenderDrawColor(app.renderer, r, g, b, 255);
-        SDL_RenderDebugText(app.renderer, left + static_cast<float>(at->x) * cell,
-                            top + static_cast<float>(at->y) * cell, s);
+        draw_text(app, left + static_cast<float>(at->x) * cell, top + static_cast<float>(at->y) * cell, cell,
+                  s, r, g, b);
     };
     glyph(stage.exit, ">", 120, 200, 255);
     for (const Dead& d : world.horde()) {
@@ -348,10 +403,9 @@ void draw(App& app) {
         app.last_hit ? "hit" : "miss", app.misses);
     static constexpr const char* kKeyHints =
         "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
-    SDL_SetRenderDrawColor(app.renderer, 200, 200, 120, 255);
-    SDL_RenderDebugText(app.renderer, 0.0F, 0.0F, status);
-    SDL_SetRenderDrawColor(app.renderer, 140, 140, 100, 255);
-    SDL_RenderDebugText(app.renderer, 0.0F, static_cast<float>(kCell), kKeyHints);
+    const auto hud_cell = static_cast<float>(app.hud_cell_px);
+    draw_text(app, 0.0F, 0.0F, hud_cell, status, 200, 200, 120);
+    draw_text(app, 0.0F, hud_cell, hud_cell, kKeyHints, 140, 140, 100);
 
     SDL_SetRenderScale(app.renderer, 1.0F, 1.0F);
     SDL_RenderPresent(app.renderer);
@@ -463,19 +517,51 @@ Seed parse_seed(const char* arg) {
     return seed;
 }
 
+struct SurfaceDeleter {
+    void operator()(SDL_Surface* surface) const noexcept { SDL_DestroySurface(surface); }
+};
+using SurfacePtr = std::unique_ptr<SDL_Surface, SurfaceDeleter>;
+
+/// `--tileset PATH` (PEO-097): the PNG at `path` if it is a DF-grid atlas, else null after a
+/// warning that names why, and the game stays in ASCII mode.
+SurfacePtr load_atlas(const char* path) {
+#if SDL_VERSION_ATLEAST(3, 4, 0)
+    SurfacePtr surface(SDL_LoadPNG(path));
+    if (!surface) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "--tileset \"%s\" is unreadable or not a PNG (%s); ASCII mode", path, SDL_GetError());
+        return nullptr;
+    }
+    if (!atlas_glyph_px(surface->w, surface->h)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "--tileset \"%s\" is %dx%d; it needs a square atlas whose side divides by %d; ASCII mode",
+                    path, surface->w, surface->h, peo::app::kAtlasGlyphsPerSide);
+        return nullptr;
+    }
+    return surface;
+#else
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "--tileset \"%s\" needs SDL 3.4 or later (built with %d.%d.%d); ASCII mode", path,
+                SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
+    return nullptr;
+#endif
+}
+
 } // namespace
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
     // Arguments: an optional seed, and anywhere `--threads N` (PEO-080),
-    // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081), `--stage WxH` (PEO-117).
+    // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081), `--stage WxH` (PEO-117),
+    // `--tileset PATH` (PEO-097).
     Seed seed = kDefaultSeed;
     Vec2i stage_size{kGameStageWidth, kGameStageHeight};
     std::size_t threads = default_threads();
     bool gpu_compute = true;
     std::size_t gpu_min_cells = kGpuFieldMinCells;
     bool gpu_min_given = false;
+    const char* tileset = nullptr;
     for (int i = 1; i < argc; ++i) {
         const std::string_view arg(argv[i]);
         if (arg == "--threads" || arg == "--gpu-min-cells") {
@@ -495,6 +581,15 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
                 ++i;
             } else {
                 SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--stage needs WxH");
+            }
+            continue;
+        }
+        if (arg == "--tileset") {
+            if (i + 1 < argc) {
+                tileset = argv[i + 1];
+                ++i;
+            } else {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--tileset needs a PATH");
             }
             continue;
         }
@@ -540,16 +635,44 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
 #endif
     app->speculator.emplace(*app->world);
     app->speculator->request();
+    // A tileset sets the one cell size (ADR-0003) before the window is sized from it.
+    SurfacePtr atlas = tileset != nullptr ? load_atlas(tileset) : nullptr;
+    if (atlas) {
+        app->glyph_px = atlas_glyph_px(atlas->w, atlas->h).value_or(kCell);
+        app->hud_cell_px = app->glyph_px * display_scale(app->glyph_px);
+        app->map_cell_px = app->hud_cell_px;
+    }
     // The window shows a view of the stage (PEO-117), so its size no longer comes from it.
-    const int win_w = kDefaultViewCols * app->map_cell_px;
-    const int win_h = kDefaultViewRows * app->map_cell_px + kHudPx;
-    if (!SDL_CreateWindowAndRenderer("Post-Event Onwards", win_w, win_h, SDL_WINDOW_RESIZABLE, &app->window,
+    const SDL_Point win = window_px(*app, kDefaultViewCols, kDefaultViewRows);
+    if (!SDL_CreateWindowAndRenderer("Post-Event Onwards", win.x, win.y, SDL_WINDOW_RESIZABLE, &app->window,
                                      &app->renderer)) {
         SDL_Log("CreateWindowAndRenderer failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_SetWindowMinimumSize(app->window, kMinViewCols * app->map_cell_px,
-                             kMinViewRows * app->map_cell_px + kHudPx);
+    if (atlas) {
+        SDL_SetSurfaceColorKey(
+            atlas.get(), true,
+            SDL_MapSurfaceRGB(atlas.get(), kAtlasColourKey.r, kAtlasColourKey.g, kAtlasColourKey.b));
+        app->atlas = SDL_CreateTextureFromSurface(app->renderer, atlas.get());
+        atlas.reset();
+        if (app->atlas != nullptr) {
+            SDL_SetTextureScaleMode(app->atlas, SDL_SCALEMODE_NEAREST);
+            SDL_SetTextureBlendMode(app->atlas, SDL_BLENDMODE_BLEND);
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--tileset \"%s\" made no texture (%s); ASCII mode",
+                        tileset, SDL_GetError());
+            use_ascii_cells(*app);
+            const SDL_Point ascii = window_px(*app, kDefaultViewCols, kDefaultViewRows);
+            SDL_SetWindowSize(app->window, ascii.x, ascii.y);
+        }
+    }
+    const SDL_Point min = window_px(*app, kMinViewCols, kMinViewRows);
+    SDL_SetWindowMinimumSize(app->window, min.x, min.y);
+    if (app->atlas != nullptr) {
+        SDL_Log("tileset %s, %d px glyphs at %dx", tileset, app->glyph_px, display_scale(app->glyph_px));
+    } else {
+        SDL_Log("ASCII mode");
+    }
     app->wake_event = SDL_RegisterEvents(1);
     const bool wait_event = SDL_GetVersion() >= kWaitEventMinVersion;
     SDL_SetHint(SDL_HINT_MAIN_CALLBACK_RATE, wait_event ? "waitevent" : kFallbackIterateHz);
@@ -615,6 +738,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 void SDL_AppQuit(void* appstate, SDL_AppResult /*result*/) {
     auto* app = static_cast<App*>(appstate);
     if (app) {
+        if (app->atlas) {
+            SDL_DestroyTexture(app->atlas);
+        }
         if (app->renderer) {
             SDL_DestroyRenderer(app->renderer);
         }
