@@ -1303,9 +1303,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "S",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-08",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [
         "docs/domains/presentation.md"
       ],
