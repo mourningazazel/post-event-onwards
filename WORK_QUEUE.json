@@ -792,10 +792,10 @@
       "order": 877,
       "type": "bug",
       "title": "verify's license check splits SPDX expressions case-sensitively, so 'MIT OR GPL-2.0' is wrongly refused",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S4",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-06",
       "references": [
         "PEO-093",

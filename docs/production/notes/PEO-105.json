@@ -8,5 +8,10 @@
     "at": "2026-10-08",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "builder",
+    "text": "commits: f14805b (license_ok splits on whitespace-bounded OR/AND, case-insensitive), 97be0d4 (self-test: 4 must-pass, 3 must-refuse). tests: --self-test 'license self-test ok'; with the old case-sensitive license_ok swapped in (in memory, no revert on disk) it fails on 'MIT OR GPL-2.0' and 'Apache-2.0 AND MIT'; validate_docs on the repo 'docs ok', no LICENSING.md change; verify --frontend --full green. manual: none in game. perf: n/a. open: none."
   }
 ]
