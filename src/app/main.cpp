@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <array>
 #include <charconv>
+#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <cstdio>
@@ -140,6 +141,12 @@ constexpr int kMinViewRows = 21;
 constexpr int kWaitEventMinVersion = SDL_VERSIONNUM(3, 4, 0);
 constexpr const char* kFallbackIterateHz = "60";
 
+/// The status line prints speculate time as whole ms and a three-digit us fraction (PEO-104).
+constexpr std::uint64_t kMicrosPerMilli = 1000;
+/// The status line's buffer: the format with every number at its widest (several 20-digit
+/// counts) is 167 bytes with its terminator.
+constexpr std::size_t kStatusLineBytes = 192;
+
 /// Timer delay floor: SDL treats a 0 ns timer oddly on some backends.
 constexpr Uint64 kMinWakeNs = 1;
 
@@ -163,7 +170,8 @@ char scent_glyph(std::int32_t scent, std::int32_t max_scent) {
 
 /// Runs World::speculate() on a worker while the world is idle. The worker only
 /// reads the World; the main thread mutates it only after quiesce(), so the two
-/// never touch it at once. The buffer is reused, so a turn allocates nothing.
+/// never touch it at once. The buffer is reused, so a turn allocates nothing. It
+/// also times each run (PEO-104): wall time is the app's to measure, never core's.
 class Speculator {
 public:
     explicit Speculator(const World& world)
@@ -194,6 +202,12 @@ public:
         return ready_ ? &buffer_ : nullptr;
     }
 
+    /// How long the last finished speculate() took, in microseconds; 0 until one finishes.
+    [[nodiscard]] std::uint64_t last_speculate_us() {
+        const std::lock_guard lock(mutex_);
+        return last_us_;
+    }
+
 private:
     void run(std::stop_token st) {
         std::unique_lock lock(mutex_);
@@ -201,8 +215,12 @@ private:
             requested_ = false;
             busy_ = true;
             lock.unlock();
+            const auto start = std::chrono::steady_clock::now();
             world_->speculate(buffer_);
+            const auto took = std::chrono::steady_clock::now() - start;
             lock.lock();
+            last_us_ = static_cast<std::uint64_t>(
+                std::chrono::duration_cast<std::chrono::microseconds>(took).count());
             busy_ = false;
             ready_ = true;
             wake_.notify_all();
@@ -215,6 +233,7 @@ private:
     bool requested_ = false;
     bool busy_ = false;
     bool ready_ = false;
+    std::uint64_t last_us_ = 0;
     Speculation buffer_;
     std::jthread worker_; // last: joins before the state above is destroyed
 };
@@ -252,6 +271,9 @@ struct App {
     /// PEO-007 manual test: was the last turn's speculation ready at input?
     bool last_hit = false;
     unsigned long long misses = 0;
+    /// PEO-104: the speculate() this turn's hit refers to, or on a miss the last one to
+    /// finish, in microseconds.
+    std::uint64_t last_spec_us = 0;
     /// Turn keys to turns (D-032): taps wait up to 3 deep, played out at 3 a second.
     TurnInput input;
     /// A registered SDL event type the wake timer pushes, and the pending timer (0: none).
@@ -313,6 +335,7 @@ void take_turn(App& app, Action action) {
     } else {
         app.world->step(action);
     }
+    app.last_spec_us = app.speculator->last_speculate_us(); // the worker is idle after quiesce()
     app.last_hit = hit;
     app.misses += hit ? 0U : 1U;
     const bool moved_on = app.world->updates() != update_before || app.world->stage_index() != stage_before;
@@ -395,12 +418,15 @@ void draw(App& app) {
     const Wind wind = world.wind();
     const auto point = static_cast<std::size_t>(((wind.toward_degrees + kCompassStep / 2) / kCompassStep) %
                                                 static_cast<std::int32_t>(kCompass.size()));
-    char status[80];
-    std::snprintf(
-        status, sizeof status, "stage %u  turn %llu  %s  dead %zu  wind to %s %d  spec:%s (miss %llu)",
-        world.stage_index(), static_cast<unsigned long long>(world.turn()), app.running ? "run" : "walk",
-        world.horde().size(), wind.intensity > 0 ? kCompass[point] : "-", wind.intensity,
-        app.last_hit ? "hit" : "miss", app.misses);
+    // Sized for every field at its widest, so snprintf never truncates; real lines stay under 80.
+    char status[kStatusLineBytes];
+    std::snprintf(status, sizeof status,
+                  "stage %u  turn %llu  %s  dead %zu  wind to %s %d  spec:%s %llu.%03llums (miss %llu)",
+                  world.stage_index(), static_cast<unsigned long long>(world.turn()),
+                  app.running ? "run" : "walk", world.horde().size(),
+                  wind.intensity > 0 ? kCompass[point] : "-", wind.intensity, app.last_hit ? "hit" : "miss",
+                  static_cast<unsigned long long>(app.last_spec_us / kMicrosPerMilli),
+                  static_cast<unsigned long long>(app.last_spec_us % kMicrosPerMilli), app.misses);
     static constexpr const char* kKeyHints =
         "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
     const auto hud_cell = static_cast<float>(app.hud_cell_px);
