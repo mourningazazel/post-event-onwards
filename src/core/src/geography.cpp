@@ -185,8 +185,21 @@ std::optional<Lake> lake_at_site(Seed world, const GeographyParams& p, std::int6
         return !in_disc(dx + 1, dy) || !in_disc(dx - 1, dy) || !in_disc(dx, dy + 1) || !in_disc(dx, dy - 1);
     };
 
-    // The lowest cell within the seed radius; ties to the first in y, then x.
+    // The lowest cell within the seed radius; ties to the first in y, then x. The seed
+    // square is always read whole, so it is read by rows (the same cells as the scan, at
+    // a fraction of the cost); the rest of the disc stays lazy.
     const int seed_r = p.lake_seed_radius_cells;
+    {
+        TerrainRows rows(world, p, cx - seed_r, 2 * seed_r + 1);
+        for (int dy = -seed_r; dy <= seed_r; ++dy) {
+            for (int dx = -seed_r; dx <= seed_r; ++dx) {
+                if (in_disc(dx, dy)) {
+                    ground_cache[at(dx, dy)] = rows.sample(dx + seed_r, cy + dy).elevation_m;
+                    known[at(dx, dy)] = 1;
+                }
+            }
+        }
+    }
     int lx = 0;
     int ly = 0;
     std::int16_t lowest = std::numeric_limits<std::int16_t>::max();
