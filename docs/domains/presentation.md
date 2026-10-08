@@ -9,6 +9,6 @@ logic in it is a bug (AGENTS.md).
 | [design/engine-api.md](../design/engine-api.md) "UI as data" | How menus will be described |
 | `src/app/` | The frontend |
 
-- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's). D-047 to D-050 (the view, sight); D-051 open (map memory); D-052 open (Look cursor past the screen edge).
+- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's). D-047 to D-050 (the view, sight); D-051 open (map memory); D-052 open (Look cursor past the screen edge); D-053 open (what shows beyond 20 ft).
 - **Done:** PEO-117 (player-centred view over a larger stage, `src/app/camera.hpp`).
-- **Queue:** PEO-018 (crow text); PEO-097 (DF-grid tileset loader); PEO-123 (HUD under the minimum width); PEO-119 (sight, D-049); PEO-120 (Look cursor, D-052).
+- **Queue:** PEO-018 (crow text); PEO-097 (DF-grid tileset loader); PEO-123 (HUD under the minimum width); PEO-119 (sight, D-049); PEO-120 (Look cursor, D-052); PEO-121 (labels within 20 ft, D-053).

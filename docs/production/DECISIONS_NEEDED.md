@@ -19,6 +19,12 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 
 ---
 
+## D-053 · What can be made out beyond 20 ft?      (raised by architect · 2026-10-08 · PEO-121)
+Why now: D-049 says what reads within 20 ft (6 tiles) but sight reaches 152 tiles, so PEO-121 must know whether anything past 6 tiles is named when looked at (a car 100 ft away, a fridge across a room).
+Affects: gameplay · rewrite: none
+- A) Nothing named past 20 ft: farther things show only as their glyph and Look names none of them; walk closer (or binoculars, later) to make them out — a size rule can still be added later   ← recommended
+- B) Size scales the range: big things (vehicles, furniture) show their generic label farther, in proportion to their size in content; small items and sign text still need 20 ft
+
 ## D-052 · Can the Look cursor go past the edge of the screen?      (raised by architect · 2026-10-08 · PEO-120)
 Why now: sight reaches 152 cells (D-049) but the player-centred view (D-048) shows far fewer, so the Look cursor (PEO-120) either stops at the screen edge or the view must move while looking; binoculars (later) widen the gap.
 Affects: gameplay · rewrite: none

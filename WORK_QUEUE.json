@@ -1254,9 +1254,15 @@
       "status": "Pending",
       "severity": "S3",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-07",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "briefed; blocked by PEO-008, PEO-116, PEO-050 besides PEO-120 (tool cannot add depends_on; listed in context); unit 'beyond 20 ft' waits on D-053; only units 1-2 can start once PEO-120 is done"
+        }
+      ],
       "references": [],
       "depends_on": [
         "PEO-120"
