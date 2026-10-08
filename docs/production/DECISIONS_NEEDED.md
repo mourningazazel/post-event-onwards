@@ -18,21 +18,3 @@ Affects: gameplay | abstraction | direction · rewrite: none | small | large
 ```
 
 ---
-
-## D-053 · What can be made out beyond 20 ft?      (raised by architect · 2026-10-08 · PEO-121)
-Why now: D-049 says what reads within 20 ft (6 tiles) but sight reaches 152 tiles, so PEO-121 must know whether anything past 6 tiles is named when looked at (a car 100 ft away, a fridge across a room).
-Affects: gameplay · rewrite: none
-- A) Nothing named past 20 ft: farther things show only as their glyph and Look names none of them; walk closer (or binoculars, later) to make them out — a size rule can still be added later   ← recommended
-- B) Size scales the range: big things (vehicles, furniture) show their generic label farther, in proportion to their size in content; small items and sign text still need 20 ft
-
-## D-052 · Can the Look cursor go past the edge of the screen?      (raised by architect · 2026-10-08 · PEO-120)
-Why now: sight reaches 152 cells (D-049) but the player-centred view (D-048) shows far fewer, so the Look cursor (PEO-120) either stops at the screen edge or the view must move while looking; binoculars (later) widen the gap.
-Affects: gameplay · rewrite: none
-- A) Screen-bound: the cursor rests only on seen cells that are on screen; the view never moves while looking — what you can inspect is what you can see on screen
-- B) Pan while looking: the cursor reaches any seen cell; when it would leave the screen the view scrolls with it, and snaps back to the player when Look ends — the whole sight range (and later binoculars) can be inspected   ← recommended
-
-## D-051 · Does the map remember terrain the player has seen?      (raised by architect · 2026-10-08 · PEO-119)
-Why now: PEO-119 limits the view to what the player sees now (D-049), so a cell that drops out of sight (round a corner, behind a wall) goes dark at once; whether it stays drawn decides what the frontend keeps per stage and what a save carries.
-Affects: gameplay · rewrite: none
-- A) Remember seen terrain: cells once seen keep their walls and floor drawn dimmed, with no Dead, items or scent on them until seen again — a per-stage seen grid in core, saved with the stage   ← recommended
-- B) Only what is seen now: anything out of sight draws dark — nothing kept, the player holds the layout in their head

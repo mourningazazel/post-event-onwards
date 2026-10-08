@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 124,
+  "next_id": 125,
   "items": [
     {
       "id": "PEO-003",
@@ -1219,6 +1219,11 @@
           "at": "2026-10-08",
           "by": "architect",
           "text": "briefed"
+        },
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "D-051 answered A: map memory is PEO-124, after this item; build this brief as written"
         }
       ],
       "references": [],
@@ -1239,6 +1244,11 @@
           "at": "2026-10-08",
           "by": "architect",
           "text": "briefed; app unit 'the view while looking' waits on D-052, the rest does not"
+        },
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "D-052 answered B: build 'the view while looking' as answer B (follow_origin); skip answer A"
         }
       ],
       "references": [],
@@ -1261,6 +1271,11 @@
           "at": "2026-10-08",
           "by": "architect",
           "text": "briefed; blocked by PEO-008, PEO-116, PEO-050 besides PEO-120 (tool cannot add depends_on; listed in context); unit 'beyond 20 ft' waits on D-053; only units 1-2 can start once PEO-120 is done"
+        },
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "D-053 answered A: unit 'beyond 20 ft' builds nothing; past 6 cells things stay unlabelled"
         }
       ],
       "references": [],
@@ -1316,6 +1331,24 @@
         "docs/domains/presentation.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-124",
+      "order": 1007,
+      "type": "feature",
+      "title": "Map memory: seen terrain stays drawn dimmed (D-051)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-08",
+      "notes": [],
+      "references": [
+        "docs/domains/presentation.md"
+      ],
+      "depends_on": [
+        "PEO-119"
+      ]
     }
   ]
 }

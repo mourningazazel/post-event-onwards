@@ -6,7 +6,16 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-035 onward as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-035 to D-037 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-08 · D-051 to D-053 · Seen terrain stays dimmed, Look pans, nothing named past 20 ft
+
+User decisions (sight batch thread). D-051 A: cells once seen keep walls and floor drawn dimmed,
+with no Dead, items or scent until seen again; a per-stage seen grid in core, saved with the stage.
+D-052 B: the Look cursor reaches any seen cell; the view scrolls with it and snaps back to the
+player when Look ends. D-053 A: past 20 ft nothing is named; walk closer (or binoculars, later).
+Consequence: PEO-120 builds answer B, PEO-121 builds nothing beyond 6 cells, and map memory is a
+new queue item after PEO-119.
 
 ## 2026-10-06 · D-047 to D-050 · The screen follows the player; sight bounds what shows
 
@@ -112,20 +121,3 @@ and long golden-run tests form a second tier, the doctest suites named `scenario
 CI build under their own 5 s budget; each tier is enforced by its own CTest. Why: the town
 scenarios keep growing and pushed one shared budget red twice. Consequence: PEO-066; a case over
 about 50 ms belongs in the scenario tier rather than being skipped.
-
-## 2026-10-01 · D-037 · Richer Dead and crowd pressure are the first scale-up
-
-User decision: C (N020). Of the things threads and the GPU open up, the Dead's weighted draw
-(PEO-009) and crowd pressure come first. Why: hordes are a pillar, and PEO-009 is the next
-mechanic. Consequence: PEO-009 bakes every term that reads only the last update into a per-cell
-desire field (research/parallel-and-gpu.md section 6); crowd pressure is PEO-084.
-
-## 2026-10-01 · D-036 · GPU compute starts now, to go bigger
-
-User decision: C (N020), superseding D-021's "no GPU work"; D-021's budget stands. The intent is
-the biggest world the hardware allows. Three goals, and the GPU earns its place if it delivers
-one: stages of 1024x1024 to 2048x2048 as the norm, so the Dead flow across a city instead of
-spawning at a border; scent that reaches far and builds up, instead of aggregates adjusting
-spawns; and fast time passing, because players sleep and pass time often. Every GPU kernel is
-integer, has a CPU reference, and an equivalence test checks them bit for bit (SYSTEMS R11).
-Consequence: ADR-0014; PEO-081 to PEO-083; stage size stays per machine (D-034).
