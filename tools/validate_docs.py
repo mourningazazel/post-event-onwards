@@ -93,10 +93,12 @@ def dependency_rows(licensing: str) -> list[tuple[str, str]]:
 
 def license_ok(cell: str, allowed: set[str]) -> bool:
     """A cell passes when each '+' part has at least one allowed 'or' alternative: dual
-    licenses are used under one, as zstd and PCG are. Parenthesised remarks are ignored."""
+    licenses are used under one, as zstd and PCG are. The SPDX operators OR and AND are read in
+    any case, and only between spaces, so 'GPL-2.0-or-later' stays one id. Parenthesised
+    remarks are ignored."""
     cell = re.sub(r"\([^)]*\)", " ", cell)
-    for part in re.split(r"\s\+\s|\band\b", cell):
-        options = [o.strip().lower() for o in re.split(r"\bor\b|/", part) if o.strip()]
+    for part in re.split(r"\s\+\s|\s+and\s+", cell, flags=re.IGNORECASE):
+        options = [o.strip().lower() for o in re.split(r"\s+or\s+|/", part, flags=re.IGNORECASE) if o.strip()]
         if not any(o in allowed for o in options):
             return False
     return True
