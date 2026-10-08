@@ -147,7 +147,8 @@ TEST_SUITE("geography") {
         }
     }
 
-    TEST_CASE("regions agree wherever they meet: across a square edge and across cell 0") {
+    TEST_CASE("regions agree wherever they meet: across a square edge and across cell 0" *
+              doctest::test_suite("scenario: geography")) {
         const GeographyParams p;
         constexpr int kSide = 48;
         for (const CellRect left :
@@ -160,7 +161,8 @@ TEST_SUITE("geography") {
         }
     }
 
-    TEST_CASE("lakes sit in their own grid square, below their level and above the sea") {
+    TEST_CASE("lakes sit in their own grid square, below their level and above the sea" *
+              doctest::test_suite("scenario: geography")) {
         GeographyParams p;
         p.lake_chance_q16 = kNoiseOne; // every site rolls
         REQUIRE(valid(p));
@@ -243,7 +245,8 @@ TEST_SUITE("geography") {
         check_agree(a, generate_geography(kSeed, p, CellRect{kEdge - 1, 0, 2, kRows}));
     }
 
-    TEST_CASE("rings close, step along an axis and enclose exactly their bodies") {
+    TEST_CASE("rings close, step along an axis and enclose exactly their bodies" *
+              doctest::test_suite("scenario: geography")) {
         GeographyParams p;
         p.lake_chance_q16 = kNoiseOne;
         check_bodies(generate_geography(kSeed, p, CellRect{-200, 900, 192, 192}));
@@ -287,6 +290,10 @@ TEST_SUITE("geography") {
 }
 
 TEST_SUITE("scenario: geography") {
+#ifdef NDEBUG
+    // Release only (Ryan, 2026-10-08): a whole 100 km square and 48 sampled squares cost
+    // about 2.5 s of Debug+ASan time on every push. The release job and verify --full
+    // run them in full.
     TEST_CASE("a whole square fits in 8 MB and its bodies match its cover") {
         constexpr std::size_t kMaxBytes = 8U << 20U;
         const GeographyRegion& g = peo::test::seed1_square00(); // shared with the site golden
@@ -349,4 +356,5 @@ TEST_SUITE("scenario: geography") {
         CHECK(dry_squares > 0);
         CHECK(coastal_squares > 0);
     }
+#endif
 }

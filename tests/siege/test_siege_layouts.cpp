@@ -22,7 +22,8 @@ int count(const SiegeLayout& l, Region r) {
 } // namespace
 
 TEST_SUITE("siege layouts") {
-    TEST_CASE("the three buildings, their setups and their player") {
+    TEST_CASE("the three buildings, their setups and their player" *
+              doctest::test_suite("scenario: siege layouts")) {
         constexpr std::array<int, 3> kFloor{25, 32, 32};
         constexpr std::array<int, 3> kHallway{0, 4, 9};
         for (const Building b : kBuildings) {

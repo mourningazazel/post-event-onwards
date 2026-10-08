@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "Ryan 2026-10-08 (thread): take the long time sinks out of every test run. Local Debug+ASan: unit tier 1698 to 844 ms, scenario tier 6390 to 4128 ms; release ctest runs every gated case."
+  }
+]
