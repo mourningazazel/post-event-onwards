@@ -20,7 +20,6 @@ add_executable(peo_core_tests
     core/test_revisit.cpp
     core/test_noise.cpp
     core/test_geography.cpp
-    core/test_settlement_site.cpp
     siege/test_siege_layouts.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 # PEO-080: the executor tests also run the frontend's thread pool (header-only, no SDL).

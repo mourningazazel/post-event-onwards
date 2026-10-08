@@ -1,7 +1,7 @@
 // peo_geo (PEO-095): draw geography squares as an image for review. Headless; file I/O
 // lives here, never in core.
 //
-//   peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] [--sites] --out file.ppm
+//   peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] --out file.ppm
 //
 // Generates the K x K squares from X,Y and writes one binary PPM (P6) at one pixel per
 // S x S cells. Sea is darker with depth, lakes a distinct blue, forest green, bare land an
@@ -10,12 +10,10 @@
 // forest and land above 1000 m.
 
 #include "peo/core/geography.hpp"
-#include "peo/core/settlement_site.hpp"
 
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -63,56 +61,6 @@ Rgb colour(std::int16_t e, std::uint8_t cover, int shade) {
     return {channel(c.r + shade), channel(c.g + shade), channel(c.b + shade)};
 }
 
-/// Places the square's sites (PEO-096), draws each as a ring at its radius coloured by
-/// size with a centre dot, and prints the counts, the water shares and the time. The
-/// square's top-left pixel in the image is (ox, oy).
-void draw_sites(Seed seed, const GeographyRegion& g, int ox, int oy, int scale, int side,
-                std::vector<Rgb>& image) {
-    const SiteParams params;
-    const auto t0 = std::chrono::steady_clock::now();
-    const std::vector<SettlementSite> found = place_sites(seed, params, g);
-    const auto t1 = std::chrono::steady_clock::now();
-    constexpr std::array<Rgb, kSiteSizes> kSizeColour{Rgb{255, 255, 255}, Rgb{255, 230, 0}, Rgb{255, 120, 0},
-                                                      Rgb{230, 0, 0}};
-    const auto put = [&](std::int64_t wx, std::int64_t wy, Rgb c) {
-        const std::int64_t px = ox + (wx - g.rect.x) / scale;
-        const std::int64_t py = oy + (wy - g.rect.y) / scale;
-        if (px >= 0 && py >= 0 && px < side && py < side) {
-            image[static_cast<std::size_t>(py) * static_cast<std::size_t>(side) +
-                  static_cast<std::size_t>(px)] = c;
-        }
-    };
-    std::array<int, kSiteSizes> by_size{};
-    std::array<int, 4> by_landmark{};
-    int sea = 0;
-    int lake = 0;
-    int dry = 0;
-    constexpr int kRingSteps = 256;
-    for (const SettlementSite& s : found) {
-        ++by_size[static_cast<std::size_t>(s.size)];
-        ++by_landmark[static_cast<std::size_t>(s.landmark)];
-        sea += (s.water & kSiteSea) != 0 ? 1 : 0;
-        lake += (s.water & kSiteLake) != 0 ? 1 : 0;
-        dry += s.water == 0 ? 1 : 0;
-        const Rgb c = kSizeColour[static_cast<std::size_t>(s.size)];
-        // The ring: integer points round the circle (the tool may use floats; core may not).
-        for (int k = 0; k < kRingSteps; ++k) {
-            const double a = 6.283185307179586 * k / kRingSteps;
-            put(s.cell_x + static_cast<std::int64_t>(s.radius_cells * std::cos(a)),
-                s.cell_y + static_cast<std::int64_t>(s.radius_cells * std::sin(a)), c);
-        }
-        for (int d = -scale; d <= scale; ++d) {
-            put(s.cell_x + d, s.cell_y, {0, 0, 0});
-            put(s.cell_x, s.cell_y + d, {0, 0, 0});
-        }
-    }
-    std::printf("  sites %zu (hamlet %d, village %d, town %d, city %d); landmark none %d, sea %d, lake %d, "
-                "mountains %d; with sea %d, lake %d, no water %d; place_sites %.1f ms\n",
-                found.size(), by_size[0], by_size[1], by_size[2], by_size[3], by_landmark[0], by_landmark[1],
-                by_landmark[2], by_landmark[3], sea, lake, dry,
-                std::chrono::duration<double, std::milli>(t1 - t0).count());
-}
-
 bool parse_pair(std::string_view s, int& a, int& b) {
     const auto comma = s.find(',');
     if (comma == std::string_view::npos) {
@@ -131,7 +79,6 @@ int main(int argc, char** argv) {
     int span = 1;
     int scale = 1;
     bool grid = false;
-    bool sites = false;
     std::string out;
     for (int i = 1; i < argc; ++i) {
         const std::string_view a = argv[i];
@@ -146,13 +93,12 @@ int main(int argc, char** argv) {
             scale = std::max(1, std::atoi(argv[++i]));
         } else if (a == "--grid") {
             grid = true;
-        } else if (a == "--sites") {
-            sites = true;
         } else if (a == "--out" && has_value) {
             out = argv[++i];
         } else {
-            std::fprintf(stderr, "usage: peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] "
-                                 "[--sites] --out file.ppm\n");
+            std::fprintf(
+                stderr,
+                "usage: peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] --out file.ppm\n");
             return 2;
         }
     }
@@ -209,9 +155,6 @@ int main(int argc, char** argv) {
                     const auto iy = static_cast<std::size_t>(qy * kSquareCells / scale + py);
                     image[iy * static_cast<std::size_t>(side) + ix] = c;
                 }
-            }
-            if (sites) {
-                draw_sites(seed, g, qx * kSquareCells / scale, qy * kSquareCells / scale, scale, side, image);
             }
         }
     }
