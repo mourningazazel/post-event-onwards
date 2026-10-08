@@ -184,7 +184,8 @@ TEST_SUITE("scent_wave") {
         CHECK(w.strongest_neighbour({2, 2}, &walls) == std::nullopt);
     }
 
-    TEST_CASE("patch_deposit after update equals deposit then update") {
+    TEST_CASE("patch_deposit after update equals deposit then update" *
+              doctest::test_suite("scenario: scent_wave")) {
         // PEO-030's commit patch: the World speculates the update with no deposit
         // and patches the player's in. Random walls, a standing source and moving
         // deposits, 1-3 per update; the two paths must match bit for bit.

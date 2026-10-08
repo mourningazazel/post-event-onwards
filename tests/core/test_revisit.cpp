@@ -153,7 +153,8 @@ TEST_SUITE("revisit") {
         CHECK(horde.size() == 20);
     }
 
-    TEST_CASE("losses grow with the absence and level off after five years") {
+    TEST_CASE("losses grow with the absence and level off after five years" *
+              doctest::test_suite("scenario: revisit")) {
         constexpr int kDead = 2000;
         constexpr double kLongSurvivors = 0.15;
         constexpr double kPoints = 0.02;

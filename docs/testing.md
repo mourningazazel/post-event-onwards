@@ -38,6 +38,9 @@ skipped, never as passed.
   the sanitizers (a town fixture, a scenario, a golden run over hundreds of
   updates) goes in the scenario tier: put it in a `TEST_SUITE("scenario: <name>")`,
   or tag the case `* doctest::test_suite("scenario: <file>")`. Never skip it.
+- A case that builds a whole 100 km square, or samples many, runs in release builds
+  only (`#ifdef NDEBUG`): the release CI job and `verify.py --full` run it, every
+  Debug run skips it (Ryan, 2026-10-08).
 
 ## Running a subset
 

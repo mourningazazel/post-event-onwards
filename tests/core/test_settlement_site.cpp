@@ -272,7 +272,9 @@ TEST_SUITE("scenario: settlement sites") {
                 CHECK(same(all[i], parts[i]));
             }
         }
-        // And a whole square against its own cells, one site cell at a time.
+#ifdef NDEBUG
+        // And a whole square against its own cells, one site cell at a time. Release only
+        // (Ryan, 2026-10-08): the whole seed-1 square costs about 1.6 s under Debug+ASan.
         const auto whole = place_sites(kSeed, p, peo::test::seed1_square00());
         for (const auto& [sx, sy] : {std::pair<std::int64_t, std::int64_t>{0, 0}, {3, 5}, {7, 7}, {6, 1}}) {
             const auto one = place_sites(kSeed, p, generate_geography(kSeed, geo, site_cell_rect(p, sx, sy)));
@@ -286,6 +288,7 @@ TEST_SUITE("scenario: settlement sites") {
                 CHECK(same(*in_whole, one.front()));
             }
         }
+#endif
     }
 
     TEST_CASE("each site's water bits match its disc") {
@@ -299,6 +302,9 @@ TEST_SUITE("scenario: settlement sites") {
             CHECK(((s.water & kSiteLake) != 0) == disc_has(g, s, kCoverLake));
         }
     }
+#ifdef NDEBUG
+    // Release only (Ryan, 2026-10-08): it reads the whole seed-1 square, as above. The
+    // release job and verify --full run it in full.
     TEST_CASE("a square's sites, in order and inside their cells, pinned") {
         const SiteParams p;
         const GeographyRegion& g = peo::test::seed1_square00(); // shared with the geography case
@@ -337,7 +343,6 @@ TEST_SUITE("scenario: settlement sites") {
         CHECK(h == kPinned);
     }
 
-#ifdef NDEBUG
     // Release only, as scent_wave's large-stage cases are: 192 site cells, each generated
     // alone, cost about 2.5 s under GCC 13's sanitizers (scenario budget, D-033; CI run
     // 37707993190). The release job and verify --full run it in full.

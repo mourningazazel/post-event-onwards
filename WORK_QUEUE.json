@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 126,
+  "next_id": 127,
   "items": [
     {
       "id": "PEO-003",
@@ -1002,6 +1002,19 @@
       "order": 1017,
       "type": "chore",
       "title": "Notes move out of WORK_QUEUE.json into per-item files so reports never hit the queue cap",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-08",
+      "references": [],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-126",
+      "order": 1027,
+      "type": "chore",
+      "title": "Debug test runs skip the whole-map geography cases; 50 ms unit cases move to the scenario tier",
       "status": "Pending",
       "severity": "S2",
       "effort": "S",

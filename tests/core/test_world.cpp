@@ -177,7 +177,7 @@ TEST_SUITE("world") {
         }
     }
 
-    TEST_CASE("the pre-clock world is pinned") {
+    TEST_CASE("the pre-clock world is pinned" * doctest::test_suite("scenario: world")) {
         // PEO-040 recorded this before the world clock existed and the clock kept it
         // bit for bit. PEO-058 (D-031) re-pinned it on purpose: the Dead now move in
         // hashed slots every second, never share a tile and no longer carry a
@@ -652,7 +652,7 @@ TEST_SUITE("world") {
         }
     }
 
-    TEST_CASE("a vacated tile waits a second") {
+    TEST_CASE("a vacated tile waits a second" * doctest::test_suite("scenario: world")) {
         // D-031: a unit deciding at t still sees one that decided at t-1 on its old
         // tile, so a tile left at t can be landed on at t+2 at the earliest. Five
         // seeds on the small stage give dozens of follow-ups, some at exactly 2 s.
@@ -1068,7 +1068,8 @@ TEST_SUITE("world") {
         }
     }
 
-    TEST_CASE("a warm speculate copies only the tiles that changed") {
+    TEST_CASE("a warm speculate copies only the tiles that changed" *
+              doctest::test_suite("scenario: world")) {
         // PEO-078: on a 384x128 stage (48 tiles of 128x8) the first speculate copies the
         // field; once the World and the Speculation have swapped waves, a speculate
         // copies only what either wrote since, a few tiles round the player.
