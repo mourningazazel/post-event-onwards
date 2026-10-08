@@ -971,10 +971,10 @@
       "order": 848,
       "type": "feature",
       "title": "Dwarf Fortress grid tileset loader (ADR-0015)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S4",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
