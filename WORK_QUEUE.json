@@ -971,7 +971,7 @@
       "order": 848,
       "type": "feature",
       "title": "Dwarf Fortress grid tileset loader (ADR-0015)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S4",
       "effort": "M",
       "owner": "builder",
@@ -986,6 +986,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "rebased on PEO-117; take it first"
+        },
+        {
+          "at": "2026-10-08",
+          "by": "builder",
+          "text": "starting unit 1"
         }
       ],
       "references": [
