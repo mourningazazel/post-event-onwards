@@ -8,5 +8,10 @@
     "at": "2026-10-07",
     "by": "builder",
     "text": "S1: main red on rerun too (run 37731420471: unit 1098 ms, scenario 5520 ms on g++-13)"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "architect",
+    "text": "PEO-126 moved the whole-map geography cases to release only and 50 ms unit cases to the scenario tier; core tests (g++-13) went green on PR #61 (run 37829196352). Check whether anything here is left."
   }
 ]
