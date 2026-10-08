@@ -162,6 +162,14 @@ def license_self_test() -> list[str]:
     fetched = dict(texts, **{"self-test.cmake": "FetchContent_Declare(bar GIT_REPOSITORY x)"})
     if not any("uses bar" in e for e in license_errors(licensing, fetched, vendored)):
         problems.append("license self-test: an unlisted FetchContent_Declare(bar) was not refused")
+    # PEO-105: SPDX operators in any case; an id with '-or-' in it is one id, not two.
+    allowed = allowed_licenses(licensing)
+    for expr in ("MIT OR GPL-2.0", "Apache-2.0 AND MIT", "mit or Zlib", "BSD-3-Clause / GPL-2.0"):
+        if not license_ok(expr, allowed):
+            problems.append(f"license self-test: '{expr}' was refused")
+    for expr in ("GPL-2.0 AND MIT", "GPL-2.0-or-later", "GPL-2.0 OR LGPL-2.1"):
+        if license_ok(expr, allowed):
+            problems.append(f"license self-test: '{expr}' was not refused")
     return problems
 
 
