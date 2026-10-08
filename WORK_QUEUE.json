@@ -1212,9 +1212,15 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-07",
-      "notes": [],
+      "notes": [
+        {
+          "at": "2026-10-08",
+          "by": "architect",
+          "text": "briefed"
+        }
+      ],
       "references": [],
       "depends_on": []
     },
