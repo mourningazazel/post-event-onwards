@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 122,
+  "next_id": 123,
   "items": [
     {
       "id": "PEO-003",
@@ -892,10 +892,10 @@
       "order": 837,
       "type": "design",
       "title": "Towns fitted to geography (ADR-0018)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "notes": [
         {
@@ -907,6 +907,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "briefed: sites on the geography with sea and lake relation; split to PEO-112 (rivers and river-town share, needs PEO-111), PEO-113 (shore and river content, needs PEO-014), PEO-114 (L2 layout generator, XL), PEO-115 (layouts fitted to water)"
+        },
+        {
+          "at": "2026-10-07",
+          "by": "builder",
+          "text": "Done 9b04df7..ba051aa; report in queue commit. place_sites 0.6-1.6 ms/square. Bands case release-only (g++-13 scenario 5985 ms; reverted, relanded). Game unchanged. See PEO-122."
         }
       ],
       "references": [
@@ -1305,6 +1310,22 @@
       "depends_on": [
         "PEO-120"
       ]
+    },
+    {
+      "id": "PEO-122",
+      "order": 987,
+      "type": "perf",
+      "title": "g++-13 unit tier has no headroom: 1024-1063 ms of 1000, flaky red",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-07",
+      "notes": [],
+      "references": [
+        "D-033"
+      ],
+      "depends_on": []
     }
   ]
 }
