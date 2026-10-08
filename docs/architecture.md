@@ -39,6 +39,7 @@ today. The renderer reads only a committed world snapshot, so swapping it later 
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
                               ├─ noise.hpp  integer value noise, fbm, ridged (Q16)
                               ├─ geography.hpp  terrain_at, generate_geography / generate_square
+                              ├─ settlement_site.hpp  place_sites: one scored site per 12.5 km cell
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
@@ -95,6 +96,15 @@ from every square it touches. Lakes and seas carry their outlines as cell-corner
 (ADR-0018 point 2). `tests/geo/geo_dump.cpp` (`peo_geo`) draws squares for review. Not built:
 river courses (PEO-111), towns fitted to the map (PEO-096), keeping neighbouring squares
 resident; no stage reads the map yet.
+
+**Settlement sites** (ADR-0018 point 3, PEO-096; `settlement_site.hpp`). Site cells of 125 cells
+(12.5 km, an eighth of a square) tile the world from cell 0, each inside one square; a cell
+holds a site with a hashed chance (about one in three: long empty stretches). Its size is a
+hashed weighted draw (hamlet to city, 0.3 to 3.5 km across); 16 hashed candidate centres are
+scored in integers (bonuses for sea and lake inside the disc and for mountains in view, less the
+disc's relief and the centre's height, plus a hashed tie-breaker) and the best wins. A site reads
+only its own site cell of the region, so it is the same whatever region holds the cell. Not
+built: rivers and river towns (PEO-112), town layouts (PEO-114, PEO-115).
 
 ### The Dead (`dead.hpp`)
 
