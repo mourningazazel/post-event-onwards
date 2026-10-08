@@ -13,5 +13,10 @@
     "at": "2026-10-08",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "builder",
+    "text": "commits: 85f6d43 (per-building files + baseline split, no value moved: only headers differ, every row and map line unchanged and in order), c9a5e33 (siege.yml matrix A/B/C, fail-fast off, 20 min timeout, wall time on failure), 0531f01 (testing.md). tests: verify --frontend --full green; refusals --setup enclosed --check, --seeds 1 --write, --density heavy --building A --check all exit 2. CI: run 37846104838 on main, three jobs pass --check, peo_siege wall A 227 s, B 230 s, C 281 s (budget 600); siege-report-B artifact holds only building B. M1 (8 threads): old full --check 420 s before the split; --building A/B/C alone 358/414/467 s and full 848 s, each matching the baseline and each building's files byte-equal to the full run's, but these times are inflated by another process loading the machine (load avg 8-11) and are not a clean comparison. perf: on 8 threads one building's 12 runs are bounded by its slowest heavy runs, so locally a building is not a third of the full run; on the 4-vCPU CI runner it is (227-281 s vs 704 s). open: none."
   }
 ]
