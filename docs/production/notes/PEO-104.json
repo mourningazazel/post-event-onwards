@@ -8,5 +8,10 @@
     "at": "2026-10-08",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-08",
+    "by": "builder",
+    "text": "dad9e0e pushed, verify --full green; status line worst case 167 bytes (buffer 192), default stage turn 999 lines 74-78 chars. Manual steps and the pool vs --threads 1 numbers still to do: the desktop was in use for 2 h, so not driven."
   }
 ]
