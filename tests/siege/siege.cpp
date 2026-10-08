@@ -7,9 +7,12 @@
 //             [--density sparse,heavy] [--seeds N] [--threads N] [--out DIR]
 //             [--check | --write]
 //
-// --check compares a full run's files with the committed baseline (tests/siege/baseline)
-// and prints the first differing lines; --write replaces the baseline. Exit codes: 0 fine,
-// 1 a broken invariant or a --check difference, 2 bad arguments.
+// Each building's report and maps go to DIR/<B>/report.md and DIR/<B>/maps.txt (PEO-103),
+// so a building's files are the same whether it ran alone or with the others. --check
+// compares each building run with its committed baseline (tests/siege/baseline/<B>/) and
+// prints the first differing lines; --write replaces those. Both take --building but no
+// other filter, so a check is always a building's full share. Exit codes: 0 fine, 1 a
+// broken invariant or a --check difference, 2 bad arguments.
 
 #include "peo/core/world.hpp"
 
@@ -408,93 +411,17 @@ bool same_as(const std::string& fresh, const std::filesystem::path& base) {
     return shown == 0;
 }
 
-} // namespace
+// ---- the files: one report and one maps file per building ---------------------------
 
-int main(int argc, char** argv) {
-    std::vector<Building> buildings(kBuildings.begin(), kBuildings.end());
-    std::vector<Setup> setups(kSetups.begin(), kSetups.end());
-    std::vector<Density> densities(kDensities.begin(), kDensities.end());
-    int seeds = kDefaultSeeds;
-    std::size_t threads = std::max(1U, std::thread::hardware_concurrency());
-    std::filesystem::path out_dir = "siege-out";
-    bool check = false;
-    bool write = false;
-    bool filtered = false;
-    for (int i = 1; i < argc; ++i) {
-        const std::string_view a = argv[i];
-        const bool has_value = i + 1 < argc;
-        if (a == "--check") {
-            check = true;
-        } else if (a == "--write") {
-            write = true;
-        } else if (a == "--building" && has_value) {
-            filtered = true;
-            if (!pick(argv[++i], kBuildingNames, kBuildings, buildings)) {
-                return 2;
-            }
-        } else if (a == "--setup" && has_value) {
-            filtered = true;
-            if (!pick(argv[++i], kSetupNames, kSetups, setups)) {
-                return 2;
-            }
-        } else if (a == "--density" && has_value) {
-            filtered = true;
-            if (!pick(argv[++i], kDensityNames, kDensities, densities)) {
-                return 2;
-            }
-        } else if (a == "--seeds" && has_value) {
-            filtered = true;
-            seeds = std::max(1, std::atoi(argv[++i]));
-        } else if (a == "--threads" && has_value) {
-            threads = static_cast<std::size_t>(std::max(1, std::atoi(argv[++i])));
-        } else if (a == "--out" && has_value) {
-            out_dir = argv[++i];
-        } else {
-            std::fprintf(stderr,
-                         "usage: peo_siege [--building A,B,C] [--setup enclosed,one-opening,two-openings]\n"
-                         "                 [--density sparse,heavy] [--seeds N] [--threads N] [--out DIR]\n"
-                         "                 [--check | --write]\n");
-            return 2;
-        }
-    }
-    if ((check || write) && filtered) {
-        std::fprintf(stderr, "peo_siege: --check and --write take the full matrix (no filters)\n");
-        return 2;
-    }
-
-    std::vector<Config> configs;
-    for (const Building b : buildings) {
-        for (const Setup s : setups) {
-            for (const Density d : densities) {
-                configs.push_back({b, s, d});
-            }
-        }
-    }
-    const std::size_t runs = configs.size() * static_cast<std::size_t>(seeds);
-    std::vector<RunResult> results(runs);
-    peo::app::ThreadPool pool(threads);
-    // Each run owns its World; results land by index, so any order gives the same files.
-    pool.run(runs, [&](std::size_t k) {
-        const std::size_t c = k / static_cast<std::size_t>(seeds);
-        const auto s = static_cast<int>(k % static_cast<std::size_t>(seeds));
-        results[k] = run(configs[c], kSeedBase + static_cast<Seed>(s), s == 0);
-    });
-
-    int failures = 0;
-    for (std::size_t k = 0; k < runs; ++k) {
-        if (!results[k].failure.empty()) {
-            std::printf("INVARIANT BROKEN: %s, seed %zu: %s\n",
-                        config_name(configs[k / static_cast<std::size_t>(seeds)]).c_str(),
-                        k % static_cast<std::size_t>(seeds), results[k].failure.c_str());
-            ++failures;
-        }
-    }
+/// Building `building`'s report: its header, its rows of the Firsts table and its section. It reads
+/// only its configurations, so it is the same whether it ran alone or in the full matrix.
+std::string building_report(Building building, const std::vector<Config>& configs,
+                            const std::vector<RunResult>& results, int seeds) {
     const int per_hour = static_cast<int>(kSubstepsPerHour / kUpdatePeriodSubsteps);
-
-    // ---- the report ----
     std::ostringstream r;
-    r << "# Siege suite report (PEO-088, N022)\n\n"
-      << "The horde round three buildings for 48 game hours while the player waits; calm wind. Each value is "
+    r << "# Siege suite report (PEO-088, N022): building "
+      << kBuildingTitles[static_cast<std::size_t>(building)] << "\n\n"
+      << "The horde round the building for 48 game hours while the player waits; calm wind. Each value is "
          "the "
          "mean over "
       << seeds << " seed" << (seeds == 1 ? "" : "s") << ", with the range in brackets when the seeds differ. "
@@ -506,6 +433,9 @@ int main(int argc, char** argv) {
       << "| building | setup | density | Dead | first inside | first on or beside the player |\n"
       << "|---|---|---|---|---|---|\n";
     for (std::size_t c = 0; c < configs.size(); ++c) {
+        if (configs[c].building != building) {
+            continue;
+        }
         std::vector<std::optional<int>> in;
         std::vector<std::optional<int>> contact;
         for (int s = 0; s < seeds; ++s) {
@@ -528,10 +458,11 @@ int main(int argc, char** argv) {
         }
         return v;
     };
+    r << "\n## Building " << kBuildingTitles[static_cast<std::size_t>(building)] << "\n";
     for (std::size_t c = 0; c < configs.size(); ++c) {
         const Config& cf = configs[c];
-        if (c == 0 || cf.building != configs[c - 1].building) {
-            r << "\n## Building " << kBuildingTitles[static_cast<std::size_t>(cf.building)] << "\n";
+        if (cf.building != building) {
+            continue;
         }
         r << "\n### " << kSetupNames[static_cast<std::size_t>(cf.setup)] << ", "
           << kDensityNames[static_cast<std::size_t>(cf.density)] << "\n\n";
@@ -583,37 +514,137 @@ int main(int argc, char** argv) {
             r << "\n";
         }
     }
+    return r.str();
+}
 
-    // ---- the maps ----
+/// Building `building`'s maps: seed kSeedBase of each of its configurations at every checkpoint.
+std::string building_maps(Building building, const std::vector<Config>& configs,
+                          const std::vector<RunResult>& results, int seeds) {
     std::ostringstream m;
-    m << "Siege suite maps (PEO-088): seed " << kSeedBase << " of every configuration, " << kMapSide << " x "
-      << kMapSide
+    m << "Siege suite maps (PEO-088): seed " << kSeedBase << " of every configuration of building "
+      << kBuildingNames[static_cast<std::size_t>(building)] << ", " << kMapSide << " x " << kMapSide
       << " cells round the building. # wall, . floor or ground, d one of the Dead, @ the player, + both.\n";
     for (std::size_t c = 0; c < configs.size(); ++c) {
+        if (configs[c].building != building) {
+            continue;
+        }
         const RunResult& rr = results[c * static_cast<std::size_t>(seeds)];
         for (std::size_t row = 0; row < rr.maps.size(); ++row) {
             m << "\n" << config_name(configs[c]) << ", " << kCheckpointHours[row] << " h\n" << rr.maps[row];
         }
     }
+    return m.str();
+}
 
+} // namespace
+
+int main(int argc, char** argv) {
+    std::vector<Building> buildings(kBuildings.begin(), kBuildings.end());
+    std::vector<Setup> setups(kSetups.begin(), kSetups.end());
+    std::vector<Density> densities(kDensities.begin(), kDensities.end());
+    int seeds = kDefaultSeeds;
+    std::size_t threads = std::max(1U, std::thread::hardware_concurrency());
+    std::filesystem::path out_dir = "siege-out";
+    bool check = false;
+    bool write = false;
+    /// --setup, --density or --seeds: a run that is less than a building's full share.
+    bool filtered = false;
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view a = argv[i];
+        const bool has_value = i + 1 < argc;
+        if (a == "--check") {
+            check = true;
+        } else if (a == "--write") {
+            write = true;
+        } else if (a == "--building" && has_value) {
+            if (!pick(argv[++i], kBuildingNames, kBuildings, buildings)) {
+                return 2;
+            }
+        } else if (a == "--setup" && has_value) {
+            filtered = true;
+            if (!pick(argv[++i], kSetupNames, kSetups, setups)) {
+                return 2;
+            }
+        } else if (a == "--density" && has_value) {
+            filtered = true;
+            if (!pick(argv[++i], kDensityNames, kDensities, densities)) {
+                return 2;
+            }
+        } else if (a == "--seeds" && has_value) {
+            filtered = true;
+            seeds = std::max(1, std::atoi(argv[++i]));
+        } else if (a == "--threads" && has_value) {
+            threads = static_cast<std::size_t>(std::max(1, std::atoi(argv[++i])));
+        } else if (a == "--out" && has_value) {
+            out_dir = argv[++i];
+        } else {
+            std::fprintf(stderr,
+                         "usage: peo_siege [--building A,B,C] [--setup enclosed,one-opening,two-openings]\n"
+                         "                 [--density sparse,heavy] [--seeds N] [--threads N] [--out DIR]\n"
+                         "                 [--check | --write]\n");
+            return 2;
+        }
+    }
+    if ((check || write) && filtered) {
+        std::fprintf(
+            stderr,
+            "peo_siege: --check and --write take whole buildings (--building only, no other filter)\n");
+        return 2;
+    }
+
+    std::vector<Config> configs;
+    for (const Building b : buildings) {
+        for (const Setup s : setups) {
+            for (const Density d : densities) {
+                configs.push_back({b, s, d});
+            }
+        }
+    }
+    const std::size_t runs = configs.size() * static_cast<std::size_t>(seeds);
+    std::vector<RunResult> results(runs);
+    peo::app::ThreadPool pool(threads);
+    // Each run owns its World; results land by index, so any order gives the same files.
+    pool.run(runs, [&](std::size_t k) {
+        const std::size_t c = k / static_cast<std::size_t>(seeds);
+        const auto s = static_cast<int>(k % static_cast<std::size_t>(seeds));
+        results[k] = run(configs[c], kSeedBase + static_cast<Seed>(s), s == 0);
+    });
+
+    int failures = 0;
+    for (std::size_t k = 0; k < runs; ++k) {
+        if (!results[k].failure.empty()) {
+            std::printf("INVARIANT BROKEN: %s, seed %zu: %s\n",
+                        config_name(configs[k / static_cast<std::size_t>(seeds)]).c_str(),
+                        k % static_cast<std::size_t>(seeds), results[k].failure.c_str());
+            ++failures;
+        }
+    }
+    // Each building's files go to <dir>/<B>/; --check and --write touch only the buildings run.
     const std::filesystem::path base = PEO_SIEGE_BASELINE_DIR;
-    const std::string report = r.str();
-    const std::string maps = m.str();
-    std::filesystem::create_directories(out_dir);
-    std::ofstream(out_dir / "report.md", std::ios::binary) << report;
-    std::ofstream(out_dir / "maps.txt", std::ios::binary) << maps;
-    std::printf("peo_siege: %zu runs, report in %s\n", runs, (out_dir / "report.md").string().c_str());
+    bool differ = false;
+    for (const Building building : buildings) {
+        const char* name = kBuildingNames[static_cast<std::size_t>(building)];
+        const std::string report = building_report(building, configs, results, seeds);
+        const std::string maps = building_maps(building, configs, results, seeds);
+        std::filesystem::create_directories(out_dir / name);
+        std::ofstream(out_dir / name / "report.md", std::ios::binary) << report;
+        std::ofstream(out_dir / name / "maps.txt", std::ios::binary) << maps;
+        if (write) {
+            std::filesystem::create_directories(base / name);
+            std::ofstream(base / name / "report.md", std::ios::binary) << report;
+            std::ofstream(base / name / "maps.txt", std::ios::binary) << maps;
+        }
+        if (check) {
+            const bool a = same_as(report, base / name / "report.md");
+            const bool m = same_as(maps, base / name / "maps.txt");
+            differ = differ || !(a && m);
+        }
+    }
+    std::printf("peo_siege: %zu runs, reports in %s/<building>/\n", runs, out_dir.string().c_str());
     if (write) {
-        std::filesystem::create_directories(base);
-        std::ofstream(base / "report.md", std::ios::binary) << report;
-        std::ofstream(base / "maps.txt", std::ios::binary) << maps;
         std::printf("peo_siege: baseline written to %s\n", base.string().c_str());
     }
-    bool differ = false;
     if (check) {
-        const bool a = same_as(report, base / "report.md");
-        const bool b = same_as(maps, base / "maps.txt");
-        differ = !(a && b);
         std::printf("peo_siege --check: %s\n", differ ? "DIFFERS from the baseline" : "matches the baseline");
     }
     return failures > 0 || differ ? 1 : 0;
