@@ -1292,7 +1292,7 @@
       "type": "perf",
       "title": "g++-13 unit tier has no headroom: 1024-1063 ms of 1000, flaky red",
       "status": "Pending",
-      "severity": "S2",
+      "severity": "S1",
       "effort": "S",
       "owner": "architect",
       "created": "2026-10-07",
@@ -1301,6 +1301,11 @@
           "at": "2026-10-08",
           "by": "architect",
           "text": "also: g++-13 scenario tier 4.91 s of 5 s on run 37708805376 attempt 1 (2.94 s on attempt 2); plan headroom for both tiers. Levers: geography share-band stride 10->20, the site any-region case's four one-cell regions."
+        },
+        {
+          "at": "2026-10-07",
+          "by": "builder",
+          "text": "S1: main red on rerun too (run 37731420471: unit 1098 ms, scenario 5520 ms on g++-13)"
         }
       ],
       "references": [
