@@ -966,10 +966,10 @@
       "order": 846,
       "type": "feature",
       "title": "Player-centred scrolling view; stages bigger than the window",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-06",
       "notes": [
         {
@@ -981,6 +981,11 @@
           "at": "2026-10-07",
           "by": "builder",
           "text": "starting unit 1"
+        },
+        {
+          "at": "2026-10-07",
+          "by": "builder",
+          "text": "commits eb56afa d29db4f c2fba52; manual all pass (@ centred every shot, 1024x1024 33 turns 0 miss); open: Hyprland tiling ignores min size (609 px, HUD clipped). Report in queue commit."
         }
       ],
       "references": [
