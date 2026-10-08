@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "geo_fixture.hpp"
+
 using namespace peo::core;
 
 namespace {
@@ -287,7 +289,7 @@ TEST_SUITE("geography") {
 TEST_SUITE("scenario: geography") {
     TEST_CASE("a whole square fits in 8 MB and its bodies match its cover") {
         constexpr std::size_t kMaxBytes = 8U << 20U;
-        const GeographyRegion g = generate_square(kSeed, GeographyParams{}, SquareCoord{0, 0});
+        const GeographyRegion& g = peo::test::seed1_square00(); // shared with the site golden
         MESSAGE("square (0,0): " << g.bytes() << " bytes, " << g.bodies.size() << " bodies");
         CHECK(g.bytes() <= kMaxBytes);
         check_bodies(g);
