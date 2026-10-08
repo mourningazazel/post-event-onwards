@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-09-29",
+    "by": "architect",
+    "text": "D-025 (open) asks whether rot masks by scaling instead of 1:1 subtraction; the pathfinding review measured subtraction zeroing every cell past about 12 cells. Fold the answer into the draw formula before starting. PEO-051 may supply the section grid."
+  },
+  {
+    "at": "2026-09-30",
+    "by": "architect",
+    "text": "D-025 answered: A. In the geodesic field (D-024, PEO-030) values are log strength, so a Dead subtracts rot x a named scale from the value it reads; it dulls the pull and never zeroes a distant trail. Replaces D-012's 1:1 subtraction. Build on ScentWave, after PEO-030."
+  }
+]

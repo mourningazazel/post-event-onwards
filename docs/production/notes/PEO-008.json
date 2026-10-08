@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-09-30",
+    "by": "architect",
+    "text": "Item-system review (2026-09-29): bake resolved archetypes and intern variants (archetype, modifier set, brand) into a table at load, so generation never deep-merges at runtime; add a golden test that it does not."
+  }
+]

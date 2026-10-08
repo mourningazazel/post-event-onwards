@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-09-28",
+    "by": "architect",
+    "text": "Scope folds into shared occupancy (ADR-0013): contests happen on and between shared tiles, not only swaps."
+  },
+  {
+    "at": "2026-10-04",
+    "by": "architect",
+    "text": "D-043 (2026-10-04): a Dead thrown by a trip may land on the player's tile; that trips the player too."
+  }
+]

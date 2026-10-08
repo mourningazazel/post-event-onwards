@@ -85,8 +85,9 @@ into `decisions.md` with the chosen option and reason, removes it from
 
 ## Handoff formats
 
-Both survive session resets: the report is a note on the item, the brief is a
-file beside it.
+Both survive session resets: the report is a note in
+`docs/production/notes/<id>.json`, the brief is a file beside it; `show <id>`
+reads both.
 
 **Brief** (Architect → Builder), `docs/production/briefs/<id>.md`, written
 with `work_queue.py brief <id> --file <json>` and read back by `show <id>`.

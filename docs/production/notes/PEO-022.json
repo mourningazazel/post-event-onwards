@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-04",
+    "by": "architect",
+    "text": "D-043 (2026-10-04): the player's tile is never chosen by a Dead, but a trip may throw one onto it, which trips the player."
+  }
+]
