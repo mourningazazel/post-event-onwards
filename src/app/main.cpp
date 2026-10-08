@@ -28,6 +28,7 @@
 #include <system_error>
 #include <thread>
 
+#include "camera.hpp"
 #include "thread_pool.hpp"
 #ifdef PEO_HAVE_GPU
 #include "gpu_field.hpp"
@@ -36,6 +37,11 @@
 namespace {
 
 using namespace peo::core;
+using peo::app::layout_view;
+using peo::app::View;
+using peo::app::view_origin;
+using peo::app::view_to_screen;
+using peo::app::ViewLayout;
 
 constexpr int kCell = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE; // 8 px glyphs
 /// The seed with no argument, or with one that is not a seed (PEO-075).
@@ -83,14 +89,42 @@ std::size_t default_threads() noexcept {
     return hardware > 1 ? hardware - 1 : 1;
 }
 
-WorldParams game_params() noexcept {
+/// The game's stage (PEO-117): bigger than the window, which shows a view of it centred
+/// on the player. `--stage WxH` chooses another, each side in [kMinGameStageSide,
+/// kMaxGameStageSide] (the PEO-083 ceiling).
+constexpr int kGameStageWidth = 200;
+constexpr int kGameStageHeight = 120;
+constexpr int kMinGameStageSide = 16;
+constexpr int kMaxGameStageSide = 2048;
+/// The Dead on the old 80x45 default stage; other stages keep that density, so
+/// `--stage 80x45` plays as the game did before PEO-117.
+constexpr int kDefaultStageDead = 40;
+constexpr int kDensityStageWidth = 80;
+constexpr int kDensityStageHeight = 45;
+
+WorldParams game_params(int stage_width, int stage_height) noexcept {
     WorldParams params;
     params.wind_max = kGameWindMax;
     params.scent.gust = kGameWindGust;
+    params.stage_width = stage_width;
+    params.stage_height = stage_height;
+    // Worst case 40 x 2048 x 2048 = 1.7e8 (46,603 Dead; World clamps to the open cells).
+    const auto dead = std::int64_t{kDefaultStageDead} * stage_width * stage_height /
+                      (std::int64_t{kDensityStageWidth} * kDensityStageHeight);
+    params.initial_dead = static_cast<int>(dead);
     return params;
 }
 constexpr int kScale = 2;
 constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
+/// The HUD's height in window pixels.
+constexpr int kHudPx = kHudRows * kCell * kScale;
+/// The window opens on this many map cells (today's size on the old default stage) and
+/// cannot shrink below the minimum: the HUD lines are written to fit 80 columns, and 21
+/// map rows (PEO-117's brief) still show ten cells either side of the player.
+constexpr int kDefaultViewCols = 80;
+constexpr int kDefaultViewRows = 45;
+constexpr int kMinViewCols = 80;
+constexpr int kMinViewRows = 21;
 /// SDL_AppIterate pacing. Nothing changes between key presses, so sleep until an
 /// event arrives ("waitevent", SDL 3.4+). Older SDL parses that string as 0 and
 /// would spin, so there it gets a frame cap instead. The SDL fetched from source
@@ -192,6 +226,11 @@ struct App {
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
+    /// The map layer's cell in window pixels: equal to the HUD's until zoom (D-050), which
+    /// changes only this.
+    int map_cell_px = kCell * kScale;
+    /// One map row of glyphs, reused across draws; grown only when the view widens.
+    std::string row;
     /// R toggles it (D-015): steps take kRunStepSubsteps. Kept across stages.
     bool running = false;
     /// Redraw only when something changed (a turn, a view toggle, an expose).
@@ -232,36 +271,63 @@ void draw(App& app) {
     const Stage& stage = world.stage();
     SDL_SetRenderDrawColor(app.renderer, 8, 8, 12, 255);
     SDL_RenderClear(app.renderer);
+    // The view (PEO-117): whole map cells of the window below the HUD, centred on the
+    // player. Laid out in window pixels, drawn at the render scale.
+    int out_w = 0;
+    int out_h = 0;
+    SDL_GetCurrentRenderOutputSize(app.renderer, &out_w, &out_h);
     SDL_SetRenderScale(app.renderer, kScale, kScale);
+    const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, kHudPx);
+    const View view = layout.view;
+    const Vec2i origin = view_origin(world.player(), view);
+    const float cell = static_cast<float>(app.map_cell_px) / kScale;
+    const float left = static_cast<float>(layout.left_px) / kScale;
+    const float top = static_cast<float>(layout.top_px) / kScale + static_cast<float>(kHudRows * kCell);
+    if (app.row.size() < static_cast<std::size_t>(view.cols) + 1) {
+        app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
+    }
+    std::string& row = app.row;
+    const auto in_stage = [&](int x, int y) {
+        return x >= 0 && y >= 0 && x < stage.spec.width && y < stage.spec.height;
+    };
 
-    const int w = stage.spec.width;
-    const int h = stage.spec.height;
-    std::string row(static_cast<std::size_t>(w), ' ');
-
-    // Map + optional scent heat. The player's @ is drawn last and sits on top.
+    // Map + optional scent heat over the view's in-stage cells, so the bands read relative
+    // to what is on screen; cells beyond the stage stay dark. @ is drawn last, on top.
     const ScentWave& scent = world.scent();
     std::int32_t max_scent = 0;
-    for (int y = 0; app.show_scent && y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            max_scent = std::max(max_scent, scent.sample({x, y}));
+    for (int vy = 0; app.show_scent && vy < view.rows; ++vy) {
+        for (int vx = 0; vx < view.cols; ++vx) {
+            if (in_stage(origin.x + vx, origin.y + vy)) {
+                max_scent = std::max(max_scent, scent.sample({origin.x + vx, origin.y + vy}));
+            }
         }
     }
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            char c = stage.blocked.at(x, y) ? '#' : '.';
-            if (app.show_scent && !stage.blocked.at(x, y)) {
-                c = scent_glyph(scent.sample({x, y}), max_scent);
+    SDL_SetRenderDrawColor(app.renderer, 90, 90, 100, 255);
+    for (int vy = 0; vy < view.rows; ++vy) {
+        const int y = origin.y + vy;
+        for (int vx = 0; vx < view.cols; ++vx) {
+            const int x = origin.x + vx;
+            char c = ' ';
+            if (in_stage(x, y)) {
+                c = stage.blocked.at(x, y) ? '#' : '.';
+                if (app.show_scent && !stage.blocked.at(x, y)) {
+                    c = scent_glyph(scent.sample({x, y}), max_scent);
+                }
             }
-            row[static_cast<std::size_t>(x)] = c;
+            row[static_cast<std::size_t>(vx)] = c;
         }
-        SDL_SetRenderDrawColor(app.renderer, 90, 90, 100, 255);
-        SDL_RenderDebugText(app.renderer, 0.0F, static_cast<float>((y + kHudRows) * kCell), row.c_str());
+        row[static_cast<std::size_t>(view.cols)] = '\0';
+        SDL_RenderDebugText(app.renderer, left, top + static_cast<float>(vy) * cell, row.c_str());
     }
 
     auto glyph = [&](Vec2i p, const char* s, Uint8 r, Uint8 g, Uint8 b) {
+        const std::optional<Vec2i> at = view_to_screen(p, origin, view);
+        if (!at) {
+            return;
+        }
         SDL_SetRenderDrawColor(app.renderer, r, g, b, 255);
-        SDL_RenderDebugText(app.renderer, static_cast<float>(p.x * kCell),
-                            static_cast<float>((p.y + kHudRows) * kCell), s);
+        SDL_RenderDebugText(app.renderer, left + static_cast<float>(at->x) * cell,
+                            top + static_cast<float>(at->y) * cell, s);
     };
     glyph(stage.exit, ">", 120, 200, 255);
     for (const Dead& d : world.horde()) {
@@ -269,7 +335,7 @@ void draw(App& app) {
     }
     glyph(world.player(), "@", 255, 255, 255);
 
-    // Two lines, each under the default stage's 80 columns. The wind is named by where
+    // Two lines, each under the window's minimum 80 columns (kMinViewCols). The wind is named by where
     // it blows to, so "to E" is downwind east.
     const Wind wind = world.wind();
     const auto point = static_cast<std::size_t>(((wind.toward_degrees + kCompassStep / 2) / kCompassStep) %
@@ -353,6 +419,33 @@ std::size_t parse_count(const char* option, const char* arg, std::size_t fallbac
     return count;
 }
 
+/// `--stage WxH` (PEO-117): two whole numbers around an 'x', each in [kMinGameStageSide,
+/// kMaxGameStageSide]. Anything else is warned about and keeps the game's stage.
+std::optional<Vec2i> parse_stage(const char* arg) {
+    const std::string_view text(arg);
+    const std::size_t cross = text.find('x');
+    const auto side = [](std::string_view part) -> std::optional<int> {
+        int value = 0;
+        const auto [end, error] = std::from_chars(part.data(), part.data() + part.size(), value);
+        if (part.empty() || error != std::errc{} || end != part.data() + part.size() ||
+            value < kMinGameStageSide || value > kMaxGameStageSide) {
+            return std::nullopt;
+        }
+        return value;
+    };
+    if (cross != std::string_view::npos) {
+        const std::optional<int> w = side(text.substr(0, cross));
+        const std::optional<int> h = side(text.substr(cross + 1));
+        if (w && h) {
+            return Vec2i{*w, *h};
+        }
+    }
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "--stage \"%s\" is not WxH with each side from %d to %d; keeping %dx%d", arg,
+                kMinGameStageSide, kMaxGameStageSide, kGameStageWidth, kGameStageHeight);
+    return std::nullopt;
+}
+
 /// `arg` as a seed: decimal digits only, in range. Anything else (letters, trailing
 /// characters, a sign, too many digits) is warned about and starts on kDefaultSeed, so a
 /// typo opens a game instead of ending the program.
@@ -376,8 +469,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     auto* app = new App();
     *appstate = app;
     // Arguments: an optional seed, and anywhere `--threads N` (PEO-080),
-    // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081).
+    // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081), `--stage WxH` (PEO-117).
     Seed seed = kDefaultSeed;
+    Vec2i stage_size{kGameStageWidth, kGameStageHeight};
     std::size_t threads = default_threads();
     bool gpu_compute = true;
     std::size_t gpu_min_cells = kGpuFieldMinCells;
@@ -395,6 +489,15 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
             }
             continue;
         }
+        if (arg == "--stage") {
+            if (i + 1 < argc) {
+                stage_size = parse_stage(argv[i + 1]).value_or(stage_size);
+                ++i;
+            } else {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--stage needs WxH");
+            }
+            continue;
+        }
         if (arg == "--no-gpu-compute") {
             gpu_compute = false;
             continue;
@@ -407,7 +510,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     }
     SDL_Log("seed %llu, %zu thread(s) for the simulation", static_cast<unsigned long long>(seed), threads);
     app->pool.emplace(threads);
-    app->world.emplace(seed, game_params());
+    const WorldParams params = game_params(stage_size.x, stage_size.y);
+    SDL_Log("stage %dx%d with %d Dead", params.stage_width, params.stage_height, params.initial_dead);
+    app->world.emplace(seed, params);
     app->world->set_executor(&*app->pool);
 #ifdef PEO_HAVE_GPU
     // A device only when the GPU could run on this stage; without one the CPU runs, as
@@ -435,13 +540,16 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
 #endif
     app->speculator.emplace(*app->world);
     app->speculator->request();
-    const StageSpec& spec = app->world->stage().spec;
-    const int win_w = spec.width * kCell * kScale;
-    const int win_h = (spec.height + kHudRows) * kCell * kScale;
-    if (!SDL_CreateWindowAndRenderer("Post-Event Onwards", win_w, win_h, 0, &app->window, &app->renderer)) {
+    // The window shows a view of the stage (PEO-117), so its size no longer comes from it.
+    const int win_w = kDefaultViewCols * app->map_cell_px;
+    const int win_h = kDefaultViewRows * app->map_cell_px + kHudPx;
+    if (!SDL_CreateWindowAndRenderer("Post-Event Onwards", win_w, win_h, SDL_WINDOW_RESIZABLE, &app->window,
+                                     &app->renderer)) {
         SDL_Log("CreateWindowAndRenderer failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    SDL_SetWindowMinimumSize(app->window, kMinViewCols * app->map_cell_px,
+                             kMinViewRows * app->map_cell_px + kHudPx);
     app->wake_event = SDL_RegisterEvents(1);
     const bool wait_event = SDL_GetVersion() >= kWaitEventMinVersion;
     SDL_SetHint(SDL_HINT_MAIN_CALLBACK_RATE, wait_event ? "waitevent" : kFallbackIterateHz);
@@ -455,6 +563,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         return SDL_APP_SUCCESS;
     case SDL_EVENT_WINDOW_EXPOSED:
     case SDL_EVENT_WINDOW_RESIZED:
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: // the view is laid out in output pixels
         app->dirty = true;
         break;
     case SDL_EVENT_KEY_DOWN: {
