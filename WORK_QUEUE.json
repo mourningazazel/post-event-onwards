@@ -837,6 +837,11 @@
           "at": "2026-10-06",
           "by": "architect",
           "text": "briefed (D-046 A): CDIC dictionary + resolve(); blocked on PEO-008 and PEO-116 too (tool cannot add depends_on)"
+        },
+        {
+          "at": "2026-10-08",
+          "by": "builder",
+          "text": "skipped 2026-10-08: PEO-008 and PEO-116 still Pending"
         }
       ],
       "references": [
