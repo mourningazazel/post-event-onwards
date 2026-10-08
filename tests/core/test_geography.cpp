@@ -289,8 +289,8 @@ TEST_SUITE("geography") {
     }
 }
 
-TEST_SUITE("scenario: geography") {
 #ifdef NDEBUG
+TEST_SUITE("scenario: geography") {
     // Release only (Ryan, 2026-10-08): a whole 100 km square and 48 sampled squares cost
     // about 2.5 s of Debug+ASan time on every push. The release job and verify --full
     // run them in full.
@@ -356,5 +356,5 @@ TEST_SUITE("scenario: geography") {
         CHECK(dry_squares > 0);
         CHECK(coastal_squares > 0);
     }
-#endif
 }
+#endif
