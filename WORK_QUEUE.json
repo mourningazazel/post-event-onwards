@@ -754,23 +754,6 @@
       ]
     },
     {
-      "id": "PEO-103",
-      "order": 857,
-      "type": "perf",
-      "title": "Siege suite over its 10 min CI budget after ADR-0016 doubled updates per game hour",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-05",
-      "references": [
-        "PEO-090",
-        "PEO-082",
-        "PEO-088"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-104",
       "order": 867,
       "type": "feature",
