@@ -13,5 +13,10 @@
     "at": "2026-10-09",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-09",
+    "by": "builder",
+    "text": "pushed 2b809e3 (sight.hpp/.cpp + 10 tests), 0fad189 (draw only seen cells), 6877d99 (docs); verify --frontend --full green. Unit sight cases 11 ms under gcc sanitizers. perf (M1 headless-release): open 512x512 685 us, generated 512x512 61 us median per compute. Row stack reserve never outgrown (sides 200/512/2048, densities 0.10-0.18, 400 origins each). Manual in-game steps still to do: desktop in use."
   }
 ]
