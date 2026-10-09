@@ -42,6 +42,7 @@ The window shows a player-centred view (`src/app/camera.hpp`, PEO-117) over a st
                               ├─ noise.hpp  integer value noise, fbm, ridged (Q16)
                               ├─ geography.hpp  terrain_at, generate_geography / generate_square
                               ├─ settlement_site.hpp  place_sites: one scored site per 12.5 km cell
+                              ├─ sight.hpp  SightField: symmetric shadowcasting within the optical range (PEO-119)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
