@@ -758,10 +758,10 @@
       "order": 867,
       "type": "feature",
       "title": "Status line shows the last speculate time (ms) beside spec:hit/miss, so the pool and --threads 1 can be compared in game",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-06",
       "references": [
         "PEO-080",
