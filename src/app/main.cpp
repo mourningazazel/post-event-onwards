@@ -6,6 +6,7 @@
 // a timer. While the player thinks, one worker thread speculates the next turn
 // (PEO-007); input commits it. Core spawns no threads: this file owns the only one.
 
+#include "peo/core/sight.hpp"
 #include "peo/core/turn_input.hpp"
 #include "peo/core/world.hpp"
 
@@ -279,6 +280,13 @@ struct App {
     /// A registered SDL event type the wake timer pushes, and the pending timer (0: none).
     Uint32 wake_event = 0;
     SDL_TimerID wake_timer = 0;
+    /// What the player can see (PEO-119), and the player cell and stage it was computed for:
+    /// draw() recomputes it only when either changed, never on a pure redraw.
+    SightField sight;
+    Vec2i sight_player{};
+    std::uint32_t sight_stage = 0;
+    /// Set by a stage load: the new stage needs sight even if its entry is the old cell.
+    bool sight_stale = true;
 };
 
 /// The HUD's height in window pixels.
@@ -367,17 +375,24 @@ void draw(App& app) {
         app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
     }
     std::string& row = app.row;
-    const auto in_stage = [&](int x, int y) {
-        return x >= 0 && y >= 0 && x < stage.spec.width && y < stage.spec.height;
-    };
+    // Sight (PEO-119) once per move or stage, not per redraw.
+    if (app.sight_stale || world.player() != app.sight_player || world.stage_index() != app.sight_stage) {
+        app.sight.compute(stage.blocked, world.player());
+        app.sight_player = world.player();
+        app.sight_stage = world.stage_index();
+        app.sight_stale = false;
+    }
+    // The one per-cell decision: drawn only when seen now (false off the stage). Map memory
+    // (D-051 A) adds its dimmed state here.
+    const auto shown = [&](Vec2i p) { return app.sight.seen(p); };
 
-    // Map + optional scent heat over the view's in-stage cells, so the bands read relative
-    // to what is on screen; cells beyond the stage stay dark. @ is drawn last, on top.
+    // Map + optional scent heat over the view's seen cells, so the bands read relative to
+    // what is visible; unseen cells and those beyond the stage stay dark. @ is drawn last.
     const ScentWave& scent = world.scent();
     std::int32_t max_scent = 0;
     for (int vy = 0; app.show_scent && vy < view.rows; ++vy) {
         for (int vx = 0; vx < view.cols; ++vx) {
-            if (in_stage(origin.x + vx, origin.y + vy)) {
+            if (shown({origin.x + vx, origin.y + vy})) {
                 max_scent = std::max(max_scent, scent.sample({origin.x + vx, origin.y + vy}));
             }
         }
@@ -387,7 +402,7 @@ void draw(App& app) {
         for (int vx = 0; vx < view.cols; ++vx) {
             const int x = origin.x + vx;
             char c = ' ';
-            if (in_stage(x, y)) {
+            if (shown({x, y})) {
                 c = stage.blocked.at(x, y) ? '#' : '.';
                 if (app.show_scent && !stage.blocked.at(x, y)) {
                     c = scent_glyph(scent.sample({x, y}), max_scent);
@@ -407,11 +422,15 @@ void draw(App& app) {
         draw_text(app, left + static_cast<float>(at->x) * cell, top + static_cast<float>(at->y) * cell, cell,
                   s, r, g, b);
     };
-    glyph(stage.exit, ">", 120, 200, 255);
-    for (const Dead& d : world.horde()) {
-        glyph(d.pos, "d", 220, 60, 60);
+    if (shown(stage.exit)) {
+        glyph(stage.exit, ">", 120, 200, 255);
     }
-    glyph(world.player(), "@", 255, 255, 255);
+    for (const Dead& d : world.horde()) {
+        if (shown(d.pos)) {
+            glyph(d.pos, "d", 220, 60, 60);
+        }
+    }
+    glyph(world.player(), "@", 255, 255, 255); // always: the origin of sight
 
     // Two lines, each under the window's minimum 80 columns (kMinViewCols). The wind is named by where
     // it blows to, so "to E" is downwind east.
@@ -731,6 +750,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             app->input.clear();               // taps were meant for the old stage
             (void)app->speculator->quiesce(); // the speculation is for the old stage
             app->world->load_stage(app->world->stage_index() + 1);
+            app->sight_stale = true;
             app->speculator->request();
             app->dirty = true;
         } else if (const std::optional<Action> action = action_for(key, app->running)) {
