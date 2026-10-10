@@ -3,5 +3,10 @@
     "at": "2026-09-30",
     "by": "architect",
     "text": "Hand to the Builder once PEO-070 lands (kept on architect so the Builder's ready list stays accurate)."
+  },
+  {
+    "at": "2026-10-10",
+    "by": "architect",
+    "text": "PEO-104 in-game speculate ms on the M1 (default stage 200x120, seed 1, 266 Dead, pool 7 threads): release stage 0 pool 0.48-3.7 ms, --threads 1 2.0-9.4 ms; stage 1 pool 1.06-3.2, t1 2.4-6.4. That is 2-10x the architecture.md 28-277 us figure for 200x120/5000 Dead, which predates wind gusts (PEO-087); reconcile or replace it when recording the per-axis costs."
   }
 ]

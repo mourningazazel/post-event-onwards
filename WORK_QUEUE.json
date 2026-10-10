@@ -754,23 +754,6 @@
       ]
     },
     {
-      "id": "PEO-104",
-      "order": 867,
-      "type": "feature",
-      "title": "Status line shows the last speculate time (ms) beside spec:hit/miss, so the pool and --threads 1 can be compared in game",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-06",
-      "references": [
-        "PEO-080",
-        "PEO-101",
-        "docs/domains/time.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-106",
       "order": 887,
       "type": "chore",
