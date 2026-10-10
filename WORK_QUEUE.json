@@ -858,19 +858,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-119",
-      "order": 957,
-      "type": "design",
-      "title": "Sight: 500 ft optical range in core (D-049)",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-07",
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-120",
       "order": 967,
       "type": "feature",
@@ -881,9 +868,7 @@
       "owner": "builder",
       "created": "2026-10-07",
       "references": [],
-      "depends_on": [
-        "PEO-119"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-121",
@@ -943,9 +928,7 @@
       "references": [
         "docs/domains/presentation.md"
       ],
-      "depends_on": [
-        "PEO-119"
-      ]
+      "depends_on": []
     }
   ]
 }
