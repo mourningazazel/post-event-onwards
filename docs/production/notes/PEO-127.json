@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-10",
+    "by": "user",
+    "text": "Ryan's design (2026-10-10), do not build before PEO-120 Look cursor ships. View distance is far but the screen is small, so: holding a modifier with a direction key opens a small window on that edge of the screen, spanning the whole edge and about 15% of the screen deep, showing a look-ahead in that direction. First press starts one tile over; each further press in the same direction moves the view half a window further out that way. Pressing a different direction with the modifier opens it the same way on that edge. Pressing the opposite direction with the modifier closes the window. Purpose: keep an eye forward while walking."
+  }
+]

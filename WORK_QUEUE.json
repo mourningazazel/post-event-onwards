@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 127,
+  "next_id": 128,
   "items": [
     {
       "id": "PEO-003",
@@ -929,6 +929,21 @@
         "docs/domains/presentation.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-127",
+      "order": 1017,
+      "type": "feature",
+      "title": "Look-ahead edge window on modifier+direction",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-10",
+      "references": [],
+      "depends_on": [
+        "PEO-120"
+      ]
     }
   ]
 }
