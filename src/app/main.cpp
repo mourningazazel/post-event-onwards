@@ -35,6 +35,7 @@
 #include "camera.hpp"
 #include "glyph_atlas.hpp"
 #include "hud.hpp"
+#include "peek.hpp"
 #include "thread_pool.hpp"
 #ifdef PEO_HAVE_GPU
 #include "gpu_field.hpp"
@@ -51,6 +52,8 @@ using peo::app::follow_origin;
 using peo::app::hud_wrap;
 using peo::app::HudSpan;
 using peo::app::layout_view;
+using peo::app::Peek;
+using peo::app::PeekStrip;
 using peo::app::View;
 using peo::app::view_origin;
 using peo::app::view_to_screen;
@@ -312,6 +315,9 @@ struct App {
     /// The view's top-left while looking: it pans only as far as keeps the cursor in view
     /// (D-052 B), and the player-centred origin is used again when Look ends (D-048).
     Vec2i look_origin{};
+    /// The look-ahead strip (PEO-127): ctrl+direction opens it on that edge of the view.
+    /// Hidden while Look is on, and kept for when it ends.
+    Peek peek;
     /// The view as last drawn, so Look can start from the origin the player sees.
     View view{1, 1};
     /// HUD rows drawn, and the HUD column count they were counted for (PEO-123). At one width
@@ -872,6 +878,21 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             }
             break;
         }
+        // The look-ahead strip (PEO-127): ctrl plus a direction is not a turn, so it never
+        // touches the queued taps or the speculator and a walk already queued plays on.
+        // Repeats are ignored: one half-strip per press, not a race to the edge.
+        if ((event->key.mod & SDL_KMOD_CTRL) != 0) {
+            if (const std::optional<Vec2i> dir = look_dir_for(key)) {
+                if (!event->key.repeat) {
+                    refresh_sight(*app); // a turn taken since the last draw moved the view
+                    if (app->peek.press(*dir, app->view, view_origin(app->world->player(), app->view),
+                                        app->sight.window())) {
+                        app->dirty = true;
+                    }
+                }
+                break;
+            }
+        }
         if (key == SDLK_L) {
             app->input.clear();  // queued taps were meant before Look
             refresh_sight(*app); // a turn taken since the last draw moved the player
@@ -895,6 +916,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             (void)app->speculator->quiesce(); // the speculation is for the old stage
             app->world->load_stage(app->world->stage_index() + 1);
             app->sight_stale = true;
+            app->peek.close();
             app->speculator->request();
             app->dirty = true;
         } else if (const std::optional<Action> action = action_for(key, app->running)) {
