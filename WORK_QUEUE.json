@@ -862,7 +862,7 @@
       "order": 967,
       "type": "feature",
       "title": "Look key: a movable cursor over the seen field (D-049)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
