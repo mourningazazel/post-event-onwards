@@ -862,10 +862,10 @@
       "order": 967,
       "type": "feature",
       "title": "Look key: a movable cursor over the seen field (D-049)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-07",
       "references": [],
       "depends_on": []
