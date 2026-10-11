@@ -920,7 +920,7 @@
       "order": 1007,
       "type": "feature",
       "title": "Map memory: seen terrain stays drawn dimmed (D-051)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
