@@ -905,7 +905,7 @@
       "order": 997,
       "type": "bug",
       "title": "HUD lines clip when a tiling WM ignores the window's minimum size",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "S",
       "owner": "builder",
