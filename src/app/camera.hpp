@@ -48,6 +48,14 @@ struct ViewLayout {
     return {player.x - view.cols / 2, player.y - view.rows / 2};
 }
 
+/// The origin shifted the least so `cell` is in view: unchanged when it already is (D-052 B).
+/// The Look cursor pans the view with it this way, so the view only moves when the cursor
+/// would leave it, and by no more than it went past the edge.
+[[nodiscard]] constexpr core::Vec2i follow_origin(core::Vec2i origin, core::Vec2i cell, View view) noexcept {
+    return {std::clamp(origin.x, cell.x - (view.cols - 1), cell.x),
+            std::clamp(origin.y, cell.y - (view.rows - 1), cell.y)};
+}
+
 /// The view cell that shows stage cell `cell`, or nullopt when it is off view.
 [[nodiscard]] constexpr std::optional<core::Vec2i> view_to_screen(core::Vec2i cell, core::Vec2i origin,
                                                                   View view) noexcept {

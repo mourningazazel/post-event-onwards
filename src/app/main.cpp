@@ -6,6 +6,7 @@
 // a timer. While the player thinks, one worker thread speculates the next turn
 // (PEO-007); input commits it. Core spawns no threads: this file owns the only one.
 
+#include "peo/core/look.hpp"
 #include "peo/core/sight.hpp"
 #include "peo/core/turn_input.hpp"
 #include "peo/core/world.hpp"
@@ -45,6 +46,7 @@ using peo::app::atlas_cell;
 using peo::app::atlas_glyph_px;
 using peo::app::AtlasCell;
 using peo::app::display_scale;
+using peo::app::follow_origin;
 using peo::app::layout_view;
 using peo::app::View;
 using peo::app::view_origin;
@@ -61,6 +63,10 @@ constexpr int kGameWindGust = 2;
 /// Compass points, clockwise from east as Wind::toward_degrees runs (y down).
 constexpr std::array<const char*, 8> kCompass{"E", "SE", "S", "SW", "W", "NW", "N", "NE"};
 constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t>(kCompass.size());
+/// The HUD's second line.
+constexpr const char* kKeyHints = "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
+/// The Look cursor's outline (PEO-120): bright against walls, floor and every glyph's colour.
+constexpr std::array<Uint8, 3> kLookCursorRgb{255, 220, 0};
 
 /// The stage size, in cells, from which the speculation's scent update runs on the GPU
 /// (PEO-081). Measured on the M1 (Honeykrisp), saturated field, readback included: the
@@ -287,6 +293,13 @@ struct App {
     std::uint32_t sight_stage = 0;
     /// Set by a stage load: the new stage needs sight even if its entry is the old cell.
     bool sight_stale = true;
+    /// The Look cursor (PEO-120): while active, movement keys move it, not the player.
+    LookCursor look;
+    /// The view's top-left while looking: it pans only as far as keeps the cursor in view
+    /// (D-052 B), and the player-centred origin is used again when Look ends (D-048).
+    Vec2i look_origin{};
+    /// The view as last drawn, so Look can start from the origin the player sees.
+    View view{1, 1};
 };
 
 /// The HUD's height in window pixels.
@@ -304,6 +317,24 @@ void use_ascii_cells(App& app) noexcept {
 /// The window size that shows `cols` by `rows` map cells and the HUD, in window pixels.
 SDL_Point window_px(const App& app, int cols, int rows) noexcept {
     return {cols * app.map_cell_px, rows * app.map_cell_px + hud_px(app)};
+}
+
+/// Sight (PEO-119) once per move or stage, not per redraw: draw() and the start of Look
+/// both need it current for the player's cell.
+void refresh_sight(App& app) {
+    const World& world = *app.world;
+    if (app.sight_stale || world.player() != app.sight_player || world.stage_index() != app.sight_stage) {
+        app.sight.compute(world.stage().blocked, world.player());
+        app.sight_player = world.player();
+        app.sight_stage = world.stage_index();
+        app.sight_stale = false;
+    }
+}
+
+/// The line the HUD shows for a looked-at cell. Empty: Ryan writes this text (D-042) and
+/// PEO-121 supplies what shows at each distance; until then the HUD is unchanged.
+std::string_view look_line(const LookReport& /*report*/) {
+    return {};
 }
 
 /// Draw `text` from window pixel (`x_px`, `y_px`), one glyph per `cell_px`, in one colour.
@@ -367,7 +398,11 @@ void draw(App& app) {
     SDL_SetRenderScale(app.renderer, render_scale, render_scale);
     const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, hud_px(app));
     const View view = layout.view;
-    const Vec2i origin = view_origin(world.player(), view);
+    app.view = view;
+    if (app.look.active()) {
+        app.look_origin = follow_origin(app.look_origin, app.look.cell(), view); // also on a resize
+    }
+    const Vec2i origin = app.look.active() ? app.look_origin : view_origin(world.player(), view);
     const auto cell = static_cast<float>(app.map_cell_px);
     const auto left = static_cast<float>(layout.left_px);
     const auto top = static_cast<float>(layout.top_px + hud_px(app));
@@ -375,13 +410,7 @@ void draw(App& app) {
         app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
     }
     std::string& row = app.row;
-    // Sight (PEO-119) once per move or stage, not per redraw.
-    if (app.sight_stale || world.player() != app.sight_player || world.stage_index() != app.sight_stage) {
-        app.sight.compute(stage.blocked, world.player());
-        app.sight_player = world.player();
-        app.sight_stage = world.stage_index();
-        app.sight_stale = false;
-    }
+    refresh_sight(app);
     // The one per-cell decision: drawn only when seen now (false off the stage). Map memory
     // (D-051 A) adds its dimmed state here.
     const auto shown = [&](Vec2i p) { return app.sight.seen(p); };
@@ -431,6 +460,25 @@ void draw(App& app) {
         }
     }
     glyph(world.player(), "@", 255, 255, 255); // always: the origin of sight
+    // The Look cursor: an outline over the cell, drawn last so no glyph covers it and it
+    // covers no glyph.
+    std::string_view hint_line = kKeyHints;
+    if (app.look.active()) {
+        if (const std::optional<Vec2i> at = view_to_screen(app.look.cell(), origin, view)) {
+            const SDL_FRect box{(left + static_cast<float>(at->x) * cell) / render_scale,
+                                (top + static_cast<float>(at->y) * cell) / render_scale, cell / render_scale,
+                                cell / render_scale};
+            SDL_SetRenderDrawColor(app.renderer, kLookCursorRgb[0], kLookCursorRgb[1], kLookCursorRgb[2],
+                                   SDL_ALPHA_OPAQUE);
+            SDL_RenderRect(app.renderer, &box);
+        }
+        if (const std::optional<LookReport> report =
+                look_at(app.sight, stage, world.horde(), world.player(), app.look.cell())) {
+            if (const std::string_view line = look_line(*report); !line.empty()) {
+                hint_line = line;
+            }
+        }
+    }
 
     // Two lines, each under the window's minimum 80 columns (kMinViewCols). The wind is named by where
     // it blows to, so "to E" is downwind east.
@@ -446,33 +494,42 @@ void draw(App& app) {
                   wind.intensity > 0 ? kCompass[point] : "-", wind.intensity, app.last_hit ? "hit" : "miss",
                   static_cast<unsigned long long>(app.last_spec_us / kMicrosPerMilli),
                   static_cast<unsigned long long>(app.last_spec_us % kMicrosPerMilli), app.misses);
-    static constexpr const char* kKeyHints =
-        "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
     const auto hud_cell = static_cast<float>(app.hud_cell_px);
     draw_text(app, 0.0F, 0.0F, hud_cell, status, 200, 200, 120);
-    draw_text(app, 0.0F, hud_cell, hud_cell, kKeyHints, 140, 140, 100);
+    const std::string hint(hint_line); // draw_text takes a C string; a look line is a view
+    draw_text(app, 0.0F, hud_cell, hud_cell, hint.c_str(), 140, 140, 100);
 
     SDL_SetRenderScale(app.renderer, 1.0F, 1.0F);
     SDL_RenderPresent(app.renderer);
 }
 
-/// Map a key to the action it spends a turn on, if any. Running shortens steps
-/// only; a wait lasts kWaitSubsteps either way.
-std::optional<Action> action_for(SDL_Keycode key, bool running) {
-    const Substeps step = running ? kRunStepSubsteps : kStepSubsteps;
+/// The direction a movement key names: one table for turn keys and the Look cursor.
+std::optional<Vec2i> look_dir_for(SDL_Keycode key) {
     switch (key) {
     case SDLK_UP:
     case SDLK_W:
-        return Action::step({0, -1}, step);
+        return Vec2i{0, -1};
     case SDLK_DOWN:
     case SDLK_S:
-        return Action::step({0, 1}, step);
+        return Vec2i{0, 1};
     case SDLK_LEFT:
     case SDLK_A:
-        return Action::step({-1, 0}, step);
+        return Vec2i{-1, 0};
     case SDLK_RIGHT:
     case SDLK_D:
-        return Action::step({1, 0}, step);
+        return Vec2i{1, 0};
+    default:
+        return std::nullopt;
+    }
+}
+
+/// Map a key to the action it spends a turn on, if any. Running shortens steps
+/// only; a wait lasts kWaitSubsteps either way.
+std::optional<Action> action_for(SDL_Keycode key, bool running) {
+    if (const std::optional<Vec2i> dir = look_dir_for(key)) {
+        return Action::step(*dir, running ? kRunStepSubsteps : kStepSubsteps);
+    }
+    switch (key) {
     case SDLK_SPACE:
     case SDLK_PERIOD:
         return Action::wait();
@@ -736,6 +793,29 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         break;
     case SDL_EVENT_KEY_DOWN: {
         const SDL_Keycode key = event->key.key;
+        // Look (PEO-120) before every other branch: while it is on, keys move the cursor or
+        // end it and nothing else, so no turn, stage, run or scent change can happen.
+        if (app->look.active()) {
+            if (key == SDLK_L || key == SDLK_ESCAPE) {
+                app->look.end();
+                app->dirty = true;
+            } else if (const std::optional<Vec2i> dir = look_dir_for(key)) {
+                // Held-key repeats move it too: not a turn, so D-032's cap does not apply.
+                const int cells = (event->key.mod & SDL_KMOD_SHIFT) != 0 ? kLookJumpCells : 1;
+                if (app->look.step(*dir, cells, app->sight, app->sight.window())) {
+                    app->dirty = true; // draw() pans the view after it (follow_origin, D-052 B)
+                }
+            }
+            break;
+        }
+        if (key == SDLK_L) {
+            app->input.clear();  // queued taps were meant before Look
+            refresh_sight(*app); // a turn taken since the last draw moved the player
+            app->look.begin(app->world->player());
+            app->look_origin = view_origin(app->world->player(), app->view);
+            app->dirty = true;
+            break;
+        }
         if (key == SDLK_ESCAPE) {
             app->input.clear();
             return SDL_APP_SUCCESS;

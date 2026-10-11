@@ -87,4 +87,23 @@ TEST_SUITE("camera") {
         CHECK_FALSE(view_to_screen(origin + Vec2i{80, 0}, origin, view));
         CHECK_FALSE(view_to_screen(origin + Vec2i{0, 45}, origin, view));
     }
+
+    TEST_CASE("follow_origin pans the view the least that keeps a cell in view") {
+        const View view{9, 7};
+        const Vec2i origin{10, 20};
+        // In view, corners included: unchanged.
+        CHECK(follow_origin(origin, {14, 23}, view) == origin);
+        CHECK(follow_origin(origin, origin, view) == origin);
+        CHECK(follow_origin(origin, origin + Vec2i{8, 6}, view) == origin);
+        // One past each edge: the view moves one cell and the cell sits on that edge.
+        CHECK(follow_origin(origin, {9, 23}, view) == Vec2i{9, 20});   // west
+        CHECK(follow_origin(origin, {19, 23}, view) == Vec2i{11, 20}); // east
+        CHECK(follow_origin(origin, {14, 19}, view) == Vec2i{10, 19}); // north
+        CHECK(follow_origin(origin, {14, 27}, view) == Vec2i{10, 21}); // south
+        // A jump of kLookJumpCells (8) past the east edge: the view follows by 8.
+        const Vec2i far{origin.x + 8 + 8, 23};
+        const Vec2i followed = follow_origin(origin, far, view);
+        CHECK(followed == Vec2i{origin.x + 8, 20});
+        CHECK(view_to_screen(far, followed, view) == Vec2i{8, 3});
+    }
 }
