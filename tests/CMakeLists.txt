@@ -22,6 +22,7 @@ add_executable(peo_core_tests
     core/test_geography.cpp
     core/test_settlement_site.cpp
     core/test_camera.cpp
+    core/test_hud.cpp
     core/test_glyph_atlas.cpp
     core/test_sight.cpp
     core/test_look.cpp
