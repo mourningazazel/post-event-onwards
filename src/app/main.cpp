@@ -34,6 +34,7 @@
 
 #include "camera.hpp"
 #include "glyph_atlas.hpp"
+#include "hud.hpp"
 #include "thread_pool.hpp"
 #ifdef PEO_HAVE_GPU
 #include "gpu_field.hpp"
@@ -47,6 +48,8 @@ using peo::app::atlas_glyph_px;
 using peo::app::AtlasCell;
 using peo::app::display_scale;
 using peo::app::follow_origin;
+using peo::app::hud_wrap;
+using peo::app::HudSpan;
 using peo::app::layout_view;
 using peo::app::View;
 using peo::app::view_origin;
@@ -129,7 +132,12 @@ WorldParams game_params(int stage_width, int stage_height) noexcept {
     return params;
 }
 constexpr int kScale = 2;
-constexpr int kHudRows = 2; // a status line and a key-hint line (PEO-062)
+/// The HUD at 80 columns or more: a status line and a key-hint line (PEO-062). Only the
+/// window's default and minimum sizes use it; draw() wraps the lines to the window (PEO-123).
+constexpr int kHudRows = 2;
+/// Rows drawn per HUD line at most: enough for the status line at its usual length down to
+/// about 14 columns. Rows past it are not drawn.
+constexpr int kMaxHudLineRows = 6;
 /// DF-grid tilesets mark their background magenta instead of alpha (PEO-097); keying it out
 /// keeps those drop-in tilesets from drawing magenta boxes.
 constexpr SDL_Color kAtlasColourKey{255, 0, 255, SDL_ALPHA_OPAQUE};
@@ -300,10 +308,17 @@ struct App {
     Vec2i look_origin{};
     /// The view as last drawn, so Look can start from the origin the player sees.
     View view{1, 1};
+    /// HUD rows drawn, and the HUD column count they were counted for (PEO-123). At one width
+    /// the count only grows, so the map does not jump a row as the status numbers widen and
+    /// narrow between turns; a new width counts afresh.
+    int hud_rows = kHudRows;
+    int hud_cols = 0;
+    /// One HUD row's text and its '\0', reused across draws.
+    std::string hud_text = std::string(kStatusLineBytes, '\0');
 };
 
-/// The HUD's height in window pixels.
-int hud_px(const App& app) noexcept {
+/// The HUD's height at 80 columns or more, in window pixels: for the window's sizes only.
+int wide_hud_px(const App& app) noexcept {
     return kHudRows * app.hud_cell_px;
 }
 
@@ -316,7 +331,7 @@ void use_ascii_cells(App& app) noexcept {
 
 /// The window size that shows `cols` by `rows` map cells and the HUD, in window pixels.
 SDL_Point window_px(const App& app, int cols, int rows) noexcept {
-    return {cols * app.map_cell_px, rows * app.map_cell_px + hud_px(app)};
+    return {cols * app.map_cell_px, rows * app.map_cell_px + wide_hud_px(app)};
 }
 
 /// Sight (PEO-119) once per move or stage, not per redraw: draw() and the start of Look
@@ -396,7 +411,42 @@ void draw(App& app) {
     SDL_GetCurrentRenderOutputSize(app.renderer, &out_w, &out_h);
     const float render_scale = app.atlas == nullptr ? static_cast<float>(kScale) : 1.0F;
     SDL_SetRenderScale(app.renderer, render_scale, render_scale);
-    const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, hud_px(app));
+    refresh_sight(app);
+
+    // The HUD's two lines, worked out first: wrapped to the window (PEO-123), their rows
+    // decide where the map starts. The wind is named by where it blows to, so "to E" is
+    // downwind east.
+    const Wind wind = world.wind();
+    const auto point = static_cast<std::size_t>(((wind.toward_degrees + kCompassStep / 2) / kCompassStep) %
+                                                static_cast<std::int32_t>(kCompass.size()));
+    // Sized for every field at its widest, so snprintf never truncates; real lines stay under 80.
+    char status[kStatusLineBytes];
+    std::snprintf(status, sizeof status,
+                  "stage %u  turn %llu  %s  dead %zu  wind to %s %d  spec:%s %llu.%03llums (miss %llu)",
+                  world.stage_index(), static_cast<unsigned long long>(world.turn()),
+                  app.running ? "run" : "walk", world.horde().size(),
+                  wind.intensity > 0 ? kCompass[point] : "-", wind.intensity, app.last_hit ? "hit" : "miss",
+                  static_cast<unsigned long long>(app.last_spec_us / kMicrosPerMilli),
+                  static_cast<unsigned long long>(app.last_spec_us % kMicrosPerMilli), app.misses);
+    std::string_view hint_line = kKeyHints;
+    if (app.look.active()) {
+        if (const std::optional<LookReport> report =
+                look_at(app.sight, stage, world.horde(), world.player(), app.look.cell())) {
+            if (const std::string_view line = look_line(*report); !line.empty()) {
+                hint_line = line;
+            }
+        }
+    }
+    const int hud_cols = std::max(out_w / app.hud_cell_px, 1);
+    std::array<HudSpan, kMaxHudLineRows> status_rows{};
+    std::array<HudSpan, kMaxHudLineRows> hint_rows{};
+    const int status_n = std::min(hud_wrap(status, hud_cols, status_rows), kMaxHudLineRows);
+    const int hint_n = std::min(hud_wrap(hint_line, hud_cols, hint_rows), kMaxHudLineRows);
+    app.hud_rows = hud_cols == app.hud_cols ? std::max(app.hud_rows, status_n + hint_n) : status_n + hint_n;
+    app.hud_cols = hud_cols;
+    const int hud_height_px = app.hud_rows * app.hud_cell_px;
+
+    const ViewLayout layout = layout_view(out_w, out_h, app.map_cell_px, hud_height_px);
     const View view = layout.view;
     app.view = view;
     if (app.look.active()) {
@@ -405,12 +455,11 @@ void draw(App& app) {
     const Vec2i origin = app.look.active() ? app.look_origin : view_origin(world.player(), view);
     const auto cell = static_cast<float>(app.map_cell_px);
     const auto left = static_cast<float>(layout.left_px);
-    const auto top = static_cast<float>(layout.top_px + hud_px(app));
+    const auto top = static_cast<float>(layout.top_px + hud_height_px);
     if (app.row.size() < static_cast<std::size_t>(view.cols) + 1) {
         app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
     }
     std::string& row = app.row;
-    refresh_sight(app);
     // The one per-cell decision: drawn only when seen now (false off the stage). Map memory
     // (D-051 A) adds its dimmed state here.
     const auto shown = [&](Vec2i p) { return app.sight.seen(p); };
@@ -462,7 +511,6 @@ void draw(App& app) {
     glyph(world.player(), "@", 255, 255, 255); // always: the origin of sight
     // The Look cursor: an outline over the cell, drawn last so no glyph covers it and it
     // covers no glyph.
-    std::string_view hint_line = kKeyHints;
     if (app.look.active()) {
         if (const std::optional<Vec2i> at = view_to_screen(app.look.cell(), origin, view)) {
             const SDL_FRect box{(left + static_cast<float>(at->x) * cell) / render_scale,
@@ -472,32 +520,28 @@ void draw(App& app) {
                                    SDL_ALPHA_OPAQUE);
             SDL_RenderRect(app.renderer, &box);
         }
-        if (const std::optional<LookReport> report =
-                look_at(app.sight, stage, world.horde(), world.player(), app.look.cell())) {
-            if (const std::string_view line = look_line(*report); !line.empty()) {
-                hint_line = line;
-            }
-        }
     }
 
-    // Two lines, each under the window's minimum 80 columns (kMinViewCols). The wind is named by where
-    // it blows to, so "to E" is downwind east.
-    const Wind wind = world.wind();
-    const auto point = static_cast<std::size_t>(((wind.toward_degrees + kCompassStep / 2) / kCompassStep) %
-                                                static_cast<std::int32_t>(kCompass.size()));
-    // Sized for every field at its widest, so snprintf never truncates; real lines stay under 80.
-    char status[kStatusLineBytes];
-    std::snprintf(status, sizeof status,
-                  "stage %u  turn %llu  %s  dead %zu  wind to %s %d  spec:%s %llu.%03llums (miss %llu)",
-                  world.stage_index(), static_cast<unsigned long long>(world.turn()),
-                  app.running ? "run" : "walk", world.horde().size(),
-                  wind.intensity > 0 ? kCompass[point] : "-", wind.intensity, app.last_hit ? "hit" : "miss",
-                  static_cast<unsigned long long>(app.last_spec_us / kMicrosPerMilli),
-                  static_cast<unsigned long long>(app.last_spec_us % kMicrosPerMilli), app.misses);
+    // The HUD: each wrapped row on its own line, status rows first. A row is copied into the
+    // reused hud_text for its '\0', so drawing allocates nothing.
     const auto hud_cell = static_cast<float>(app.hud_cell_px);
-    draw_text(app, 0.0F, 0.0F, hud_cell, status, 200, 200, 120);
-    const std::string hint(hint_line); // draw_text takes a C string; a look line is a view
-    draw_text(app, 0.0F, hud_cell, hud_cell, hint.c_str(), 140, 140, 100);
+    int hud_row = 0;
+    const auto draw_rows = [&](std::string_view line, std::span<const HudSpan> rows, Uint8 r, Uint8 g,
+                               Uint8 b) {
+        for (const HudSpan span : rows) {
+            const std::size_t length =
+                std::min(static_cast<std::size_t>(span.length), app.hud_text.size() - 1);
+            line.copy(app.hud_text.data(), length, static_cast<std::size_t>(span.begin));
+            app.hud_text[length] = '\0';
+            draw_text(app, 0.0F, static_cast<float>(hud_row) * hud_cell, hud_cell, app.hud_text.c_str(), r, g,
+                      b);
+            ++hud_row;
+        }
+    };
+    draw_rows(status, std::span<const HudSpan>(status_rows).first(static_cast<std::size_t>(status_n)), 200,
+              200, 120);
+    draw_rows(hint_line, std::span<const HudSpan>(hint_rows).first(static_cast<std::size_t>(hint_n)), 140,
+              140, 100);
 
     SDL_SetRenderScale(app.renderer, 1.0F, 1.0F);
     SDL_RenderPresent(app.renderer);
