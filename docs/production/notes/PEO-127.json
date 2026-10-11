@@ -8,5 +8,10 @@
     "at": "2026-10-11",
     "by": "architect",
     "text": "briefed: ctrl is the modifier, repeats ignored, strip follows the view, hidden during Look, stops past sight range"
+  },
+  {
+    "at": "2026-10-11",
+    "by": "builder",
+    "text": "starting unit 1"
   }
 ]

@@ -890,7 +890,7 @@
       "order": 1017,
       "type": "feature",
       "title": "Look-ahead edge window on modifier+direction",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S4",
       "effort": "M",
       "owner": "builder",
