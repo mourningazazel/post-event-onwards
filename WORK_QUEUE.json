@@ -893,7 +893,7 @@
       "status": "Pending",
       "severity": "S4",
       "effort": "M",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-10",
       "references": [],
       "depends_on": []
