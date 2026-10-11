@@ -45,6 +45,7 @@ HUD lines wrap to the window width when it is under 80 columns (`src/app/hud.hpp
                               ├─ settlement_site.hpp  place_sites: one scored site per 12.5 km cell
                               ├─ sight.hpp  SightField: symmetric shadowcasting within the optical range (PEO-119)
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
+                              ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
@@ -175,7 +176,8 @@ Beside the stage clock runs one clock since the Event, `World::since_event()`: t
 this one; it never decreases. Each of the Dead carries a `fate`, a threshold drawn from a hash
 of the stage seed when it spawns (no spawn draw moves), uniform above the attrition curve at
 that clock (`peo/core/aftermath.hpp`: integer, piecewise linear, saturating). `store_area()`
-copies a generated stage's index, clock and horde into an `AreaRecord`; `resume_area()`
+copies a generated stage's index, clock, horde and the player's map memory into an
+`AreaRecord`; `resume_area()`
 rebuilds the stage as `load_stage` does, moves any unit off the entry (before thinning, so
 where it lands never depends on when), then `thin_horde` drops every unit whose fate the curve
 has passed: one comparison a unit, reading only the clock now, so several short absences
