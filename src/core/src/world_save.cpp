@@ -23,6 +23,8 @@ constexpr std::uint32_t kScentSection = section_id("SCNT");
 constexpr std::uint32_t kHordeSection = section_id("HORD");
 constexpr std::uint32_t kLogSection = section_id("OCCL");
 constexpr std::uint32_t kCharacterSection = section_id("CHAR");
+/// The player's map memory (PEO-124, D-051 A). Optional: saves from before it have none.
+constexpr std::uint32_t kSeenSection = section_id("SEEN");
 constexpr std::uint16_t kSectionVersion = 1;
 
 /// The largest stage side a save may ask for: D-036 plans stages to 2048 square, so
@@ -46,6 +48,8 @@ constexpr std::uint32_t kCharacters = 1;
 constexpr std::uint64_t kLogRecordBytes = 12;  // Vec2i, u32
 constexpr std::uint64_t kDeadRecordBytes = 12; // Vec2i, u16 step, u16 fate
 constexpr std::uint64_t kMoveRecordBytes = 12; // u32, Vec2i
+/// SEEN packs a cell a bit, row-major, the first cell in a byte's least significant bit.
+constexpr std::size_t kCellsPerByte = 8;
 constexpr std::uint16_t kMaxStep = std::numeric_limits<std::uint16_t>::max() / kSlotSubsteps * kSlotSubsteps;
 
 void write_params(ByteWriter& w, const WorldParams& p) {
@@ -195,6 +199,28 @@ SaveImage World::save(std::string_view build) const {
     character.u32(kCharacters);
     character.vec2i(player_);
     add(kCharacterSection, SyncScope::Character, character);
+
+    // SEEN: per character, the stage it is of, its size, then its cells as bits; padding
+    // bits are zero, so the same memory always gives the same bytes.
+    ByteWriter seen;
+    seen.u32(kCharacters);
+    seen.u32(stage_index_);
+    seen.i32(memory_.width());
+    seen.i32(memory_.height());
+    const Grid<bool>& remembered = memory_.cells();
+    std::uint8_t bits = 0;
+    std::size_t i = 0;
+    for (const std::uint8_t cell : remembered) {
+        bits = static_cast<std::uint8_t>(bits | ((cell != 0 ? 1U : 0U) << (i % kCellsPerByte)));
+        if (++i % kCellsPerByte == 0) {
+            seen.u8(bits);
+            bits = 0;
+        }
+    }
+    if (i % kCellsPerByte != 0) {
+        seen.u8(bits);
+    }
+    add(kSeenSection, SyncScope::Character, seen);
     return image;
 }
 
@@ -212,9 +238,10 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
 
     // Which sections this World reads, and the scope each must declare.
     const std::map<std::uint32_t, SyncScope> known{
-        {kWorldSection, SyncScope::World}, {kStageSection, SyncScope::World},
-        {kScentSection, SyncScope::World}, {kHordeSection, SyncScope::World},
-        {kLogSection, SyncScope::World},   {kCharacterSection, SyncScope::Character}};
+        {kWorldSection, SyncScope::World},   {kStageSection, SyncScope::World},
+        {kScentSection, SyncScope::World},   {kHordeSection, SyncScope::World},
+        {kLogSection, SyncScope::World},     {kCharacterSection, SyncScope::Character},
+        {kSeenSection, SyncScope::Character}};
     std::map<std::uint32_t, const SaveSection*> found;
     for (const SaveSection& s : image.sections) {
         const auto k = known.find(s.id);
@@ -466,6 +493,49 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     std::vector<std::int8_t> log_odds = hr.byte_vector<std::int8_t>();
     if (const auto r = whole(hr, kHordeSection)) {
         return refuse(*r);
+    }
+
+    // SEEN, optional: without it (a save from before PEO-124) the player remembers nothing.
+    // The stage load above left w's memory empty at the stage's size; the bits fill it.
+    if (found.contains(kSeenSection)) {
+        ByteReader er = reader(kSeenSection);
+        const auto seen_field = [&](const char* what) {
+            return refuse({kSeenSection, SyncScope::Character, what});
+        };
+        const std::uint32_t seen_characters = er.u32();
+        const std::uint32_t seen_stage = er.u32();
+        const int seen_width = er.i32();
+        const int seen_height = er.i32();
+        if (er.failed()) {
+            return seen_field("payload ends early");
+        }
+        if (seen_characters != kCharacters) {
+            return seen_field("a World holds one character today");
+        }
+        if (seen_stage != stage_index || seen_width != width || seen_height != height) {
+            return seen_field("stage or size differs from the stage WRLD builds");
+        }
+        const std::size_t seen_bytes = (cells + kCellsPerByte - 1) / kCellsPerByte;
+        if (!er.has(seen_bytes)) {
+            return seen_field("payload ends early");
+        }
+        for (std::size_t b = 0; b < seen_bytes; ++b) {
+            const std::uint8_t byte = er.u8();
+            for (std::size_t bit = 0; bit < kCellsPerByte; ++bit) {
+                if (((byte >> bit) & 1U) == 0) {
+                    continue;
+                }
+                const std::size_t cell = b * kCellsPerByte + bit;
+                if (cell >= cells) {
+                    return seen_field("a padding bit set");
+                }
+                w.memory_.mark({static_cast<int>(cell % static_cast<std::size_t>(width)),
+                                static_cast<int>(cell / static_cast<std::size_t>(width))});
+            }
+        }
+        if (const auto r = whole(er, kSeenSection)) {
+            return refuse(*r);
+        }
     }
 
     // All read and checked: set the clock first (the slot poll reads it), then the rest.
