@@ -890,10 +890,10 @@
       "order": 1017,
       "type": "feature",
       "title": "Look-ahead edge window on modifier+direction",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S4",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-10",
       "references": [],
       "depends_on": []
