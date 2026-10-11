@@ -29,6 +29,7 @@ profiling) are targets; the prototype uses `SDL_Renderer` debug text so the loop
 today, and `--tileset PATH` swaps that font for a Dwarf Fortress grid PNG atlas
 (`src/app/glyph_atlas.hpp`, PEO-097, ADR-0015) at its one cell size. The renderer reads only a committed world snapshot, so swapping it later is contained.
 The window shows a player-centred view (`src/app/camera.hpp`, PEO-117) over a stage larger than it.
+HUD lines wrap to the window width when it is under 80 columns (`src/app/hud.hpp`, PEO-123).
 
 ## Current code
 
