@@ -2,6 +2,7 @@
 #include "peo/core/revisit.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/save.hpp"
+#include "peo/core/sight.hpp"
 #include "peo/core/world.hpp"
 
 #include <doctest/doctest.h>
@@ -299,5 +300,22 @@ TEST_SUITE("scenario: revisit") {
                 FAIL("diverged at action " << i);
             }
         }
+    }
+
+    TEST_CASE("the map memory goes with a stored area and comes back on resume") {
+        World w(kSeed, small_params());
+        SightField sight;
+        sight.compute(w.stage().blocked, w.player(), {8});
+        REQUIRE(w.remember(sight) > 0);
+        const std::optional<AreaRecord> record = w.store_area();
+        REQUIRE(record.has_value());
+        CHECK(record->memory == w.memory());
+        w.load_stage(w.stage_index() + 1);
+        CHECK(w.memory().count() == 0);
+        w.resume_area(*record);
+        CHECK(w.memory() == record->memory);
+        World fresh(kSeed, small_params());
+        fresh.load_stage(record->stage_index);
+        CHECK(fresh.memory().count() == 0);
     }
 }

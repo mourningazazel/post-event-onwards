@@ -1,6 +1,7 @@
 #include "peo/core/byte_io.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/save.hpp"
+#include "peo/core/sight.hpp"
 #include "peo/core/world.hpp"
 
 #include <doctest/doctest.h>
@@ -28,6 +29,41 @@ constexpr std::size_t kVectorCountBytes = 8;
 
 WorldParams small_params(int dead = 30) {
     return {.initial_dead = dead, .stage_width = 32, .stage_height = 20};
+}
+
+/// PEO-124: 33 x 20 cells is not a whole number of bytes, so SEEN has padding bits to forge.
+WorldParams seen_params() {
+    return {.initial_dead = 30, .stage_width = 33, .stage_height = 20};
+}
+
+/// A world that has taken a few steps and remembered what it saw from each cell.
+World remembering_world() {
+    constexpr int kSightRange = 6;
+    World w(kSeed, seen_params());
+    SightField sight;
+    for (const Vec2i dir : {Vec2i{1, 0}, Vec2i{0, 1}, Vec2i{1, 0}}) {
+        sight.compute(w.stage().blocked, w.player(), {kSightRange});
+        (void)w.remember(sight);
+        w.step(Action::step(dir, kStepSubsteps));
+    }
+    sight.compute(w.stage().blocked, w.player(), {kSightRange});
+    (void)w.remember(sight);
+    return w;
+}
+
+/// Overwrite the little-endian u32 at `at` in a payload.
+void put_u32(std::vector<std::byte>& p, std::size_t at, std::uint32_t v) {
+    for (std::size_t i = 0; i < sizeof v; ++i) {
+        p[at + i] = static_cast<std::byte>((v >> (8 * i)) & 0xFFU);
+    }
+}
+
+/// `image`'s section `id`, which must be there.
+SaveSection& section(SaveImage& image, std::uint32_t id) {
+    const auto it = std::find_if(image.sections.begin(), image.sections.end(),
+                                 [id](const SaveSection& sec) { return sec.id == id; });
+    REQUIRE(it != image.sections.end());
+    return *it;
 }
 
 std::vector<std::byte> payload_of(std::initializer_list<int> values) {
@@ -251,12 +287,80 @@ TEST_SUITE("save") {
         CHECK(write_save(w.save(kBuild)) == bytes);
         for (const SaveSection& s : image.sections) {
             CAPTURE(section_name(s.id));
-            CHECK(s.scope == (s.id == section_id("CHAR") ? SyncScope::Character : SyncScope::World));
+            const bool character = s.id == section_id("CHAR") || s.id == section_id("SEEN");
+            CHECK(s.scope == (character ? SyncScope::Character : SyncScope::World));
         }
         World loaded(kSeed + 1, small_params(0));
         std::vector<SaveIssue> issues;
         REQUIRE(load(loaded, bytes, issues) == SaveStatus::Ok);
         CHECK(write_save(loaded.save(kBuild)) == bytes);
+    }
+
+    TEST_CASE(
+        "SEEN carries the map memory as a Character section, and a restored World saves the same bytes") {
+        const World w = remembering_world();
+        REQUIRE(w.memory().count() > 0);
+        SaveImage image = w.save(kBuild);
+        CHECK(section(image, section_id("SEEN")).scope == SyncScope::Character);
+        const std::vector<std::byte> bytes = write_save(image);
+        World loaded(kSeed + 1, small_params(0));
+        std::vector<SaveIssue> issues;
+        REQUIRE(load(loaded, bytes, issues) == SaveStatus::Ok);
+        CHECK(issues.empty());
+        CHECK(loaded.memory() == w.memory());
+        CHECK(World::equivalent(loaded, w));
+        CHECK(write_save(loaded.save(kBuild)) == bytes);
+    }
+
+    TEST_CASE("a save without SEEN restores with nothing remembered") {
+        const World w = remembering_world();
+        SaveImage image = w.save(kBuild);
+        std::erase_if(image.sections, [](const SaveSection& sec) { return sec.id == section_id("SEEN"); });
+        World loaded(kSeed + 1, small_params(0));
+        std::vector<SaveIssue> issues;
+        REQUIRE(loaded.restore(image, issues) == SaveStatus::Ok);
+        CHECK_FALSE(has_issue(issues, section_id("SEEN")));
+        CHECK(loaded.memory().count() == 0);
+        CHECK(loaded.memory().width() == w.memory().width());
+        CHECK(loaded.player() == w.player());
+    }
+
+    TEST_CASE("every forged SEEN payload is Corrupt and changes nothing") {
+        const World w = remembering_world();
+        const SaveImage image = w.save(kBuild);
+        // SEEN's layout: u32 characters, u32 stage, i32 width, i32 height, then the bits.
+        const auto cells = static_cast<std::size_t>(w.stage().spec.width * w.stage().spec.height);
+        REQUIRE(cells % 8 != 0);
+        struct Forge {
+            const char* name;
+            void (*apply)(std::vector<std::byte>&, std::size_t cells);
+        };
+        const std::vector<Forge> forges{
+            {"two characters", [](std::vector<std::byte>& p, std::size_t) { put_u32(p, 0, 2); }},
+            {"another stage", [](std::vector<std::byte>& p, std::size_t) { put_u32(p, 4, 1); }},
+            {"a width one larger",
+             [](std::vector<std::byte>& p, std::size_t) {
+                 put_u32(p, 8, static_cast<std::uint32_t>(seen_params().stage_width + 1));
+             }},
+            {"one byte short", [](std::vector<std::byte>& p, std::size_t) { p.pop_back(); }},
+            {"one byte extra", [](std::vector<std::byte>& p, std::size_t) { p.push_back(std::byte{0}); }},
+            {"a padding bit set", [](std::vector<std::byte>& p,
+                                     std::size_t n) { p.back() |= static_cast<std::byte>(1U << (n % 8)); }},
+        };
+        World target = remembering_world();
+        target.step(Action::wait());
+        const std::vector<std::byte> before = write_save(target.save(kBuild));
+        const MapMemory memory_before = target.memory();
+        for (const Forge& f : forges) {
+            CAPTURE(f.name);
+            SaveImage forged = image;
+            f.apply(section(forged, section_id("SEEN")).payload, cells);
+            std::vector<SaveIssue> issues;
+            CHECK(target.restore(forged, issues) == SaveStatus::Corrupt);
+            CHECK(has_issue(issues, section_id("SEEN")));
+            CHECK(target.memory() == memory_before);
+            CHECK(write_save(target.save(kBuild)) == before);
+        }
     }
 
     TEST_CASE("an image whose player stands on a wall is Corrupt and changes nothing") {
