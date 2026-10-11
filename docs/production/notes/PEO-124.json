@@ -8,5 +8,10 @@
     "at": "2026-10-11",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-11",
+    "by": "builder",
+    "text": "commits: a96060e MapMemory, 730ba69 World owns it (loads reset, AreaRecord carries it, remember() refuses sight not from the player's cell), 544897d SEEN section, 337a30c tests, a3830e2 app, 83b4449 docs\ntests: verify.py --frontend --full passed on Arch Linux aarch64 (Asahi), g++ debug/release + clang; memory suite 7 unit cases (about 5.5 ms together in the debug build) + perf case; save gains SEEN round-trip/byte-identical, no-SEEN restores empty, six forged SEEN payloads Corrupt and unchanged (33x20 stage so padding bits exist); revisit gains memory across store/resume\nmanual: stage 0 walked 10 cells along the west wall: seen, remembered-dimmed and never-seen cells all on screen at once; scent on: scent glyphs only on seen cells, remembered cells stay plain # and .; n: stage 1 starts with nothing dimmed, only the entry view; no Dead seen drawn on a dimmed cell in four screenshots (the glyph lambda is gated on seen, as before). 512x512: remembered walls read clearly; remembered floor dots at 36,36,42 are faint, suggest about 44,44,52 if the owner wants them easier to see\nperf: perf memory 512x512 open range=152 fold_median=127.8 us on the M1 in headless-release (beside perf sight open 249.5 us, stage 61.7 us), under the 0.2 ms budget; cloud number not run here. Holding an arrow on 512x512 (2912 Dead) walked at the 3/s cap, smooth, as after PEO-119\nopen: the fold runs in refresh_sight, which draw() and the L key call, not after take_turn: it still runs once per player-cell or stage change. World::remember catches sight from the wrong cell but not from another stage at the same cell; the frontend recomputes on every stage change. presentation.md Queue->Done left for completion"
   }
 ]
