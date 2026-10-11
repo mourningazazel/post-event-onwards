@@ -884,19 +884,6 @@
         "D-033"
       ],
       "depends_on": []
-    },
-    {
-      "id": "PEO-127",
-      "order": 1017,
-      "type": "feature",
-      "title": "Look-ahead edge window on modifier+direction",
-      "status": "Validation",
-      "severity": "S4",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-10",
-      "references": [],
-      "depends_on": []
     }
   ]
 }
