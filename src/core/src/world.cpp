@@ -127,6 +127,7 @@ void World::enter_stage(std::uint32_t index) {
     hand_built_ = false;
     start_field(stage_seed(seed_, index));
     player_ = stage_.entry;
+    memory_.reset(stage_.spec.width, stage_.spec.height);
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
 }
 
@@ -166,7 +167,8 @@ std::optional<AreaRecord> World::store_area() const {
     if (hand_built_) {
         return std::nullopt;
     }
-    return AreaRecord{.stage_index = stage_index_, .updated_at = since_event(), .horde = dead_.horde};
+    return AreaRecord{
+        .stage_index = stage_index_, .updated_at = since_event(), .horde = dead_.horde, .memory = memory_};
 }
 
 void World::resume_area(AreaRecord record) {
@@ -231,6 +233,16 @@ void World::resume_area(AreaRecord record) {
         ++d.occupied.at(unit.pos);
     }
     start_horde(stage_seed(seed_, stage_index_));
+    if (record.memory.width() == w && record.memory.height() == h) {
+        memory_ = std::move(record.memory); // enter_stage left it empty otherwise
+    }
+}
+
+std::size_t World::remember(const SightField& sight) {
+    if (sight.origin() != player_) {
+        return 0;
+    }
+    return memory_.remember(sight);
 }
 
 void World::draw_fates(Seed stage_seed_value) noexcept {
@@ -258,6 +270,7 @@ void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
     }
     start_field(stage_seed(seed_, stage_index_));
     player_ = player;
+    memory_.reset(w, h);
     HordeState& d = dead_;
     d.horde = std::move(horde);
     d.occupied = Grid<std::uint8_t>(w, h, 0);
@@ -615,7 +628,7 @@ bool World::equivalent(const World& a, const World& b) noexcept {
         !same_moves(da.landing, db.landing) || !same_moves(da.deciding, db.deciding) ||
         da.moving != db.moving || da.slot_begin != db.slot_begin || da.slot_units != db.slot_units ||
         !same_cells(da.occupied, db.occupied) || !same_cells(da.reserved, db.reserved) ||
-        !(a.desire_ == b.desire_)) {
+        !(a.desire_ == b.desire_) || !(a.memory_ == b.memory_)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {

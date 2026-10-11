@@ -5,10 +5,12 @@
 #include "peo/core/dead.hpp"
 #include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
+#include "peo/core/memory.hpp"
 #include "peo/core/revisit.hpp"
 #include "peo/core/rng.hpp"
 #include "peo/core/save.hpp"
 #include "peo/core/scent_wave.hpp"
+#include "peo/core/sight.hpp"
 #include "peo/core/stage.hpp"
 #include "peo/core/types.hpp"
 
@@ -185,16 +187,17 @@ public:
     /// speculation was built from without making it stale, so speculate after it.
     void deposit(Vec2i at, std::int32_t strength) noexcept { scent_.deposit(at, strength); }
 
-    /// Same stage, turn, clock, occupancy log, player, horde, scent bits and the
-    /// Dead's pending moves, reservations and slots. For tests.
+    /// Same stage, turn, clock, occupancy log, player, horde, scent bits, the Dead's
+    /// pending moves, reservations and slots, and the player's map memory. For tests.
     [[nodiscard]] static bool equivalent(const World& a, const World& b) noexcept;
 
     /// This world as a save image (PEO-091, ADR-0002, ADR-0017), tagged with `build`.
     /// One section per system, each with its sync scope: WRLD (seed, params, stage,
     /// clock, the spawn stream), STAG (a hand-built stage only; a generated one is
     /// regenerated), SCNT (the field), HORD (the Dead, their pending moves and the
-    /// desire snapshot), OCCL (the occupancy log), all World; CHAR (the player),
-    /// Character. Deterministic: the same world gives the same bytes.
+    /// desire snapshot), OCCL (the occupancy log), all World; CHAR (the player) and SEEN
+    /// (the player's map memory, PEO-124), Character. Deterministic: the same world gives
+    /// the same bytes.
     [[nodiscard]] SaveImage save(std::string_view build) const;
     /// Become the world `image` holds, so that it continues bit-identical to the one
     /// saved. Every value is checked against the stage it builds; on anything but Ok
@@ -220,6 +223,15 @@ public:
     [[nodiscard]] const ScentWave& scent() const noexcept { return scent_; }
     [[nodiscard]] const std::vector<Dead>& horde() const noexcept { return dead_.horde; }
     [[nodiscard]] Vec2i player() const noexcept { return player_; }
+    /// What the player remembers seeing of this stage (D-051 A, PEO-124): empty at the
+    /// stage's size after every load, carried by store_area and resume_area, saved as SEEN.
+    [[nodiscard]] const MapMemory& memory() const noexcept { return memory_; }
+    /// Fold `sight` into the map memory; returns the cells newly remembered. A field not
+    /// computed from the player's current cell (before the last move, or from another
+    /// stage's entry) folds nothing and returns 0. A field from another stage whose origin
+    /// happens to be the same cell is not caught here: the caller recomputes sight on every
+    /// stage change, as the frontend does. Step, commit and speculate never touch the memory.
+    std::size_t remember(const SightField& sight);
     /// Actions taken on this stage (the HUD's turn counter).
     [[nodiscard]] Tick turn() const noexcept { return turn_; }
     /// Substeps since the Event (ADR-0009, PEO-094): the start day, every earlier stage
@@ -228,13 +240,15 @@ public:
         return EventSubsteps{params_.start_day} * kSubstepsPerDay + earlier_substeps_ + substeps_;
     }
     /// This generated stage as a record to resume later (ADR-0019): its index, the event
-    /// clock and the Dead. None for a load_layout stage, which cannot be regenerated.
+    /// clock, the Dead and the player's map memory. None for a load_layout stage, which
+    /// cannot be regenerated.
     [[nodiscard]] std::optional<AreaRecord> store_area() const;
     /// Go back to a stored area: its stage rebuilt as load_stage builds it (stage, wind,
     /// a cold scent field, the player at the entry, the stage clock reset), its horde
     /// thinned to the attrition curve at since_event() and taken in place of a spawn. A
     /// unit on the entry, or anywhere it cannot stand, moves to the nearest free open
-    /// cell (a ring scan, rows then columns). The event clock keeps running.
+    /// cell (a ring scan, rows then columns). The event clock keeps running. The map
+    /// memory comes back when its size matches the rebuilt stage; else it starts empty.
     void resume_area(AreaRecord record);
 
     /// Substeps elapsed on this stage.
@@ -300,6 +314,8 @@ private:
     /// Mixed into the slot hashes: the stage's own seed.
     std::uint64_t stage_salt_ = 0;
     Vec2i player_{};
+    /// The player's map memory of this stage (PEO-124).
+    MapMemory memory_;
     Rng rng_{1};
     Tick turn_ = 0;
     Substeps substeps_ = 0;
