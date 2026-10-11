@@ -858,19 +858,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-120",
-      "order": 967,
-      "type": "feature",
-      "title": "Look key: a movable cursor over the seen field (D-049)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-07",
-      "references": [],
-      "depends_on": []
-    },
-    {
       "id": "PEO-121",
       "order": 977,
       "type": "design",
@@ -881,9 +868,7 @@
       "owner": "builder",
       "created": "2026-10-07",
       "references": [],
-      "depends_on": [
-        "PEO-120"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-122",
@@ -941,9 +926,7 @@
       "owner": "architect",
       "created": "2026-10-10",
       "references": [],
-      "depends_on": [
-        "PEO-120"
-      ]
+      "depends_on": []
     }
   ]
 }
