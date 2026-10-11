@@ -905,10 +905,10 @@
       "order": 997,
       "type": "bug",
       "title": "HUD lines clip when a tiling WM ignores the window's minimum size",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "S",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-08",
       "references": [
         "docs/domains/presentation.md"
