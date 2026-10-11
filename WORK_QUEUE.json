@@ -886,21 +886,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-123",
-      "order": 997,
-      "type": "bug",
-      "title": "HUD lines clip when a tiling WM ignores the window's minimum size",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "S",
-      "owner": "architect",
-      "created": "2026-10-08",
-      "references": [
-        "docs/domains/presentation.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-124",
       "order": 1007,
       "type": "feature",
