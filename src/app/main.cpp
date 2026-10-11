@@ -70,6 +70,9 @@ constexpr std::int32_t kCompassStep = kDegreesPerTurn / static_cast<std::int32_t
 constexpr const char* kKeyHints = "[arrows/wasd] move [space/.] wait [r] run [shift+s] scent [n] next";
 /// The Look cursor's outline (PEO-120): bright against walls, floor and every glyph's colour.
 constexpr std::array<Uint8, 3> kLookCursorRgb{255, 220, 0};
+/// Seen terrain is 90, 90, 100; remembered terrain out of sight is drawn at about 40% of it
+/// (D-051 A), dim but still readable over the 8, 8, 12 background. A tunable.
+constexpr std::array<Uint8, 3> kRememberedRgb{36, 36, 42};
 
 /// The stage size, in cells, from which the speculation's scent update runs on the GPU
 /// (PEO-081). Measured on the M1 (Honeykrisp), saturated field, readback included: the
@@ -279,6 +282,9 @@ struct App {
     int map_cell_px = kCell * kScale;
     /// One map row of glyphs, reused across draws; grown only when the view widens.
     std::string row;
+    /// The same row's remembered-but-unseen terrain (PEO-124), drawn in its own dim colour:
+    /// a row string draws in one colour, so the two states need two strings.
+    std::string remembered_row;
     /// R toggles it (D-015): steps take kRunStepSubsteps. Kept across stages.
     bool running = false;
     /// Redraw only when something changed (a turn, a view toggle, an expose).
@@ -335,11 +341,13 @@ SDL_Point window_px(const App& app, int cols, int rows) noexcept {
 }
 
 /// Sight (PEO-119) once per move or stage, not per redraw: draw() and the start of Look
-/// both need it current for the player's cell.
+/// both need it current for the player's cell. Each fresh field is folded into the
+/// player's map memory (PEO-124), so memory too changes only on a move or a stage.
 void refresh_sight(App& app) {
-    const World& world = *app.world;
+    World& world = *app.world;
     if (app.sight_stale || world.player() != app.sight_player || world.stage_index() != app.sight_stage) {
         app.sight.compute(world.stage().blocked, world.player());
+        (void)world.remember(app.sight);
         app.sight_player = world.player();
         app.sight_stage = world.stage_index();
         app.sight_stale = false;
@@ -458,11 +466,15 @@ void draw(App& app) {
     const auto top = static_cast<float>(layout.top_px + hud_height_px);
     if (app.row.size() < static_cast<std::size_t>(view.cols) + 1) {
         app.row.resize(static_cast<std::size_t>(view.cols) + 1); // the glyphs and a '\0'
+        app.remembered_row.resize(app.row.size());
     }
     std::string& row = app.row;
-    // The one per-cell decision: drawn only when seen now (false off the stage). Map memory
-    // (D-051 A) adds its dimmed state here.
+    std::string& remembered_row = app.remembered_row;
+    // The one per-cell decision, three ways: seen now draws everything on it; seen before
+    // (D-051 A, PEO-124) draws its terrain only, dimmed; never seen draws nothing. All
+    // false off the stage. Only seen cells show the Dead, the exit or scent.
     const auto shown = [&](Vec2i p) { return app.sight.seen(p); };
+    const MapMemory& memory = world.memory();
 
     // Map + optional scent heat over the view's seen cells, so the bands read relative to
     // what is visible; unseen cells and those beyond the stage stay dark. @ is drawn last.
@@ -480,16 +492,24 @@ void draw(App& app) {
         for (int vx = 0; vx < view.cols; ++vx) {
             const int x = origin.x + vx;
             char c = ' ';
+            char m = ' ';
             if (shown({x, y})) {
                 c = stage.blocked.at(x, y) ? '#' : '.';
                 if (app.show_scent && !stage.blocked.at(x, y)) {
                     c = scent_glyph(scent.sample({x, y}), max_scent);
                 }
+            } else if (memory.remembered({x, y})) {
+                m = stage.blocked.at(x, y) ? '#' : '.';
             }
             row[static_cast<std::size_t>(vx)] = c;
+            remembered_row[static_cast<std::size_t>(vx)] = m;
         }
         row[static_cast<std::size_t>(view.cols)] = '\0';
-        draw_text(app, left, top + static_cast<float>(vy) * cell, cell, row.c_str(), 90, 90, 100);
+        remembered_row[static_cast<std::size_t>(view.cols)] = '\0';
+        const float row_y = top + static_cast<float>(vy) * cell;
+        draw_text(app, left, row_y, cell, remembered_row.c_str(), kRememberedRgb[0], kRememberedRgb[1],
+                  kRememberedRgb[2]);
+        draw_text(app, left, row_y, cell, row.c_str(), 90, 90, 100);
     }
 
     auto glyph = [&](Vec2i p, const char* s, Uint8 r, Uint8 g, Uint8 b) {
