@@ -76,6 +76,11 @@ constexpr std::array<Uint8, 3> kLookCursorRgb{255, 220, 0};
 /// Seen terrain is 90, 90, 100; remembered terrain out of sight is drawn at about 40% of it
 /// (D-051 A), dim but still readable over the 8, 8, 12 background. A tunable.
 constexpr std::array<Uint8, 3> kRememberedRgb{36, 36, 42};
+/// The window behind everything, and what the look-ahead strip is cleared to (PEO-127).
+constexpr std::array<Uint8, 3> kBackgroundRgb{8, 8, 12};
+/// The look-ahead strip's inner edge (PEO-127): a muted blue, apart from every glyph's
+/// colour and the Look cursor's yellow, so the strip never reads as the map carrying on.
+constexpr std::array<Uint8, 3> kPeekEdgeRgb{70, 110, 170};
 
 /// The stage size, in cells, from which the speculation's scent update runs on the GPU
 /// (PEO-081). Measured on the M1 (Honeykrisp), saturated field, readback included: the
@@ -415,7 +420,8 @@ void take_turn(App& app, Action action) {
 void draw(App& app) {
     const World& world = *app.world;
     const Stage& stage = world.stage();
-    SDL_SetRenderDrawColor(app.renderer, 8, 8, 12, 255);
+    SDL_SetRenderDrawColor(app.renderer, kBackgroundRgb[0], kBackgroundRgb[1], kBackgroundRgb[2],
+                           SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app.renderer);
     // The view (PEO-117): whole map cells of the window below the HUD, centred on the
     // player. Laid out and drawn in window pixels; ASCII mode's debug font draws under a
@@ -493,48 +499,89 @@ void draw(App& app) {
             }
         }
     }
-    for (int vy = 0; vy < view.rows; ++vy) {
-        const int y = origin.y + vy;
-        for (int vx = 0; vx < view.cols; ++vx) {
-            const int x = origin.x + vx;
-            char c = ' ';
-            char m = ' ';
-            if (shown({x, y})) {
-                c = stage.blocked.at(x, y) ? '#' : '.';
-                if (app.show_scent && !stage.blocked.at(x, y)) {
-                    c = scent_glyph(scent.sample({x, y}), max_scent);
+    // Draws `size` cells of the stage from stage cell `from`, placed at view cell `at`: the
+    // main view, and the look-ahead strip (PEO-127) by the same rule, so the strip shows
+    // only what sight or memory already has. Scent bands use the main view's max_scent.
+    const auto draw_cells = [&](Vec2i from, Vec2i at, View size) {
+        const float cells_left = left + static_cast<float>(at.x) * cell;
+        for (int vy = 0; vy < size.rows; ++vy) {
+            const int y = from.y + vy;
+            for (int vx = 0; vx < size.cols; ++vx) {
+                const int x = from.x + vx;
+                char c = ' ';
+                char m = ' ';
+                if (shown({x, y})) {
+                    c = stage.blocked.at(x, y) ? '#' : '.';
+                    if (app.show_scent && !stage.blocked.at(x, y)) {
+                        c = scent_glyph(scent.sample({x, y}), max_scent);
+                    }
+                } else if (memory.remembered({x, y})) {
+                    m = stage.blocked.at(x, y) ? '#' : '.';
                 }
-            } else if (memory.remembered({x, y})) {
-                m = stage.blocked.at(x, y) ? '#' : '.';
+                row[static_cast<std::size_t>(vx)] = c;
+                remembered_row[static_cast<std::size_t>(vx)] = m;
             }
-            row[static_cast<std::size_t>(vx)] = c;
-            remembered_row[static_cast<std::size_t>(vx)] = m;
+            row[static_cast<std::size_t>(size.cols)] = '\0';
+            remembered_row[static_cast<std::size_t>(size.cols)] = '\0';
+            const float row_y = top + static_cast<float>(at.y + vy) * cell;
+            draw_text(app, cells_left, row_y, cell, remembered_row.c_str(), kRememberedRgb[0],
+                      kRememberedRgb[1], kRememberedRgb[2]);
+            draw_text(app, cells_left, row_y, cell, row.c_str(), 90, 90, 100);
         }
-        row[static_cast<std::size_t>(view.cols)] = '\0';
-        remembered_row[static_cast<std::size_t>(view.cols)] = '\0';
-        const float row_y = top + static_cast<float>(vy) * cell;
-        draw_text(app, left, row_y, cell, remembered_row.c_str(), kRememberedRgb[0], kRememberedRgb[1],
-                  kRememberedRgb[2]);
-        draw_text(app, left, row_y, cell, row.c_str(), 90, 90, 100);
-    }
 
-    auto glyph = [&](Vec2i p, const char* s, Uint8 r, Uint8 g, Uint8 b) {
-        const std::optional<Vec2i> at = view_to_screen(p, origin, view);
-        if (!at) {
-            return;
+        const auto glyph = [&](Vec2i p, const char* s, Uint8 r, Uint8 g, Uint8 b) {
+            const std::optional<Vec2i> v = view_to_screen(p, from, size);
+            if (!v) {
+                return;
+            }
+            draw_text(app, left + static_cast<float>(at.x + v->x) * cell,
+                      top + static_cast<float>(at.y + v->y) * cell, cell, s, r, g, b);
+        };
+        if (shown(stage.exit)) {
+            glyph(stage.exit, ">", 120, 200, 255);
         }
-        draw_text(app, left + static_cast<float>(at->x) * cell, top + static_cast<float>(at->y) * cell, cell,
-                  s, r, g, b);
+        for (const Dead& d : world.horde()) {
+            if (shown(d.pos)) {
+                glyph(d.pos, "d", 220, 60, 60);
+            }
+        }
+        glyph(world.player(), "@", 255, 255, 255); // always: the origin of sight
     };
-    if (shown(stage.exit)) {
-        glyph(stage.exit, ">", 120, 200, 255);
-    }
-    for (const Dead& d : world.horde()) {
-        if (shown(d.pos)) {
-            glyph(d.pos, "d", 220, 60, 60);
+    draw_cells(origin, {0, 0}, view);
+
+    // The look-ahead strip over the map's edge: its rect cleared to the background so the
+    // map under it is hidden, then its cells, then a line on its inner edge so the eye can
+    // tell it is not the map carrying on. Hidden during Look, which pans to any seen cell
+    // itself and whose cursor the strip would cover.
+    if (app.peek.open() && !app.look.active()) {
+        if (const std::optional<PeekStrip> strip = app.peek.strip(view, origin)) {
+            const SDL_FRect box{(left + static_cast<float>(strip->at.x) * cell) / render_scale,
+                                (top + static_cast<float>(strip->at.y) * cell) / render_scale,
+                                static_cast<float>(strip->size.cols) * cell / render_scale,
+                                static_cast<float>(strip->size.rows) * cell / render_scale};
+            SDL_SetRenderDrawColor(app.renderer, kBackgroundRgb[0], kBackgroundRgb[1], kBackgroundRgb[2],
+                                   SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(app.renderer, &box);
+            draw_cells(strip->origin, strip->at, strip->size);
+            // One window pixel thick: drawn at render scale 1, inside the strip's own cells.
+            SDL_SetRenderScale(app.renderer, 1.0F, 1.0F);
+            const float x0 = box.x * render_scale;
+            const float y0 = box.y * render_scale;
+            const float x1 = x0 + box.w * render_scale - 1.0F;
+            const float y1 = y0 + box.h * render_scale - 1.0F;
+            const Vec2i dir = app.peek.dir();
+            SDL_SetRenderDrawColor(app.renderer, kPeekEdgeRgb[0], kPeekEdgeRgb[1], kPeekEdgeRgb[2],
+                                   SDL_ALPHA_OPAQUE);
+            if (dir.x == 0) {
+                const float edge_y = dir.y < 0 ? y1 : y0; // a north strip's bottom, a south one's top
+                SDL_RenderLine(app.renderer, x0, edge_y, x1, edge_y);
+            } else {
+                const float edge_x = dir.x < 0 ? x1 : x0; // a west strip's right, an east one's left
+                SDL_RenderLine(app.renderer, edge_x, y0, edge_x, y1);
+            }
+            SDL_SetRenderScale(app.renderer, render_scale, render_scale);
         }
     }
-    glyph(world.player(), "@", 255, 255, 255); // always: the origin of sight
     // The Look cursor: an outline over the cell, drawn last so no glyph covers it and it
     // covers no glyph.
     if (app.look.active()) {
