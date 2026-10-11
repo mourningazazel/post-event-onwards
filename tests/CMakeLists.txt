@@ -27,6 +27,7 @@ add_executable(peo_core_tests
     core/test_sight.cpp
     core/test_look.cpp
     core/test_memory.cpp
+    core/test_peek.cpp
     siege/test_siege_layouts.cpp)
 target_link_libraries(peo_core_tests PRIVATE peo::core peo::options doctest)
 # PEO-080: the executor tests also run the frontend's thread pool (header-only, no SDL).
