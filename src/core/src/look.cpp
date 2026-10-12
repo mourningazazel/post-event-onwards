@@ -55,10 +55,12 @@ std::optional<LookReport> look_at(const SightField& sight, const Stage& stage, s
     // inside int32. player is not asserted to be sight.origin() so the Dead that can see may
     // pass their own origin later.
     const Vec2i d = cell - player;
+    const std::int32_t distance_sq = d.x * d.x + d.y * d.y;
     const auto dead =
         std::count_if(horde.begin(), horde.end(), [cell](const Dead& unit) { return unit.pos == cell; });
     return LookReport{cell,
-                      d.x * d.x + d.y * d.y,
+                      distance_sq,
+                      legible(distance_sq),
                       cell == player,
                       stage.blocked.at(cell) != 0,
                       cell == stage.exit,

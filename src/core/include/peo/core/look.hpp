@@ -20,6 +20,17 @@ namespace peo::core {
 /// no number of its own.
 inline constexpr int kLookJumpCells = 8;
 
+/// 20 ft at the D-049 tile scale: within this many cells signs read and things show their
+/// generic labels; past it they show as present only (D-053 A).
+inline constexpr std::int32_t kLegibleRangeCells = 6;
+
+/// Whether a cell at `distance_sq` from the player is close enough to make things out. The
+/// same disc test sight uses, so a cell is legible exactly when its whole-cell distance is
+/// within kLegibleRangeCells.
+[[nodiscard]] constexpr bool legible(std::int32_t distance_sq) noexcept {
+    return distance_sq <= kLegibleRangeCells * kLegibleRangeCells;
+}
+
 /// The Look cursor. It only ever rests on a cell the player sees now, so nothing it points
 /// at can tell the player more than sight already has.
 class LookCursor {
@@ -47,13 +58,14 @@ private:
     bool active_ = false;
 };
 
-/// What is at one seen cell: data only, no words (D-042). PEO-121 adds what shows at each
-/// distance.
+/// What is at one seen cell: data only, no words (D-042).
 struct LookReport {
     Vec2i cell;
     /// Squared distance from the player in cells: compared with r * r, the same disc test
     /// sight uses, so no square root and no float.
     std::int32_t distance_sq;
+    /// legible(distance_sq): things here can be made out, not merely seen (PEO-121).
+    bool legible;
     bool player;
     /// The cell blocks sight (a wall today).
     bool opaque;
