@@ -160,4 +160,25 @@ TEST_SUITE("look") {
         REQUIRE(empty.has_value());
         CHECK(empty->dead == 0);
     }
+
+    TEST_CASE("look_at marks cells within 6 cells legible, by the sight disc test") {
+        const Stage stage = open_stage(24);
+        const Vec2i player{12, 12};
+        // Sight reaches well past the legible range, so only the 20 ft rule decides.
+        const SightField sight = sight_from(stage, player, 10);
+
+        const auto legible_at = [&](Vec2i offset) {
+            const auto report = look_at(sight, stage, std::span<const Dead>{}, player, player + offset);
+            REQUIRE(report.has_value());
+            return report->legible;
+        };
+
+        CHECK(legible_at({0, 0}));
+        CHECK(legible_at({6, 0}));
+        CHECK(legible_at({0, 6}));
+        CHECK(legible_at({4, 4})); // distance_sq 32
+        CHECK_FALSE(legible_at({7, 0}));
+        CHECK_FALSE(legible_at({5, 5})); // distance_sq 50
+        CHECK_FALSE(legible_at({6, 1})); // distance_sq 37
+    }
 }
