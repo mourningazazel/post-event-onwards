@@ -24,8 +24,9 @@ improve prose.
 1. `git diff --stat <range>` and read the changed hunks.
 2. Collect what changed that docs could name: commands, flags, file paths,
    presets, constants, public types, budgets.
-3. `rg -l` each term under `docs/`, `AGENTS.md`, `CLAUDE.md` and
-   `.agents/`. Read only the matching sections.
+3. `rg -l` each term under `docs/` (the owner's wiki in `docs/wiki/`
+   included), `AGENTS.md`, `CLAUDE.md` and `.agents/`. Read only the
+   matching sections.
 4. Fix each stale statement in place, keeping the page's wording style.
 5. Run `python3 tools/validate_docs.py`; trim your own edits until it
    passes.

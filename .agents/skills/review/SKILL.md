@@ -40,7 +40,9 @@ When handed one item, do that item only.
    - **Report:** `manual` results are specific; perf numbers present when
      asked.
 4. Pass: `python3 tools/work_queue.py complete <id> --by architect --commit
-   <last sha>`. Update `docs/architecture.md` if a seam changed.
+   <last sha>`. Update `docs/architecture.md` if a seam changed, and the
+   `docs/wiki/` page of any behaviour, formula, tunable or public symbol
+   the diff changed.
    If the work is correct but raises a gameplay, abstraction or direction
    question (or the next step is a big rewrite), still complete it, then add
    a `D-xxx` entry to `docs/production/DECISIONS_NEEDED.md` and set the
