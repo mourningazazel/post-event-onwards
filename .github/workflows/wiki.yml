@@ -1,0 +1,42 @@
+# Publishes docs/wiki to the repository's Wiki tab on every push to main that touches it.
+# docs/wiki stays the source; the Wiki tab is a rendered copy (tools/wiki_publish.py).
+name: wiki
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/wiki/**", "tools/wiki_publish.py", ".github/workflows/wiki.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: publish wiki
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Render pages
+        run: python3 tools/wiki_publish.py "$RUNNER_TEMP/pages"
+      - name: Push to the wiki
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          # The wiki repository exists once its first page is created on the Wiki tab.
+          git clone "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" "$RUNNER_TEMP/wiki"
+          cd "$RUNNER_TEMP/wiki"
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp "$RUNNER_TEMP"/pages/*.md .
+          git add -A .
+          if git diff --cached --quiet; then echo "wiki already current"; exit 0; fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Publish docs/wiki at ${GITHUB_SHA::7}"
+          git push origin HEAD

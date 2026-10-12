@@ -172,6 +172,7 @@ def main() -> int:
     LOG.parent.mkdir(parents=True, exist_ok=True)
     LOG.write_text("", encoding="utf-8")
     run("docs", [sys.executable, "tools/validate_docs.py"])
+    run("wiki-links", [sys.executable, "tools/wiki_publish.py", "--check"])
     run("content-lint", [sys.executable, "tools/content/lint.py"])
     run("content-tests", [sys.executable, "tools/content/test.py"])
 
