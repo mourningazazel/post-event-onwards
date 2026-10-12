@@ -11,7 +11,7 @@ process). Load the always set and the one domain your work names.
 | When you are… | Read |
 |---------------|------|
 | Starting any session | `../AGENTS.md`, your role in [roles.md](roles.md), then [domains/](domains/README.md) |
-| New to the project (a human taking it over) | [wiki/](wiki/README.md): a guided walk through every system |
+| Understanding a system in depth (the owner's reference) | [wiki/](wiki/README.md); keep its page current with your change |
 | Working on a queue item | its brief, then the domain page in its references |
 | Unsure why something is the way it is | the domain page's decisions, then [production/decisions.md](production/decisions.md) |
 | Facing a gameplay / abstraction / direction choice, or a big rewrite | Add an entry to [production/DECISIONS_NEEDED.md](production/DECISIONS_NEEDED.md); set the item `AwaitingUser` |

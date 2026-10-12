@@ -1,4 +1,4 @@
-# 5 · Scent
+# Scent
 
 The signature mechanic. One integer field over the stage that says, per cell, how strongly
 the player's scent reads there now. The Dead climb it. Decisions: D-024 (the geodesic field),
@@ -19,7 +19,7 @@ scent(cell) = max over deposits of  strength - distance_cost x route - age_cost 
 - `age` is updates since the deposit.
 - Read as 0 when negative; a deposit is gone where it reaches 0.
 
-Defaults (`WaveParams`, `scent_wave.hpp:40`): `distance_cost = 8`, `age_cost = 8`,
+Defaults (`WaveParams`, `scent_wave.hpp`): `distance_cost = 8`, `age_cost = 8`,
 `strength = 60 x (8 + 8) = 960`, `speed = 1`, no wind. Equal costs mean a trail one update
 old reads like one a cell further away. Because the front moves `speed` cells per update, a
 cell `r` away is reached no sooner than `r` updates later, so a deposit from a standing player
@@ -43,12 +43,12 @@ age_line         = age_cost x updates
 The line moves up by `age_cost` per update, so everything reads 8 weaker without being
 touched. An unreached cell holds `kWaveUnreached` (INT32_MIN / 2). The line must stay inside
 int32: `max_wave_updates()` gives 2^27 updates, about 12 game years, and a `static_assert`
-fails the build if the defaults ever drop below one year (`scent_wave.hpp:82`). A wave lives
+fails the build if the defaults ever drop below one year (`scent_wave.hpp`). A wave lives
 for one stage; outliving that would need a rebase pass (PEO-077, ADR-0011).
 
 ## One update: rounds of a pull
 
-`ScentWave::update` (`scent_wave.cpp:407`):
+`ScentWave::update` (`scent_wave.cpp`):
 
 1. `++updates` (the age line moves).
 2. `speed` **full rounds**. In a round every open cell looks at its eight neighbours'
@@ -74,7 +74,7 @@ patch all exact.
   round pulls only tiles that changed last round and their neighbours (`expand_active`). A
   tile nobody pulls holds the same values in both buffers, so skipping it is free. The work
   grows with the active front, not the map.
-- The row kernel (`wave_kernels.hpp:59`, `pull_row`) is branch-free integer max and
+- The row kernel (`wave_kernels.hpp`, `pull_row`) is branch-free integer max and
   subtract, so compilers vectorise it. It is built twice from one source: plain (NEON on
   arm64, SSE2 on x86-64) and AVX2 (`wave_kernels_avx2.cpp`); a CPU check picks once per
   process. Both give the same bits; tests compare them.
@@ -84,12 +84,12 @@ patch all exact.
 
 ## Wind
 
-Each stage draws its own wind from its seed (`World::start_field`, `world.cpp:286`): a
+Each stage draws its own wind from its seed (`World::start_field`, `world.cpp`): a
 direction 0 to 359 degrees (clockwise from east, `toward_degrees`) and an intensity 0 to
 `WorldParams::wind_max`. Core's default `wind_max` is 0, always calm; the game sets 8 (full)
-and `gust = 2` (`src/app/main.cpp:67`). The HUD shows it as "wind to SE 5".
+and `gust = 2` (`src/app/main.cpp`). The HUD shows it as "wind to SE 5".
 
-`wind_table` (`wind.cpp:378`) turns it into a per-direction step adjustment, integers only:
+`wind_table` (`wind.cpp`) turns it into a per-direction step adjustment, integers only:
 
 ```
 progress(d) = dx(d) x cos(toward) + dy(d) x sin(toward)          (x 4096, fixed table)
@@ -98,7 +98,7 @@ downwind(d) = progress > 0
 ```
 
 and the kernel's cost for scent travelling in direction d into a cell from neighbour n
-(`wave_kernels.hpp:130`):
+(`wave_kernels.hpp`):
 
 ```
 step_cost = max(1, distance_cost - step(d) x openness(n) / 255)
@@ -106,8 +106,8 @@ step_cost = max(1, distance_cost - step(d) x openness(n) / 255)
 
 So a full wind (8, `kWindFull`, which must equal `distance_cost`) makes a straight downwind
 step outdoors cost the floor of 1 and an upwind step 16. `openness` is 255 outdoors and 0
-indoors (`kOpennessOutdoors`/`kOpennessIndoors`); today every open cell of a generated
-stage is outdoors, and buildings will mark their insides. `wind_loss` (default 0) models
+indoors (`kOpennessOutdoors`/`kOpennessIndoors`). `generate_stage` marks every open cell
+outdoors; hand-built layouts may pass their own grid, and buildings will mark their insides. `wind_loss` (default 0) models
 scent lost upward outdoors. A calm wave keeps the windless kernel, bit-identical to a world
 with no wind code at all.
 
@@ -118,7 +118,7 @@ pays (from 512x512, `docs/bottlenecks.md` row B3).
 
 To let `speculate` run the update before the player has moved, the speculated update runs
 **with no deposit**, and on commit the player's logged deposits are added afterwards with
-`patch_deposit(before, at, strength, blocked, openness)` (`scent_wave.cpp:542`). For speed 1
+`patch_deposit(before, at, strength, blocked, openness)` (`scent_wave.cpp`). For speed 1
 this is exact: a round is a max over offers, so the deposit's offers can be added after the
 others. Under wind (gust rounds and all) the deposit is run alone through the update's rounds
 on a small block round it and maxed in, which is exact for any speed. `World::commit` still
@@ -136,11 +136,11 @@ falls back to a live step when `speed != 1`.
   backend and diagnostics.
 
 The frontend's scent overlay (Shift+S) draws `*`, `+`, `:` where a cell is at least 10%,
-0.1% or 0.001% of the strongest cell (`src/app/main.cpp:186`).
+0.1% or 0.001% of the strongest cell (`src/app/main.cpp`).
 
-## Levers
+## Tunables
 
-| Lever | Where | Default | Turning it up |
+| Tunable | Where | Default | Raising it |
 |---|---|---|---|
 | `strength` | `WaveParams` | 960 | Longer reach (reach = strength / (distance + age cost)) |
 | `distance_cost` | `WaveParams` | 8 | Scent falls off faster with distance; shorter reach. Must equal `kWindFull` (static_assert) |
@@ -151,12 +151,15 @@ The frontend's scent overlay (Shift+S) draws `*`, `+`, `:` where a cell is at le
 | `wind_max` | `WorldParams` | 0 core, 8 in game | Stronger winds possible per stage |
 | tile size | `kWaveTileWidth/Height` | 128 x 8 | Performance only |
 
-Changing any of these moves the siege baseline and the swarm scenario numbers; run
-`peo_siege --check` and expect to `--write` a new baseline with a reason.
+Any change here moves the swarm scenario numbers and the siege baseline
+([Build and test](build-and-test.md#on-demand-suites)); a deliberate move rewrites the
+baseline with its reason in the commit.
 
-## Where scent is going
+## Designed, not built
 
-From `docs/design/scent-mobs.md` and the queue: blood (PEO-003), rot from the Dead masking
+From `docs/design/scent-mobs.md` (later rounds win) and `docs/design/scent-performance.md`:
+blood (PEO-003), rot from the Dead masking
 human scent (PEO-039), soak, a per-tile scent memory from contact (PEO-038), a reach radius
 with sealed buildings skipped (PEO-047), z-level routes (PEO-049), a 6x6 section aggregate
-layer (PEO-051), several channels with a dominance matrix, and bigger stages (PEO-083).
+layer (PEO-051), several channels with a dominance matrix (`content/registry/scent.toml` lists them), and
+bigger stages (PEO-083).

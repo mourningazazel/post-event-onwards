@@ -1,4 +1,4 @@
-# 9 · Saves and revisits
+# Saves and revisits
 
 ## The save container (`save.hpp`, `save.cpp`, ADR-0002, ADR-0017, PEO-091)
 
@@ -37,15 +37,14 @@ issues)` checks **every value** against the stage it builds before touching anyt
 are bounded (`kMaxRestoreSide = 4096`, periods, rounds), counts are checked against the bytes
 left before allocating, and values must be ones the code could have written. On anything but
 `Ok` the World is untouched and `issues` says what and where. A restored world then continues
-bit-identical to one never saved (`test_save.cpp:507`). The executor and field backend are not
+bit-identical to one never saved (`test_save.cpp`). The executor and field backend are not
 saved; they are the app's.
 
-Every section is version 1 today. A change to a section's layout bumps its version, and a
+Each section carries its own version (`kSectionVersion` in `world_save.cpp`). A change to a section's layout bumps its version, and a
 reader keeps reading the old ones (ADR-0017's save evolution: fallbacks, content migration on
 load, PEO-092).
 
-Not built: files on disk, the two-good-copies fallback and crash flag (PEO-107), zstd
-compression (PEO-108). Nothing in the game calls save yet.
+Saves live in memory as bytes; nothing in the frontend writes them to disk yet.
 
 ## The clock since the Event
 
@@ -60,7 +59,7 @@ first and after the last (it saturates). `affected` is in parts of 65,536. `affe
 is integer only and exact at every knot. `valid()` requires days strictly rising and values
 never falling.
 
-The one curve in use is **the Dead's attrition** (`kDefaultAttrition`, `aftermath.hpp:93`):
+The one curve in use is **the Dead's attrition** (`kDefaultAttrition`, `aftermath.hpp`):
 the share of the Dead gone by each day since the Event.
 
 | Day | 0 | 7 | 30 | 365 | 1825 and after |
@@ -87,7 +86,7 @@ thin_horde(horde, attrition, now):  drop every unit with fate < affected_at(attr
 ```
 
 One comparison a unit, reading only `now`, never when it was stored. So several short
-absences leave exactly what one long one does (`test_revisit.cpp:269`), and there is no
+absences leave exactly what one long one does (`test_revisit.cpp`), and there is no
 simulation to catch up.
 
 ## Leaving and coming back
@@ -101,11 +100,19 @@ simulation to catch up.
   depends on when), then thins the horde to the curve at `since_event()`. The map memory
   comes back if its size matches.
 
-Nothing in play calls these yet. Designed next: player-made things age on revisit (PEO-109),
-the catch-up as a streaming job when an area reloads (PEO-110), and D-040 says revisits have
-no gate.
+No gameplay path calls these yet; tests drive them. D-040: revisits have no gate.
 
-## Levers
+## Tunables
 
 `WorldParams::start_day` and `WorldParams::attrition` (any valid curve; an invalid one becomes
-the default). The knot constants `kAttrition*` in `aftermath.hpp:85` to `:92`.
+the default). The default curve's knots are the `kAttrition*` constants in `aftermath.hpp`.
+
+## Designed, not built
+
+- Save files on disk, two good copies and a crash flag (PEO-107, ADR-0017).
+- zstd-compressed sections (PEO-108, ADR-0002).
+- Content migration on load (PEO-092, ADR-0017).
+- Replays: seed plus input log reproduces a run headlessly (PEO-006).
+- Player-made things age on revisit from `last_touched` (PEO-109, ADR-0019 point 4).
+- The revisit catch-up as a streaming job when an area reloads (PEO-110).
+- Network sync by scope (ADR-0017 decision 3).

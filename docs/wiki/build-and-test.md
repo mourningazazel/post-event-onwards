@@ -1,4 +1,4 @@
-# 2 · Build, run and test
+# Build, run and test
 
 ## Toolchain
 
@@ -18,7 +18,7 @@ First thing in a fresh checkout: `python3 tools/bootstrap.py`. It installs the g
 | Preset | Type | Frontend | Notes |
 |---|---|---|---|
 | `dev` | Debug | yes | ASan and UBSan on. The everyday build for playing and coding |
-| `release` | Release | yes | What you play for feel and frame time |
+| `release` | Release | yes | Playing for feel and frame time |
 | `headless` | Debug | no | ASan/UBSan. What CI's main test job and `verify.py` build |
 | `headless-release` | Release | no | Perf numbers, the siege suite, release-only tests |
 | `headless-tsan` | Debug | no | ThreadSanitizer, for the threaded tests |
@@ -29,40 +29,10 @@ cmake --preset dev && cmake --build --preset dev && ./build/dev/bin/peo
 cmake --preset headless && cmake --build --preset headless && ctest --preset headless
 ```
 
-## Playing the prototype
+## Running the game
 
-`./build/dev/bin/peo [SEED] [--stage WxH] [--threads N] [--tileset PATH]
-[--no-gpu-compute] [--gpu-min-cells N]` (`src/app/main.cpp:771`).
-
-| Flag | Default | Effect |
-|---|---|---|
-| `SEED` | 1 | The world seed. Same seed and same keys give the same run |
-| `--stage WxH` | 200x120 | Stage size, each side 16 to 2048. The Dead scale with area: 40 per 80x45 (so 266 at the default) |
-| `--threads N` | hardware threads less one | Workers lent to core; 1 is serial. Results are identical at any count |
-| `--tileset PATH` | ASCII | A Dwarf Fortress grid PNG atlas (16x16 glyphs, CP437 order) |
-| `--no-gpu-compute` | off | Never use the GPU scent backend |
-| `--gpu-min-cells N` | never (calm), 512x512 (windy) | Stage size from which the speculated scent update runs on the GPU |
-
-Keys (`src/app/main.cpp:901`):
-
-| Key | Does |
-|---|---|
-| Arrows or WASD | Step (4 directions). A step into a wall still spends the turn |
-| Space or `.` | Wait one turn |
-| R | Toggle running: steps take half the time (two cells per update) |
-| Shift+S | Overlay the scent field (`*` `+` `:` bands at 10%, 0.1%, 0.001% of the strongest) |
-| N | Skip to the next stage |
-| L | Look: a cursor over what you can see now; arrows move it, Shift moves 8, L or Esc ends |
-| Ctrl+direction | Look-ahead strip along that edge of the view |
-| Esc | Quit |
-
-Walk onto the exit to load the next stage. The status line reads `stage, turn, walk/run,
-dead count, wind, spec: hit/miss and how long the last speculation took`. A "miss" means
-the precomputed turn was not ready when you pressed a key, so the turn ran live.
-
-Stages are random walls (see [World generation](07-world-generation.md)); nothing
-guarantees the exit is reachable, so N exists. The Dead never touch the player yet: there is
-no damage or death (D-043 and PEO-102 are about the player's tile).
+`./build/dev/bin/peo [SEED] [flags]` (or `build/release/bin/peo`). The flags and keys are
+listed on [Frontend](frontend.md#command-line).
 
 ## Tests
 
@@ -91,7 +61,7 @@ bit-identical to the one never saved`, `revisit: one long absence equals several
 ones`, the serial-versus-threaded golden runs in `test_executor.cpp`, and the swarm
 scenarios in `test_swarm.cpp`. If one of those goes red, something fundamental broke.
 
-### On-demand tools
+### On-demand suites
 
 - **Siege suite** (`tests/siege/siege.cpp`, PEO-088). The horde round each of three
   buildings, three opening setups, two densities, 48 game hours while the player waits;

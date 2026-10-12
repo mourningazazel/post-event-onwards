@@ -10,7 +10,8 @@ Detect: `CLAUDE_CODE_REMOTE` is set; no display; branch `claude/*`.
 
 Owns:
 - **Direction.** `docs/production/vision.md` (pillars), `docs/architecture.md`
-  (systems and boundaries), `docs/production/decisions.md` (why).
+  (systems and boundaries), `docs/production/decisions.md` (why), and
+  `docs/wiki/` (the owner's reference: every page kept current with the code).
 - **Abstraction.** Public interfaces in `src/core/include/peo/core/`. When the
   Builder needs a new seam, the Architect designs the header and the tests
   that pin its behaviour, then briefs the implementation.

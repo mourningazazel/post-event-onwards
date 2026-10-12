@@ -1,27 +1,27 @@
-# 7 · World generation
+# World generation
 
-Two separate things live here today, and they are not connected yet:
+World generation has two subsystems that are not yet connected:
 
-1. **Stages**: what you play on. Random walls, an endless sequence.
-2. **Geography**: the real map the game will be played on, built bottom-up (terrain, seas,
-   lakes, settlement sites), currently reachable only from tests and `peo_geo`.
+1. **Stages**: the maps play happens on. Random walls, an endless sequence.
+2. **Geography**: the real map, built bottom-up (terrain, seas, lakes, settlement sites).
+   Tests and `peo_geo` use it; no stage reads it yet.
 
 The target is one continuous map with no stage jumps (ADR-0007, D-041, PEO-118), generated
 in levels (macro, region, settlement, structure, tile, contents) as a baseline world plus the
 Event plus aftermath on one clock (ADR-0009, ADR-0011, ADR-0018). Design:
 `docs/design/world-generation.md`, `docs/design/world-catalog.md`.
 
-## Stages today (`stage.hpp`, `stage.cpp`)
+## Stages (`stage.hpp`, `stage.cpp`)
 
 - `stage_seed(world_seed, index)`: a splitmix64 mix, so stage 5 and 6 are unrelated.
 - `stage_spec(world_seed, index)`: 80x45 by default (the World overrides size from
-  `WorldParams`), wall density `0.10 + 0.01 x index`, capped at 0.35 (`stage.cpp:18`).
+  `WorldParams`), wall density `0.10 + 0.01 x index`, capped at 0.35 (`stage.cpp`).
 - `generate_stage(spec)`: each cell is a wall with chance `wall_density`; the border is
   always wall; the entry is a random cell on column 1, the exit a random cell on column
   width-2, both carved open. Openness is outdoors on every open cell.
 
-Nothing checks the exit is reachable (inferred from the code: there is no connectivity
-pass), which is one reason the frontend has N to skip a stage. `generate_stage`'s signature is
+There is no connectivity pass, so the exit is not guaranteed reachable; the frontend's N key
+skips a stage. `generate_stage`'s signature is
 the seam: generators (caves, PEO-005; towns later) plug in behind it.
 
 Two hand-built layouts exist for tests and are played through `World::load_layout`:
@@ -39,7 +39,7 @@ a pure function of the world seed and the cell's world coordinates, so squares j
 seams in any order. `generate_geography(seed, params, rect)` fills any rectangle cell for
 cell equal to `terrain_at` (scanning by row, for speed); `generate_square` does one square.
 
-### Elevation (`geography.cpp:37`, `terrain_from`)
+### Elevation (`geography.cpp`, `terrain_from`)
 
 Every noise value is Q16 (65536 = 1.0), from integer value noise with an integer smoothstep
 (`noise.hpp`): `value_noise`, `fbm` (octaves, each half the wavelength), `ridged`
@@ -73,7 +73,7 @@ octaves); hills 2^7 (5 octaves); forest 2^8 (4 octaves).
 - Water bodies carry their outlines as closed rings of cell corners (outer rings positive
   area, island holes negative), ADR-0018 point 2.
 
-Rivers are not built: PEO-111 (courses), ADR-0010 (rivers as lazy long features).
+Rivers are designed, not built (see below).
 
 ## Settlement sites (`settlement_site.hpp`, `settlement_site.cpp`, PEO-096)
 
@@ -100,21 +100,33 @@ cell 0. Each holds at most one site:
 5. The best candidate (ties to the lower index) is kept if it scores at least -900.
 
 A site reads only its own site cell of the region, so the same seed gives the same sites
-whatever region you generate. Not built: rivers and river towns (PEO-112), town layouts
-(PEO-114, PEO-115), the building census (PEO-014).
+whichever region is generated.
 
-## Looking at it
+## Viewing the map
 
 `peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] --out f.ppm` draws squares
 (about 0.1 s each in release). The defaults in `GeographyParams` and `SiteParams` were chosen
 by reading these images; the reasons are in PEO-095's and PEO-096's notes
 (`docs/production/notes/`).
 
-## Levers
+## Tunables
 
-Every field of `GeographyParams` (`geography.hpp:39`) and `SiteParams`
-(`settlement_site.hpp:32`) is a lever, with its unit in a comment. `valid()` on each says
+Every field of `GeographyParams` (`geography.hpp`) and `SiteParams`
+(`settlement_site.hpp`) is a tunable, with its unit in a comment. `valid()` on each says
 which combinations the generators accept (for example the lake spacing must be at least
 twice the max radius plus one, and the site cell side must divide 1000). The stage levers
-are `kBaseDensity`, `kDensityPerStage`, `kMaxDensity` in `stage.cpp:18`, and the stage size
-in `WorldParams` or `--stage`.
+are `kBaseDensity`, `kDensityPerStage`, `kMaxDensity` in `stage.cpp`, and the stage size
+in `WorldParams` or `--stage`. All values are in [Tunables](tunables.md#the-map).
+
+## Designed, not built
+
+- Rivers: courses on the square (PEO-111, ADR-0010 rivers as lazy long features); sites that
+  know their rivers (PEO-112).
+- Settlements: the layout generator, outline to streets, blocks and lots (PEO-114); towns
+  fitted to rivers and shores (PEO-115).
+- Buildings and contents: the building census, category retail and persona houses (PEO-014,
+  PEO-113, `docs/design/world-catalog.md`), rooms and loot from `content/world/`, a room slot
+  for one item from a list (PEO-064).
+- Other stage generators behind `generate_stage`: caves (PEO-005).
+- One continuous map with no stage jumps (PEO-118, ADR-0007, D-041), z-levels, and the
+  aftermath layer on the global clock (ADR-0009, ADR-0011).

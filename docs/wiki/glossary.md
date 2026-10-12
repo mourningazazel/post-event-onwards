@@ -5,7 +5,7 @@
 | **the Dead** | The enemies: blind walking corpses that follow scent. One is "one of the Dead"; `Dead` in code. "Zombie" is banned everywhere |
 | **horde** | Any group of the Dead; `horde` in code (`World::horde()`) |
 | **the Event** | When nearly everyone turned. The world's long clock counts from it (`since_event()`) |
-| **stage** | One playable map today: random walls, an entry and an exit. Will give way to one continuous map (PEO-118) |
+| **stage** | One playable map: random walls, an entry and an exit. Designed to give way to one continuous map (PEO-118) |
 | **substep** | 250 game ms; the smallest unit of game time |
 | **slot** | Two substeps; the moments the Dead may act (the even substeps) |
 | **between layer** | The odd substeps, reserved for later use (ADR-0016) |
@@ -44,11 +44,11 @@
 | **siege suite** | `peo_siege`: hordes round three buildings for 48 game hours, checked against a baseline |
 | **unit tier / scenario tier** | Fast tests (all under 1 s) and slower `scenario*` suites (under 5 s), D-033 |
 | **Architect** | The cloud Claude: direction, briefs, headless tests, tooling, review |
-| **Builder** | The local Claude on your machine: implementation, running the game, perf numbers |
+| **Builder** | The local Claude on the owner's machine: implementation, running the game, perf numbers |
 | **brief** | An item's plan: goal, context, units, acceptance, tests, manual steps, out of scope |
 | **unit (of work)** | One commit-sized step of a brief |
 | **Validation** | Queue status: built and reported, waiting for review |
-| **AwaitingUser** | Queue status: waiting on your answer to a D-entry |
+| **AwaitingUser** | Queue status: waiting on the owner's answer to a D-entry |
 | **PEO-xxx / D-xxx / ADR-xxxx / Nxxx** | Queue item / owner decision / architecture decision / owner's verbatim note |
 | **D-021** | The performance budget: speculate under 100 ms, commit under 1 ms on the M1 Air |
 | **DF grid tileset** | A Dwarf Fortress-style PNG atlas: 16x16 glyphs in code page 437 order |

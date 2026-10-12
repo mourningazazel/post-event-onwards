@@ -1,12 +1,13 @@
-# 10 · Content data
+# Content
 
 ## What it is
 
-`content/` holds the game's catalogue as TOML: about 26,000 lines with 410 item archetypes,
-54 materials, 146 modifiers, 56 building types, 60 room types and 124 loot tables (counted
-2026-10-12). It is authored mostly by Claude (owner notes N008, N011) and checked by Python.
-**The C++ game does not load any of it yet**: the loader is PEO-008, and everything in this
-page is data plus an executable spec waiting for its port.
+`content/` holds the game's catalogue as TOML: item archetypes, materials, substances,
+modifiers and detail tables, brands, building and room types, loot tables and occupant
+profiles. `python3 tools/content/lint.py` prints the record count of every type. It is
+authored mostly by Claude (owner notes N008, N011) and checked by Python. The C++ game does
+not load it yet (the loader is PEO-008), so the Python tools are both the checker and the
+**executable spec** the C++ port must match.
 
 Schema reference: `content/README.md`. Design: `docs/design/content-model.md` (materials,
 features, capabilities, reactions, tags; attachment and joints; generated descriptions;
@@ -51,14 +52,14 @@ brands; quality), `docs/design/survival-actions.md`, `docs/design/world-catalog.
 - `rolls/pinned.toml`: container rolls pinned seed by seed, plus determinism, prefix
   stability and the detail blend over 200 seeds.
 
-## Levers
+## Tunables
 
-The content is itself the lever: numbers in TOML. When the loader lands, item behaviour comes
+The content is itself the tunable: numbers in TOML. When the loader lands, item behaviour comes
 from materials and features through `derive.py`'s formulas (the named constants at the top of
 `derive.py`, such as `SLICE_CAP`, `WIELD_MAX_G`, `IGNITE_BY_METHOD`, are tunables). Container
 fill comes from loot tables and purposes through `generate.py`'s order of salts.
 
-## Where content is going
+## Designed, not built
 
 The loader (PEO-008), quality and degradation (PEO-013), items as seeds that instantiate on
 change (PEO-050), the contents generator in C++ (PEO-053), skills (PEO-012), locks (PEO-019),

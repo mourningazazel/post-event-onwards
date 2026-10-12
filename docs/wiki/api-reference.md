@@ -1,4 +1,4 @@
-# 11 · API reference
+# API reference
 
 Every public header in `src/core/include/peo/core/`, namespace `peo::core`, grouped by job.
 This is a map, not a copy: each header's own comments are the contract and say more. The
@@ -42,7 +42,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | `speculate()` / `speculate(Speculation&)` | const | The next update ahead |
 | `commit(Speculation&, action)` | | Spend an action using it; bit-identical to `step` |
 | `deposit(at, strength)` | | Test hook for emitters; not a mechanic |
-| `save(build)` / `restore(image, issues)` | | Save sections and back ([Saves](09-saves-and-revisits.md)) |
+| `save(build)` / `restore(image, issues)` | | Save sections and back ([Saves](persistence.md)) |
 | `store_area()` / `resume_area(record)` | | Leave and return to a stage, thinned |
 | `remember(sight)` | | Fold sight into map memory; returns cells newly remembered |
 | `set_executor(Executor*)`, `set_field_backend(FieldBackend*)` | | Lend threads or a GPU; not owned |
