@@ -66,3 +66,9 @@ symbol, command or process described here updates the matching page in the same 
 Architect checks it in review (`/review`), and the `docs-drift` subagent includes
 `docs/wiki/` when it looks for stale docs. A system moving from designed to built moves its
 section into the page body.
+
+`docs/wiki/` is the source. Every push to `main` that touches it publishes the pages to the
+repository's Wiki tab (`tools/wiki_publish.py`, workflow `wiki`): `README.md` becomes Home,
+each other page is named after its title, and the sidebar is built from [Pages](#pages).
+Edits made directly on the Wiki tab are overwritten by the next publish. A link to another
+page names its file (`scent.md`); CI fails a link to a missing page or heading.
