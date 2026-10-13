@@ -647,7 +647,7 @@
       "order": 797,
       "type": "feature",
       "title": "Content migration on load (ADR-0017)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
