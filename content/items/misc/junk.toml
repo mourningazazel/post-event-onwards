@@ -1,0 +1,18 @@
+# Junk (D-046, PEO-116): what an item from an old save becomes when its archetype, every remap
+# and every ancestor on its parent chain are gone (PEO-092). It does nothing and generation
+# never places it; lint_junk keeps it that way.
+
+[item.junk]
+name = "junk"
+tags = ["cat.debris"]
+shape = "small"
+dims_mm = [80, 50, 30]
+mass_g = 40
+desc = "A lump of something that was once useful."   # placeholder; the owner writes final text (D-042)
+glyph = "item.scrap"
+why = "Content migration's last fallback: an old save's item whose kind no longer exists (D-046)."
+value_class = "junk"
+
+[item.junk.composition.body]
+material = "polypropylene"
+share = 100
