@@ -8,5 +8,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "PEO-134 done: brief on docs/design/reference-syntax.md (D-055); still waits on PEO-130"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-056: whitespace and line breaks inside query braces are insignificant; multi-line queries are TOML triple-quoted strings"
   }
 ]

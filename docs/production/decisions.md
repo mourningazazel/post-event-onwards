@@ -6,7 +6,14 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-033, D-035 to D-039, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-040, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-13 · D-056 · Queries are laid out one condition per line
+
+Owner request. Inside a query's braces, line breaks and indentation are ignored, so filters are
+written one condition per line, indented per nesting level, nested braces opening their own
+block; a multi-line query is a TOML triple-quoted string. Short ones may stay on one line.
+Consequence: PEO-132's parser treats whitespace inside braces as insignificant.
 
 ## 2026-10-13 · D-055 · Reference syntax settled: materials are items, calls end a path
 
@@ -126,10 +133,3 @@ read and write. Consequence: ADR-0015 point 2; content-model §4; PEO-008.
 
 User decision: A. Neighbouring squares generate whole when the player nears an edge, with coast
 and ranges continuous across them (ADR-0018, ADR-0007). Consequence: PEO-095.
-
-## 2026-10-03 · D-040 · Revisits have no gate
-
-User decision: A ("if that is easily accomplishable"; it is simpler than a gate, since the
-catch-up is closed form). Any area out of the active range catches up when reloaded, so a day
-away changes a little and a month a lot. Replaces N009's 30-day gate. Consequence: ADR-0019;
-PEO-094.

@@ -46,9 +46,22 @@ item.material.wood.*               any record directly under item.material.wood
 item.tool.**                       anything at any depth under item.tool
 self.carried.**{material ~ item.material.wood.**, dims_mm.0 > 100}
 item.**{capability.cut >= 3, mass_g <= 2000}
+
+self.carried.**{
+    material ~ item.material.wood.**,
+    dims_mm.0 >= 150,
+    contents.**{
+        substance ~ substance.liquid.water,
+    },
+}
 ```
 
 - `*` matches one segment, `**` any number.
+- **Layout (D-056).** Line breaks and indentation inside braces mean nothing, so a filter is
+  written one condition per line, indented four spaces per level, with the closing brace back at
+  the opening line's indent. A trailing comma is allowed. Braces nest: a filter on a list inside
+  the thing (its contents, its parts) opens its own block. Short filters may stay on one line.
+  In TOML, a query that spans lines is a triple-quoted string (`"""…"""`).
 - A filter is a comma list, all of which must hold: `=`, `!=`, `<`, `<=`, `>`, `>=` on
   numbers and IDs; `~` "is under or matches" a path or query (`material ~ item.material.wood.**`);
   `has` for lists (`tags has from.kitchen`).
@@ -65,12 +78,19 @@ effects refer to roles with `$`.
 
 ```toml
 [action.carve_spoon]
-roles.source = "self.carried.**{material ~ item.material.wood.**, dims_mm.0 >= 150}"
-roles.tool   = "self.carried.**{capability.cut >= 3}"
+roles.source = """
+self.carried.**{
+    material ~ item.material.wood.**,
+    dims_mm.0 >= 150,
+}"""
+roles.tool = "self.carried.**{capability.cut >= 3}"
 skill   = "skill.craft.woodworking"
 time_s  = 1800
 effects = [
-  "item.kitchen.utensil.spoon{composition.body.material = $source.material}.make(self.hands)",
+  """
+  item.kitchen.utensil.spoon{
+      composition.body.material = $source.material,
+  }.make(self.hands)""",
   "$source.use()",
   "$tool.durability.reduce(1)",
 ]
@@ -117,3 +137,4 @@ update. Decision: strings (D-055); revisit only if a load-time measurement says 
    attribute.
 4. **Queries:** braces for filters, `~` for "is under".
 5. **Format:** paths and queries are strings in the TOML, parsed once at load.
+6. **Layout (D-056):** one condition per line inside braces, indented per nesting level.
