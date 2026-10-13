@@ -69,6 +69,11 @@ if(Python3_Interpreter_FOUND)
              COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/suite_budget.py
                      $<TARGET_FILE:peo_core_tests> --tier scenario --agents ${CMAKE_SOURCE_DIR}/AGENTS.md)
     set_tests_properties(scenario_budget PROPERTIES TIMEOUT 120)
+    # PEO-008: every item in content/ resolves in the engine exactly as derive.py resolves it.
+    add_test(NAME content_golden
+             COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/content/golden.py
+                     --engine $<TARGET_FILE:peo_content_dump> --content ${CMAKE_SOURCE_DIR}/content)
+    set_tests_properties(content_golden PROPERTIES TIMEOUT 60)
 else()
-    message(WARNING "Python3 not found: the suite_budget test is not registered")
+    message(WARNING "Python3 not found: the suite_budget and content_golden tests are not registered")
 endif()
