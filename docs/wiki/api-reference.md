@@ -88,7 +88,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | Header | Symbols |
 |---|---|
 | `sight.hpp` | `SightField` (`compute(opaque, origin, params)`, `seen`, `window`, `origin`, `range`), `SightParams`, `CellRect`, `kOpticalRangeCells` |
-| `content.hpp` | `load_content(sources)`, `ContentSource`, `ContentLoad`, `Content` (`item`, `item_count`, `item_id`, `name`, `parent`, `abstract`, `tags`, `has`, `int_at`, `string_at`, `has_record`, `for_each_leaf`), `ItemId`, `ContentLeaf`, `kMaxItemAncestry` |
+| `content.hpp` | `load_content(sources)`, `ContentSource`, `ContentLoad`, `Content` (`item`, `item_count`, `item_id`, `name`, `parent`, `ancestry`, `abstract`, `tags`, `has`, `int_at`, `string_at`, `has_record`, `for_each_leaf`), `ItemId`, `ContentLeaf` |
 | `memory.hpp` | `MapMemory` (`reset`, `remember(sight)`, `remembered`, `mark`, `count`, `cells`) |
 | `look.hpp` | `LookCursor` (`begin`, `end`, `step(dir, cells, sight, bounds)`, `cell`, `active`), `LookReport`, `look_at`, `legible`, `kLookJumpCells`, `kLegibleRangeCells` |
 

@@ -34,10 +34,6 @@ struct ItemId {
     friend constexpr auto operator<=>(ItemId, ItemId) noexcept = default;
 };
 
-/// Longest parent chain an item may have; a longer one is a load error (content is depth 1
-/// today). A bound, so a walk up the chain never runs away.
-inline constexpr std::uint32_t kMaxItemAncestry = 16;
-
 /// One value of a resolved item at its dotted path, for tools that print or compare whole
 /// items (peo_content_dump). Only the member its kind names is set; views live for the visit.
 struct ContentLeaf {
@@ -70,6 +66,10 @@ public:
     [[nodiscard]] std::string_view name(ItemId item) const noexcept;
     /// The item it inherits from, or nullopt for a root.
     [[nodiscard]] std::optional<ItemId> parent(ItemId item) const noexcept;
+    /// Its whole parent chain, nearest first (parent, grandparent, ... root); empty for a root.
+    /// Stored at load, so reading it walks nothing. A chain has no length limit: load rejects
+    /// cycles, so every chain ends at a root.
+    [[nodiscard]] std::span<const ItemId> ancestry(ItemId item) const noexcept;
     /// A template only, never spawned. Never inherited.
     [[nodiscard]] bool abstract(ItemId item) const noexcept;
     /// Its resolved tags, the parent's first.
@@ -111,7 +111,7 @@ struct ContentLoad {
 /// status, default) merge across files. Then resolve every item as resolve_item does: tables
 /// merge, arrays and scalars replace, tags are the parent's then its own with repeats dropped,
 /// and `abstract` is never inherited. Any error (a TOML syntax error, an unknown record type, a
-/// duplicate ID, an unknown parent, a cycle, a chain over kMaxItemAncestry) means no Content.
+/// duplicate ID, an unknown parent, a cycle) means no Content.
 [[nodiscard]] ContentLoad load_content(std::span<const ContentSource> sources);
 
 } // namespace peo::core

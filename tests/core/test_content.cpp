@@ -59,6 +59,9 @@ bool reported(const std::vector<std::string>& errors, std::initializer_list<std:
     });
 }
 
+/// Far deeper than any real family, to show a chain has no length limit.
+constexpr int kDeepChain = 100;
+
 /// A chain of `length` items, each the parent of the next: link0 <- link1 <- ...
 std::string chain_text(int length) {
     std::string text;
@@ -122,10 +125,14 @@ TEST_SUITE("content") {
         CHECK(content.parent(must(content, "claw_hammer")) == content.item("hammer"));
         CHECK(content.parent(must(content, "hammer")) == content.item("tool_base"));
         CHECK_FALSE(content.parent(must(content, "tool_base")).has_value());
+        const auto chain = content.ancestry(must(content, "claw_hammer"));
+        REQUIRE(chain.size() == 2);
+        CHECK(content.item_id(chain[0]) == "hammer");
+        CHECK(content.item_id(chain[1]) == "tool_base");
         CHECK_FALSE(content.item("crowbar").has_value());
     }
 
-    TEST_CASE("an unknown parent, a cycle and a chain over the limit give errors and no content") {
+    TEST_CASE("an unknown parent and a cycle give errors and no content") {
         const ContentLoad unknown = load({{"a.toml", "[item.orphan]\nparent = \"nobody\"\n"}});
         CHECK_FALSE(unknown.content.has_value());
         CHECK(reported(unknown.errors, {"item.orphan", "unknown parent 'nobody'", "orphan -> nobody"}));
@@ -135,13 +142,26 @@ TEST_SUITE("content") {
         CHECK_FALSE(cycle.content.has_value());
         CHECK(reported(cycle.errors, {"inheritance cycle", "ping -> pong -> ping"}));
 
-        // kMaxItemAncestry ancestors is the limit; one more is an error.
-        const std::string ok = chain_text(static_cast<int>(kMaxItemAncestry) + 1);
-        CHECK(load({{"chain.toml", ok}}).content.has_value());
-        const std::string deep = chain_text(static_cast<int>(kMaxItemAncestry) + 2);
-        const ContentLoad too_deep = load({{"chain.toml", deep}});
-        CHECK_FALSE(too_deep.content.has_value());
-        CHECK(reported(too_deep.errors, {"parent chain longer than 16"}));
+        // A cycle beside a long chain is still found, and the chain alone is fine.
+        constexpr std::string_view kLoop =
+            "[item.loop_a]\nparent = \"loop_b\"\n[item.loop_b]\nparent = \"loop_a\"\n";
+        const std::string chain = chain_text(kDeepChain);
+        const ContentLoad deep_cycle = load({{"chain.toml", chain}, {"loop.toml", kLoop}});
+        CHECK_FALSE(deep_cycle.content.has_value());
+        CHECK(reported(deep_cycle.errors, {"inheritance cycle", "loop_a -> loop_b -> loop_a"}));
+    }
+
+    TEST_CASE("a chain has no length limit; ancestry lists it nearest first") {
+        // IDs sort as link0, link1, link10, ... so resolving meets chains half resolved.
+        const ContentLoad loaded = load({{"chain.toml", chain_text(kDeepChain)}});
+        REQUIRE(loaded.errors.empty());
+        const Content& content = *loaded.content;
+        const auto last = content.ancestry(must(content, "link" + std::to_string(kDeepChain - 1)));
+        REQUIRE(last.size() == static_cast<std::size_t>(kDeepChain - 1));
+        CHECK(content.item_id(last.front()) == "link" + std::to_string(kDeepChain - 2));
+        CHECK(content.item_id(last.back()) == "link0");
+        CHECK(content.ancestry(must(content, "link10")).size() == 10);
+        CHECK(content.ancestry(must(content, "link0")).empty());
     }
 
     TEST_CASE("load errors name their sources: a duplicate, an unknown type, a syntax error") {

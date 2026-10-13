@@ -90,10 +90,15 @@ struct Content::Impl {
         toml::table resolved;
         std::vector<std::string> tags;
         std::optional<ItemId> parent;
+        /// Its parent chain in `ancestry`, nearest first.
+        std::uint32_t ancestry_begin = 0;
+        std::uint32_t ancestry_count = 0;
     };
 
     /// Sorted by ID; an ItemId is an index here.
     std::vector<Item> items;
+    /// Every item's parent chain, one after another.
+    std::vector<ItemId> ancestry;
     /// Every record type as authored (items too), by type then ID.
     std::map<std::string, Records, std::less<>> records;
     std::map<std::string, toml::table, std::less<>> merged;
@@ -140,6 +145,12 @@ std::string_view Content::name(ItemId item) const noexcept {
 std::optional<ItemId> Content::parent(ItemId item) const noexcept {
     assert(item.index < impl_->items.size());
     return impl_->items[item.index].parent;
+}
+
+std::span<const ItemId> Content::ancestry(ItemId item) const noexcept {
+    assert(item.index < impl_->items.size());
+    const Impl::Item& entry = impl_->items[item.index];
+    return std::span<const ItemId>(impl_->ancestry).subspan(entry.ancestry_begin, entry.ancestry_count);
 }
 
 bool Content::abstract(ItemId item) const noexcept {
@@ -325,10 +336,7 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
     };
 
     std::vector<bool> done(impl.items.size(), false);
-    // Ancestors of each resolved item, so a walk that stops at one still counts the whole chain.
-    std::vector<std::uint32_t> depth(impl.items.size(), 0);
     std::vector<std::uint32_t> chain;
-    chain.reserve(kMaxItemAncestry + 2);
     for (std::uint32_t start = 0; start < impl.items.size(); ++start) {
         if (done[start]) {
             continue;
@@ -364,14 +372,6 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
                 break;
             }
             chain.push_back(*next);
-            // A walk stopping at a resolved ancestor adds that ancestor's own depth.
-            const std::size_t ancestors = chain.size() - 1 + (done[chain.back()] ? depth[chain.back()] : 0);
-            if (ancestors > kMaxItemAncestry) {
-                errors.push_back(cat({"item.", id, ": parent chain longer than ",
-                                      std::to_string(kMaxItemAncestry), ": ", chain_text("...")}));
-                ok = false;
-                break;
-            }
         }
         if (!ok) {
             continue;
@@ -390,7 +390,6 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
             } else {
                 const std::uint32_t up = *index_of(parent);
                 item.parent = ItemId{up};
-                depth[index] = depth[up] + 1;
                 item.resolved = impl.items[up].resolved;
                 item.resolved.erase("abstract");
                 merge_into(item.resolved, own);
@@ -422,7 +421,13 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
     if (!errors.empty()) {
         return;
     }
+    // No cycles remain, so each climb ends at a root.
     for (Impl::Item& item : impl.items) {
+        item.ancestry_begin = static_cast<std::uint32_t>(impl.ancestry.size());
+        for (std::optional<ItemId> up = item.parent; up; up = impl.items[up->index].parent) {
+            impl.ancestry.push_back(*up);
+        }
+        item.ancestry_count = static_cast<std::uint32_t>(impl.ancestry.size()) - item.ancestry_begin;
         if (const toml::array* list = item.resolved.get_as<toml::array>("tags")) {
             for (const toml::node& tag : *list) {
                 if (const auto* text = tag.as_string()) {
