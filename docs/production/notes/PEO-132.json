@@ -3,5 +3,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "also waits on PEO-134 (syntax); tool takes one depends_on"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "PEO-134 done: brief on docs/design/reference-syntax.md (D-055); still waits on PEO-130"
   }
 ]

@@ -8,6 +8,16 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`; D-033, D-035 to D-039, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
 
+## 2026-10-13 · D-055 · Reference syntax settled: materials are items, calls end a path
+
+Owner answers to PEO-134 (docs/design/reference-syntax.md section 6). A material is an item
+(`item.material.wood.oak`, a hunk of it); substances keep their own root. Things in play are
+reached through `self`, `$role`, `here`, `cell(x, y)`. Effects are calls at the end of a path
+(`$target.mind.sanity.reduce(25)`), one form for every attribute. Filters use braces and `~`.
+Paths stay strings in TOML: today's 930 KB loads in about 30 ms, so a 15 s startup budget holds
+hundreds of times more. Consequence: PEO-130 moves materials under `item.material`; PEO-132 is
+briefed on this syntax.
+
 ## 2026-10-13 · D-054 · One reference path for everything; children inherit
 
 Owner decision (PEO-116 thread, answers to Q1-Q7). (1) Flat IDs stay, and every record is

@@ -1,6 +1,7 @@
 # Reference, query and effect syntax (proposal, PEO-134)
 
-Status: **draft for the owner to review** (D-054 point 6). Nothing here is built. Every
+Status: **settled with the owner 2026-10-13** (D-054 point 6, D-055); section 5 records the
+answers. Nothing here is built. Every
 example is illustrative; names of real parts, stats and roots get settled item by item.
 
 The aim, in the owner's words: everything in the game is referenced the same way, in a single
@@ -13,14 +14,16 @@ A **path** is lowercase `snake_case` segments joined by `.`:
 ```
 item.tool.hammer.claw_hammer                       a record (an item archetype)
 item.tool.hammer.claw_hammer.mass_g                a value on it
-item.tool.hammer.claw_hammer.composition.handle.material            -> material.wood.oak
+item.tool.hammer.claw_hammer.composition.handle.material            -> item.material.wood.oak
 item.tool.hammer.claw_hammer.composition.handle.material.hardness   steps into oak
 unit.self.body.head.hair.color                     a value on the player
 ```
 
-- **Roots.** The first segment says what kind of thing it is. Proposed roots: `item`, `unit`,
-  `material`, `substance`, `action`, `effect`, `skill`, `world` (settings, buildings, rooms,
-  loot) and `tag`. Below a root, segments follow the parent chain: abstract category roots
+- **Roots.** The first segment says what kind of thing it is: `item`, `unit`, `substance`,
+  `action`, `effect`, `skill`, `world` (settings, buildings, rooms, loot) and `tag`. A material
+  is an item (D-055): `item.material.wood.oak` is a hunk of oak, and a part made of oak points at
+  it. There is no "25 wood", only 25 wooden blocks. A substance (water, a pool of blood) keeps
+  its own root. Below a root, segments follow the parent chain: abstract category roots
   first (`item.tool`), then the family (`hammer`), then the variant (`claw_hammer`).
 - **Short form.** The flat ID still works wherever the kind is known: `claw_hammer`,
   `material: oak`. Both forms name the same record (D-054 point 1). Files keep flat IDs, so
@@ -39,15 +42,15 @@ unit.self.body.head.hair.color                     a value on the player
 A **query** is a path with wildcards and a filter in braces.
 
 ```
-material.wood.*                    any record directly under material.wood
+item.material.wood.*               any record directly under item.material.wood
 item.tool.**                       anything at any depth under item.tool
-self.carried.**{material ~ material.wood.**, dims_mm.0 > 100}
+self.carried.**{material ~ item.material.wood.**, dims_mm.0 > 100}
 item.**{capability.cut >= 3, mass_g <= 2000}
 ```
 
 - `*` matches one segment, `**` any number.
 - A filter is a comma list, all of which must hold: `=`, `!=`, `<`, `<=`, `>`, `>=` on
-  numbers and IDs; `~` "is under or matches" a path or query (`material ~ material.wood.**`);
+  numbers and IDs; `~` "is under or matches" a path or query (`material ~ item.material.wood.**`);
   `has` for lists (`tags has from.kitchen`).
 - A filter path is read from the thing being tested, so `mass_g` means its mass.
 - Numbers are integers in the content units (mm, g, ml, seconds), as content already is.
@@ -62,29 +65,27 @@ effects refer to roles with `$`.
 
 ```toml
 [action.carve_spoon]
-roles.source = "self.carried.**{material ~ material.wood.**, dims_mm.0 >= 150}"
+roles.source = "self.carried.**{material ~ item.material.wood.**, dims_mm.0 >= 150}"
 roles.tool   = "self.carried.**{capability.cut >= 3}"
 skill   = "skill.craft.woodworking"
 time_s  = 1800
 effects = [
-  "make item.kitchen.utensil.spoon{composition.body.material = $source.material} in self.hands",
-  "use $source",
-  "wear $tool 1",
+  "item.kitchen.utensil.spoon{composition.body.material = $source.material}.make(self.hands)",
+  "$source.use()",
+  "$tool.durability.reduce(1)",
 ]
 ```
 
 ```toml
 [effect.shaken]
-effects = ["$target.mind.sanity -= 25"]
+effects = ["$target.mind.sanity.reduce(25)"]
 ```
 
-- An effect is a **verb** and its arguments: `make`, `use` (consume), `wear`, `move`, `apply
-  effect.x to $target`, or an assignment on a value (`-=`, `+=`, `=`). A short fixed verb list
-  keeps effects checkable by lint and cheap to run.
-- Your form `action.effect.status_effect.mental.sanity.reduce(25)` maps to
-  `$target.mind.sanity -= 25`. The path says which value, the operator says what happens to it.
-  Writing it as `reduce(25)` at the end of the path also works if you prefer it; that's
-  question 3 below.
+- An effect is a **call at the end of a path** (D-055): the path says which thing or value, the
+  call says what happens to it. Values take `set(x)`, `add(n)`, `reduce(n)`; things take verbs
+  such as `make(where)`, `use()`, `move(where)`, `apply(effect.x)`. Every attribute is changed
+  the same way, so there is no separate format for value effects and action effects. The call
+  list stays short and fixed so lint can check every effect at load.
 
 ## 4. How the engine runs it (for the Builder, later)
 
@@ -95,16 +96,24 @@ effects = ["$target.mind.sanity -= 25"]
 - Paths derive from the parent chain, so a full path changes when a record moves, while its
   flat ID does not. Saves keep flat IDs and remaps (PEO-092).
 
-## 5. Questions for the owner
+## 5. Parsing cost at startup
 
-1. **Roots.** Are `item`, `unit`, `material`, `substance`, `action`, `effect`, `skill`, `world`
-   and `tag` the right top level? Should materials sit under `item` (`item.material.wood.oak`, as
-   in your example) or have their own root?
-2. **Instances.** Is `self`, `$role`, `here` the right way to reach things in play, as opposed to
-   archetype paths?
-3. **Effects.** `$target.mind.sanity -= 25` (operator), or `….sanity.reduce(25)` (call at the end
-   of the path)?
-4. **Queries.** Braces for filters and `~` for "is under", or another notation you find easier to
-   read?
-5. **Strings in TOML.** Paths and queries as plain strings in the content files (shown above), or
-   as TOML tables (`{ path = "…", min = 3 }`)? Strings read better; tables need no parser.
+Measured 2026-10-13 (PEO-008 report): all of content/ today is 930 KB of TOML, 418 items, and
+loads and resolves in about 30 ms in a release build, so about 30 MB a second. Path and query
+strings parse at least as fast as TOML (short, no nesting), and resolving each segment is one
+hash lookup (well under a microsecond). If every value in content were a path, startup would
+roughly double, to 60 ms. A 15 s budget therefore holds content around **200 to 500 times
+today's size** (hundreds of MB of TOML, around 100,000 items) before strings become the
+problem, and file reading would be the limit before the parser. The real cost to watch is not
+startup but play: so every path is compiled once at load (section 4) and never re-parsed per
+update. Decision: strings (D-055); revisit only if a load-time measurement says so.
+
+## 6. Settled with the owner (2026-10-13, D-055)
+
+1. **Roots:** as proposed, except materials are items (`item.material.…`); substances keep
+   their own root.
+2. **Instances:** `self`, `$role`, `here`, `cell(x, y)`.
+3. **Effects:** a call at the end of the path (`….sanity.reduce(25)`), the same form for every
+   attribute.
+4. **Queries:** braces for filters, `~` for "is under".
+5. **Format:** paths and queries are strings in the TOML, parsed once at load.

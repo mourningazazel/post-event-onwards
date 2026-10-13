@@ -847,21 +847,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-134",
-      "order": 939,
-      "type": "design",
-      "title": "Reference, query and effect syntax proposal (D-054)",
-      "status": "AwaitingUser",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "user",
-      "created": "2026-10-13",
-      "references": [
-        "docs/design/reference-syntax.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-132",
       "order": 940,
       "type": "feature",

@@ -8,5 +8,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "D-054: now the lean-inheritance and category-roots pass, not add-nothing generics"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-055: materials become items under item.material (a hunk of the material); [material.X] records move into the item tree, parts keep naming them by flat ID"
   }
 ]
