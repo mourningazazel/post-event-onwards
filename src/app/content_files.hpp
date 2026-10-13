@@ -9,10 +9,11 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <iterator>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <system_error>
+#include <utility>
 #include <vector>
 
 namespace peo::app {
@@ -62,8 +63,12 @@ struct ContentFiles {
             error = file.generic_string() + " cannot be read";
             return std::nullopt;
         }
+        // Through a stringstream, not istreambuf_iterator: GCC 13 at -O2 flags the iterator
+        // with -Wnull-dereference inside libstdc++.
+        std::ostringstream text;
+        text << in.rdbuf();
         out.paths.push_back(file.generic_string());
-        out.texts.emplace_back(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+        out.texts.push_back(std::move(text).str());
     }
     return out;
 }
