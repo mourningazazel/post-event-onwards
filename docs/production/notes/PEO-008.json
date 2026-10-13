@@ -13,5 +13,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "briefed: loader, registry, resolution and golden only; derivations split to PEO-128, modifiers and variant table to PEO-129"
+  },
+  {
+    "at": "2026-10-12",
+    "by": "builder",
+    "text": "starting unit 1"
   }
 ]
