@@ -18,5 +18,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "D-057: build after PEO-135; full paths only in files"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-058: also parse and run handlers (on.<operator>, on.get, on.<action>), if blocks, += shorthands and &name arguments; content-format.md section 10"
   }
 ]

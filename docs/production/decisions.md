@@ -6,7 +6,16 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-033, D-035 to D-042, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-043, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-13 · D-058 · Fields and actions can carry handlers
+
+Owner design (PEO-116 thread). A number field may be a block with `value` and `on.<operator>`
+handlers (`on.reduce`, `on.get`, ...), and a record may hook actions done with it
+(`on.use.fire`). Handlers are effect lists using `$input`, `$value`, `output()` (only inside
+`on.`), `if (...) { ... }`, `+=`-style shorthands and `&name = value` arguments that override
+the called record for that call. Spec: docs/design/content-format.md section 10. Consequence:
+PEO-132 runs handlers; PEO-135 already captures them as expressions.
 
 ## 2026-10-13 · D-057 · Content moves from TOML to our own format
 
@@ -118,13 +127,3 @@ reviews and L/XL briefs, medium for recording decisions, promotions and small br
 every model call re-reads the whole session, and nine of the twelve PRs before this carried no
 code. Consequence: roles.md, CLAUDE.md, the review, plan, start-work and burndown skills,
 `verify.py` tails, `next --by-effort`, `docs.yml`.
-
-## 2026-10-04 · D-043 · The player's tile is taken; a Dead tripped onto it trips the player
-
-User decision: A, with a note. One of the Dead never steps onto the player's tile by choice: the
-tile counts as taken, so the Dead stop beside the player (seen in the PEO-088 siege maps, where
-one stood on the player's tile with nothing happening). "Since [the Dead] can trip over each
-other and be ejected into a different space, let that interplay and have [one] fall onto the
-player, also trip the player." So the trip rule (PEO-011, PEO-022) may throw a falling Dead onto
-the player's tile, and that knocks the player down too. Consequence: PEO-102 builds the taken
-tile now; PEO-011/022 carry the fall-onto-player trip when they are briefed.

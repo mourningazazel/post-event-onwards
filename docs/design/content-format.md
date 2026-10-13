@@ -331,6 +331,66 @@ def.tag.use.weapon { desc.text = "Usable as a weapon." }
 mechanic.skill.craft.woodworking { name.text = "woodworking" }
 ```
 
+## 10. Handlers: fields and actions that react (D-058)
+
+Any number field can be a plain value or a block with handlers. Any record can also hook the
+actions done with it. A handler is a list of effects, run in order, every time it is triggered.
+
+```
+item.weapon.firearm.handgun.pistol {
+    durability {
+        value = 9,
+        on.reduce = [
+            if ($input > 3) { $self.composition.frame.crack() },
+            output($input * 50%)
+        ]
+    },
+    skill_required {
+        value = 30,
+        on.get = [
+            if ($user.body.arm.**.hand.damage < 10) { output($value + 20) }
+        ]
+    },
+    on.use.fire = [
+        if ($user.body.arm.**.hand.damage < 10) {
+            $self.fail_rate += 50%,
+            $self.misfire_rate *= 2
+        },
+        if ($self.condition < 10%) {
+            chance(&rate = 50%,
+                $self.condition = 0,
+                mechanic.effect.explosion(&size = 10 m, &heat = 900 F))
+        }
+    ]
+}
+```
+
+- **`on.<operator>`** (`on.set`, `on.add`, `on.reduce`, `on.multiply`, `on.divide`) runs when
+  that operator is called on the field, in place of the plain change. `$input` is what the
+  caller passed and `$value` the field's current number; `output(x)`, used only inside an
+  `on.` handler, says what the operator applies. With no `output`, the plain change runs with
+  `$input`.
+- **`on.get`** runs whenever the field is read, so a property can depend on anything outside
+  the item (an injured hand raises the skill a gun needs). With no `output`, the stored value
+  is read.
+- **`on.<action path>`** (`on.use.fire`) runs whenever that action is done with the record,
+  before the action's own effects. Several `if` blocks in one handler all run, in order.
+- **`if (condition) { effects }`**: effects inside braces are separated by commas. A query in a
+  condition (`$user.body.arm.**.hand.damage < 10`) holds if any match holds.
+- **`x += n`, `x -= n`, `x *= n`, `x /= n`, `x = n`** are short for `x.add(n)`, `x.reduce(n)`,
+  `x.multiply(n)`, `x.divide(n)`, `x.set(n)`, and go through the same handlers. `==`, `!=`,
+  `<`, `<=`, `>`, `>=` compare.
+- **`&name = value`** passes a named argument that sets that value on the called record for
+  this call only: `explosion(&size = 10 m, &heat = 900 F)` explodes bigger and hotter than the
+  explosion record's defaults, without changing the record.
+- **Handlers inherit** like any field: a variant overrides just `durability.on.reduce` to wear
+  faster or slower.
+- **No loops**: inside a handler, the same operator on the same field changes it directly
+  instead of running the handler again, and a chain of handlers stops at a fixed depth with a
+  logged error.
+- **Cost**: fields with no handlers read as fast as plain numbers. Every `on.get` is listed at
+  load, so the dev tools can show which values are computed.
+
 ## The root tree
 
 Every record sits under one of ten roots. Each root is an umbrella over related kinds, so the
