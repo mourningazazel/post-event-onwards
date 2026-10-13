@@ -23,5 +23,10 @@
     "at": "2026-10-12",
     "by": "builder",
     "text": "owner 2026-10-12: read the parent chain from Content::ancestry (PEO-008); there is no ancestry limit. Unit 3 updated"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "builder",
+    "text": "skipped 2026-10-13: units 3-9 wait on PEO-116 and PEO-050 (both Pending); PEO-008 complete"
   }
 ]

@@ -33,5 +33,10 @@
     "at": "2026-10-12",
     "by": "builder",
     "text": "owner 2026-10-12: content chains have no length limit (PEO-008 now stores Content::ancestry at load); the save cap is kMaxSavedAncestry = 512, so CDIC's ancestry count is u16 and the malformed case uses 600. Brief units, tests and acceptance updated"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "builder",
+    "text": "skipped 2026-10-13: PEO-008 complete; PEO-116 still Pending (unbriefed)"
   }
 ]
