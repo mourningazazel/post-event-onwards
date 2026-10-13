@@ -98,6 +98,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | Header | Symbols |
 |---|---|
 | `content_migration.hpp` | `ContentRef`, `Migration`, `Resolved`, `resolve`, `content_ref`, `MigrationReport`, `migration_summary`, `kMaxSavedAncestry`, `kMaxContentIdBytes`, `kMaxContentNameBytes` |
+| `peo_format.hpp` | `parse_peo(source)`, `PeoParse`, `PeoRecord`, `PeoValue`, `PeoField`, `PeoKind`, `PeoDimension`, `dimension_name` |
 | `save.hpp` | `SaveImage`, `SaveSection`, `SyncScope`, `SaveStatus`, `SaveIssue`, `SaveRead`, `write_save`, `read_save`, `section_id("WRLD")`, `section_name`, `crc32`, `kSaveFormat` |
 | `byte_io.hpp` | `ByteWriter`, `ByteReader`: little-endian fields, bounds-checked reads |
 | `aftermath.hpp` | `Curve`, `CurveKnot`, `affected_at`, `valid`, `normalized`, `draw_fate`, `kDefaultAttrition`, `EventSubsteps`, `kSubstepsPerDay`, `kAffectedScale` |

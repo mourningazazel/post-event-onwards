@@ -51,6 +51,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
                               ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
                               ├─ content_migration.hpp  resolve, MigrationReport: a save's content entries against current content (PEO-092)
+                              ├─ peo_format.hpp  parse_peo: a .peo content file into records (D-057, PEO-135; tools/content/peo.py the same in Python)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 

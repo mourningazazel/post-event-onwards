@@ -46,6 +46,9 @@ All tests are headless doctest suites linked into one binary,
 - `content_golden` (`tools/content/golden.py --engine peo_content_dump`) fails when any item in
   `content/` resolves differently in the engine than in `derive.py`, printing the first 20
   differing lines (item, dotted path, value).
+- `peo_conformance` (`tools/content/peo_conformance.py --engine peo_peo_dump`) fails when the
+  engine's .peo parser gives any case in `tests/content/peo/` other lines than its `.expect`;
+  `tools/content/test.py` runs the same check on the Python parser, so the two agree.
 - Cases that build a whole 100 km geography square run only in release builds
   (`#ifdef NDEBUG`).
 
@@ -77,6 +80,11 @@ scenarios in `test_swarm.cpp`. If one of those goes red, something fundamental b
 - **Resolved content** (`tests/content_dump/content_dump.cpp`): `peo_content_dump <content_dir>`
   prints every resolved item as `<id>\t<dotted path>\t<value>` lines; `golden.py` prints the
   same from Python.
+- **Parsed .peo** (`tests/peo_dump/peo_dump.cpp`): `peo_peo_dump <file.peo>...` prints each
+  record as `<record>\t<field path>\t<kind>\t<value>` lines and its errors;
+  `python3 tools/content/peo.py <file.peo>...` prints the same. A new conformance case is a
+  `.peo` file in `tests/content/peo/` plus its `.expect` (`peo_conformance.py --write` makes it
+  from the Python parser: read it before committing).
 
 ## `verify.py`: the one gate
 
