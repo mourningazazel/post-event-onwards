@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 130,
+  "next_id": 131,
   "items": [
     {
       "id": "PEO-003",
@@ -643,6 +643,22 @@
       "depends_on": []
     },
     {
+      "id": "PEO-116",
+      "order": 792,
+      "type": "chore",
+      "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-10-06",
+      "references": [
+        "content/README.md",
+        "docs/production/decisions.md"
+      ],
+      "depends_on": []
+    },
+    {
       "id": "PEO-092",
       "order": 797,
       "type": "feature",
@@ -831,20 +847,22 @@
       "depends_on": []
     },
     {
-      "id": "PEO-116",
-      "order": 937,
+      "id": "PEO-130",
+      "order": 938,
       "type": "chore",
-      "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
+      "title": "Content: generic parents for the remaining item families (D-046)",
       "status": "Pending",
       "severity": "S3",
       "effort": "M",
       "owner": "architect",
-      "created": "2026-10-06",
+      "created": "2026-10-13",
       "references": [
         "content/README.md",
         "docs/production/decisions.md"
       ],
-      "depends_on": []
+      "depends_on": [
+        "PEO-116"
+      ]
     },
     {
       "id": "PEO-118",
