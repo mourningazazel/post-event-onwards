@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 136,
+  "next_id": 139,
   "items": [
     {
       "id": "PEO-003",
@@ -837,14 +837,31 @@
       "title": "Content format: .peo parser in core and tools, one-time TOML converter (D-057)",
       "status": "Pending",
       "severity": "S2",
-      "effort": "XL",
-      "owner": "architect",
+      "effort": "L",
+      "owner": "builder",
       "created": "2026-10-13",
       "references": [
         "docs/design/content-format.md",
         "docs/production/decisions.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-136",
+      "order": 937,
+      "type": "feature",
+      "title": "Content: convert content/ to .peo and switch both loaders over (D-057)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/content-format.md"
+      ],
+      "depends_on": [
+        "PEO-135"
+      ]
     },
     {
       "id": "PEO-130",
@@ -861,6 +878,23 @@
         "docs/production/decisions.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-137",
+      "order": 938,
+      "type": "chore",
+      "title": "Content: integer gradients for word scales, prose into text records (D-057)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/content-format.md"
+      ],
+      "depends_on": [
+        "PEO-136"
+      ]
     },
     {
       "id": "PEO-132",
@@ -912,6 +946,23 @@
         "docs/adr/0007-endless-staged-world.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-138",
+      "order": 960,
+      "type": "chore",
+      "title": "Editor syntax highlighting for .peo files",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "S",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/content-format.md"
+      ],
+      "depends_on": [
+        "PEO-135"
+      ]
     },
     {
       "id": "PEO-121",

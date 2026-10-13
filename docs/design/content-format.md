@@ -1,7 +1,7 @@
 # Content format (.peo): examples and rules (D-057)
 
-Every kind of record in the proposed format, using real content. Draft 3 follows your notes
-from 2026-10-13 and adds the root tree. Nothing is built yet. The root tree near the end is the one part still open.
+Every kind of record in the proposed format, using real content. Approved by the owner
+2026-10-13 (D-057), root tree included. The grammar the parsers build to is the last section.
 
 ## The rules in one screen
 
@@ -343,7 +343,7 @@ def.tag.use.weapon { desc.text = "Usable as a weapon.", },
 mechanic.skill.craft.woodworking { name.text = "woodworking", },
 ```
 
-## The root tree (proposal)
+## The root tree
 
 Every record sits under one of ten roots. Each root is an umbrella over related kinds, so the
 first word of any path says what kind of thing it is.
@@ -375,4 +375,43 @@ remap.*         renamed IDs, for old saves
 - **Generated text:** `${…}` inside `"""`.
 - **Weighted entries:** always named blocks.
 - **`unit.self`:** keeps its `parent =` line.
-- **Roots:** shared umbrella roots, as abstract as the content allows (the tree above).
+- **Roots:** shared umbrella roots, as abstract as the content allows: the tree above, approved.
+
+## Grammar (for the parsers, PEO-135)
+
+Both parsers (core and `tools/content/`) build to this, and one set of conformance cases proves
+they agree. A file is UTF-8; `#` outside a string starts a comment to the end of the line;
+whitespace and line breaks separate tokens and mean nothing else.
+
+```
+file    = { record }
+record  = [ "abstract" ] path block "," | path "=" value ","
+block   = "{" { field } "}"
+field   = lhs "=" value "," | lhs block ","          # every field ends with a comma
+lhs     = name { "." name }                          # a dotted lhs sets a nested value
+list    = "[" [ value { "," value } [ "," ] ] "]"   # a trailing comma is allowed
+value   = quantity [ ".." quantity ] | "yes" | "no" | string | path | list | block | expr
+quantity= number [ unit ]
+path    = name { "." name }                          # a bare dotted name
+name    = [a-z_][a-z0-9_]*
+expr    = anything else, up to the comma that ends its field or list element, with (), [], {} balanced
+          and strings skipped: queries, $roles, calls. Kept as text; PEO-132 parses it.
+```
+
+- **Strings.** `"..."`: verbatim, one line, no escapes, cannot hold `"`. `"""..."""`: may span
+  lines; reads `\n`, `\t`, `\\` and `\"` (any other `\` is an error); `<b>`, `<i>` and `${...}`
+  are kept as written for the text system; a line break right after the opening quotes and the
+  whitespace-only line before the closing ones are dropped, then the indentation every line
+  shares is trimmed. Each string records whether it was formatted.
+- **Numbers and units.** A number without a unit is an integer. With a unit it may have a
+  decimal point and is converted to the base unit of its dimension: length mm (`mm`, `cm`, `m`,
+  `km`); area mm2 (`mm2`, `cm2`, `m2`); mass g (`g`, `kg`, `oz`, `lb`); volume ml (`ml`, `l`,
+  `fl_oz`, `gal`, US); time s (`s`, `min`, `h`, `d`); temperature whole C (`C`, `F`); density
+  kg/m3; percent `%`. The result rounds half away from zero, as derive.py does. `ft`, `in`, `yd`
+  and `mi` are errors that say lengths are metric. A range takes the unit of either end, and
+  both ends must be the same dimension.
+- **Records.** The header path is kept whole; what its prefix means (the parent chain) is
+  resolution, not parsing. The same path twice is an error naming both files.
+- **Errors** name the file, line and column, and parsing goes on to the next record so one run
+  lists every error.
+

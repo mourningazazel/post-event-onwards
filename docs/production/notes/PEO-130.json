@@ -18,5 +18,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "D-057: build after PEO-135 (new format); roots follow the root tree in docs/design/content-format.md"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "after PEO-136 and PEO-137 (content in .peo)"
   }
 ]

@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "briefed: parser only (core + Python + conformance); conversion and loader switch PEO-136, word scales and text records PEO-137, editor highlighting PEO-138"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "title still says converter (tool cannot rename); the converter is PEO-136"
+  }
+]
