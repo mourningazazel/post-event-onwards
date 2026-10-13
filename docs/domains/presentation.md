@@ -9,6 +9,7 @@ logic in it is a bug (AGENTS.md).
 | [design/engine-api.md](../design/engine-api.md) "UI as data" | How menus will be described |
 | `src/app/` | The frontend |
 
-- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's). D-047 to D-050 (the view, sight); D-051 A (seen terrain stays drawn dimmed, a per-stage seen grid in core, saved); D-052 B (the Look cursor reaches any seen cell, the view scrolls with it); D-053 A (nothing named past 20 ft).
+- **Decisions:** D-011 (3 moves a second), D-032 (taps and held keys). D-042 (font: SDL3's built-in one until the owner's). D-047 to D-050 (the view, sight); D-051 A (seen terrain stays drawn dimmed, a per-stage seen grid in core, saved); D-052 B (the Look cursor reaches any seen cell, the view scrolls with it); D-053 A (nothing named past 20 ft). N024 (any tileset layout, not only the DF grid).
 - **Done:** PEO-127 (look-ahead strip on ctrl+direction, `src/app/peek.hpp`); PEO-124 (map memory: seen terrain stays drawn dimmed, `peo/core/memory.hpp`, saved as SEEN); PEO-123 (HUD lines wrap to the window width, `src/app/hud.hpp`); PEO-120 (the Look cursor over the seen field, `peo/core/look.hpp`; the view follows it, D-052 B); PEO-119 (the player's sight, `peo/core/sight.hpp`; the view draws only seen cells); PEO-117 (player-centred view over a larger stage, `src/app/camera.hpp`); PEO-097 (`--tileset PATH` DF-grid atlas, `src/app/glyph_atlas.hpp`).
 - **Queue:** PEO-018 (crow text); PEO-121 (labels within 20 ft, D-053).
+- **Deferred:** PEO-131 (tileset mapper: grid any PNG, game IDs, shareable ini; N024).

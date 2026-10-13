@@ -58,8 +58,8 @@ off"), scaled by what the thing is and how close you look.
 - Not a story game; the setting is told through what you find and the notes the dead survivors
   left. No NPCs are ever met, and there are no quests.
 - Not high fantasy. Magic and its kin belong to the engine later, not to this game.
-- Not tile graphics first. ASCII first; tilesets use the Dwarf Fortress grid layout so players'
-  own tilesets fit, and every bundled asset is original (ADR-0015).
+- Not tile graphics first. ASCII first; the Dwarf Fortress grid layout works so players' own
+  tilesets fit, but it is not the only layout (N024), and every bundled asset is original (ADR-0015).
 - No wildlife. Every animal is inexplicably dead; crows are heard in text, never found.
 
 ## Performance target

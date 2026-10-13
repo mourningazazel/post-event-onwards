@@ -6,7 +6,15 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-035 to D-037 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-038 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-13 · N024 · Any tileset, not only the Dwarf Fortress grid
+
+Owner direction (N024). The DF grid stays supported, but it is not the only way to play: ADR-0015
+point 3 now reads as the default layout, not the required one. With the GUI configuration work, a
+small tool grids any PNG (any columns, rows and cell size), names cells with system-agnostic game
+IDs, and saves a shareable ini; unknown IDs are ignored, missing ones use the game's defaults.
+Consequence: deferred PEO-131, which lists what ties the frontend to the DF grid today.
 
 ## 2026-10-12 · Item parent chains have no length limit; a save reads up to 512 ancestors
 
@@ -118,20 +126,3 @@ clients (ADR-0017). Geography is generated first in 100 km squares with lakes an
 towns fit it; most towns have no river (ADR-0018). Revisited areas catch up lazily, the horde
 thinning and player-made things aging, with no global day pass (ADR-0019). Docs are loaded by
 domain (`docs/domains/`). D-039 to D-042 answered below.
-
-## 2026-10-01 · D-038 · The Dead are surer on a trail as the scent gets stronger
-
-User decision: B ("good job on keeping to the gradient mindset"). The Dead's step is a weighted
-draw over the neighbours and staying; how sharply it favours climbing scent grows with the
-scent's strength, set by two knobs (sharpness at the edge of reach and at full strength) with an
-integer gradient between. Near a fresh trail they climb almost every step; at the edge of reach
-they wander with a lean. Why: the geodesic field (D-024) drops by the same step every cell, so a
-fixed preference would make them as sure at the edge as at the source. Consequence: PEO-009.
-
-## 2026-10-01 · D-033 · Two test tiers: unit under 1 s, scenarios under 5 s
-
-User decision: B. Unit tests keep the 1 s budget so the edit-test loop stays fast. Town, scenario
-and long golden-run tests form a second tier, the doctest suites named `scenario*`, run in the same
-CI build under their own 5 s budget; each tier is enforced by its own CTest. Why: the town
-scenarios keep growing and pushed one shared budget red twice. Consequence: PEO-066; a case over
-about 50 ms belongs in the scenario tier rather than being skipped.

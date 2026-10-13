@@ -1,6 +1,6 @@
 # ADR-0015: MIT-compatible dependencies; every asset original
 
-- Status: Accepted (owner note N023)
+- Status: Accepted (owner note N023); point 3 amended by N024 (2026-10-13)
 - Date: 2026-10-03
 - Supersedes: ADR-0004's "permissive, GPL-compatible" wording and its assets bullet; ADR-0008's
   "original art, fonts and text assets ... a future decision". The rest of both stands.
@@ -24,7 +24,8 @@ dependency can ship inside an MIT-licensed game without changing what users of o
 3. **Tilesets use the Dwarf Fortress grid layout:** one PNG atlas of 16 x 16 square glyphs in
    code page 437 order, so tilesets players already own drop in. No third-party tileset is
    bundled. The game ships an ASCII mode and the owner's default tileset (ADR-0003's one cell
-   size still holds).
+   size still holds). Amended by N024: the DF grid is the default layout, not the only one;
+   a later grid tool maps any PNG to game IDs in a shareable ini (deferred PEO-131).
 4. **Techniques stay free to learn; code stays ours** (ADR-0004, LICENSING.md "Original
    implementation policy"). Sources of ideas are cited (`docs/research/roguebasin-notes.md`).
 

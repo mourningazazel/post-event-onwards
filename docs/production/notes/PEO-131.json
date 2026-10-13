@@ -1,0 +1,12 @@
+[
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "Requirements (owner, N024, verbatim there): (1) DF grid is not the only way to play. (2) With the wider GUI configuration work, a small tool overlays a grid on a PNG and assigns IDs to its cells: a common set offered, more addable. (3) Any grid: 16x16 or 54x52 must both work; read as any columns x rows and any cell size in px, square or not. (4) The mapping saves to an ini file shared with the tileset. (5) IDs are agnostic to the system: an ini ID the game does not know is ignored, never breaks play; an ID the ini lacks falls back to the game's default. Not queued for the Builder; promote with the GUI configuration work."
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "What ties the game to the DF grid today (2026-10-13, no code changed): (a) src/app/glyph_atlas.hpp:14 kAtlasGlyphsPerSide = 16 fixed; atlas_glyph_px (:29) refuses any PNG that is not square with a side divisible by 16, so a 54x52 sheet or non-square cells drop to ASCII mode. (b) atlas_cell (:37) indexes the atlas by the CP437 byte: a glyph's identity is the character itself, there is no ID layer. (c) main.cpp draws terrain and actors as literal chars: '#' and '.' (main.cpp:518), scent '*' '+' ':' (main.cpp:188), '>' exit (main.cpp:545), '@' player (main.cpp:552); a tileset can only restyle those bytes, not give 'wall' its own tile. (d) HUD text and the map share one atlas through draw_text (main.cpp:394), so a pictorial tileset would also replace the letters; the mapper needs text and map IDs kept apart. (e) Magenta keying is always on (kAtlasColourKey, main.cpp:156), a DF convention. (f) Only --tileset PATH selects a sheet (main.cpp:750, 811); no config file. (g) Docs: ADR-0015 point 3 and vision.md 'What it is not' (amended now); GAMEPLAN 3.1 plans a TOML mapping, the owner now asks for an ini. Good news: src/core holds no glyphs at all, so the ID layer is a frontend change."
+  }
+]

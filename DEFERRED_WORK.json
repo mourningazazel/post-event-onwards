@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 99,
+  "next_id": 132,
   "items": [
     {
       "id": "PEO-098",
@@ -12,9 +12,24 @@
       "effort": "L",
       "owner": "architect",
       "created": "2026-10-03",
-      "notes": [],
       "references": [
         "docs/domains/engine-api.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-131",
+      "order": 997,
+      "type": "feature",
+      "title": "Tileset mapper: grid any PNG, name its cells with game IDs, share as an ini (N024)",
+      "status": "Pending",
+      "severity": "S4",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/notes/N024-any-tileset-grid-mapper.md",
+        "src/app/glyph_atlas.hpp"
       ],
       "depends_on": []
     }
