@@ -375,13 +375,15 @@ item.weapon.firearm.handgun.pistol {
   is read.
 - **`on.<action path>`** (`on.use.fire`) runs whenever that action is done with the record,
   before the action's own effects. Several `if` blocks in one handler all run, in order.
+- **`$self` and `$user`** (owner, 2026-10-13): in a handler, `$self` is the record that owns
+  it (the gun) and `$user` is the unit using it.
 - **`else = { effects }`**, the last entry of a handler list, runs only when no `if` in that
   list fired: a default without writing the opposite `if`. One per list.
 - **`if (condition) { effects }`**: effects inside braces are separated by commas. A query in a
   condition (`$user.body.arm.**.hand.damage < 10`) holds if any match holds.
 - **`x += n`, `x -= n`, `x *= n`, `x /= n`, `x = n`** are short for `x.add(n)`, `x.reduce(n)`,
   `x.multiply(n)`, `x.divide(n)`, `x.set(n)`, and go through the same handlers. `==`, `!=`,
-  `<`, `<=`, `>`, `>=` compare.
+  `<`, `<=`, `>`, `>=` compare; `=` always sets, `==` always compares (owner, 2026-10-13).
 - **`&name = value`** passes a named argument that sets that value on the called record for
   this call only: `explosion(&size = 10 m, &heat = 900 F)` explodes bigger and hotter than the
   explosion record's defaults, without changing the record.
