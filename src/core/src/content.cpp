@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <charconv>
 #include <map>
 #include <toml.hpp>
 #include <utility>
@@ -56,6 +57,31 @@ void merge_into(toml::table& into, const toml::table& from) {
 
 using Records = std::map<std::string, toml::table, std::less<>>;
 
+/// The node a dotted path names under `root`: a part is a key in a table and a decimal index
+/// in an array. Null when any step is missing.
+const toml::node* at_path(const toml::table& root, std::string_view path) noexcept {
+    const toml::node* node = &root;
+    while (node != nullptr) {
+        const std::size_t dot = path.find('.');
+        const std::string_view part = path.substr(0, dot);
+        if (const toml::table* table = node->as_table()) {
+            node = table->get(part);
+        } else if (const toml::array* array = node->as_array()) {
+            std::size_t index = 0;
+            const char* end = part.data() + part.size();
+            const auto [stop, error] = std::from_chars(part.data(), end, index);
+            node = (part.empty() || error != std::errc{} || stop != end) ? nullptr : array->get(index);
+        } else {
+            return nullptr;
+        }
+        if (dot == std::string_view::npos) {
+            return node;
+        }
+        path.remove_prefix(dot + 1);
+    }
+    return nullptr;
+}
+
 } // namespace
 
 struct Content::Impl {
@@ -105,6 +131,57 @@ std::size_t Content::item_count() const noexcept {
 std::string_view Content::item_id(ItemId item) const noexcept {
     assert(item.index < impl_->items.size());
     return impl_->items[item.index].id;
+}
+
+std::string_view Content::name(ItemId item) const noexcept {
+    return string_at(item, "name").value_or(std::string_view{});
+}
+
+std::optional<ItemId> Content::parent(ItemId item) const noexcept {
+    assert(item.index < impl_->items.size());
+    return impl_->items[item.index].parent;
+}
+
+bool Content::abstract(ItemId item) const noexcept {
+    assert(item.index < impl_->items.size());
+    const toml::node* node = impl_->items[item.index].resolved.get("abstract");
+    const auto* flag = node == nullptr ? nullptr : node->as_boolean();
+    return flag != nullptr && flag->get();
+}
+
+std::span<const std::string> Content::tags(ItemId item) const noexcept {
+    assert(item.index < impl_->items.size());
+    return impl_->items[item.index].tags;
+}
+
+bool Content::has(ItemId item, std::string_view dotted_path) const noexcept {
+    assert(item.index < impl_->items.size());
+    return at_path(impl_->items[item.index].resolved, dotted_path) != nullptr;
+}
+
+std::optional<std::int64_t> Content::int_at(ItemId item, std::string_view dotted_path) const noexcept {
+    assert(item.index < impl_->items.size());
+    const toml::node* node = at_path(impl_->items[item.index].resolved, dotted_path);
+    const auto* value = node == nullptr ? nullptr : node->as_integer();
+    if (value == nullptr) {
+        return std::nullopt;
+    }
+    return value->get();
+}
+
+std::optional<std::string_view> Content::string_at(ItemId item, std::string_view dotted_path) const noexcept {
+    assert(item.index < impl_->items.size());
+    const toml::node* node = at_path(impl_->items[item.index].resolved, dotted_path);
+    const auto* value = node == nullptr ? nullptr : node->as_string();
+    if (value == nullptr) {
+        return std::nullopt;
+    }
+    return std::string_view(value->get());
+}
+
+bool Content::has_record(std::string_view type, std::string_view id) const noexcept {
+    const auto bucket = impl_->records.find(type);
+    return bucket != impl_->records.end() && bucket->second.find(id) != bucket->second.end();
 }
 
 /// Read every source into `impl` as common.load does, appending its errors.

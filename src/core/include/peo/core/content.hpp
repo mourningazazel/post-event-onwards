@@ -50,8 +50,28 @@ public:
     /// The item with this ID, or nullopt.
     [[nodiscard]] std::optional<ItemId> item(std::string_view id) const noexcept;
     [[nodiscard]] std::size_t item_count() const noexcept;
-    /// The item's content ID (asserts `item` is a handle of this Content).
+    /// The item's content ID. Every ItemId taken asserts it is a handle of this Content.
     [[nodiscard]] std::string_view item_id(ItemId item) const noexcept;
+    /// Its base name (content/README.md: before tags, brands and modifiers), or empty.
+    [[nodiscard]] std::string_view name(ItemId item) const noexcept;
+    /// The item it inherits from, or nullopt for a root.
+    [[nodiscard]] std::optional<ItemId> parent(ItemId item) const noexcept;
+    /// A template only, never spawned. Never inherited.
+    [[nodiscard]] bool abstract(ItemId item) const noexcept;
+    /// Its resolved tags, the parent's first.
+    [[nodiscard]] std::span<const std::string> tags(ItemId item) const noexcept;
+
+    /// Generic reads of the resolved item, for typed views later items build. A dotted path
+    /// names table keys and array indices: `dims_mm.0`, `features.readable.kind`. A missing
+    /// path or a value of another type gives false or nullopt. No allocation.
+    [[nodiscard]] bool has(ItemId item, std::string_view dotted_path) const noexcept;
+    [[nodiscard]] std::optional<std::int64_t> int_at(ItemId item,
+                                                     std::string_view dotted_path) const noexcept;
+    [[nodiscard]] std::optional<std::string_view> string_at(ItemId item,
+                                                            std::string_view dotted_path) const noexcept;
+
+    /// Whether a record of `type` (any record type, `item` included) has this ID.
+    [[nodiscard]] bool has_record(std::string_view type, std::string_view id) const noexcept;
 
 private:
     struct Impl;
