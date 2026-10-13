@@ -8,6 +8,13 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`; D-035 to D-037 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
 
+## 2026-10-12 · toml++, vendored
+
+`third_party/toml++/toml.hpp` is committed (PEO-008), with its LICENSE. Why: no network
+during configure, as doctest. Consequence: built with `TOML_EXCEPTIONS=0`, included only from
+`src/core/src/content.cpp`; upgrade by replacing the header and noting the version here
+(currently 3.4.0).
+
 ## 2026-10-08 · D-051 to D-053 · Seen terrain stays dimmed, Look pans, nothing named past 20 ft
 
 User decisions (sight batch thread). D-051 A: cells once seen keep walls and floor drawn dimmed,

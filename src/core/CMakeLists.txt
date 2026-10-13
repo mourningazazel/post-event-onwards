@@ -31,6 +31,11 @@ target_include_directories(peo_core PUBLIC
 target_compile_features(peo_core PUBLIC cxx_std_20)
 target_link_libraries(peo_core PRIVATE peo::options)
 
+# PEO-008: toml++ parses content text handed to load_content; only src/content.cpp includes
+# it, and core still opens no file. Without exceptions a parse failure is a returned error.
+target_include_directories(peo_core SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/third_party/toml++)
+target_compile_definitions(peo_core PRIVATE TOML_EXCEPTIONS=0)
+
 # D-002 needs bit-identical floats across Debug/Release, compilers and CPUs. GCC and
 # Clang default to -ffp-contract=fast when optimising, fusing a*b+c into an FMA on
 # some builds and not others. PUBLIC: core headers are compiled into consumers too.
