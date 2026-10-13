@@ -102,6 +102,22 @@ w = 1 }] }`, or gives the whole item one table with `contains`, rolled once and 
 compartments by fit (never both on one object). `upright = true` marks an item whose longest side is
 its height; `rests_on = "<item>"` marks one that lies on another (a mattress on its bed frame).
 
+## Generic parents and junk (D-046)
+
+When an old save names an item that no longer exists, it becomes the nearest spawnable item on
+its parent chain, so an item family has a plain **generic parent**, named by its plain noun:
+`claw_hammer` and `sledgehammer` have `parent = "hammer"`. Generation never places a generic
+(no room, loot table, outdoor set or profile names it); it is reached through its children.
+
+A generic must **add nothing** to its children, because resolution deep-merges: it sets only
+dotted paths every child also sets (an array is one path), its composition has only parts every
+child has, and its tags are a subset of every child's. `golden.py --unchanged-from` proves a
+new generic left every existing item as it was. A family whose children share no `cat.*` tag
+gets no generic yet.
+
+`item.junk` is the last fallback: what an item becomes when it, every remap and every ancestor
+are gone. It does nothing and is never placed; `lint.py` keeps it that way.
+
 ## Remap record (ADR-0017, PEO-116)
 
 A save names items by ID. When an item is renamed or split, a remap tells an old save what its
