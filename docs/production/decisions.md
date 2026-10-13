@@ -11,8 +11,8 @@ Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010
 ## 2026-10-13 · D-057 · Content moves from TOML to our own format
 
 Owner decision (PEO-116 thread). Content is written in the path-and-brace syntax itself
-(docs/design/content-format.md): a record is its full path then a block; every field ends with a
-comma; references are full paths only (short IDs leave the files; saves keep them); `"..."` is
+(docs/design/content-format.md): a record is its full path then a block; commas go only between
+fields and list entries (owner, 2026-10-13: none before a closing bracket); references are full paths only (short IDs leave the files; saves keep them); `"..."` is
 verbatim, `"""..."""` spans lines and reads escapes, `<b>`/`<i>` and `${...}`; prose lives in
 `text.*` records and may be generated; numbers carry units, lengths metric only; scales are
 integers, never words; `dims { l, w, h }`; shared umbrella roots. Supersedes D-054 point 1 and

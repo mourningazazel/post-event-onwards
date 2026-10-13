@@ -8,5 +8,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "title still says converter (tool cannot rename); the converter is PEO-136"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "brief updated: no trailing commas (owner rule)"
   }
 ]

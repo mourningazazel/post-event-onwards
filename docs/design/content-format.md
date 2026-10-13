@@ -9,19 +9,20 @@ Every kind of record in the proposed format, using real content. Approved by the
 # a comment runs to the end of the line
 
 item.tool.hammer.claw_hammer {                  # a record: its full path, then a block
-    mass = 570 g,                               # key = value, and every field ends with a comma
-    dims { l = 330 mm, w = 130 mm, h = 30 mm, },
+    mass = 570 g,                               # key = value; commas go between fields
+    dims { l = 330 mm, w = 130 mm, h = 30 mm },
     value = 45,                                 # gradients are integers, never words
     name.text = "claw hammer",                  # "..." is verbatim: no escapes, no formatting
     desc.text = text.item.tool.hammer.claw_hammer.desc,   # or a path to a text record
-    tags = [def.tag.use.tool, def.tag.use.weapon,],
-},
+    tags = [def.tag.use.tool, def.tag.use.weapon]
+}
 ```
 
 - **The header path is the parent chain.** `item.tool.hammer.claw_hammer` means its parent is
   `hammer`, whose parent is `tool`, under the `item` root. There's no `parent =` line.
-- **Every field ends with a comma**, blocks included (`},`). Line breaks and indentation
-  mean nothing.
+- **Commas separate items.** A comma goes between two fields or two list entries, never
+  after the last one before `}` or `]`, and never after a whole record. Line breaks and
+  indentation mean nothing.
 - **Every reference is a full path.** `material = item.material.plastic.hdpe`, never `hdpe`.
   A query (`item.material.plastic.hdpe.**`) means "any of these". Short IDs are gone from the
   files. (This changes D-054 point 1. Saves still keep flat IDs internally.)
@@ -59,63 +60,59 @@ text.item.tool.hammer.claw_hammer.desc {
     text = """
         A steel-headed hammer with a split claw
         and a <i>hickory</i> handle.
-    """,
-},
-
+    """
+}
 text.gen.item.tool {
     # A generator: picks the first line whose `if` holds, fills in values from the item.
     lines = [
         { if = $self{ condition <= 20% },
-          text = """A <b>battered</b> ${$self.name.text}, its ${$self.composition.head.material.name.text} head pitted with rust.""", },
-        { text = """A ${$self.name.text} with a ${$self.composition.handle.material.name.text} handle.""", },
-    ],
-},
+          text = """A <b>battered</b> ${$self.name.text}, its ${$self.composition.head.material.name.text} head pitted with rust.""" },
+        { text = """A ${$self.name.text} with a ${$self.composition.handle.material.name.text} handle.""" }
+    ]
+}
 ```
 
 ## 1. Category roots and families
 
 ```
 abstract item.tool {
-    tags = [def.tag.use.tool,],
+    tags = [def.tag.use.tool],
     value = 20,
-    brands = [brand.category.tools,],
-    desc.text = text.gen.item.tool,         # every tool describes itself unless a child says otherwise
-},
-
+    brands = [brand.category.tools],
+    desc.text = text.gen.item.tool         # every tool describes itself unless a child says otherwise
+}
 item.tool.hammer {
     name.text = "hammer",
     shape = def.shape.rod,
-    dims { l = 330 mm, w = 130 mm, h = 30 mm, },
+    dims { l = 330 mm, w = 130 mm, h = 30 mm },
     mass = 570 g,
     durability = 9,
     balance = 85%,                          # how far along its length the weight sits
     glyph = art.glyph.item.hammer,
-    tags = [def.tag.use.weapon, def.tag.from.garage, def.tag.from.construction,],
+    tags = [def.tag.use.weapon, def.tag.from.garage, def.tag.from.construction],
 
     composition {
-        head   { material = item.material.metal.steel.carbon_steel, share = 70%, },
-        handle { material = item.material.wood.hardwood,            share = 30%, },
+        head   { material = item.material.metal.steel.carbon_steel, share = 70% },
+        handle { material = item.material.wood.hardwood,            share = 30% }
     },
     features {
-        striking_face { area = 700 mm2, },
-        grip          { hands = 1, girth = 32 mm, },
-    },
-},
-
+        striking_face { area = 700 mm2 },
+        grip          { hands = 1, girth = 32 mm }
+    }
+}
 item.tool.hammer.claw_hammer {
     name.text = "claw hammer",
     desc.text = text.item.tool.hammer.claw_hammer.desc,
     value = 45,
-    capabilities { pry = 2, },
-    composition.handle.material = item.material.wood.hardwood.hickory,
-},
-
+    capabilities { pry = 2 },
+    composition.handle.material = item.material.wood.hardwood.hickory
+}
 item.tool.hammer.sledgehammer {
     name.text = "sledgehammer",
-    dims { l = 900 mm, w = 200 mm, h = 60 mm, },
+    dims { l = 900 mm, w = 200 mm, h = 60 mm },
     mass = 10 lb,                           # any mass unit; stored in grams
-    features.grip.hands = 2,
-},
+    features.grip.hands = 2
+}
 ```
 
 ## 2. Materials are items, and have variants
@@ -123,30 +120,28 @@ item.tool.hammer.sledgehammer {
 ```
 abstract item.material {
     shape = def.shape.block,
-    glyph = art.glyph.item.chunk,
-},
-
+    glyph = art.glyph.item.chunk
+}
 item.material.plastic.hdpe {
     name.text = "HDPE",
     density = 950 kg/m3,
     flammability = 55,                      # 0 to 100, no words
-    melt = 130 C,
-},
-
+    melt = 130 C
+}
 item.material.plastic.hdpe.strands {
     # the same plastic, spun into strands (rope, tarp weave)
     structure = def.structure.strands,
-    tensile = 40,
-},
+    tensile = 40
+}
 ```
 
 A part names a material by full path, either one variant or any of them:
 
 ```
 composition {
-    body  { material = item.material.plastic.hdpe,         share = 90%, },  # solid HDPE
-    weave { material = item.material.plastic.hdpe.strands, share = 10%, },  # the strand variant
-},
+    body  { material = item.material.plastic.hdpe,         share = 90% },  # solid HDPE
+    weave { material = item.material.plastic.hdpe.strands, share = 10% }  # the strand variant
+}
 ```
 
 ## 3. Containers and compartments
@@ -154,45 +149,44 @@ composition {
 ```
 item.container.jug.milk_jug {
     name.text = "milk jug",
-    dims { l = 250 mm, w = 150 mm, h = 150 mm, },
+    dims { l = 250 mm, w = 150 mm, h = 150 mm },
     mass = 60 g,
     composition {
-        body { material = item.material.plastic.hdpe,          share = 90%, },
-        cap  { material = item.material.plastic.polypropylene, share = 10%, },
+        body { material = item.material.plastic.hdpe,          share = 90% },
+        cap  { material = item.material.plastic.polypropylene, share = 10% }
     },
     features.container {
         capacity = 1 gal,
         opening = 38 mm,
         closable = yes,
         sealable = yes,
-        holds = [substance.liquid.**, substance.granular.**,],
+        holds = [substance.liquid.**, substance.granular.**]
     },
-    contents { substance = substance.liquid.milk, fill = 0%..100%, },
-},
-
+    contents { substance = substance.liquid.milk, fill = 0%..100% }
+}
 item.furniture.cabinet.kitchen_base_run {
     name.text = "kitchen base cabinets",
-    dims { l = 2400 mm, w = 600 mm, h = 900 mm, },
+    dims { l = 2400 mm, w = 600 mm, h = 900 mm },
     compartments {
         top_drawer {
             name.text = "top drawer",
             capacity = 12 l,
             max_size = 500 mm,
             purposes = [
-                { purpose = world.purpose.cutlery_drawer, w = 30, },
-                { purpose = world.purpose.junk_drawer,    w = 25, },
-            ],
+                { purpose = world.purpose.cutlery_drawer, w = 30 },
+                { purpose = world.purpose.junk_drawer,    w = 25 }
+            ]
         },
         cupboard {
             name.text = "cupboard",
             capacity = 150 l,
             purposes = [
-                { purpose = world.purpose.dish_cupboard,     w = 25, },
-                { purpose = world.purpose.cookware_cupboard, w = 25, },
-            ],
-        },
-    },
-},
+                { purpose = world.purpose.dish_cupboard,     w = 25 },
+                { purpose = world.purpose.cookware_cupboard, w = 25 }
+            ]
+        }
+    }
+}
 ```
 
 ## 4. Substances
@@ -202,8 +196,8 @@ substance.liquid.blood {
     name.text = "blood",
     density = 1060 kg/m3,
     stain = 90,
-    scent = def.scent.blood,
-},
+    scent = def.scent.blood
+}
 ```
 
 ## 5. Units: people, the player, the Dead
@@ -212,33 +206,30 @@ substance.liquid.blood {
 abstract unit.human {
     body {
         head {
-            hair { color = def.color.black, length = 40 mm, },
-            eyes { color = def.color.brown, },
+            hair { color = def.color.black, length = 40 mm },
+            eyes { color = def.color.brown }
         },
-        height = 175 cm,
+        height = 175 cm
     },
-    mind { sanity = 100, morale = 50, },
-    hands { left = empty, right = empty, },
-},
-
+    mind { sanity = 100, morale = 50 },
+    hands { left = empty, right = empty }
+}
 unit.human.civilian.nurse {
     name.text = "nurse",
-    outfit = [item.clothing.top.scrubs_top, item.clothing.bottom.scrubs_pants, item.clothing.footwear.sneakers,],
+    outfit = [item.clothing.top.scrubs_top, item.clothing.bottom.scrubs_pants, item.clothing.footwear.sneakers],
     carried = [
-        { item = item.personal.id.lanyard_badge, },
-        { item = item.medical.medicine.painkillers, chance = 40%, },
-    ],
-},
-
+        { item = item.personal.id.lanyard_badge },
+        { item = item.medical.medicine.painkillers, chance = 40% }
+    ]
+}
 unit.self {
-    parent = unit.human.civilian,           # the one record whose path is fixed by the game
-},
-
+    parent = unit.human.civilian           # the one record whose path is fixed by the game
+}
 unit.dead.walker {
     name.text = "the Dead",
     speed = 1,
-    senses { smell = 60, sight = 6 m, },
-},
+    senses { smell = 60, sight = 6 m }
+}
 ```
 
 ## 6. Actions and effects
@@ -254,55 +245,53 @@ mechanic.action.craft.carve_spoon {
     roles {
         source = self.carried.**{
             material ~ item.material.wood.**,
-            dims.l >= 150 mm,
+            dims.l >= 150 mm
         },
-        tool = self.carried.**{ capability.cut >= 3, },
+        tool = self.carried.**{ capability.cut >= 3 }
     },
 
     effects = [
         item.kitchen.utensil.spoon{
-            composition.body.material = $source.material,
+            composition.body.material = $source.material
         }.make(self.hands),
         $source.use(),
-        $tool.durability.reduce(1),
+        $tool.durability.reduce(1)
     ],
 
     on_fail = [
-        { outcome = mechanic.outcome.failed,             w = 70, },
-        { outcome = mechanic.outcome.damaged_components, w = 25, },
-        { outcome = mechanic.outcome.bad_event,          w = 5, },
-    ],
-},
-
+        { outcome = mechanic.outcome.failed,             w = 70 },
+        { outcome = mechanic.outcome.damaged_components, w = 25 },
+        { outcome = mechanic.outcome.bad_event,          w = 5 }
+    ]
+}
 mechanic.effect.mental.shaken {
     desc.text = "Something you saw will not leave you.",
     effects = [
         $target.mind.sanity.reduce(25),
-        $target.mind.morale.reduce(10),
+        $target.mind.morale.reduce(10)
     ],
-    lasts = 2 h,
-},
+    lasts = 2 h
+}
 ```
 
 ## 7. Modifiers and detail tables
 
 ```
 mechanic.modifier.state.charred {
-    applies_to = item.**{ tags has def.tag.mat.textile | def.tag.mat.wood | def.tag.mat.paper, },
-    name_part { slot = def.slot.prefix, order = 10, text = "charred", },
-    tags = [def.tag.state.charred,],
-    effects = [ $item.durability.multiply(50%), ],
-},
-
+    applies_to = item.**{ tags has def.tag.mat.textile | def.tag.mat.wood | def.tag.mat.paper },
+    name_part { slot = def.slot.prefix, order = 10, text = "charred" },
+    tags = [def.tag.state.charred],
+    effects = [ $item.durability.multiply(50%) ]
+}
 mechanic.detail_table.mug_print {
-    applies_to = [item.kitchen.tableware.mug,],
+    applies_to = [item.kitchen.tableware.mug],
     pick = 1,
     entries = [
-        { w = 5, text = "printed with a faded company logo", },
-        { w = 2, text = "chipped at the rim", effects = [ $item.durability.multiply(80%), ], },
-        { w = 1, text = "bearing a hand-painted name", tags = [def.tag.flavor.sentimental,], },
-    ],
-},
+        { w = 5, text = "printed with a faded company logo" },
+        { w = 2, text = "chipped at the rim", effects = [ $item.durability.multiply(80%) ] },
+        { w = 1, text = "bearing a hand-painted name", tags = [def.tag.flavor.sentimental] }
+    ]
+}
 ```
 
 ## 8. World generation: loot, rooms, extras
@@ -312,12 +301,11 @@ world.loot.smoker_evidence {
     rolls = 1,
     empty = 0%,
     entries = [
-        { item = item.personal.tobacco.cigarettes, w = 10, count = 1..3, },
-        { item = item.fire.lighter,                w = 6,  count = 1..2, },
-        { item = item.fire.matchbook,              w = 5,  count = 1..3, },
-    ],
-},
-
+        { item = item.personal.tobacco.cigarettes, w = 10, count = 1..3 },
+        { item = item.fire.lighter,                w = 6,  count = 1..2 },
+        { item = item.fire.matchbook,              w = 5,  count = 1..3 }
+    ]
+}
 world.room.barn_interior {
     desc.text = """
         Inside a working barn: hay, feed and fencing, the tractor,
@@ -325,22 +313,22 @@ world.room.barn_interior {
     """,
     size = 80 m2..600 m2,
     floor = world.surface.ground,
-    tags = [def.tag.from.farm,],
+    tags = [def.tag.from.farm],
     objects = [
-        { item = item.farm.hay.hay_bale,             count = 10..200, },
-        { item = item.furniture.storage.metal_shelving, count = 1..4, contains = [world.loot.farm_barn_stock,], },
-        { item = item.furniture.table.workbench,     count = 1, chance = 60%, contains = [world.loot.workbench_tools,], },
-        { item = item.vehicle.tractor,               count = 1, chance = 50%, },
-    ],
-},
+        { item = item.farm.hay.hay_bale,             count = 10..200 },
+        { item = item.furniture.storage.metal_shelving, count = 1..4, contains = [world.loot.farm_barn_stock] },
+        { item = item.furniture.table.workbench,     count = 1, chance = 60%, contains = [world.loot.workbench_tools] },
+        { item = item.vehicle.tractor,               count = 1, chance = 50% }
+    ]
+}
 ```
 
 ## 9. Small records
 
 ```
-remap.item.tool.hammer_old = item.tool.hammer,
-def.tag.use.weapon { desc.text = "Usable as a weapon.", },
-mechanic.skill.craft.woodworking { name.text = "woodworking", },
+remap.item.tool.hammer_old = item.tool.hammer
+def.tag.use.weapon { desc.text = "Usable as a weapon." }
+mechanic.skill.craft.woodworking { name.text = "woodworking" }
 ```
 
 ## The root tree
@@ -384,12 +372,12 @@ they agree. A file is UTF-8; `#` outside a string starts a comment to the end of
 whitespace and line breaks separate tokens and mean nothing else.
 
 ```
-file    = { record }
-record  = [ "abstract" ] path block "," | path "=" value ","
-block   = "{" { field } "}"
-field   = lhs "=" value "," | lhs block ","          # every field ends with a comma
+file    = { record }                                 # records need no comma between them
+record  = [ "abstract" ] path block | path "=" value
+block   = "{" [ field { "," field } ] "}"            # commas only between fields
+field   = lhs "=" value | lhs block
 lhs     = name { "." name }                          # a dotted lhs sets a nested value
-list    = "[" [ value { "," value } [ "," ] ] "]"   # a trailing comma is allowed
+list    = "[" [ value { "," value } ] "]"           # a comma before ] or } is an error
 value   = quantity [ ".." quantity ] | "yes" | "no" | string | path | list | block | expr
 quantity= number [ unit ]
 path    = name { "." name }                          # a bare dotted name
