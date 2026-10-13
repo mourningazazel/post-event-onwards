@@ -52,10 +52,10 @@
       "order": 80,
       "type": "feature",
       "title": "Content loader: registry, materials, items, modifiers into runtime tables",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-09-28",
       "references": [
         "content/README.md",
