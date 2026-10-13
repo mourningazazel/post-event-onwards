@@ -34,6 +34,11 @@ struct ItemId {
     friend constexpr auto operator<=>(ItemId, ItemId) noexcept = default;
 };
 
+/// The archetype an item resolves to when it, every remap and every ancestor are gone (D-046,
+/// PEO-092). load_content does not require it, so test content need not carry one; lint
+/// requires it in content/.
+inline constexpr std::string_view kJunkItemId = "junk";
+
 /// One value of a resolved item at its dotted path, for tools that print or compare whole
 /// items (peo_content_dump). Only the member its kind names is set; views live for the visit.
 struct ContentLeaf {
@@ -86,6 +91,11 @@ public:
 
     /// Whether a record of `type` (any record type, `item` included) has this ID.
     [[nodiscard]] bool has_record(std::string_view type, std::string_view id) const noexcept;
+
+    /// The `to` of [remap.old_id]: the ID a renamed or split item now has. Nullopt when there
+    /// is no such remap or its `to` is not a string. One step: a `to` may name another remap,
+    /// and following the chain is the caller's (PEO-092). No allocation.
+    [[nodiscard]] std::optional<std::string_view> remap(std::string_view old_id) const noexcept;
 
     /// Every value of the resolved item, keys in sorted order and arrays by index; an empty
     /// table or array has none. Builds paths as it goes, so it allocates: tools only, never in

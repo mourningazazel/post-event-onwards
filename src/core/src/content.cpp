@@ -15,16 +15,17 @@ namespace peo::core {
 namespace {
 
 // common.py RECORD_TYPES: tables of records by ID.
-constexpr std::array<std::string_view, 30> kRecordTypes{
-    "property",    "feature",     "capability", "stimulus", "namespace",    "tag",
-    "fastener",    "scent",       "action",     "shape",    "skill",        "schema",
-    "material",    "substance",   "item",       "modifier", "detail_table", "company",
-    "brand",       "store_chain", "setting",    "building", "room",         "loot",
-    "outdoor_set", "profile",     "purpose",    "detail",   "detail_loot",  "extras"};
+constexpr std::array<std::string_view, 31> kRecordTypes{
+    "property",    "feature",  "capability",   "stimulus",    "namespace", "tag",         "fastener",
+    "scent",       "action",   "shape",        "skill",       "schema",    "material",    "substance",
+    "item",        "modifier", "detail_table", "company",     "brand",     "store_chain", "setting",
+    "building",    "room",     "loot",         "outdoor_set", "profile",   "purpose",     "detail",
+    "detail_loot", "extras",   "remap"};
 // common.py MERGED_TYPES: single tables merged across files.
 constexpr std::array<std::string_view, 4> kMergedTypes{"dominance", "meta", "status", "default"};
 
 constexpr std::string_view kItemType = "item";
+constexpr std::string_view kRemapType = "remap";
 // Stands in for a `parent` value that is not a string; no ID can match it.
 constexpr std::string_view kParentNotAString = "(not a string)";
 
@@ -188,6 +189,23 @@ std::optional<std::string_view> Content::string_at(ItemId item, std::string_view
         return std::nullopt;
     }
     return std::string_view(value->get());
+}
+
+std::optional<std::string_view> Content::remap(std::string_view old_id) const noexcept {
+    const auto bucket = impl_->records.find(kRemapType);
+    if (bucket == impl_->records.end()) {
+        return std::nullopt;
+    }
+    const auto record = bucket->second.find(old_id);
+    if (record == bucket->second.end()) {
+        return std::nullopt;
+    }
+    const toml::node* to = record->second.get("to");
+    const auto* id = to == nullptr ? nullptr : to->as_string();
+    if (id == nullptr) {
+        return std::nullopt;
+    }
+    return std::string_view(id->get());
 }
 
 bool Content::has_record(std::string_view type, std::string_view id) const noexcept {
