@@ -48,6 +48,11 @@ target_compile_definitions(peo_siege PRIVATE PEO_SIEGE_BASELINE_DIR="${CMAKE_SOU
 add_executable(peo_geo geo/geo_dump.cpp)
 target_link_libraries(peo_geo PRIVATE peo::core peo::options)
 
+# PEO-008: prints every resolved item for the content_golden diff against derive.py. Built
+# with everything else so it never rots; content_golden runs it.
+add_executable(peo_content_dump content_dump/content_dump.cpp)
+target_link_libraries(peo_content_dump PRIVATE peo::core peo::options)
+
 add_test(NAME core COMMAND peo_core_tests --no-intro)
 set_tests_properties(core PROPERTIES TIMEOUT 30)
 

@@ -184,6 +184,57 @@ bool Content::has_record(std::string_view type, std::string_view id) const noexc
     return bucket != impl_->records.end() && bucket->second.find(id) != bucket->second.end();
 }
 
+namespace {
+
+/// Visit every scalar under `node`, `path` holding the dotted path to it (restored on return).
+void walk_leaves(const toml::node& node, std::string& path,
+                 const std::function<void(const ContentLeaf&)>& visit) {
+    const auto descend = [&](std::string_view part, const toml::node& child) {
+        const std::size_t mark = path.size();
+        if (!path.empty()) {
+            path += '.';
+        }
+        path += part;
+        walk_leaves(child, path, visit);
+        path.resize(mark);
+    };
+    if (const toml::table* table = node.as_table()) {
+        for (auto&& [key, child] : *table) {
+            descend(key.str(), child);
+        }
+        return;
+    }
+    if (const toml::array* array = node.as_array()) {
+        for (std::size_t i = 0; i < array->size(); ++i) {
+            descend(std::to_string(i), *array->get(i));
+        }
+        return;
+    }
+    ContentLeaf leaf{path, ContentLeaf::Kind::Other, 0, false, 0.0, {}};
+    if (const auto* integer = node.as_integer()) {
+        leaf.kind = ContentLeaf::Kind::Integer;
+        leaf.integer = integer->get();
+    } else if (const auto* boolean = node.as_boolean()) {
+        leaf.kind = ContentLeaf::Kind::Boolean;
+        leaf.boolean = boolean->get();
+    } else if (const auto* text = node.as_string()) {
+        leaf.kind = ContentLeaf::Kind::String;
+        leaf.text = text->get();
+    } else if (const auto* floating = node.as_floating_point()) {
+        leaf.kind = ContentLeaf::Kind::Float;
+        leaf.floating = floating->get();
+    }
+    visit(leaf);
+}
+
+} // namespace
+
+void Content::for_each_leaf(ItemId item, const std::function<void(const ContentLeaf&)>& visit) const {
+    assert(item.index < impl_->items.size());
+    std::string path;
+    walk_leaves(impl_->items[item.index].resolved, path, visit);
+}
+
 /// Read every source into `impl` as common.load does, appending its errors.
 void ContentLoader::read_sources(std::span<const ContentSource> sources, Impl& impl,
                                  std::vector<std::string>& errors) {

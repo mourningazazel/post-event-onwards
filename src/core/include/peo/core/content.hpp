@@ -8,6 +8,7 @@
 
 #include <compare>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -36,6 +37,19 @@ struct ItemId {
 /// Longest parent chain an item may have; a longer one is a load error (content is depth 1
 /// today). A bound, so a walk up the chain never runs away.
 inline constexpr std::uint32_t kMaxItemAncestry = 16;
+
+/// One value of a resolved item at its dotted path, for tools that print or compare whole
+/// items (peo_content_dump). Only the member its kind names is set; views live for the visit.
+struct ContentLeaf {
+    enum class Kind : std::uint8_t { Integer, Boolean, String, Float, Other };
+
+    std::string_view path;
+    Kind kind;
+    std::int64_t integer;
+    bool boolean;
+    double floating;
+    std::string_view text;
+};
 
 /// Content as loaded: every record type kept by ID and every item resolved. Immutable; it owns
 /// all it read.
@@ -72,6 +86,11 @@ public:
 
     /// Whether a record of `type` (any record type, `item` included) has this ID.
     [[nodiscard]] bool has_record(std::string_view type, std::string_view id) const noexcept;
+
+    /// Every value of the resolved item, keys in sorted order and arrays by index; an empty
+    /// table or array has none. Builds paths as it goes, so it allocates: tools only, never in
+    /// play.
+    void for_each_leaf(ItemId item, const std::function<void(const ContentLeaf&)>& visit) const;
 
 private:
     struct Impl;
