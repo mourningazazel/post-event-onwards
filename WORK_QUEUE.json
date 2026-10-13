@@ -647,7 +647,7 @@
       "order": 792,
       "type": "chore",
       "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S3",
       "effort": "M",
       "owner": "builder",
