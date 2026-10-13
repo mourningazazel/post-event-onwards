@@ -3,5 +3,10 @@
     "at": "2026-10-13",
     "by": "builder",
     "text": "from PEO-116: lantern (battery_lantern, kerosene_lantern), battery (battery_9v, battery_aa, battery_d) and handgun (pistol, revolver) got no generic: their children share no cat.* tag. rifle (hunting_rifle, semi_auto_rifle) got none: only the barrel part is shared, so lint's mass estimate of a barrel-only rifle is ~32 kg and fill_pct/hollow are not shared. Each needs a content decision (a shared cat tag on the children, or a shared part) before a generic can add nothing"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-054: now the lean-inheritance and category-roots pass, not add-nothing generics"
   }
 ]

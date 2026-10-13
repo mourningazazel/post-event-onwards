@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 132,
+  "next_id": 135,
   "items": [
     {
       "id": "PEO-003",
@@ -643,22 +643,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-116",
-      "order": 792,
-      "type": "chore",
-      "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-06",
-      "references": [
-        "content/README.md",
-        "docs/production/decisions.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-092",
       "order": 797,
       "type": "feature",
@@ -853,15 +837,64 @@
       "title": "Content: generic parents for the remaining item families (D-046)",
       "status": "Pending",
       "severity": "S3",
-      "effort": "M",
+      "effort": "L",
       "owner": "architect",
       "created": "2026-10-13",
       "references": [
         "content/README.md",
         "docs/production/decisions.md"
       ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-134",
+      "order": 939,
+      "type": "design",
+      "title": "Reference, query and effect syntax proposal (D-054)",
+      "status": "AwaitingUser",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "user",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/reference-syntax.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-132",
+      "order": 940,
+      "type": "feature",
+      "title": "Content: one reference path for every record, following references (D-054)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/production/decisions.md",
+        "content/README.md"
+      ],
       "depends_on": [
-        "PEO-116"
+        "PEO-130"
+      ]
+    },
+    {
+      "id": "PEO-133",
+      "order": 941,
+      "type": "design",
+      "title": "Units as content records under unit.* (D-054)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/production/decisions.md",
+        "docs/design/content-model.md"
+      ],
+      "depends_on": [
+        "PEO-132"
       ]
     },
     {

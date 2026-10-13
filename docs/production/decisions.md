@@ -6,7 +6,22 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-033, D-035 to D-038 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-039, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-13 · D-054 · One reference path for everything; children inherit
+
+Owner decision (PEO-116 thread, answers to Q1-Q7). (1) Flat IDs stay, and every record is
+also addressable by its full path from its root (`item.tool.hammer.claw_hammer`), derived from
+the parent chain; both forms are accepted. (2) A path follows references in one line:
+`item.tool.hammer.claw_hammer.composition.handle.material.hardness` steps into the material.
+(3) Children inherit: shared data lives on the generic parent and a child sets only what it
+changes, so the add-nothing rule of PEO-116 is retired. (4) Abstract category roots: every
+record falls under a generic root (`item.*`, `unit.*`, with `unit.self.*` the player, and
+roots for world generation). (5) Units are content records that work like items. (6) The
+reference, query and effect syntax is a proposal the owner and Architect settle together
+(PEO-134). Consequences: PEO-130 becomes the lean-inheritance and roots pass; PEO-132 (paths),
+PEO-133 (units) and PEO-134 (syntax) are queued; PEO-092 and PEO-121 keep flat IDs and are
+unaffected.
 
 ## 2026-10-13 · N024 · Any tileset, not only the Dwarf Fortress grid
 
@@ -108,21 +123,3 @@ User decision: A ("if that is easily accomplishable"; it is simpler than a gate,
 catch-up is closed form). Any area out of the active range catches up when reloaded, so a day
 away changes a little and a month a lot. Replaces N009's 30-day gate. Consequence: ADR-0019;
 PEO-094.
-
-## 2026-10-03 · D-039 · Long actions cost twice the updates under 3 s turns
-
-User decision: A. Every turn behaves as today; sleeping and waiting keep their hours, so a time
-skip runs twice today's updates per game hour, and fast time passing (PEO-082, threads and the
-GPU) absorbs it. Consequence: ADR-0016; PEO-090.
-
-## 2026-10-03 · N023 · Owner's documentation audit
-
-User direction (N023). Dependencies must be MIT-compatible, and every asset is original; the
-owner supplies art, the default tileset, detailed descriptions and lore (ADR-0015). A walking
-turn becomes 12 substeps and reads as 3 game seconds, with today's behaviour on the even
-substeps (ADR-0016, amending D-014, D-015, D-031). Saves keep two fallback copies, migrate
-content to generic stand-ins or junk, and tag each section's sync scope for a future host and
-clients (ADR-0017). Geography is generated first in 100 km squares with lakes and sea, and
-towns fit it; most towns have no river (ADR-0018). Revisited areas catch up lazily, the horde
-thinning and player-made things aging, with no global day pass (ADR-0019). Docs are loaded by
-domain (`docs/domains/`). D-039 to D-042 answered below.
