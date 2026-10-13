@@ -30,6 +30,7 @@ All game content is **data**, authored mostly by Claude (N008, N011) and checked
 | `brands/` | Fictional brand universe | `[company.X]`, `[brand.X]`, `[store_chain.X]` |
 | `world/` | Settings, building types, room types, loot tables, outdoor object sets | `[setting.X]`, `[building.X]`, `[room.X]`, `[loot.X]`, `[outdoor_set.X]` |
 | `profiles/` | Occupant profiles: outfits and pockets by occupation and time of event | `[profile.X]` |
+| `remaps/` | Item IDs that were renamed or split, and the ID each now becomes (ADR-0017) | `[remap.X]` |
 
 IDs are `snake_case`, and unique across the whole content tree within their record type.
 
@@ -100,6 +101,20 @@ overrides a compartment's purposes with `purposes = { "cupboard" = [{ purpose = 
 w = 1 }] }`, or gives the whole item one table with `contains`, rolled once and spread over the
 compartments by fit (never both on one object). `upright = true` marks an item whose longest side is
 its height; `rests_on = "<item>"` marks one that lies on another (a mattress on its bed frame).
+
+## Remap record (ADR-0017, PEO-116)
+
+A save names items by ID. When an item is renamed or split, a remap tells an old save what its
+ID now is:
+
+```toml
+[remap.hammer_base_old]           # an item ID that no longer exists
+to = "hammer"                     # required: the one ID it becomes (a split names one)
+why = "Renamed when hammers gained a generic parent."   # required
+```
+
+`to` names an item or another remap; chains are followed on load (PEO-092) and must end at a
+spawnable item. Never key a remap by a current item ID.
 
 ## Purposes, details and extras (D-030, `content/world/`)
 
