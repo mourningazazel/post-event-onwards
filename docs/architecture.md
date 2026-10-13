@@ -47,6 +47,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ settlement_site.hpp  place_sites: one scored site per 12.5 km cell
                               ├─ sight.hpp  SightField: symmetric shadowcasting within the optical range (PEO-119)
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
+                              ├─ look_label.hpp  far_label: what a thing shows from 20 ft (PEO-121)
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
                               ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
                               ├─ content_migration.hpp  resolve, MigrationReport: a save's content entries against current content (PEO-092)
