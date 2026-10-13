@@ -8,5 +8,10 @@
     "at": "2026-10-08",
     "by": "architect",
     "text": "D-053 answered A: unit 'beyond 20 ft' builds nothing; past 6 cells things stay unlabelled"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "Review of units 1-2 (20392db, c69754c), item not in Validation so not completed: brief met (kLegibleRangeCells = 6, legible() disc test, LookReport.legible set in look_at, boundary cases match the brief); CI green on c69754c; /cpp-core clean (constexpr, int32, no allocation); wiki sight-and-memory, tunables and api-reference updated. Units 3-8 wait on PEO-008, PEO-116, PEO-050, none briefed yet."
   }
 ]

@@ -31,10 +31,11 @@ cell is ignored. The memory resets on every stage load, travels with `store_area
 
 `LookCursor` only ever rests on a cell the player sees now, so looking can never tell more
 than sight already has, and it never spends a turn. `look_at(sight, stage, horde, player,
-cell)` returns a `LookReport` (data only, no words: distance squared, player, opaque, exit,
-how many Dead stand there) or nothing for an unseen cell. The HUD line for it is empty on
-purpose: the owner writes that text (D-042), and PEO-121 decides what can be made out at each
-distance.
+cell)` returns a `LookReport` (data only, no words: distance squared, legible, player,
+opaque, exit, how many Dead stand there) or nothing for an unseen cell. `legible` is
+`legible(distance_sq)`: the cell is within `kLegibleRangeCells` (6 cells, 20 ft, D-049) by the
+same disc test sight uses; past it things are present but unlabelled (D-053 A). The HUD line
+for it is empty on purpose: the owner writes that text (D-042).
 
 ## Tunables
 
@@ -43,10 +44,12 @@ distance.
 | Optical range | `kOpticalRangeCells` (`sight.hpp`), per call `SightParams::range_cells` | 152 cells (500 ft) |
 | Range ceiling | `kMaxSightRangeCells` | 2048 |
 | Look jump | `kLookJumpCells` (`look.hpp`) | 8 cells |
+| Legible range | `kLegibleRangeCells` (`look.hpp`) | 6 cells (20 ft) |
 
 ## Designed, not built
 
-- What can be made out at each distance, and the HUD's Look text (PEO-121, D-049, D-053).
+- Labels within 20 ft and the HUD's Look text (rest of PEO-121; waits on PEO-008, PEO-116,
+  PEO-050).
 - A sight layer separate from walls for doors, windows and glass.
 - The Dead that can see (a dead player's character, PEO-021) reading the same symmetric pass.
 - Binoculars through `SightParams::range_cells`.

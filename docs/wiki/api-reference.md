@@ -89,7 +89,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 |---|---|
 | `sight.hpp` | `SightField` (`compute(opaque, origin, params)`, `seen`, `window`, `origin`, `range`), `SightParams`, `CellRect`, `kOpticalRangeCells` |
 | `memory.hpp` | `MapMemory` (`reset`, `remember(sight)`, `remembered`, `mark`, `count`, `cells`) |
-| `look.hpp` | `LookCursor` (`begin`, `end`, `step(dir, cells, sight, bounds)`, `cell`, `active`), `LookReport`, `look_at`, `kLookJumpCells` |
+| `look.hpp` | `LookCursor` (`begin`, `end`, `step(dir, cells, sight, bounds)`, `cell`, `active`), `LookReport`, `look_at`, `legible`, `kLookJumpCells`, `kLegibleRangeCells` |
 
 ## Persistence and the long clock
 

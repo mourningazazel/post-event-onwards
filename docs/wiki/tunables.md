@@ -71,6 +71,7 @@ changing them is a design change, not a tweak.
 |---|---|---|
 | Sight range | `kOpticalRangeCells`, `sight.hpp` | 152 cells (500 ft) |
 | Look jump | `kLookJumpCells`, `look.hpp` | 8 |
+| Legible range | `kLegibleRangeCells`, `look.hpp` | 6 (20 ft) |
 | Peek depth | `kPeekDepthPercent`, `src/app/peek.hpp` | 15% |
 | View size | `kDefaultViewCols/Rows`, `kMinViewCols/Rows`, `src/app/main.cpp` | 80x45, at least 80x21 |
 | Scent overlay bands | `kScentBands`, `src/app/main.cpp` | 10%, 0.1%, 0.001% of the strongest |

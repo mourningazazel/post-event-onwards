@@ -3,5 +3,10 @@
     "at": "2026-09-30",
     "by": "architect",
     "text": "Item-system review (2026-09-29): bake resolved archetypes and intern variants (archetype, modifier set, brand) into a table at load, so generation never deep-merges at runtime; add a golden test that it does not."
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "2026-10-13: the Builder's whole queue (PEO-121 units 3-8, PEO-092) waits on this item, which has no units yet; brief it next, then PEO-116 and PEO-050."
   }
 ]
