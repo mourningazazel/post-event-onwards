@@ -2,3 +2,5 @@
 *.png binary
 *.wav binary
 *.ogg binary
+# PEO-135: a conformance case that must keep its CRLF line endings.
+tests/content/peo/edge_crlf.peo -text
