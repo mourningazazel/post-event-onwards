@@ -191,6 +191,11 @@ std::optional<std::string_view> Content::string_at(ItemId item, std::string_view
     return std::string_view(value->get());
 }
 
+std::size_t Content::remap_count() const noexcept {
+    const auto bucket = impl_->records.find(kRemapType);
+    return bucket == impl_->records.end() ? 0 : bucket->second.size();
+}
+
 std::optional<std::string_view> Content::remap(std::string_view old_id) const noexcept {
     const auto bucket = impl_->records.find(kRemapType);
     if (bucket == impl_->records.end()) {

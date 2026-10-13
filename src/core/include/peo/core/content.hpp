@@ -96,6 +96,8 @@ public:
     /// is no such remap or its `to` is not a string. One step: a `to` may name another remap,
     /// and following the chain is the caller's (PEO-092). No allocation.
     [[nodiscard]] std::optional<std::string_view> remap(std::string_view old_id) const noexcept;
+    /// How many remap records there are: a bound for following remap chains (PEO-092).
+    [[nodiscard]] std::size_t remap_count() const noexcept;
 
     /// Every value of the resolved item, keys in sorted order and arrays by index; an empty
     /// table or array has none. Builds paths as it goes, so it allocates: tools only, never in
