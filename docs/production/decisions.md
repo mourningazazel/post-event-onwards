@@ -13,7 +13,7 @@ Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010
 Owner design (PEO-116 thread). A number field may be a block with `value` and `on.<operator>`
 handlers (`on.reduce`, `on.get`, ...), and a record may hook actions done with it
 (`on.use.fire`). Handlers are effect lists using `$input`, `$value`, `output()` (only inside
-`on.`), `if (...) { ... }`, `+=`-style shorthands and `&name = value` arguments that override
+`on.`), `if (...) { ... }` with a closing `else = { ... }`, `+=`-style shorthands and `&name = value` arguments that override
 the called record for that call. Spec: docs/design/content-format.md section 10. Consequence:
 PEO-132 runs handlers; PEO-135 already captures them as expressions.
 

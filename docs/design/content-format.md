@@ -341,8 +341,8 @@ item.weapon.firearm.handgun.pistol {
     durability {
         value = 9,
         on.reduce = [
-            if ($input > 3) { $self.composition.frame.crack() },
-            output($input * 50%)
+            if ($input > 3) { $self.composition.frame.crack(), output($input) },
+            else = { output($input * 50%) }
         ]
     },
     skill_required {
@@ -375,6 +375,8 @@ item.weapon.firearm.handgun.pistol {
   is read.
 - **`on.<action path>`** (`on.use.fire`) runs whenever that action is done with the record,
   before the action's own effects. Several `if` blocks in one handler all run, in order.
+- **`else = { effects }`**, the last entry of a handler list, runs only when no `if` in that
+  list fired: a default without writing the opposite `if`. One per list.
 - **`if (condition) { effects }`**: effects inside braces are separated by commas. A query in a
   condition (`$user.body.arm.**.hand.damage < 10`) holds if any match holds.
 - **`x += n`, `x -= n`, `x *= n`, `x /= n`, `x = n`** are short for `x.add(n)`, `x.reduce(n)`,
