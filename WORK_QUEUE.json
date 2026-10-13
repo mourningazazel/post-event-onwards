@@ -647,10 +647,10 @@
       "order": 797,
       "type": "feature",
       "title": "Content migration on load (ADR-0017)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-03",
       "references": [
         "docs/domains/persistence.md"
