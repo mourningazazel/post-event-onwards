@@ -13,5 +13,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "D-056: whitespace and line breaks inside query braces are insignificant; multi-line queries are TOML triple-quoted strings"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-057: build after PEO-135; full paths only in files"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 135,
+  "next_id": 136,
   "items": [
     {
       "id": "PEO-003",
@@ -827,6 +827,22 @@
       "created": "2026-10-06",
       "references": [
         "docs/domains/world.md"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "PEO-135",
+      "order": 936,
+      "type": "feature",
+      "title": "Content format: .peo parser in core and tools, one-time TOML converter (D-057)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "XL",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "docs/design/content-format.md",
+        "docs/production/decisions.md"
       ],
       "depends_on": []
     },

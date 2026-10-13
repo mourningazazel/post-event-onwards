@@ -13,5 +13,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "D-055: materials become items under item.material (a hunk of the material); [material.X] records move into the item tree, parts keep naming them by flat ID"
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "D-057: build after PEO-135 (new format); roots follow the root tree in docs/design/content-format.md"
   }
 ]

@@ -6,7 +6,17 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-033, D-035 to D-040, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-042, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-13 · D-057 · Content moves from TOML to our own format
+
+Owner decision (PEO-116 thread). Content is written in the path-and-brace syntax itself
+(docs/design/content-format.md): a record is its full path then a block; every field ends with a
+comma; references are full paths only (short IDs leave the files; saves keep them); `"..."` is
+verbatim, `"""..."""` spans lines and reads escapes, `<b>`/`<i>` and `${...}`; prose lives in
+`text.*` records and may be generated; numbers carry units, lengths metric only; scales are
+integers, never words; `dims { l, w, h }`; shared umbrella roots. Supersedes D-054 point 1 and
+D-056's triple-quoted queries. Consequence: PEO-135 builds it before PEO-130 and PEO-132.
 
 ## 2026-10-13 · D-056 · Queries are laid out one condition per line
 
@@ -118,18 +128,3 @@ other and be ejected into a different space, let that interplay and have [one] f
 player, also trip the player." So the trip rule (PEO-011, PEO-022) may throw a falling Dead onto
 the player's tile, and that knocks the player down too. Consequence: PEO-102 builds the taken
 tile now; PEO-011/022 carry the fall-onto-player trip when they are briefed.
-
-## 2026-10-03 · D-042 · The owner writes every player-facing line
-
-User decision: B. "I don't want you doing the more creative work that i can do myself." Agents
-author data only (properties, tags, numbers, structure) and write no new descriptions, flavour
-text, notes or lore. Existing agent-written `desc` and flavour strings stay as placeholders
-until the owner replaces them. The font, for now, is a free-use one: SDL3's built-in debug font
-(Zlib), later the owner's own. Later the owner will build a small terminal GUI to author the
-game's text and much of the later game; the content format should stay easy for a tool to
-read and write. Consequence: ADR-0015 point 2; content-model §4; PEO-008.
-
-## 2026-10-03 · D-041 · The world is endless, in 100 km geography squares
-
-User decision: A. Neighbouring squares generate whole when the player nears an edge, with coast
-and ranges continuous across them (ADR-0018, ADR-0007). Consequence: PEO-095.
