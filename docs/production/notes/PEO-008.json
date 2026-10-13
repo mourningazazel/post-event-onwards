@@ -8,5 +8,10 @@
     "at": "2026-10-13",
     "by": "architect",
     "text": "2026-10-13: the Builder's whole queue (PEO-121 units 3-8, PEO-092) waits on this item, which has no units yet; brief it next, then PEO-116 and PEO-050."
+  },
+  {
+    "at": "2026-10-13",
+    "by": "architect",
+    "text": "briefed: loader, registry, resolution and golden only; derivations split to PEO-128, modifiers and variant table to PEO-129"
   }
 ]

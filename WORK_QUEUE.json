@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 128,
+  "next_id": 130,
   "items": [
     {
       "id": "PEO-003",
@@ -55,7 +55,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-28",
       "references": [
         "content/README.md",
@@ -63,6 +63,42 @@
         "docs/architecture.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-128",
+      "order": 81,
+      "type": "feature",
+      "title": "Content derivations in core: capabilities, mass estimate, packing, soak and search, integer spec first",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "tools/content/derive.py",
+        "docs/domains/items.md"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
+    },
+    {
+      "id": "PEO-129",
+      "order": 82,
+      "type": "feature",
+      "title": "Content: apply modifiers and bake the variant table at load",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-13",
+      "references": [
+        "tools/content/derive.py",
+        "docs/domains/items.md"
+      ],
+      "depends_on": [
+        "PEO-008"
+      ]
     },
     {
       "id": "PEO-010",
