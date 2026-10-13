@@ -1,0 +1,4 @@
+item.a { value = 1 }
+item.b {
+    value = 3,
+    dims { l = 1 mm }

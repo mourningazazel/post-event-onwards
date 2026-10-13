@@ -1,0 +1,6 @@
+item.d		record	concrete
+item.d	value	integer	9223372036854775807
+item.d	low	integer	-9223372036854775807
+error	edge_huge_numbers.peo:1:18: a number is too large
+error	edge_huge_numbers.peo:2:17: a number with a unit has at most 9 digits and 6 decimals
+error	edge_huge_numbers.peo:3:17: a number with a unit has at most 9 digits and 6 decimals

@@ -1,0 +1,2 @@
+item.a { effects = [ $x.use(1, 2 ] }
+item.b { value = 1 }

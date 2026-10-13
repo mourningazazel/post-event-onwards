@@ -1,0 +1,5 @@
+item.a		record	concrete
+item.a	value	integer	1
+item.b		record	concrete
+item.b	value	integer	3
+error	err_duplicate_record.peo:2:1: record 'item.a' is already defined at line 1

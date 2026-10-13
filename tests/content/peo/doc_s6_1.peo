@@ -1,0 +1,37 @@
+mechanic.action.craft.carve_spoon {
+    desc.text = "Carve a spoon from a block of wood.",
+    skill = mechanic.skill.craft.woodworking,
+    difficulty = 20,
+    time = 30 min,
+    noise = 35,                             # a gradient, not "quiet"
+
+    roles {
+        source = self.carried.**{
+            material ~ item.material.wood.**,
+            dims.l >= 150 mm
+        },
+        tool = self.carried.**{ capability.cut >= 3 }
+    },
+
+    effects = [
+        item.kitchen.utensil.spoon{
+            composition.body.material = $source.material
+        }.make(self.hands),
+        $source.use(),
+        $tool.durability.reduce(1)
+    ],
+
+    on_fail = [
+        { outcome = mechanic.outcome.failed,             w = 70 },
+        { outcome = mechanic.outcome.damaged_components, w = 25 },
+        { outcome = mechanic.outcome.bad_event,          w = 5 }
+    ]
+}
+mechanic.effect.mental.shaken {
+    desc.text = "Something you saw will not leave you.",
+    effects = [
+        $target.mind.sanity.reduce(25),
+        $target.mind.morale.reduce(10)
+    ],
+    lasts = 2 h
+}

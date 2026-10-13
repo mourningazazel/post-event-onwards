@@ -1,0 +1,9 @@
+mechanic.sample		record	concrete
+mechanic.sample	source	expr	self.carried.**{ material ~ item.material.wood.**, dims.l >= 150 mm }
+mechanic.sample	effects.0	expr	$tool.durability.reduce(1)
+mechanic.sample	effects.1	expr	item.x{ a = "}" }.make(self.hands)
+mechanic.sample	on.reduce.0	expr	if ($input > 3) { $self.composition.frame.crack(), output($input) }
+mechanic.sample	on.reduce.1	expr	else = { output($input * 50%) }
+mechanic.sample	applies_to	expr	item.**{ tags has def.tag.a | def.tag.b }
+remap.item.q		record	concrete
+remap.item.q	=	expr	item.**

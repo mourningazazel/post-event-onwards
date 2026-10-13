@@ -1,0 +1,36 @@
+item.container.jug.milk_jug		record	concrete
+item.container.jug.milk_jug	name.text	string	milk jug
+item.container.jug.milk_jug	dims.l	quantity	250 length
+item.container.jug.milk_jug	dims.w	quantity	150 length
+item.container.jug.milk_jug	dims.h	quantity	150 length
+item.container.jug.milk_jug	mass	quantity	60 mass
+item.container.jug.milk_jug	composition.body.material	path	item.material.plastic.hdpe
+item.container.jug.milk_jug	composition.body.share	quantity	90 percent
+item.container.jug.milk_jug	composition.cap.material	path	item.material.plastic.polypropylene
+item.container.jug.milk_jug	composition.cap.share	quantity	10 percent
+item.container.jug.milk_jug	features.container.capacity	quantity	3785 volume
+item.container.jug.milk_jug	features.container.opening	quantity	38 length
+item.container.jug.milk_jug	features.container.closable	boolean	yes
+item.container.jug.milk_jug	features.container.sealable	boolean	yes
+item.container.jug.milk_jug	features.container.holds.0	expr	substance.liquid.**
+item.container.jug.milk_jug	features.container.holds.1	expr	substance.granular.**
+item.container.jug.milk_jug	contents.substance	path	substance.liquid.milk
+item.container.jug.milk_jug	contents.fill	range	0..100 percent
+item.furniture.cabinet.kitchen_base_run		record	concrete
+item.furniture.cabinet.kitchen_base_run	name.text	string	kitchen base cabinets
+item.furniture.cabinet.kitchen_base_run	dims.l	quantity	2400 length
+item.furniture.cabinet.kitchen_base_run	dims.w	quantity	600 length
+item.furniture.cabinet.kitchen_base_run	dims.h	quantity	900 length
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.name.text	string	top drawer
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.capacity	quantity	12000 volume
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.max_size	quantity	500 length
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.purposes.0.purpose	path	world.purpose.cutlery_drawer
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.purposes.0.w	integer	30
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.purposes.1.purpose	path	world.purpose.junk_drawer
+item.furniture.cabinet.kitchen_base_run	compartments.top_drawer.purposes.1.w	integer	25
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.name.text	string	cupboard
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.capacity	quantity	150000 volume
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.purposes.0.purpose	path	world.purpose.dish_cupboard
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.purposes.0.w	integer	25
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.purposes.1.purpose	path	world.purpose.cookware_cupboard
+item.furniture.cabinet.kitchen_base_run	compartments.cupboard.purposes.1.w	integer	25

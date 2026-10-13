@@ -1,0 +1,5 @@
+substance.liquid.blood		record	concrete
+substance.liquid.blood	name.text	string	blood
+substance.liquid.blood	density	quantity	1060 density
+substance.liquid.blood	stain	integer	90
+substance.liquid.blood	scent	path	def.scent.blood

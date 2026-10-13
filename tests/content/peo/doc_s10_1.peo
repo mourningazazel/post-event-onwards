@@ -1,0 +1,26 @@
+item.weapon.firearm.handgun.pistol {
+    durability {
+        value = 9,
+        on.reduce = [
+            if ($input > 3) { $self.composition.frame.crack(), output($input) },
+            else = { output($input * 50%) }
+        ]
+    },
+    skill_required {
+        value = 30,
+        on.get = [
+            if ($user.body.arm.**.hand.damage < 10) { output($value + 20) }
+        ]
+    },
+    on.use.fire = [
+        if ($user.body.arm.**.hand.damage < 10) {
+            $self.fail_rate += 50%,
+            $self.misfire_rate *= 2
+        },
+        if ($self.condition < 10%) {
+            chance(&rate = 50%,
+                $self.condition = 0,
+                mechanic.effect.explosion(&size = 10 m, &heat = 900 F))
+        }
+    ]
+}

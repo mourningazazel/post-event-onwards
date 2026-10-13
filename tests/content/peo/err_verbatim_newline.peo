@@ -1,0 +1,4 @@
+item.a {
+    name.text = "no end
+}
+item.b { value = 1 }

@@ -1,0 +1,13 @@
+item.a {
+    features.grip.hands = 2,
+    features { grip { girth = 30 mm }, edge { sharpness = 4 } },
+    composition.handle.material = item.material.wood.hardwood,
+    empty_list = [],
+    empty_block {},
+    flag = yes,
+    off = no,
+    words = [left, right]
+}
+abstract item.b { value = 1 }
+remap.item.c = item.a
+remap.item.d = [item.a, item.b]

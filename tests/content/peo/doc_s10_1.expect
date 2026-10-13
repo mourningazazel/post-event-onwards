@@ -1,0 +1,8 @@
+item.weapon.firearm.handgun.pistol		record	concrete
+item.weapon.firearm.handgun.pistol	durability.value	integer	9
+item.weapon.firearm.handgun.pistol	durability.on.reduce.0	expr	if ($input > 3) { $self.composition.frame.crack(), output($input) }
+item.weapon.firearm.handgun.pistol	durability.on.reduce.1	expr	else = { output($input * 50%) }
+item.weapon.firearm.handgun.pistol	skill_required.value	integer	30
+item.weapon.firearm.handgun.pistol	skill_required.on.get.0	expr	if ($user.body.arm.**.hand.damage < 10) { output($value + 20) }
+item.weapon.firearm.handgun.pistol	on.use.fire.0	expr	if ($user.body.arm.**.hand.damage < 10) {\n            $self.fail_rate += 50%,\n            $self.misfire_rate *= 2\n        }
+item.weapon.firearm.handgun.pistol	on.use.fire.1	expr	if ($self.condition < 10%) {\n            chance(&rate = 50%,\n                $self.condition = 0,\n                mechanic.effect.explosion(&size = 10 m, &heat = 900 F))\n        }

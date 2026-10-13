@@ -1,0 +1,6 @@
+text.item.tool.hammer.claw_hammer.desc		record	concrete
+text.item.tool.hammer.claw_hammer.desc	text	formatted	A steel-headed hammer with a split claw\nand a <i>hickory</i> handle.
+text.gen.item.tool		record	concrete
+text.gen.item.tool	lines.0.if	expr	$self{ condition <= 20% }
+text.gen.item.tool	lines.0.text	formatted	A <b>battered</b> ${$self.name.text}, its ${$self.composition.head.material.name.text} head pitted with rust.
+text.gen.item.tool	lines.1.text	formatted	A ${$self.name.text} with a ${$self.composition.handle.material.name.text} handle.

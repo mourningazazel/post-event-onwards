@@ -1,0 +1,10 @@
+text.sample {
+    plain = "<b>bold?</b> and a back\slash",
+    formatted = """
+        First line with a \"quote\"
+          indented \\ backslash\tand tab
+
+        last line\nsplit
+    """,
+    one = """single line ${$self.name.text}"""
+}

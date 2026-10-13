@@ -1,0 +1,27 @@
+abstract unit.human {
+    body {
+        head {
+            hair { color = def.color.black, length = 40 mm },
+            eyes { color = def.color.brown }
+        },
+        height = 175 cm
+    },
+    mind { sanity = 100, morale = 50 },
+    hands { left = empty, right = empty }
+}
+unit.human.civilian.nurse {
+    name.text = "nurse",
+    outfit = [item.clothing.top.scrubs_top, item.clothing.bottom.scrubs_pants, item.clothing.footwear.sneakers],
+    carried = [
+        { item = item.personal.id.lanyard_badge },
+        { item = item.medical.medicine.painkillers, chance = 40% }
+    ]
+}
+unit.self {
+    parent = unit.human.civilian           # the one record whose path is fixed by the game
+}
+unit.dead.walker {
+    name.text = "the Dead",
+    speed = 1,
+    senses { smell = 60, sight = 6 m }
+}

@@ -1,0 +1,4 @@
+composition {
+    body  { material = item.material.plastic.hdpe,         share = 90% },  # solid HDPE
+    weave { material = item.material.plastic.hdpe.strands, share = 10% }  # the strand variant
+}

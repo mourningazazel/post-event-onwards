@@ -1,0 +1,6 @@
+item.a		record	concrete
+item.a	a	range	-5..-1
+item.a	b	range	3600..10800 time
+item.a	c	range	5400..10800 time
+item.a	d	range	1000..2000 mass
+item.a	e	range	0..100 percent

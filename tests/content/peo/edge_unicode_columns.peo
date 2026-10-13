@@ -1,0 +1,3 @@
+text.a { name.text = "café ☕", note = "naïve" }
+text.b { x = "é" é }
+item.c { value = 1 }

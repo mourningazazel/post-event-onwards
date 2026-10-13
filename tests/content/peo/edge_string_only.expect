@@ -1,0 +1,3 @@
+item.a		record	concrete
+item.a	value	integer	1
+error	edge_string_only.peo:1:1: expected a record path, found a string

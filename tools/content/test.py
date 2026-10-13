@@ -398,6 +398,17 @@ def run_remap_probes(db: Db) -> list[str]:
     return errors
 
 
+# ---------------------------------------------------------------- .peo conformance (PEO-135)
+def run_peo_conformance() -> list[str]:
+    """The Python .peo parser against every tests/content/peo/*.expect; ctest peo_conformance
+    checks the engine's against the same files."""
+    import peo_conformance
+
+    failures = peo_conformance.check(None)
+    print(f"peo conformance: {len(list(peo_conformance.CASES.glob('*.peo')))} cases, {len(failures)} failed")
+    return [f"peo conformance: {f}" for f in failures]
+
+
 # ---------------------------------------------------------------- rolls (D-030, PEO-057)
 ROLL_SEEDS = range(1, 201)
 SMOKER = "detail.smoker"
@@ -563,7 +574,7 @@ def main() -> int:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
     errors = (run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
-              + run_extras_probes(db) + run_remap_probes(db) + run_rolls(db))
+              + run_extras_probes(db) + run_remap_probes(db) + run_peo_conformance() + run_rolls(db))
     return fail_if(errors, "content tests")
 
 

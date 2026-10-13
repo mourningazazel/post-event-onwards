@@ -1,0 +1,2 @@
+item.a { span = 1 kg..3 m }
+item.b { value = 1 }

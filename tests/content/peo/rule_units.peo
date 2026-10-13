@@ -1,0 +1,18 @@
+def.measure.sample {
+    a = 1.5 cm,
+    b = 10 lb,
+    c = 1 gal,
+    d = 2 h,
+    e = 212 F,
+    f = 1..3 h,
+    g = 0%..100%,
+    h = 12.5%,
+    i = -40 F,
+    j = 950 kg/m3,
+    k = 2 oz,
+    l = 3 fl_oz,
+    m = 1.25 km,
+    n = 2 d,
+    o = -5,
+    p = 1 kg..1500 g
+}

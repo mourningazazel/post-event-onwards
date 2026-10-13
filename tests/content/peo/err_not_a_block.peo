@@ -1,0 +1,5 @@
+item.a {
+    value = 3,
+    value.text = "x"
+}
+item.b { value = 1 }

@@ -1,0 +1,5 @@
+composition		record	concrete
+composition	body.material	path	item.material.plastic.hdpe
+composition	body.share	quantity	90 percent
+composition	weave.material	path	item.material.plastic.hdpe.strands
+composition	weave.share	quantity	10 percent

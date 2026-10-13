@@ -1,0 +1,3 @@
+item.b		record	concrete
+item.b	value	integer	1
+error	err_comma_before_bracket.peo:2:33: no comma before ']'

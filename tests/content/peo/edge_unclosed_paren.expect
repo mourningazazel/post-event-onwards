@@ -1,0 +1,3 @@
+item.b		record	concrete
+item.b	value	integer	1
+error	edge_unclosed_paren.peo:1:34: unbalanced ']' in an expression

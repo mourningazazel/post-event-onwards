@@ -1,0 +1,38 @@
+abstract item.tool {
+    tags = [def.tag.use.tool],
+    value = 20,
+    brands = [brand.category.tools],
+    desc.text = text.gen.item.tool         # every tool describes itself unless a child says otherwise
+}
+item.tool.hammer {
+    name.text = "hammer",
+    shape = def.shape.rod,
+    dims { l = 330 mm, w = 130 mm, h = 30 mm },
+    mass = 570 g,
+    durability = 9,
+    balance = 85%,                          # how far along its length the weight sits
+    glyph = art.glyph.item.hammer,
+    tags = [def.tag.use.weapon, def.tag.from.garage, def.tag.from.construction],
+
+    composition {
+        head   { material = item.material.metal.steel.carbon_steel, share = 70% },
+        handle { material = item.material.wood.hardwood,            share = 30% }
+    },
+    features {
+        striking_face { area = 700 mm2 },
+        grip          { hands = 1, girth = 32 mm }
+    }
+}
+item.tool.hammer.claw_hammer {
+    name.text = "claw hammer",
+    desc.text = text.item.tool.hammer.claw_hammer.desc,
+    value = 45,
+    capabilities { pry = 2 },
+    composition.handle.material = item.material.wood.hardwood.hickory
+}
+item.tool.hammer.sledgehammer {
+    name.text = "sledgehammer",
+    dims { l = 900 mm, w = 200 mm, h = 60 mm },
+    mass = 10 lb,                           # any mass unit; stored in grams
+    features.grip.hands = 2
+}

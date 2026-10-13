@@ -1,0 +1,22 @@
+mechanic.action.craft.carve_spoon		record	concrete
+mechanic.action.craft.carve_spoon	desc.text	string	Carve a spoon from a block of wood.
+mechanic.action.craft.carve_spoon	skill	path	mechanic.skill.craft.woodworking
+mechanic.action.craft.carve_spoon	difficulty	integer	20
+mechanic.action.craft.carve_spoon	time	quantity	1800 time
+mechanic.action.craft.carve_spoon	noise	integer	35
+mechanic.action.craft.carve_spoon	roles.source	expr	self.carried.**{\n            material ~ item.material.wood.**,\n            dims.l >= 150 mm\n        }
+mechanic.action.craft.carve_spoon	roles.tool	expr	self.carried.**{ capability.cut >= 3 }
+mechanic.action.craft.carve_spoon	effects.0	expr	item.kitchen.utensil.spoon{\n            composition.body.material = $source.material\n        }.make(self.hands)
+mechanic.action.craft.carve_spoon	effects.1	expr	$source.use()
+mechanic.action.craft.carve_spoon	effects.2	expr	$tool.durability.reduce(1)
+mechanic.action.craft.carve_spoon	on_fail.0.outcome	path	mechanic.outcome.failed
+mechanic.action.craft.carve_spoon	on_fail.0.w	integer	70
+mechanic.action.craft.carve_spoon	on_fail.1.outcome	path	mechanic.outcome.damaged_components
+mechanic.action.craft.carve_spoon	on_fail.1.w	integer	25
+mechanic.action.craft.carve_spoon	on_fail.2.outcome	path	mechanic.outcome.bad_event
+mechanic.action.craft.carve_spoon	on_fail.2.w	integer	5
+mechanic.effect.mental.shaken		record	concrete
+mechanic.effect.mental.shaken	desc.text	string	Something you saw will not leave you.
+mechanic.effect.mental.shaken	effects.0	expr	$target.mind.sanity.reduce(25)
+mechanic.effect.mental.shaken	effects.1	expr	$target.mind.morale.reduce(10)
+mechanic.effect.mental.shaken	lasts	quantity	7200 time

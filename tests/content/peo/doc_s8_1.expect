@@ -1,0 +1,29 @@
+world.loot.smoker_evidence		record	concrete
+world.loot.smoker_evidence	rolls	integer	1
+world.loot.smoker_evidence	empty	quantity	0 percent
+world.loot.smoker_evidence	entries.0.item	path	item.personal.tobacco.cigarettes
+world.loot.smoker_evidence	entries.0.w	integer	10
+world.loot.smoker_evidence	entries.0.count	range	1..3
+world.loot.smoker_evidence	entries.1.item	path	item.fire.lighter
+world.loot.smoker_evidence	entries.1.w	integer	6
+world.loot.smoker_evidence	entries.1.count	range	1..2
+world.loot.smoker_evidence	entries.2.item	path	item.fire.matchbook
+world.loot.smoker_evidence	entries.2.w	integer	5
+world.loot.smoker_evidence	entries.2.count	range	1..3
+world.room.barn_interior		record	concrete
+world.room.barn_interior	desc.text	formatted	Inside a working barn: hay, feed and fencing, the tractor,\nfuel drums, a workbench, a meat freezer.
+world.room.barn_interior	size	range	80000000..600000000 area
+world.room.barn_interior	floor	path	world.surface.ground
+world.room.barn_interior	tags.0	path	def.tag.from.farm
+world.room.barn_interior	objects.0.item	path	item.farm.hay.hay_bale
+world.room.barn_interior	objects.0.count	range	10..200
+world.room.barn_interior	objects.1.item	path	item.furniture.storage.metal_shelving
+world.room.barn_interior	objects.1.count	range	1..4
+world.room.barn_interior	objects.1.contains.0	path	world.loot.farm_barn_stock
+world.room.barn_interior	objects.2.item	path	item.furniture.table.workbench
+world.room.barn_interior	objects.2.count	integer	1
+world.room.barn_interior	objects.2.chance	quantity	60 percent
+world.room.barn_interior	objects.2.contains.0	path	world.loot.workbench_tools
+world.room.barn_interior	objects.3.item	path	item.vehicle.tractor
+world.room.barn_interior	objects.3.count	integer	1
+world.room.barn_interior	objects.3.chance	quantity	50 percent

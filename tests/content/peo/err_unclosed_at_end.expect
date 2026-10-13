@@ -1,0 +1,3 @@
+item.a		record	concrete
+item.a	value	integer	1
+error	err_unclosed_at_end.peo:2:8: '{' is never closed

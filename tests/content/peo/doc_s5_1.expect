@@ -1,0 +1,24 @@
+unit.human		record	abstract
+unit.human	body.head.hair.color	path	def.color.black
+unit.human	body.head.hair.length	quantity	40 length
+unit.human	body.head.eyes.color	path	def.color.brown
+unit.human	body.height	quantity	1750 length
+unit.human	mind.sanity	integer	100
+unit.human	mind.morale	integer	50
+unit.human	hands.left	path	empty
+unit.human	hands.right	path	empty
+unit.human.civilian.nurse		record	concrete
+unit.human.civilian.nurse	name.text	string	nurse
+unit.human.civilian.nurse	outfit.0	path	item.clothing.top.scrubs_top
+unit.human.civilian.nurse	outfit.1	path	item.clothing.bottom.scrubs_pants
+unit.human.civilian.nurse	outfit.2	path	item.clothing.footwear.sneakers
+unit.human.civilian.nurse	carried.0.item	path	item.personal.id.lanyard_badge
+unit.human.civilian.nurse	carried.1.item	path	item.medical.medicine.painkillers
+unit.human.civilian.nurse	carried.1.chance	quantity	40 percent
+unit.self		record	concrete
+unit.self	parent	path	unit.human.civilian
+unit.dead.walker		record	concrete
+unit.dead.walker	name.text	string	the Dead
+unit.dead.walker	speed	integer	1
+unit.dead.walker	senses.smell	integer	60
+unit.dead.walker	senses.sight	quantity	6000 length

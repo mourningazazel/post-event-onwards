@@ -1,0 +1,8 @@
+item.a {
+    value = 3,
+    text = """
+        two
+        lines
+    """
+}
+item.b { value = 1 }

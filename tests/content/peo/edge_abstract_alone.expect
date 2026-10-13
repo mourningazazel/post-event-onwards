@@ -1,0 +1,3 @@
+item.a		record	concrete
+item.a	value	integer	1
+error	edge_abstract_alone.peo:2:1: expected '{' or '=' after 'abstract', found 'item'

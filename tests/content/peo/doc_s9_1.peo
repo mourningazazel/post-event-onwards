@@ -1,0 +1,3 @@
+remap.item.tool.hammer_old = item.tool.hammer
+def.tag.use.weapon { desc.text = "Usable as a weapon." }
+mechanic.skill.craft.woodworking { name.text = "woodworking" }

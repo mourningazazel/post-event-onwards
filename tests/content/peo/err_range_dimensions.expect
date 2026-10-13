@@ -1,0 +1,3 @@
+item.b		record	concrete
+item.b	value	integer	1
+error	err_range_dimensions.peo:1:23: a range's ends are different dimensions (mass and length)

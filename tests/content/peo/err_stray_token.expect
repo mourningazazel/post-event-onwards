@@ -1,0 +1,5 @@
+item.a		record	concrete
+item.a	value	integer	1
+item.c		record	concrete
+item.c	value	integer	3
+error	err_stray_token.peo:2:1: expected a record path, found '@'

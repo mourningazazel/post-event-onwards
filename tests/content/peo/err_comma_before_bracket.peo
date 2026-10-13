@@ -1,0 +1,4 @@
+item.a {
+    tags = [def.tag.a, def.tag.b,]
+}
+item.b { value = 1 }

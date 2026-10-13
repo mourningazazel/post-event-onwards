@@ -1,0 +1,4 @@
+# leading comment
+
+   abstract   item.a   {   value   =   1 ,  note = "# not a comment"  }  # trailing
+item.b{value=2}

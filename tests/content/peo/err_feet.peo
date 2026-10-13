@@ -1,0 +1,4 @@
+item.a {
+    dims { l = 6 ft }
+}
+item.b { value = 1 }

@@ -1,0 +1,4 @@
+remap.item.a		record	concrete
+remap.item.a	=	expr	item.**{ x >= 1,\n    y < 2 }
+remap.item.b		record	concrete
+remap.item.b	=	path	item.c

@@ -1,0 +1,18 @@
+mechanic.modifier.state.charred		record	concrete
+mechanic.modifier.state.charred	applies_to	expr	item.**{ tags has def.tag.mat.textile | def.tag.mat.wood | def.tag.mat.paper }
+mechanic.modifier.state.charred	name_part.slot	path	def.slot.prefix
+mechanic.modifier.state.charred	name_part.order	integer	10
+mechanic.modifier.state.charred	name_part.text	string	charred
+mechanic.modifier.state.charred	tags.0	path	def.tag.state.charred
+mechanic.modifier.state.charred	effects.0	expr	$item.durability.multiply(50%)
+mechanic.detail_table.mug_print		record	concrete
+mechanic.detail_table.mug_print	applies_to.0	path	item.kitchen.tableware.mug
+mechanic.detail_table.mug_print	pick	integer	1
+mechanic.detail_table.mug_print	entries.0.w	integer	5
+mechanic.detail_table.mug_print	entries.0.text	string	printed with a faded company logo
+mechanic.detail_table.mug_print	entries.1.w	integer	2
+mechanic.detail_table.mug_print	entries.1.text	string	chipped at the rim
+mechanic.detail_table.mug_print	entries.1.effects.0	expr	$item.durability.multiply(80%)
+mechanic.detail_table.mug_print	entries.2.w	integer	1
+mechanic.detail_table.mug_print	entries.2.text	string	bearing a hand-painted name
+mechanic.detail_table.mug_print	entries.2.tags.0	path	def.tag.flavor.sentimental

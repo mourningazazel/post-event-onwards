@@ -1,0 +1,10 @@
+mechanic.sample {
+    source = self.carried.**{ material ~ item.material.wood.**, dims.l >= 150 mm },
+    effects = [$tool.durability.reduce(1), item.x{ a = "}" }.make(self.hands)],
+    on.reduce = [
+        if ($input > 3) { $self.composition.frame.crack(), output($input) },
+        else = { output($input * 50%) }
+    ],
+    applies_to = item.**{ tags has def.tag.a | def.tag.b }
+}
+remap.item.q = item.**

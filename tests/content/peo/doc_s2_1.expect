@@ -1,0 +1,11 @@
+item.material		record	abstract
+item.material	shape	path	def.shape.block
+item.material	glyph	path	art.glyph.item.chunk
+item.material.plastic.hdpe		record	concrete
+item.material.plastic.hdpe	name.text	string	HDPE
+item.material.plastic.hdpe	density	quantity	950 density
+item.material.plastic.hdpe	flammability	integer	55
+item.material.plastic.hdpe	melt	quantity	130 temperature
+item.material.plastic.hdpe.strands		record	concrete
+item.material.plastic.hdpe.strands	structure	path	def.structure.strands
+item.material.plastic.hdpe.strands	tensile	integer	40

@@ -1,0 +1,14 @@
+text.item.tool.hammer.claw_hammer.desc {
+    text = """
+        A steel-headed hammer with a split claw
+        and a <i>hickory</i> handle.
+    """
+}
+text.gen.item.tool {
+    # A generator: picks the first line whose `if` holds, fills in values from the item.
+    lines = [
+        { if = $self{ condition <= 20% },
+          text = """A <b>battered</b> ${$self.name.text}, its ${$self.composition.head.material.name.text} head pitted with rust.""" },
+        { text = """A ${$self.name.text} with a ${$self.composition.handle.material.name.text} handle.""" }
+    ]
+}

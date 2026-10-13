@@ -1,0 +1,3 @@
+item.b		record	concrete
+item.b	value	integer	1
+error	err_verbatim_newline.peo:2:17: a "..." string ends at the end of its line; use """...""" for more

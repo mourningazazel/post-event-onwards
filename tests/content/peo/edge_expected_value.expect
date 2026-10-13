@@ -1,0 +1,5 @@
+item.d		record	concrete
+item.d	value	integer	1
+error	edge_expected_value.peo:1:18: expected a value, found '}'
+error	edge_expected_value.peo:2:18: expected a value, found ','
+error	edge_expected_value.peo:4:1: expected a value on the line of '=', found 'item'

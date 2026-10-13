@@ -1,0 +1,4 @@
+item.c		record	concrete
+item.c	value	integer	1
+error	edge_field_errors.peo:1:10: expected a field name, found '5'
+error	edge_field_errors.peo:2:16: expected '=' or '{' after 'value', found '1'

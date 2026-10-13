@@ -1,0 +1,17 @@
+def.measure.sample		record	concrete
+def.measure.sample	a	quantity	15 length
+def.measure.sample	b	quantity	4536 mass
+def.measure.sample	c	quantity	3785 volume
+def.measure.sample	d	quantity	7200 time
+def.measure.sample	e	quantity	100 temperature
+def.measure.sample	f	range	3600..10800 time
+def.measure.sample	g	range	0..100 percent
+def.measure.sample	h	quantity	13 percent
+def.measure.sample	i	quantity	-40 temperature
+def.measure.sample	j	quantity	950 density
+def.measure.sample	k	quantity	57 mass
+def.measure.sample	l	quantity	89 volume
+def.measure.sample	m	quantity	1250000 length
+def.measure.sample	n	quantity	172800 time
+def.measure.sample	o	integer	-5
+def.measure.sample	p	range	1000..1500 mass

@@ -1,0 +1,6 @@
+remap.item.tool.hammer_old		record	concrete
+remap.item.tool.hammer_old	=	path	item.tool.hammer
+def.tag.use.weapon		record	concrete
+def.tag.use.weapon	desc.text	string	Usable as a weapon.
+mechanic.skill.craft.woodworking		record	concrete
+mechanic.skill.craft.woodworking	name.text	string	woodworking

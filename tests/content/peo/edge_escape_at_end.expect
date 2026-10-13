@@ -1,0 +1,2 @@
+error	edge_escape_at_end.peo:1:17: a """ string is never closed
+error	edge_escape_at_end.peo:1:42: unknown escape '\' in a """ string

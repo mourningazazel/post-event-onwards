@@ -1,0 +1,6 @@
+text.a		record	concrete
+text.a	name.text	string	café ☕
+text.a	note	string	naïve
+item.c		record	concrete
+item.c	value	integer	1
+error	edge_unicode_columns.peo:2:18: expected ',' or '}', found 'é'

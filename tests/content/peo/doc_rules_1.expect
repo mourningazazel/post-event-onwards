@@ -1,0 +1,10 @@
+item.tool.hammer.claw_hammer		record	concrete
+item.tool.hammer.claw_hammer	mass	quantity	570 mass
+item.tool.hammer.claw_hammer	dims.l	quantity	330 length
+item.tool.hammer.claw_hammer	dims.w	quantity	130 length
+item.tool.hammer.claw_hammer	dims.h	quantity	30 length
+item.tool.hammer.claw_hammer	value	integer	45
+item.tool.hammer.claw_hammer	name.text	string	claw hammer
+item.tool.hammer.claw_hammer	desc.text	path	text.item.tool.hammer.claw_hammer.desc
+item.tool.hammer.claw_hammer	tags.0	path	def.tag.use.tool
+item.tool.hammer.claw_hammer	tags.1	path	def.tag.use.weapon

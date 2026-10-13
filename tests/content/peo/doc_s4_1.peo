@@ -1,0 +1,6 @@
+substance.liquid.blood {
+    name.text = "blood",
+    density = 1060 kg/m3,
+    stain = 90,
+    scent = def.scent.blood
+}

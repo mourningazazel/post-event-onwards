@@ -1,0 +1,10 @@
+# a comment runs to the end of the line
+
+item.tool.hammer.claw_hammer {                  # a record: its full path, then a block
+    mass = 570 g,                               # key = value; commas go between fields
+    dims { l = 330 mm, w = 130 mm, h = 30 mm },
+    value = 45,                                 # gradients are integers, never words
+    name.text = "claw hammer",                  # "..." is verbatim: no escapes, no formatting
+    desc.text = text.item.tool.hammer.claw_hammer.desc,   # or a path to a text record
+    tags = [def.tag.use.tool, def.tag.use.weapon]
+}

@@ -1,0 +1,2 @@
+item.a { mass = 5 stone }
+item.b { value = 1 }

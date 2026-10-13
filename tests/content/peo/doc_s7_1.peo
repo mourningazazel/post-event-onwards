@@ -1,0 +1,15 @@
+mechanic.modifier.state.charred {
+    applies_to = item.**{ tags has def.tag.mat.textile | def.tag.mat.wood | def.tag.mat.paper },
+    name_part { slot = def.slot.prefix, order = 10, text = "charred" },
+    tags = [def.tag.state.charred],
+    effects = [ $item.durability.multiply(50%) ]
+}
+mechanic.detail_table.mug_print {
+    applies_to = [item.kitchen.tableware.mug],
+    pick = 1,
+    entries = [
+        { w = 5, text = "printed with a faded company logo" },
+        { w = 2, text = "chipped at the rim", effects = [ $item.durability.multiply(80%) ] },
+        { w = 1, text = "bearing a hand-painted name", tags = [def.tag.flavor.sentimental] }
+    ]
+}

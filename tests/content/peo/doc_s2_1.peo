@@ -1,0 +1,15 @@
+abstract item.material {
+    shape = def.shape.block,
+    glyph = art.glyph.item.chunk
+}
+item.material.plastic.hdpe {
+    name.text = "HDPE",
+    density = 950 kg/m3,
+    flammability = 55,                      # 0 to 100, no words
+    melt = 130 C
+}
+item.material.plastic.hdpe.strands {
+    # the same plastic, spun into strands (rope, tarp weave)
+    structure = def.structure.strands,
+    tensile = 40
+}

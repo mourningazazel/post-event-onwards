@@ -1,0 +1,4 @@
+text.sample		record	concrete
+text.sample	plain	string	<b>bold?</b> and a back\\slash
+text.sample	formatted	formatted	First line with a "quote"\n  indented \\ backslash\tand tab\n\nlast line\nsplit
+text.sample	one	formatted	single line ${$self.name.text}

@@ -1,0 +1,38 @@
+item.tool		record	abstract
+item.tool	tags.0	path	def.tag.use.tool
+item.tool	value	integer	20
+item.tool	brands.0	path	brand.category.tools
+item.tool	desc.text	path	text.gen.item.tool
+item.tool.hammer		record	concrete
+item.tool.hammer	name.text	string	hammer
+item.tool.hammer	shape	path	def.shape.rod
+item.tool.hammer	dims.l	quantity	330 length
+item.tool.hammer	dims.w	quantity	130 length
+item.tool.hammer	dims.h	quantity	30 length
+item.tool.hammer	mass	quantity	570 mass
+item.tool.hammer	durability	integer	9
+item.tool.hammer	balance	quantity	85 percent
+item.tool.hammer	glyph	path	art.glyph.item.hammer
+item.tool.hammer	tags.0	path	def.tag.use.weapon
+item.tool.hammer	tags.1	path	def.tag.from.garage
+item.tool.hammer	tags.2	path	def.tag.from.construction
+item.tool.hammer	composition.head.material	path	item.material.metal.steel.carbon_steel
+item.tool.hammer	composition.head.share	quantity	70 percent
+item.tool.hammer	composition.handle.material	path	item.material.wood.hardwood
+item.tool.hammer	composition.handle.share	quantity	30 percent
+item.tool.hammer	features.striking_face.area	quantity	700 area
+item.tool.hammer	features.grip.hands	integer	1
+item.tool.hammer	features.grip.girth	quantity	32 length
+item.tool.hammer.claw_hammer		record	concrete
+item.tool.hammer.claw_hammer	name.text	string	claw hammer
+item.tool.hammer.claw_hammer	desc.text	path	text.item.tool.hammer.claw_hammer.desc
+item.tool.hammer.claw_hammer	value	integer	45
+item.tool.hammer.claw_hammer	capabilities.pry	integer	2
+item.tool.hammer.claw_hammer	composition.handle.material	path	item.material.wood.hardwood.hickory
+item.tool.hammer.sledgehammer		record	concrete
+item.tool.hammer.sledgehammer	name.text	string	sledgehammer
+item.tool.hammer.sledgehammer	dims.l	quantity	900 length
+item.tool.hammer.sledgehammer	dims.w	quantity	200 length
+item.tool.hammer.sledgehammer	dims.h	quantity	60 length
+item.tool.hammer.sledgehammer	mass	quantity	4536 mass
+item.tool.hammer.sledgehammer	features.grip.hands	integer	2

@@ -1,0 +1,40 @@
+item.container.jug.milk_jug {
+    name.text = "milk jug",
+    dims { l = 250 mm, w = 150 mm, h = 150 mm },
+    mass = 60 g,
+    composition {
+        body { material = item.material.plastic.hdpe,          share = 90% },
+        cap  { material = item.material.plastic.polypropylene, share = 10% }
+    },
+    features.container {
+        capacity = 1 gal,
+        opening = 38 mm,
+        closable = yes,
+        sealable = yes,
+        holds = [substance.liquid.**, substance.granular.**]
+    },
+    contents { substance = substance.liquid.milk, fill = 0%..100% }
+}
+item.furniture.cabinet.kitchen_base_run {
+    name.text = "kitchen base cabinets",
+    dims { l = 2400 mm, w = 600 mm, h = 900 mm },
+    compartments {
+        top_drawer {
+            name.text = "top drawer",
+            capacity = 12 l,
+            max_size = 500 mm,
+            purposes = [
+                { purpose = world.purpose.cutlery_drawer, w = 30 },
+                { purpose = world.purpose.junk_drawer,    w = 25 }
+            ]
+        },
+        cupboard {
+            name.text = "cupboard",
+            capacity = 150 l,
+            purposes = [
+                { purpose = world.purpose.dish_cupboard,     w = 25 },
+                { purpose = world.purpose.cookware_cupboard, w = 25 }
+            ]
+        }
+    }
+}

@@ -1,0 +1,5 @@
+item.a		record	concrete
+item.a	value	integer	3
+item.a	text	formatted	two\nlines
+item.b		record	concrete
+item.b	value	integer	1

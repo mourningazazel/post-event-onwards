@@ -1,0 +1,5 @@
+item.a		record	abstract
+item.a	value	integer	1
+item.a	note	string	# not a comment
+item.b		record	concrete
+item.b	value	integer	2

@@ -1,0 +1,18 @@
+item.a		record	concrete
+item.a	features.grip.hands	integer	2
+item.a	features.grip.girth	quantity	30 length
+item.a	features.edge.sharpness	integer	4
+item.a	composition.handle.material	path	item.material.wood.hardwood
+item.a	empty_list	list	[]
+item.a	empty_block	block	{}
+item.a	flag	boolean	yes
+item.a	off	boolean	no
+item.a	words.0	path	left
+item.a	words.1	path	right
+item.b		record	abstract
+item.b	value	integer	1
+remap.item.c		record	concrete
+remap.item.c	=	path	item.a
+remap.item.d		record	concrete
+remap.item.d	=.0	path	item.a
+remap.item.d	=.1	path	item.b
