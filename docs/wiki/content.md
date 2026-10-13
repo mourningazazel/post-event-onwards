@@ -5,9 +5,13 @@
 `content/` holds the game's catalogue as TOML: item archetypes, materials, substances,
 modifiers and detail tables, brands, building and room types, loot tables and occupant
 profiles. `python3 tools/content/lint.py` prints the record count of every type. It is
-authored mostly by Claude (owner notes N008, N011) and checked by Python. The C++ game does
-not load it yet (the loader is PEO-008), so the Python tools are both the checker and the
-**executable spec** the C++ port must match.
+authored mostly by Claude (owner notes N008, N011) and checked by Python. The game loads it at
+startup (PEO-008): the frontend reads every `*.toml` under `content/` (or `--content DIR`) in
+sorted path order, core's `load_content` parses them and resolves every item through its parent
+chain, and a broken file stops the game before its window opens, naming the file and line. The
+ctest `content_golden` runs `tools/content/golden.py`, which diffs every resolved value from
+`peo_content_dump` against `derive.resolve_item`. The Python tools stay the checker and the
+**executable spec** the rest of the C++ port must match.
 
 Schema reference: `content/README.md`. Design: `docs/design/content-model.md` (materials,
 features, capabilities, reactions, tags; attachment and joints; generated descriptions;
@@ -54,14 +58,15 @@ brands; quality), `docs/design/survival-actions.md`, `docs/design/world-catalog.
 
 ## Tunables
 
-The content is itself the tunable: numbers in TOML. When the loader lands, item behaviour comes
-from materials and features through `derive.py`'s formulas (the named constants at the top of
+The content is itself the tunable: numbers in TOML. When the derivations land (PEO-128), item
+behaviour comes from materials and features through `derive.py`'s formulas (the named constants at the top of
 `derive.py`, such as `SLICE_CAP`, `WIELD_MAX_G`, `IGNITE_BY_METHOD`, are tunables). Container
 fill comes from loot tables and purposes through `generate.py`'s order of salts.
 
 ## Designed, not built
 
-The loader (PEO-008), quality and degradation (PEO-013), items as seeds that instantiate on
+Derivations in C++ (PEO-128), modifiers and the variant table (PEO-129), quality and
+degradation (PEO-013), items as seeds that instantiate on
 change (PEO-050), the contents generator in C++ (PEO-053), skills (PEO-012), locks (PEO-019),
 books (PEO-020), generic parent archetypes and remaps (PEO-116), content migration on load
 (PEO-092), the building census (PEO-014).

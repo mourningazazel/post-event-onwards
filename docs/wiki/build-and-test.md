@@ -37,12 +37,15 @@ listed on [Frontend](frontend.md#command-line).
 ## Tests
 
 All tests are headless doctest suites linked into one binary,
-`build/<preset>/tests/peo_core_tests`, plus two CTest budget checks (`tests/CMakeLists.txt`).
+`build/<preset>/tests/peo_core_tests`, plus CTest checks beside it (`tests/CMakeLists.txt`): two budgets and the content golden.
 
 - **Unit tier**: everything not in a `scenario*` suite. Must sum under 1 s (D-033).
 - **Scenario tier**: suites named `scenario: ...` (golden runs, town fixtures). Under 5 s.
 - `suite_budget` and `scenario_budget` (`tools/suite_budget.py`) fail the run when a tier's
   summed case times exceed the numbers written in `AGENTS.md`, naming the slowest cases.
+- `content_golden` (`tools/content/golden.py --engine peo_content_dump`) fails when any item in
+  `content/` resolves differently in the engine than in `derive.py`, printing the first 20
+  differing lines (item, dotted path, value).
 - Cases that build a whole 100 km geography square run only in release builds
   (`#ifdef NDEBUG`).
 
@@ -71,6 +74,9 @@ scenarios in `test_swarm.cpp`. If one of those goes red, something fundamental b
   Never part of `verify.py` or regular CI; the `siege` workflow runs it by hand.
 - **Geography images** (`tests/geo/geo_dump.cpp`): `peo_geo --seed N --square X,Y
   [--span K] [--scale S] [--grid] --out f.ppm`. The headless way to look at the map.
+- **Resolved content** (`tests/content_dump/content_dump.cpp`): `peo_content_dump <content_dir>`
+  prints every resolved item as `<id>\t<dotted path>\t<value>` lines; `golden.py` prints the
+  same from Python.
 
 ## `verify.py`: the one gate
 

@@ -17,7 +17,7 @@ the current code are marked below; the rest apply as each system lands.
 | R8 determinism (seeded streams, no wall clock, no `std` distributions) | holds (`rng.hpp`, `stage.hpp`) |
 | R11 every system runs headless | holds (`headless` preset) |
 | R12 no singals, explicit context | holds |
-| R6 content is data (registry, TOML) | data exists in `content/`; loading is queued |
+| R6 content is data (registry, TOML) | holds: the game loads `content/` at startup (`content.hpp`, PEO-008) |
 | R1/R2 one CMake target per system, acyclic | one `core` target today; split as systems appear |
 | R3 commands and events | `Action` is the first command (PEO-002) |
 | R4 batch-first APIs | the Dead's poll and slot buckets are one pass over the horde; keep it that way |
@@ -48,6 +48,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ sight.hpp  SightField: symmetric shadowcasting within the optical range (PEO-119)
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
+                              ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
@@ -236,8 +237,12 @@ time, so a runner covers two cells per update.
   in the World scope, CHAR in the Character scope. Restore checks every value against the
   stage it builds and changes nothing unless the image is Ok. Files, the two fallbacks and
   zstd are the app's and PEO-107 / PEO-108.
-- `Content`: loads `content/` (registry, materials, items, modifiers) into runtime tables;
-  the derivation rules in `tools/content/derive.py` are the executable spec to port.
+- `Content`: **built (PEO-008)** in `peo/core/content.hpp`. Core parses the TOML text the
+  frontend reads (`src/app/content_files.hpp`, `--content DIR`) with vendored toml++, keeps
+  every record type by ID and resolves each item through its parent chain once, at load, as
+  `derive.resolve_item` does; lookups by ID and dotted path. `peo_content_dump` prints every
+  resolved item and the ctest `content_golden` diffs it against `tools/content/golden.py`.
+  Derivations (PEO-128) and modifiers with the variant table (PEO-129) build on it.
 - `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for
   reviewing bugs it cannot see. First piece of the playtest harness.
 - `Fields`: the generic scalar-field service (scent channels, later sound, heat, light).
