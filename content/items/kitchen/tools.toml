@@ -1,6 +1,34 @@
 # Kitchen tools and utensils. Exemplar file.
 
+# PEO-116, D-046: the knife family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.knife]
+name = "knife"
+tags = ["cat.tool.knife", "use.tool"]
+brand_cats = ["cutlery"]
+desc = "A plain knife."
+dims_mm = [300, 35, 20]
+durability = 6
+glyph = "item.knife"
+mass_g = 200
+shape = "blade"
+value_class = "useful"
+why = "Generic parent of the knife family (D-046): what a removed kind of knife becomes in an old save."
+
+[item.knife.composition.blade]
+material = "stainless_steel"
+share = 100
+
+[item.knife.features.edge]
+length_mm = 180
+sharpness = 7
+
+[item.knife.features.grip]
+girth_mm = 25
+hands = 1
+
 [item.kitchen_knife]
+parent = "knife"
 name = "kitchen knife"
 tags = ["cat.tool.knife", "from.kitchen", "from.restaurant", "use.tool", "use.weapon"]
 shape = "blade"
@@ -34,6 +62,7 @@ girth_mm = 25
 # ---------------------------------------------------------------- domain A additions
 
 [item.cleaver]
+parent = "knife"
 name = "meat cleaver"
 tags = ["cat.tool.knife", "from.kitchen", "from.restaurant", "use.tool", "use.weapon"]
 shape = "blade"

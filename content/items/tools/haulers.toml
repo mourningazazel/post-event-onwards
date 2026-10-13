@@ -171,6 +171,7 @@ hands = 2
 girth_mm = 30
 
 [item.ladder_step]
+parent = "ladder"
 name = "stepladder"
 tags = ["cat.tool.ladder", "from.garage", "from.construction", "from.retail", "use.tool"]
 shape = "complex"
@@ -205,7 +206,38 @@ girth_mm = 60
 [item.ladder_step.capabilities]
 hammer = 2
 
+# PEO-116, D-046: the ladder family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.ladder]
+name = "ladder"
+tags = ["cat.tool.ladder", "from.garage", "from.construction", "use.tool"]
+desc = "A plain ladder."
+dims_mm = [3710, 470, 140]
+durability = 8
+fill_pct = 2
+glyph = "obj.ladder_extension"
+mass_g = 20000
+shape = "complex"
+value_class = "valuable"
+why = "Generic parent of the ladder family (D-046): what a removed kind of ladder becomes in an old save."
+
+[item.ladder.capabilities]
+hammer = 1
+
+[item.ladder.composition.rails]
+material = "aluminum"
+share = 100
+
+[item.ladder.features.climbable]
+difficulty = 1
+height_mm = 7000
+
+[item.ladder.features.grip]
+girth_mm = 60
+hands = 2
+
 [item.extension_ladder]
+parent = "ladder"
 name = "extension ladder"
 tags = ["cat.tool.ladder", "from.garage", "from.construction", "from.fire_service", "use.tool"]
 shape = "complex"

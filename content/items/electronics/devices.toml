@@ -3,7 +3,46 @@
 # radios and walkie-talkies are noise lures; power banks and solar panels keep small devices alive
 # after the grid fails (N007). `tv_remote` and `alarm_clock` live in items/appliances/.
 
+# PEO-116, D-046: the radio family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.radio]
+name = "radio"
+tags = ["cat.electronics.radio", "from.outdoors", "from.retail", "use.signal", "use.lure"]
+brand_cats = ["radios"]
+desc = "A plain radio."
+dims_mm = [170, 80, 65]
+glyph = "item.radio"
+mass_g = 400
+shape = "complex"
+value_class = "valuable"
+why = "Generic parent of the radio family (D-046): what a removed kind of radio becomes in an old save."
+
+[item.radio.capabilities]
+noise = 6
+
+[item.radio.composition.case]
+material = "abs"
+share = 88
+
+[item.radio.composition.speaker]
+material = "mild_steel"
+share = 12
+
+[item.radio.features.alarm]
+loudness = "loud"
+timer = false
+trigger = "touch"
+
+[item.radio.features.slot]
+accepts = "cat.battery.aa"
+count = 3
+
+[item.radio.features.strap]
+kind = "handle"
+load_g = 2000
+
 [item.emergency_radio]
+parent = "radio"
 name = "emergency radio"
 tags = ["cat.electronics.radio", "from.living", "from.garage", "from.outdoors", "from.retail", "use.power", "use.light_source", "use.signal", "use.lure"]
 shape = "complex"
@@ -50,6 +89,7 @@ load_g = 2000
 noise = 6
 
 [item.walkie_talkie]
+parent = "radio"
 name = "walkie-talkie"
 tags = ["cat.electronics.radio", "from.police", "from.fire_service", "from.construction", "from.retail", "from.outdoors", "use.lure", "use.signal"]
 shape = "complex"
@@ -139,7 +179,31 @@ share = 5
 material = "pet"
 share = 15
 
+# PEO-116, D-046: the computer family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.computer]
+name = "computer"
+tags = ["cat.electronics.computer", "from.office", "from.bedroom", "from.school", "use.salvage"]
+brand_cats = ["computers"]
+desc = "A plain computer."
+dims_mm = [360, 250, 20]
+fill_pct = 50
+glyph = "item.laptop"
+mass_g = 1800
+shape = "sheet"
+value_class = "useful"
+why = "Generic parent of the computer family (D-046): what a removed kind of computer becomes in an old save."
+
+[item.computer.power_use]
+voltage = "ac_mains"
+watts = 45
+
+[item.computer.composition.case]
+material = "aluminum"
+share = 100
+
 [item.laptop]
+parent = "computer"
 name = "laptop"
 tags = ["cat.electronics.computer", "from.office", "from.bedroom", "from.school", "from.living", "use.power", "use.salvage"]
 shape = "sheet"
@@ -173,6 +237,7 @@ share = 8
 salvage = { item = "copper_wire", count = 1, set = { dims_mm = [1000, 1, 1], mass_g = 10 }, tool = "fasten>=2", time_s = 300 }
 
 [item.desktop_pc]
+parent = "computer"
 name = "desktop computer"
 tags = ["cat.electronics.computer", "from.office", "from.school", "from.bedroom", "use.salvage"]
 shape = "complex"

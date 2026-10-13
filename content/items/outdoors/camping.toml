@@ -193,6 +193,7 @@ kind = "lanyard"
 load_g = 2000
 
 [item.hunting_knife]
+parent = "knife"
 name = "hunting knife"
 tags = ["cat.tool.knife", "from.outdoors", "from.bedroom", "from.garage", "use.tool", "use.weapon"]
 shape = "blade"

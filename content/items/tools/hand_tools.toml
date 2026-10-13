@@ -55,7 +55,39 @@ girth_mm = 25
 sharpness = 2
 width_mm = 20
 
+# PEO-116, D-046: the hammer family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.hammer]
+name = "hammer"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool", "use.weapon"]
+balance = "head"
+brand_cats = ["tools"]
+desc = "A plain hammer."
+dims_mm = [330, 130, 30]
+durability = 9
+glyph = "item.hammer"
+mass_g = 570
+shape = "rod"
+value_class = "valuable"
+why = "Generic parent of the hammer family (D-046): what a removed kind of hammer becomes in an old save."
+
+[item.hammer.composition.handle]
+material = "hardwood"
+share = 30
+
+[item.hammer.composition.head]
+material = "carbon_steel"
+share = 70
+
+[item.hammer.features.grip]
+girth_mm = 32
+hands = 1
+
+[item.hammer.features.striking_face]
+area_mm2 = 700
+
 [item.claw_hammer]
+parent = "hammer"
 name = "claw hammer"
 tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool", "use.weapon"]
 shape = "rod"
@@ -113,6 +145,7 @@ grip_tool = 2
 # and long wooden-handled heads over-score on pry/hammer; see the domain report.
 
 [item.sledgehammer]
+parent = "hammer"
 name = "sledgehammer"
 tags = ["cat.tool.hand", "from.construction", "from.garage", "from.farm", "from.fire_service", "use.tool", "use.weapon"]
 shape = "rod"
@@ -218,7 +251,44 @@ girth_mm = 35
 [item.axe.capabilities]
 pry = 7
 
+# PEO-116, D-046: the saw family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.saw]
+name = "saw"
+tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool"]
+brand_cats = ["tools"]
+desc = "A plain saw."
+details = ["tool_wear_marks"]
+dims_mm = [610, 150, 30]
+durability = 7
+fill_pct = 10
+glyph = "item.saw"
+mass_g = 500
+shape = "blade"
+value_class = "useful"
+why = "Generic parent of the saw family (D-046): what a removed kind of saw becomes in an old save."
+
+[item.saw.capabilities]
+hammer = 1
+
+[item.saw.composition.blade]
+material = "carbon_steel"
+share = 70
+
+[item.saw.composition.handle]
+material = "polypropylene"
+share = 30
+
+[item.saw.features.grip]
+girth_mm = 30
+hands = 1
+
+[item.saw.features.saw_edge]
+coarse = true
+length_mm = 500
+
 [item.handsaw]
+parent = "saw"
 name = "handsaw"
 tags = ["cat.tool.hand", "from.garage", "from.construction", "use.tool"]
 shape = "blade"
@@ -254,6 +324,7 @@ pry = 1
 hammer = 1
 
 [item.hacksaw]
+parent = "saw"
 name = "hacksaw"
 tags = ["cat.tool.hand", "from.garage", "from.construction", "from.industrial", "use.tool"]
 shape = "complex"
@@ -424,6 +495,7 @@ chop = 1
 cut = 7
 
 [item.utility_knife]
+parent = "knife"
 name = "utility knife"
 tags = ["cat.tool.knife", "from.garage", "from.construction", "from.office", "from.retail", "use.tool"]
 shape = "blade"

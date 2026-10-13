@@ -124,6 +124,7 @@ material = "mild_steel"
 share = 100
 
 [item.copper_wire]
+parent = "wire"
 name = "copper wire"
 tags = ["cat.part.wire", "cat.fastener.wire", "from.utility", "from.construction", "from.garage", "use.salvage", "use.fastener"]
 shape = "cord"

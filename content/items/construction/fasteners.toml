@@ -168,7 +168,36 @@ share = 100
 [item.paracord.capabilities]
 bind = 5
 
+# PEO-116, D-046: the wire family's generic parent. It sets only what every
+# child sets itself, so no child's resolved data changes; generation never places it.
+[item.wire]
+name = "wire"
+tags = ["cat.fastener.wire", "from.construction", "from.garage", "use.fastener"]
+desc = "A plain wire."
+dims_mm = [100000, 2, 2]
+glyph = "item.wire_coil"
+mass_g = 1600
+shape = "cord"
+units = 200
+value_class = "useful"
+why = "Generic parent of the wire family (D-046): what a removed kind of wire becomes in an old save."
+
+[item.wire.attach_surface]
+contact_area_mm2 = 200
+kind = "round"
+wrap_girth_mm = 6
+
+[item.wire.divisible]
+min_piece_mm = 100
+mode = "length"
+needs = "cut>=6"
+
+[item.wire.composition.wire]
+material = "mild_steel"
+share = 100
+
 [item.baling_wire]
+parent = "wire"
 name = "baling wire"
 tags = ["cat.fastener.wire", "from.farm", "from.construction", "from.garage", "use.fastener"]
 shape = "cord"
