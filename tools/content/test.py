@@ -363,6 +363,41 @@ def run_extras_probes(db: Db) -> list[str]:
     return errors
 
 
+# Remaps lint must refuse, and one it must accept (PEO-116): label -> (records added, the text
+# an error on the probe must contain, or None when it must be accepted).
+REMAP_PROBES = {
+    "to a missing ID": ({"probe_gone": {"to": "probe_nowhere", "why": "probe"}}, "names neither"),
+    "a two-remap cycle": ({"probe_gone": {"to": "probe_other", "why": "probe"},
+                           "probe_other": {"to": "probe_gone", "why": "probe"}}, "remap cycle"),
+    "keyed by a current item": ({"claw_hammer": {"to": "hammer", "why": "probe"}}, "current item ID"),
+    "valid": ({"probe_gone": {"to": "claw_hammer", "why": "probe"}}, None),
+}
+
+
+def run_remap_probes(db: Db) -> list[str]:
+    errors = []
+    for label, (records, expect) in REMAP_PROBES.items():
+        for rid, rec in records.items():
+            db["remap"][rid] = rec
+        try:
+            lint = Lint(db)
+            lint.lint_remaps()
+        finally:
+            for rid in records:
+                del db["remap"][rid]
+        hits = [e for e in lint.errors if any(f"remap.{rid}" in e for rid in records)
+                and (expect is None or expect in e)]
+        if expect is None:
+            print(f"remap probe: {label} -> {len(hits)} error(s), accepted: {not hits}")
+            if hits:
+                errors.append(f"remap probe: {label} was refused: {hits[0]}")
+        else:
+            print(f"remap probe: {label} -> {len(hits)} error(s)")
+            if not hits:
+                errors.append(f"remap probe: {label} was not refused")
+    return errors
+
+
 # ---------------------------------------------------------------- rolls (D-030, PEO-057)
 ROLL_SEEDS = range(1, 201)
 SMOKER = "detail.smoker"
@@ -528,7 +563,7 @@ def main() -> int:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
     errors = (run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
-              + run_extras_probes(db) + run_rolls(db))
+              + run_extras_probes(db) + run_remap_probes(db) + run_rolls(db))
     return fail_if(errors, "content tests")
 
 
