@@ -8,6 +8,13 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`; D-035 to D-037 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
 
+## 2026-10-12 · Item parent chains have no length limit; a save reads up to 512 ancestors
+
+Owner decision. Content rejects inheritance cycles, so every parent chain ends at a root and no
+fixed depth is needed: PEO-008 drops `kMaxItemAncestry` and stores each item's chain at load
+(`Content::ancestry`). A save is untrusted input, so PEO-092 caps what one CDIC entry may claim
+at `kMaxSavedAncestry = 512` (u16 count): far beyond any real family, and the data is tiny.
+
 ## 2026-10-12 · toml++, vendored
 
 `third_party/toml++/toml.hpp` is committed (PEO-008), with its LICENSE. Why: no network

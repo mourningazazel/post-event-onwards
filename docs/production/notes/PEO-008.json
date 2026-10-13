@@ -23,5 +23,10 @@
     "at": "2026-10-12",
     "by": "builder",
     "text": "commits: d7ae58c toml++ 3.4.0 vendored, 250c194 load_content + resolve, 42a6ab4 lookups, 9e17ae9 fix: depth counted through resolved ancestors (found by the depth-17 test), 31a44a0 content suite, 3e62c5f peo_content_dump + Content::for_each_leaf (tools only; std::function, allocates), a978e5c golden.py + ctest content_golden, 9b777e4 app load + --content, af5940a docs. tests: verify.py --frontend --full all stages passed each unit; content suite 9 cases/88 assertions, slowest 2.5 ms under ASan; content_golden 13817 lines over 410 items match derive.py; a value altered in the engine output fails naming crowbar mass_g. manual: dev logs 'content: 410 items ... in 267 ms' (Debug+ASan), release 24-38 ms over 3 runs; --content /nonexistent and a scratch copy with a broken header both refuse to start, the latter naming hand_tools.toml line 799 col 13; game ran 5 s clean, turns not played by hand. perf: startup only, no bottlenecks row. deviations: vendored dir is third_party/toml++ not tomlplusplus, because validate_docs matches the dir name to the LICENSING.md row 'toml++' (row unchanged); for_each_leaf added to Content (the dump tool needs a whole-item walk; not in the brief's lookup list). open: core-checker agent not registered locally, /cpp-core applied by hand"
+  },
+  {
+    "at": "2026-10-12",
+    "by": "builder",
+    "text": "owner 2026-10-12, after the report: kMaxItemAncestry removed. Cycle rejection already bounds every chain, so the limit only made content fail. Content::ancestry(ItemId) now returns the parent chain nearest first, stored flat at load (no walk at lookup); the depth tracking from 9e17ae9 is gone with it. Test: a 100-deep chain loads and lists its ancestry; a cycle beside it is still found. Save cap 512 moved to PEO-092"
   }
 ]
