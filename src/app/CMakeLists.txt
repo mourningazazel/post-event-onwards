@@ -1,5 +1,7 @@
 add_executable(peo main.cpp)
 target_link_libraries(peo PRIVATE peo::core peo::options SDL3::SDL3)
+# PEO-008: where the game reads content/ unless --content names another directory.
+target_compile_definitions(peo PRIVATE PEO_CONTENT_DIR="${CMAKE_SOURCE_DIR}/content")
 # PEO-081: the scent field on the GPU, when peo_gpu was built (a shader compiler found).
 if(TARGET peo::gpu)
     target_link_libraries(peo PRIVATE peo::gpu)

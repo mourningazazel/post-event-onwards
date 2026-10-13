@@ -6,6 +6,7 @@
 // a timer. While the player thinks, one worker thread speculates the next turn
 // (PEO-007); input commits it. Core spawns no threads: this file owns the only one.
 
+#include "peo/core/content.hpp"
 #include "peo/core/look.hpp"
 #include "peo/core/sight.hpp"
 #include "peo/core/turn_input.hpp"
@@ -33,6 +34,7 @@
 #include <thread>
 
 #include "camera.hpp"
+#include "content_files.hpp"
 #include "glyph_atlas.hpp"
 #include "hud.hpp"
 #include "peek.hpp"
@@ -275,6 +277,8 @@ struct App {
 #endif
     /// Core's executor (D-035): before world and speculator, so destroyed after them.
     std::optional<peo::app::ThreadPool> pool;
+    /// content/ as loaded at startup (PEO-008); kept for the items that read it.
+    std::optional<peo::core::Content> content;
     std::optional<World> world;
     std::optional<Speculator> speculator; // after world: destroyed (joined) first
     bool show_scent = false;
@@ -773,7 +777,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     *appstate = app;
     // Arguments: an optional seed, and anywhere `--threads N` (PEO-080),
     // `--no-gpu-compute` and `--gpu-min-cells N` (PEO-081), `--stage WxH` (PEO-117),
-    // `--tileset PATH` (PEO-097).
+    // `--tileset PATH` (PEO-097), `--content DIR` (PEO-008).
     Seed seed = kDefaultSeed;
     Vec2i stage_size{kGameStageWidth, kGameStageHeight};
     std::size_t threads = default_threads();
@@ -781,6 +785,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     std::size_t gpu_min_cells = kGpuFieldMinCells;
     bool gpu_min_given = false;
     const char* tileset = nullptr;
+    const char* content_dir = PEO_CONTENT_DIR;
     for (int i = 1; i < argc; ++i) {
         const std::string_view arg(argv[i]);
         if (arg == "--threads" || arg == "--gpu-min-cells") {
@@ -812,12 +817,43 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
             }
             continue;
         }
+        if (arg == "--content") {
+            if (i + 1 < argc) {
+                content_dir = argv[i + 1];
+                ++i;
+            } else {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "--content needs a DIR");
+            }
+            continue;
+        }
         if (arg == "--no-gpu-compute") {
             gpu_compute = false;
             continue;
         }
         seed = parse_seed(argv[i]);
     }
+    // Content first: a game with broken content does not start, so it never opens a window.
+    const auto load_start = std::chrono::steady_clock::now();
+    std::string read_error;
+    const std::optional<peo::app::ContentFiles> files = peo::app::read_content_files(content_dir, read_error);
+    if (!files) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "content: %s", read_error.c_str());
+        return SDL_APP_FAILURE;
+    }
+    peo::core::ContentLoad load = peo::core::load_content(files->sources());
+    if (!load.content) {
+        for (const std::string& error : load.errors) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "content: %s", error.c_str());
+        }
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "content in %s has %zu error(s); not starting",
+                     content_dir, load.errors.size());
+        return SDL_APP_FAILURE;
+    }
+    app->content = std::move(load.content);
+    const auto load_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - load_start);
+    SDL_Log("content: %zu items from %s in %lld ms", app->content->item_count(), content_dir,
+            static_cast<long long>(load_ms.count()));
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
