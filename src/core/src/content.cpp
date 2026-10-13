@@ -274,6 +274,8 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
     };
 
     std::vector<bool> done(impl.items.size(), false);
+    // Ancestors of each resolved item, so a walk that stops at one still counts the whole chain.
+    std::vector<std::uint32_t> depth(impl.items.size(), 0);
     std::vector<std::uint32_t> chain;
     chain.reserve(kMaxItemAncestry + 2);
     for (std::uint32_t start = 0; start < impl.items.size(); ++start) {
@@ -311,7 +313,9 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
                 break;
             }
             chain.push_back(*next);
-            if (chain.size() - 1 > kMaxItemAncestry) {
+            // A walk stopping at a resolved ancestor adds that ancestor's own depth.
+            const std::size_t ancestors = chain.size() - 1 + (done[chain.back()] ? depth[chain.back()] : 0);
+            if (ancestors > kMaxItemAncestry) {
                 errors.push_back(cat({"item.", id, ": parent chain longer than ",
                                       std::to_string(kMaxItemAncestry), ": ", chain_text("...")}));
                 ok = false;
@@ -335,6 +339,7 @@ void ContentLoader::resolve_items(Impl& impl, std::vector<std::string>& errors) 
             } else {
                 const std::uint32_t up = *index_of(parent);
                 item.parent = ItemId{up};
+                depth[index] = depth[up] + 1;
                 item.resolved = impl.items[up].resolved;
                 item.resolved.erase("abstract");
                 merge_into(item.resolved, own);
