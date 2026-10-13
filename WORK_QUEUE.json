@@ -835,10 +835,10 @@
       "order": 936,
       "type": "feature",
       "title": "Content format: .peo parser in core and tools, one-time TOML converter (D-057)",
-      "status": "Pending",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-13",
       "references": [
         "docs/design/content-format.md",
