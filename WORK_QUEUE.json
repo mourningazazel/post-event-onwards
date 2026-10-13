@@ -647,10 +647,10 @@
       "order": 792,
       "type": "chore",
       "title": "Content: generic parent archetypes for item families, a junk archetype, remap records (D-046)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S3",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-06",
       "references": [
         "content/README.md",
