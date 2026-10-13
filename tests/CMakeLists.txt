@@ -58,6 +58,11 @@ target_link_libraries(peo_geo PRIVATE peo::core peo::options)
 add_executable(peo_content_dump content_dump/content_dump.cpp)
 target_link_libraries(peo_content_dump PRIVATE peo::core peo::options)
 
+# PEO-135: prints parsed .peo files as canonical lines for the peo_conformance diff against
+# tools/content/peo.py. Built with everything else so it never rots.
+add_executable(peo_peo_dump peo_dump/peo_dump.cpp)
+target_link_libraries(peo_peo_dump PRIVATE peo::core peo::options)
+
 add_test(NAME core COMMAND peo_core_tests --no-intro)
 set_tests_properties(core PROPERTIES TIMEOUT 30)
 
