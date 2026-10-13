@@ -31,6 +31,7 @@ all little-endian
 | `OCCL` | World | the occupancy log since the last update |
 | `CHAR` | Character | the player (written as a count, so a second character is a second record) |
 | `SEEN` | Character | the player's map memory, one bit per cell (optional: older saves lack it) |
+| `CDIC` | World | the content dictionary: each item archetype the save refers to, by ID, save-time parent chain and base name (optional: older saves lack it) |
 
 `World::save(build)` is deterministic (same world, same bytes). `World::restore(image,
 issues)` checks **every value** against the stage it builds before touching anything: sizes
@@ -43,6 +44,15 @@ saved; they are the app's.
 Each section carries its own version (`kSectionVersion` in `world_save.cpp`). A change to a section's layout bumps its version, and a
 reader keeps reading the old ones (ADR-0017's save evolution: fallbacks, content migration on
 load, PEO-092).
+
+**Content migration** (PEO-092, `content_migration.hpp`): any section that refers to content
+stores an index into CDIC, never an ID. `World::restore(image, issues, report)` resolves each
+CDIC entry once against the content `World::set_content` gave: still there (Kept), its remaps
+followed to a spawnable item (Remapped), the nearest spawnable ancestor on its save-time chain
+(StandIn: a removed claw hammer becomes a hammer), else `junk` keeping the old name. It never
+refuses a save. Every entry that changed is a `MigrationReport` line, and `migration_summary`
+is the one message the player is told (placeholder wording, D-042). A CDIC entry may claim at
+most 512 ancestors and 64-byte IDs; anything more, or a count past the bytes left, is Corrupt.
 
 Saves live in memory as bytes; nothing in the frontend writes them to disk yet.
 
@@ -111,7 +121,7 @@ the default). The default curve's knots are the `kAttrition*` constants in `afte
 
 - Save files on disk, two good copies and a crash flag (PEO-107, ADR-0017).
 - zstd-compressed sections (PEO-108, ADR-0002).
-- Content migration on load (PEO-092, ADR-0017).
+- Showing the migration summary in game, and a warning before a lossy migration (PEO-107).
 - Replays: seed plus input log reproduces a run headlessly (PEO-006).
 - Player-made things age on revisit from `last_touched` (PEO-109, ADR-0019 point 4).
 - The revisit catch-up as a streaming job when an area reloads (PEO-110).

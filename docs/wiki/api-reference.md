@@ -42,10 +42,10 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | `speculate()` / `speculate(Speculation&)` | const | The next update ahead |
 | `commit(Speculation&, action)` | | Spend an action using it; bit-identical to `step` |
 | `deposit(at, strength)` | | Test hook for emitters; not a mechanic |
-| `save(build)` / `restore(image, issues)` | | Save sections and back ([Saves](persistence.md)) |
+| `save(build)` / `restore(image, issues[, report])` | | Save sections and back; `report` gets the content migration ([Saves](persistence.md)) |
 | `store_area()` / `resume_area(record)` | | Leave and return to a stage, thinned |
 | `remember(sight)` | | Fold sight into map memory; returns cells newly remembered |
-| `set_executor(Executor*)`, `set_field_backend(FieldBackend*)` | | Lend threads or a GPU; not owned |
+| `set_executor(Executor*)`, `set_field_backend(FieldBackend*)`, `set_content(const Content*)` | | Lend threads, a GPU or content; not owned |
 | `stage()`, `params()`, `scent()`, `desire()`, `wind()`, `horde()`, `player()`, `memory()` | const reads | |
 | `turn()`, `substeps()`, `game_ms()`, `updates()`, `since_event()`, `stage_index()`, `occupancy()` | const reads | Counters and clocks |
 | `equivalent(a, b)` | static | Every piece of state equal; the golden tests' oracle |
@@ -88,7 +88,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | Header | Symbols |
 |---|---|
 | `sight.hpp` | `SightField` (`compute(opaque, origin, params)`, `seen`, `window`, `origin`, `range`), `SightParams`, `CellRect`, `kOpticalRangeCells` |
-| `content.hpp` | `load_content(sources)`, `ContentSource`, `ContentLoad`, `Content` (`item`, `item_count`, `item_id`, `name`, `parent`, `ancestry`, `abstract`, `tags`, `has`, `int_at`, `string_at`, `has_record`, `remap`, `for_each_leaf`), `ItemId`, `ContentLeaf`, `kJunkItemId` |
+| `content.hpp` | `load_content(sources)`, `ContentSource`, `ContentLoad`, `Content` (`item`, `item_count`, `item_id`, `name`, `parent`, `ancestry`, `abstract`, `tags`, `has`, `int_at`, `string_at`, `has_record`, `remap`, `remap_count`, `for_each_leaf`), `ItemId`, `ContentLeaf`, `kJunkItemId` |
 | `memory.hpp` | `MapMemory` (`reset`, `remember(sight)`, `remembered`, `mark`, `count`, `cells`) |
 | `look.hpp` | `LookCursor` (`begin`, `end`, `step(dir, cells, sight, bounds)`, `cell`, `active`), `LookReport`, `look_at`, `legible`, `kLookJumpCells`, `kLegibleRangeCells` |
 
@@ -96,6 +96,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 
 | Header | Symbols |
 |---|---|
+| `content_migration.hpp` | `ContentRef`, `Migration`, `Resolved`, `resolve`, `content_ref`, `MigrationReport`, `migration_summary`, `kMaxSavedAncestry`, `kMaxContentIdBytes`, `kMaxContentNameBytes` |
 | `save.hpp` | `SaveImage`, `SaveSection`, `SyncScope`, `SaveStatus`, `SaveIssue`, `SaveRead`, `write_save`, `read_save`, `section_id("WRLD")`, `section_name`, `crc32`, `kSaveFormat` |
 | `byte_io.hpp` | `ByteWriter`, `ByteReader`: little-endian fields, bounds-checked reads |
 | `aftermath.hpp` | `Curve`, `CurveKnot`, `affected_at`, `valid`, `normalized`, `draw_fate`, `kDefaultAttrition`, `EventSubsteps`, `kSubstepsPerDay`, `kAffectedScale` |

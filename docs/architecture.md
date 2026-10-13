@@ -49,6 +49,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
                               ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
+                              ├─ content_migration.hpp  resolve, MigrationReport: a save's content entries against current content (PEO-092)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
 
@@ -234,9 +235,15 @@ time, so a runner covers two cells per update.
   read as bytes in memory; `read_save` never trusts a length and names what it refuses.
   `peo/core/byte_io.hpp` reads and writes payloads little-endian. `World::save` /
   `World::restore` own the sections: WRLD, STAG (hand-built stages only), SCNT, HORD, OCCL
-  in the World scope, CHAR in the Character scope. Restore checks every value against the
-  stage it builds and changes nothing unless the image is Ok. Files, the two fallbacks and
-  zstd are the app's and PEO-107 / PEO-108.
+  and CDIC in the World scope, CHAR and SEEN in the Character scope. Restore checks every value
+  against the stage it builds and changes nothing unless the image is Ok. Files, the two
+  fallbacks and zstd are the app's and PEO-107 / PEO-108.
+  **CDIC** (PEO-092, `peo/core/content_migration.hpp`) is the content dictionary: one entry per
+  item archetype the save refers to (ID, save-time parent chain, base name). Any section that
+  refers to content stores a u32 index into CDIC, never an ID string, so on restore each entry
+  resolves once against current content (kept, remapped, nearest spawnable ancestor, else
+  junk; ADR-0017, D-046) into a `MigrationReport`, and a record's own fields are untouched.
+  `World::set_content` gives restore the content; CDIC is empty until items exist.
 - `Content`: **built (PEO-008)** in `peo/core/content.hpp`. Core parses the TOML text the
   frontend reads (`src/app/content_files.hpp`, `--content DIR`) with vendored toml++, keeps
   every record type by ID and resolves each item through its parent chain once, at load, as
