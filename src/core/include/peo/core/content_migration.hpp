@@ -8,6 +8,7 @@
 
 #include "peo/core/content.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -26,6 +27,12 @@ struct ContentRef {
 
     friend bool operator==(const ContentRef&, const ContentRef&) = default;
 };
+
+/// What a save's CDIC entry may hold; anything more is Corrupt. A save is untrusted input, so
+/// it has limits content does not: 512 ancestors (owner, 2026-10-12), far past any real family.
+inline constexpr std::size_t kMaxSavedAncestry = 512;
+inline constexpr std::size_t kMaxContentIdBytes = 64;
+inline constexpr std::size_t kMaxContentNameBytes = 128;
 
 enum class Migration : std::uint8_t { Kept, Remapped, StandIn, Junk };
 

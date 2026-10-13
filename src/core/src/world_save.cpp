@@ -25,6 +25,13 @@ constexpr std::uint32_t kLogSection = section_id("OCCL");
 constexpr std::uint32_t kCharacterSection = section_id("CHAR");
 /// The player's map memory (PEO-124, D-051 A). Optional: saves from before it have none.
 constexpr std::uint32_t kSeenSection = section_id("SEEN");
+// CDIC (PEO-092): the content dictionary. The rule it fixes: any section that refers to content
+// stores a u32 index into CDIC, never an ID string, so migration runs once per distinct
+// archetype, not once per item, and leaves a record's own fields (material, quality, contents)
+// alone.
+constexpr std::uint32_t kDictionarySection = section_id("CDIC");
+// The least one CDIC entry takes: an empty-length id, an ancestry count and an empty-length name.
+constexpr std::size_t kMinDictionaryEntryBytes = 4 + 2 + 4;
 constexpr std::uint16_t kSectionVersion = 1;
 
 /// The largest stage side a save may ask for: D-036 plans stages to 2048 square, so
@@ -125,6 +132,74 @@ bool open_cell(const Stage& s, Vec2i p) noexcept {
     return s.blocked.in_bounds(p) && !s.blocked.at(p);
 }
 
+/// CDIC's payload: u32 entry count, then per entry the id, a u16 ancestry count and each
+/// ancestor nearest first, and the base name, every string a u32 length and its bytes.
+void write_dictionary(ByteWriter& w, std::span<const ContentRef> entries) {
+    w.u32(static_cast<std::uint32_t>(entries.size()));
+    for (const ContentRef& entry : entries) {
+        w.string(entry.id);
+        w.u16(static_cast<std::uint16_t>(entry.ancestry.size()));
+        for (const std::string& ancestor : entry.ancestry) {
+            w.string(ancestor);
+        }
+        w.string(entry.name);
+    }
+}
+
+/// Read CDIC into `out`, or say what is wrong with it. Every length is checked before anything
+/// is allocated for it.
+std::optional<std::string> read_dictionary(ByteReader& r, std::vector<ContentRef>& out) {
+    const std::uint32_t count = r.u32();
+    if (r.failed()) {
+        return "payload ends early";
+    }
+    if (count > r.remaining() / kMinDictionaryEntryBytes) {
+        return "entry count past the bytes left";
+    }
+    out.reserve(count);
+    const auto id = [&r](std::string& into) -> std::optional<std::string> {
+        std::optional<std::string> text = r.string(kMaxContentIdBytes);
+        if (!text) {
+            return r.failed() ? "payload ends early"
+                              : "an id over " + std::to_string(kMaxContentIdBytes) + " bytes";
+        }
+        if (text->empty()) {
+            return "an empty id";
+        }
+        into = std::move(*text);
+        return std::nullopt;
+    };
+    for (std::uint32_t i = 0; i < count; ++i) {
+        ContentRef& entry = out.emplace_back();
+        if (auto error = id(entry.id)) {
+            return error;
+        }
+        const std::uint16_t ancestors = r.u16();
+        if (r.failed()) {
+            return "payload ends early";
+        }
+        if (ancestors > kMaxSavedAncestry) {
+            return "ancestry over " + std::to_string(kMaxSavedAncestry);
+        }
+        entry.ancestry.resize(ancestors);
+        for (std::string& ancestor : entry.ancestry) {
+            if (auto error = id(ancestor)) {
+                return error;
+            }
+        }
+        std::optional<std::string> name = r.string(kMaxContentNameBytes);
+        if (!name) {
+            return r.failed() ? "payload ends early"
+                              : "a name over " + std::to_string(kMaxContentNameBytes) + " bytes";
+        }
+        entry.name = std::move(*name);
+    }
+    if (!r.done()) {
+        return "bytes after the payload";
+    }
+    return std::nullopt;
+}
+
 /// Where the parsing and checking of one image goes wrong: the section and the field.
 struct Refusal {
     std::uint32_t section;
@@ -195,6 +270,12 @@ SaveImage World::save(std::string_view build) const {
     }
     add(kLogSection, SyncScope::World, log);
 
+    // CDIC: always written, so the format does not change when items land. The World holds no
+    // item yet, so it has no entries.
+    ByteWriter dictionary;
+    write_dictionary(dictionary, {});
+    add(kDictionarySection, SyncScope::World, dictionary);
+
     ByteWriter character;
     character.u32(kCharacters);
     character.vec2i(player_);
@@ -225,6 +306,11 @@ SaveImage World::save(std::string_view build) const {
 }
 
 SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues) {
+    MigrationReport unused;
+    return restore(image, issues, unused);
+}
+
+SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues, MigrationReport& report) {
     const auto refuse = [&](const Refusal& r) {
         issues.push_back({.section_id = r.section, .scope = r.scope, .what = r.what});
         return r.status;
@@ -238,10 +324,10 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
 
     // Which sections this World reads, and the scope each must declare.
     const std::map<std::uint32_t, SyncScope> known{
-        {kWorldSection, SyncScope::World},   {kStageSection, SyncScope::World},
-        {kScentSection, SyncScope::World},   {kHordeSection, SyncScope::World},
-        {kLogSection, SyncScope::World},     {kCharacterSection, SyncScope::Character},
-        {kSeenSection, SyncScope::Character}};
+        {kWorldSection, SyncScope::World},    {kStageSection, SyncScope::World},
+        {kScentSection, SyncScope::World},    {kHordeSection, SyncScope::World},
+        {kLogSection, SyncScope::World},      {kCharacterSection, SyncScope::Character},
+        {kSeenSection, SyncScope::Character}, {kDictionarySection, SyncScope::World}};
     std::map<std::uint32_t, const SaveSection*> found;
     for (const SaveSection& s : image.sections) {
         const auto k = known.find(s.id);
@@ -538,6 +624,34 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
         }
     }
 
+    // CDIC, optional: an image from before PEO-092 has none and restores with an empty report.
+    // Each entry resolves once, into the index-to-Resolved table later sections will read.
+    MigrationReport migrated;
+    if (found.contains(kDictionarySection)) {
+        ByteReader dr = reader(kDictionarySection);
+        std::vector<ContentRef> entries;
+        if (std::optional<std::string> error = read_dictionary(dr, entries)) {
+            return refuse({kDictionarySection, SyncScope::World, std::move(*error)});
+        }
+        if (!entries.empty() && content_ == nullptr) {
+            return refuse({kDictionarySection, SyncScope::World,
+                           "content entries but no content to resolve them against"});
+        }
+        std::vector<Resolved> resolved;
+        resolved.reserve(entries.size());
+        for (const ContentRef& entry : entries) {
+            resolved.push_back(resolve(entry, *content_));
+        }
+        for (std::size_t i = 0; i < entries.size(); ++i) {
+            const Resolved& to = resolved[i];
+            if (to.how == Migration::Kept) {
+                continue;
+            }
+            migrated.lines.push_back({entries[i].id, entries[i].name, to,
+                                      to.item ? std::string(content_->name(*to.item)) : std::string{}, 0});
+        }
+    }
+
     // All read and checked: set the clock first (the slot poll reads it), then the rest.
     w.turn_ = turn;
     w.substeps_ = substeps;
@@ -556,12 +670,15 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     w.restore_horde(std::move(horde), std::move(landing));
 
     Executor* executor = executor_;
+    const Content* content = content_;
     FieldBackend* backend = field_backend_;
     const std::uint64_t epoch = epoch_ + 1; // a speculation from before cannot commit
     *this = std::move(w);
     epoch_ = epoch;
     set_executor(executor);
     set_field_backend(backend);
+    content_ = content;
+    report = std::move(migrated);
     return SaveStatus::Ok;
 }
 

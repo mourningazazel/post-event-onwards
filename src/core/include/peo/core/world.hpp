@@ -2,6 +2,7 @@
 
 #include "peo/core/action.hpp"
 #include "peo/core/aftermath.hpp"
+#include "peo/core/content_migration.hpp"
 #include "peo/core/dead.hpp"
 #include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
@@ -204,6 +205,11 @@ public:
     /// this World is untouched and `issues` says what and where. Unknown sections are
     /// skipped with an issue. The executor and field backend are kept, never saved.
     [[nodiscard]] SaveStatus restore(const SaveImage& image, std::vector<SaveIssue>& issues);
+    /// The same, and `report` gets every content entry of the save (CDIC, PEO-092) that did
+    /// not stay as it was, resolved against the content set_content gave. It is filled only
+    /// when the restore is Ok. An image from before CDIC restores with an empty report.
+    [[nodiscard]] SaveStatus restore(const SaveImage& image, std::vector<SaveIssue>& issues,
+                                     MigrationReport& report);
 
     [[nodiscard]] const Stage& stage() const noexcept { return stage_; }
     /// The parameters as this World keeps them (rounded, clamped, an invalid curve replaced).
@@ -214,6 +220,10 @@ public:
     /// their pieces (D-035, PEO-080). Null, the default, is serial; every executor gives
     /// the same world. Not owned: it must outlive the World's use of it.
     void set_executor(Executor* executor) noexcept;
+    /// The content a restore resolves the save's content entries against (PEO-092). Null, the
+    /// default, is fine for a save with none; a save that has some is then refused. Not owned:
+    /// it must outlive the World's use of it. Kept across a restore, never saved.
+    void set_content(const Content* content) noexcept { content_ = content; }
     /// Where speculate() may run the scent's calm update (ADR-0014, PEO-081): a GPU
     /// backend from the frontend; null, the default, is the CPU pull. Same world either
     /// way. Live updates stay on the CPU, so a turn never waits on the device.
@@ -308,6 +318,7 @@ private:
     Wind wind_{};
     DesireField desire_;
     Executor* executor_ = nullptr;
+    const Content* content_ = nullptr;
     FieldBackend* field_backend_ = nullptr;
     ScentWave scent_{1, 1};
     HordeState dead_;

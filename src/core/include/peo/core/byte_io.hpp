@@ -4,7 +4,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <span>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,6 +34,11 @@ public:
         for (const T x : v) {
             u8(static_cast<std::uint8_t>(x));
         }
+    }
+    /// A u32 byte length, then the bytes (PEO-092: content IDs and names).
+    void string(std::string_view s) {
+        u32(static_cast<std::uint32_t>(s.size()));
+        bytes(std::as_bytes(std::span<const char>(s.data(), s.size())));
     }
     void i32_vector(const std::vector<std::int32_t>& v) {
         u64(v.size());
@@ -88,6 +96,20 @@ public:
             x = static_cast<T>(u8());
         }
         return v;
+    }
+    /// What string() wrote. Nullopt when its length is over `max_bytes` (failed() stays false,
+    /// so the caller can tell too long from cut off) or past the end (failed() is set). Nothing
+    /// is allocated for a length before it is checked.
+    std::optional<std::string> string(std::size_t max_bytes) {
+        const std::uint32_t n = u32();
+        if (failed_ || n > max_bytes) {
+            return std::nullopt;
+        }
+        const std::span<const std::byte> raw = bytes(n);
+        if (failed_) {
+            return std::nullopt;
+        }
+        return std::string(reinterpret_cast<const char*>(raw.data()), raw.size());
     }
     std::vector<std::int32_t> i32_vector() {
         const std::uint64_t n = u64();
