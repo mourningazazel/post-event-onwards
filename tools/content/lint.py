@@ -52,6 +52,23 @@ def combined_box(comps: list[dict]) -> dict:
     return box
 
 
+# The archetype an item becomes when it and everything on its chain are gone (D-046, PEO-092);
+# the engine's kJunkItemId.
+JUNK_ITEM = "junk"
+
+
+def collect_strings(v, out: set[str]) -> None:
+    """Add every string anywhere inside `v` to `out`."""
+    if isinstance(v, str):
+        out.add(v)
+    elif isinstance(v, list):
+        for x in v:
+            collect_strings(x, out)
+    elif isinstance(v, dict):
+        for x in v.values():
+            collect_strings(x, out)
+
+
 class Lint:
     def __init__(self, db: Db) -> None:
         self.db = db
@@ -793,24 +810,23 @@ class Lint:
             if not any(t == q or t.startswith(q + ".") for t in tags):
                 self.err(where, f"cat query '{q}' matches no item's tags")
 
-    def lint_reachable(self) -> None:
-        """Warn for each concrete item nothing places: no room, loot, outdoor set, profile or
-        salvage yield names it, and it is not on the generator's list (PEO-056)."""
+    def placement_refs(self) -> set[str]:
+        """Every string a room, loot table, outdoor set or profile names: the IDs generation can
+        place."""
         refs: set[str] = set()
-
-        def walk(v):
-            if isinstance(v, str):
-                refs.add(v)
-            elif isinstance(v, list):
-                for x in v:
-                    walk(x)
-            elif isinstance(v, dict):
-                for x in v.values():
-                    walk(x)
-
         for rtype in ("room", "loot", "outdoor_set", "profile"):
             for rec in self.db[rtype].values():
-                walk(rec)
+                collect_strings(rec, refs)
+        return refs
+
+    def lint_reachable(self) -> None:
+        """Warn for each concrete item nothing places: no room, loot, outdoor set, profile or
+        salvage yield names it, and it is not on the generator's list (PEO-056). Junk is never
+        placed (D-046), and a generic parent is reached through its placed children."""
+        refs = self.placement_refs()
+
+        def walk(v):
+            collect_strings(v, refs)
         items = {}
         for iid in self.db["item"]:
             try:
@@ -822,10 +838,73 @@ class Lint:
                 if part.get("salvage"):
                     refs.add(part["salvage"].get("item", ""))
             walk((it.get("contents") or {}).get("items", []))
+        reached = {iid for iid, it in items.items()
+                   if not it.get("abstract") and (iid in refs or iid in REACHABLE_BY_GENERATOR)}
+        # A parent of a reached item is reached through it, up the whole chain.
+        frontier = list(reached)
+        while frontier:
+            parent = self.db["item"].get(frontier.pop(), {}).get("parent")
+            if parent in items and parent not in reached:
+                reached.add(parent)
+                frontier.append(parent)
         for iid, it in items.items():
-            if not it.get("abstract") and iid not in refs and iid not in REACHABLE_BY_GENERATOR:
+            if not it.get("abstract") and iid not in reached and iid != JUNK_ITEM:
                 self.warn(f"{self.db.where('item', iid)} item.{iid}",
                           "unreachable: no room, loot, outdoor set, profile or salvage places it")
+
+    # ---------------------------------------------------------------- remaps and junk (D-046)
+    def lint_remaps(self) -> None:
+        """A remap is keyed by an ID that no longer exists and leads, remap by remap, to a
+        spawnable item (ADR-0017, PEO-092)."""
+        items, remaps = self.db["item"], self.db["remap"]
+        for rid, rec in remaps.items():
+            w = f"{self.db.where('remap', rid)} remap.{rid}"
+            if rid in items:
+                self.err(w, f"keyed by a current item ID '{rid}'; a remap names an ID that is gone")
+            for key in ("to", "why"):
+                if not isinstance(rec.get(key), str) or not rec.get(key):
+                    self.err(w, f"'{key}' must be a non-empty string")
+            to = rec.get("to")
+            if not isinstance(to, str) or not to:
+                continue
+            if to not in items and to not in remaps:
+                self.err(w, f"to '{to}' names neither an item nor a remap")
+                continue
+            chain, cur = [rid], to
+            while cur not in items:
+                if cur in chain:
+                    self.err(w, f"remap cycle: {' -> '.join(chain + [cur])}")
+                    break
+                if cur not in remaps or not isinstance(remaps[cur].get("to"), str):
+                    self.err(w, f"chain {' -> '.join(chain + [str(cur)])} ends at no item")
+                    break
+                chain.append(cur)
+                cur = remaps[cur]["to"]
+            else:
+                try:
+                    if resolve_item(self.db, cur).get("abstract"):
+                        self.err(w, f"chain {' -> '.join(chain + [cur])} ends at abstract item '{cur}'")
+                except ResolveError:
+                    pass  # lint_items reports it
+
+    def lint_junk(self) -> None:
+        """item.junk: the inert stand-in for an item with nothing left on its chain (D-046). It
+        does nothing and is never placed."""
+        rec = self.db.get("item", JUNK_ITEM)
+        if rec is None:
+            self.err("content/items", f"item.{JUNK_ITEM} is missing (D-046: content migration's last fallback)")
+            return
+        w = f"{self.db.where('item', JUNK_ITEM)} item.{JUNK_ITEM}"
+        for key, why in (("abstract", "it must be spawnable"), ("parent", "it stands alone"),
+                         ("features", "it does nothing"), ("compartments", "it holds nothing"),
+                         ("capabilities", "it does nothing")):
+            if rec.get(key):
+                self.err(w, f"has '{key}': {why}")
+        for tag in rec.get("tags", []):
+            if tag.startswith("from."):
+                self.err(w, f"tag '{tag}': junk is never placed, so it comes from nowhere")
+        if JUNK_ITEM in self.placement_refs():
+            self.err(w, "named by a room, loot table, outdoor set or profile; junk is never placed")
 
     def run(self) -> None:
         self.lint_registry()
@@ -837,6 +916,8 @@ class Lint:
         self.lint_cat_queries()
         self.lint_d030()
         self.lint_reachable()
+        self.lint_remaps()
+        self.lint_junk()
 
 
 def main() -> int:
