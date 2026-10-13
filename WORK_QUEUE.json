@@ -48,23 +48,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-008",
-      "order": 80,
-      "type": "feature",
-      "title": "Content loader: registry, materials, items, modifiers into runtime tables",
-      "status": "Validation",
-      "severity": "S2",
-      "effort": "L",
-      "owner": "architect",
-      "created": "2026-09-28",
-      "references": [
-        "content/README.md",
-        "tools/content/derive.py",
-        "docs/architecture.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-128",
       "order": 81,
       "type": "feature",
@@ -78,9 +61,7 @@
         "tools/content/derive.py",
         "docs/domains/items.md"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-129",
@@ -96,9 +77,7 @@
         "tools/content/derive.py",
         "docs/domains/items.md"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-010",
@@ -144,9 +123,7 @@
         "docs/design/survival-actions.md",
         "content/registry/actions.toml"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-013",
@@ -161,9 +138,7 @@
       "references": [
         "docs/design/content-model.md"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-014",
@@ -256,9 +231,7 @@
         "docs/design/survival-actions.md",
         "content/registry/features.toml"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-020",
@@ -370,7 +343,6 @@
         "docs/design/gameplay-model/G04-characters.md"
       ],
       "depends_on": [
-        "PEO-008",
         "PEO-012"
       ]
     },
@@ -418,9 +390,7 @@
         "docs/design/gameplay-model/G03-items-and-belongings.md",
         "docs/design/gameplay-model/G02-templates-generation-detail.md"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-051",
@@ -451,9 +421,7 @@
         "docs/design/gameplay-model/G02-templates-generation-detail.md",
         "docs/design/gameplay-model/G03-items-and-belongings.md"
       ],
-      "depends_on": [
-        "PEO-008"
-      ]
+      "depends_on": []
     },
     {
       "id": "PEO-059",
