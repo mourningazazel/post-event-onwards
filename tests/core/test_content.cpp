@@ -213,6 +213,19 @@ TEST_SUITE("content") {
         CHECK(content.string_at(hammer, "tags.2") == "cat.tool.hammer");
     }
 
+    TEST_CASE("a remap gives the ID its old item now has, one step, or nullopt") {
+        const ContentLoad loaded = load({{"remaps.toml", "[remap.old]\nto = \"new\"\nwhy = \"renamed\"\n"
+                                                         "[remap.odd]\nto = 7\nwhy = \"not a name\"\n"},
+                                         {"items.toml", "[item.new]\nname = \"new\"\n"}});
+        REQUIRE(loaded.errors.empty());
+        const Content& content = *loaded.content;
+        CHECK(content.remap("old") == "new");
+        CHECK(content.has_record("remap", "old"));
+        CHECK_FALSE(content.remap("new").has_value()); // an item with no remap of its own
+        CHECK_FALSE(content.remap("odd").has_value()); // `to` is not a string
+        CHECK_FALSE(load({{"items.toml", kFamily}}).content->remap("old").has_value()); // no remaps at all
+    }
+
     TEST_CASE("the same sources in the same order load the same content twice") {
         const std::array<ContentSource, 2> sources{
             {{"items.toml", kFamily}, {"z.toml", "[item.zeta]\nname = \"z\"\ntags = [\"a\"]\n"}}};
