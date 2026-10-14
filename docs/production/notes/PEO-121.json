@@ -43,5 +43,10 @@
     "at": "2026-10-13",
     "by": "builder",
     "text": "units 1-4 landed; 5-6 and 8 wait on PEO-050"
+  },
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "PEO-050 briefed as the store only: units 5-6 read ItemStore::at(cell) (a Line counts as one thing); sign_text needs PEO-140 (details from the seed), after PEO-139"
   }
 ]

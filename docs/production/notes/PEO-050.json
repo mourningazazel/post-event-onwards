@@ -8,5 +8,10 @@
     "at": "2026-09-30",
     "by": "architect",
     "text": "Scope split with PEO-053 recorded on PEO-053: 050 is read-through, instantiate, put-back, quality sampling and the cap; 053 is generation."
+  },
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "briefed: the store only (things, lines, locations, cap, ITEM save via CDIC, area carry); split PEO-139 read-through and take/put-back, PEO-140 details and sign text, PEO-141 time-driven resolve (after PEO-013). Title still names all of D-023 (tool cannot rename)"
   }
 ]

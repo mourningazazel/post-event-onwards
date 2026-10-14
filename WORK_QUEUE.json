@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 139,
+  "next_id": 142,
   "items": [
     {
       "id": "PEO-003",
@@ -384,7 +384,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "references": [
         "docs/design/gameplay-model/G03-items-and-belongings.md",
@@ -976,6 +976,58 @@
         "D-033"
       ],
       "depends_on": []
+    },
+    {
+      "id": "PEO-139",
+      "order": 997,
+      "type": "design",
+      "title": "Items read through the seed: take one instantiates, put back lists beside, examined mark, quality sampled (D-023, D-026, D-029)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-14",
+      "references": [
+        "docs/design/gameplay-model/G03-items-and-belongings.md"
+      ],
+      "depends_on": [
+        "PEO-050"
+      ]
+    },
+    {
+      "id": "PEO-140",
+      "order": 1007,
+      "type": "feature",
+      "title": "Details from the seed: detail tables in core, rolled per address; a sign's text (D-023, PEO-121)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-14",
+      "references": [
+        "content/README.md"
+      ],
+      "depends_on": [
+        "PEO-139"
+      ]
+    },
+    {
+      "id": "PEO-141",
+      "order": 1017,
+      "type": "design",
+      "title": "Time-driven change resolves from the clock on access, name first (D-023)",
+      "status": "Pending",
+      "severity": "S3",
+      "effort": "M",
+      "owner": "architect",
+      "created": "2026-10-14",
+      "references": [
+        "docs/production/decisions-archive/2026-09.md"
+      ],
+      "depends_on": [
+        "PEO-139",
+        "PEO-013"
+      ]
     }
   ]
 }

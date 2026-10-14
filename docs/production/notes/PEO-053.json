@@ -8,5 +8,10 @@
     "at": "2026-09-30",
     "by": "architect",
     "text": "D-030 (N018): generation order per compartment is purpose, then main loot, then extras for the kind, ctx and detail tags, all from the compartment seed with the salts in PEO-057's brief; port tools/content/generate.py and pin C++ against its roll cases. The purpose name is stored on the compartment and shown once examined; D-026's unexamined mark applies to the compartment's name as well as its lines. Nested containers inherit ctx."
+  },
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "PEO-050 defines Line, Entry, Address and ItemStore (item_store.hpp); generation fills lines into a compartment's listing with place_line; reading through and take are PEO-139"
   }
 ]

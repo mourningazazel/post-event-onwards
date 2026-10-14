@@ -15,4 +15,4 @@ survival actions, skills content, brands and descriptions.
 - **Owner notes:** N008, N010, N011, N012, N013, N015, N017, N018.
 - **Rule (ADR-0015, D-042 B):** agents author data only; every description, flavour line,
   note and piece of lore is the owner's. Existing agent text is placeholder.
-- **Queue:** PEO-012, 013, 015, 019, 020, 050, 053, 064, 130, 132, 133, 135, 136, 137, 138.
+- **Queue:** PEO-012, 013, 015, 019, 020, 050 (the item store), 053, 064, 130, 132, 133, 135, 136, 137, 138, 139 to 141 (read-through, details, time; split from 050).
