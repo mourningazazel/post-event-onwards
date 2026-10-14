@@ -6,7 +6,17 @@ its cap, move the oldest entries to `decisions-archive/`.
 Format: date · title · decision · why · consequences.
 
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
-`decisions-archive/2026-09.md`; D-033, D-035 to D-043, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+`decisions-archive/2026-09.md`; D-033, D-035 to D-044, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
+
+## 2026-10-14 · D-059 · One continuous map, tested at real size
+
+Owner direction (review thread). The map is one continuous world the player walks with no
+barrier between places; the stages with an exit are a test placeholder (ADR-0007, D-041).
+From now on, work is proven at real map size, not on small staged areas: scenario tests, perf
+and manual steps use a map of at least 1024x1024 cells with Dead at play density (the planning
+size in performance-targets.md). Small fixtures stay only for unit tests that pin one rule. A
+real-size case over the scenario budget under the sanitizers runs in release builds only.
+Consequence: PEO-118 is briefed now; briefs and reviews check map size.
 
 ## 2026-10-13 · D-058 · Fields and actions can carry handlers
 
@@ -114,16 +124,3 @@ scent reach the Dead lean only slightly toward the trail, so in play at seed 1 d
 is not visible by eye. The headless swarm test shows it is there (55% of moving draws climb
 beyond 45 cells). Why: raised by the PEO-101 playtest; a faint pull at the edge of reach is the
 intended gradient. Consequence: no tuning item; the swarm test stays the check.
-
-## 2026-10-05 · D-044 · Usage rules: metadata lands on main, one subagent per item, review on demand
-
-User decision (thread "Context usage audit"; every recommended option). The Architect
-fast-forwards queue, brief, decision and docs-only commits straight to `main`, as the Builder
-does; pull requests remain for code, tests, tooling, CI and skills, and CI's build jobs skip
-pushes that change none of those. A review or brief batch is one thread that runs each item in
-its own subagent and keeps one line per item. Reviews start when the owner says "review" in the
-project chat, with a 12 h safety poll behind it. Thread effort follows the task: high for
-reviews and L/XL briefs, medium for recording decisions, promotions and small briefs. Why:
-every model call re-reads the whole session, and nine of the twelve PRs before this carried no
-code. Consequence: roles.md, CLAUDE.md, the review, plan, start-work and burndown skills,
-`verify.py` tails, `next --by-effort`, `docs.yml`.
