@@ -820,10 +820,10 @@
       "order": 937,
       "type": "feature",
       "title": "Content: convert content/ to .peo and switch both loaders over (D-057)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-13",
       "references": [
         "docs/design/content-format.md"
