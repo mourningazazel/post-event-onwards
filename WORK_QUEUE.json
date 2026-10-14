@@ -820,7 +820,7 @@
       "order": 937,
       "type": "feature",
       "title": "Content: convert content/ to .peo and switch both loaders over (D-057)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
