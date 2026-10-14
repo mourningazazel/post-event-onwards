@@ -6,8 +6,9 @@
 
 #include <cstdio>
 #include <fstream>
-#include <iterator>
+#include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -104,7 +105,11 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "peo_peo_dump: %s cannot be read\n", argv[a]);
             return kExitError;
         }
-        const std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        // Through a stringstream, not istreambuf_iterator: GCC 13 at -O2 flags the iterator with
+        // -Wnull-dereference inside libstdc++ (as content_dump.cpp reads).
+        std::ostringstream buffer;
+        buffer << in.rdbuf();
+        const std::string text = std::move(buffer).str();
         const peo::core::PeoParse parsed = peo::core::parse_peo({argv[a], text});
         std::vector<std::string> lines;
         for (const peo::core::PeoRecord& rec : parsed.records) {
