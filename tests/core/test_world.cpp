@@ -159,6 +159,15 @@ std::vector<Vec2i> path_to_exit(const World& w) {
 } // namespace
 
 TEST_SUITE("world") {
+    TEST_CASE("play_density_dead gives the dev game's density at any size") {
+        CHECK(play_density_dead(80, 45) == 40);
+        CHECK(play_density_dead(1024, 1024) == 11650);
+        CHECK(play_density_dead(2048, 2048) == 46603);
+        CHECK(play_density_dead(0, 0) == 0);
+        CHECK(play_density_dead(-5, 45) == 0);
+        static_assert(play_density_dead(80, 45) == 40); // usable where a constant is needed
+    }
+
     TEST_CASE("same seed same world after 100 turns") {
         World a(kSeed, small_world());
         World b(kSeed, small_world());
