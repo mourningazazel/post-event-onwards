@@ -8,5 +8,10 @@
     "at": "2026-10-14",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "commits: b1d6809 play_density_dead + kPlayDensity* in world.hpp (constexpr, 64-bit, 0 for non-positive sides), b54cd04 test_world case (80x45 40, 1024^2 11650, 2048^2 46603, 0x0 0, -5x45 0, static_assert), b57806c app default 1024x1024 from play_density_dead (kDefaultStageDead and kDensityStage* gone from src/app; --stage range unchanged; its warning names the default), 6ecf099 docs (tunables, frontend x2, testing.md manual row, bottlenecks Multipliers line). tests: verify.py --frontend --full all stages passed. manual: no flags logs 'stage 1024x1024 with 11650 Dead' and the game ran 8 s; '--stage 80x45' logs 'stage 80x45 with 40 Dead'. perf on the M1 (headless-release, game wind, seed 1, 40 walking steps of speculate then commit): build 37-44 ms; speculate median 23.0 ms / worst 40.6 ms serial, 7.8 / 25.6 ms on 7 threads (the game's default here); commit 0.16-0.18 ms. Not done by hand: walking 50 steps and watching the status line, Shift+S overlay frame drops, key lag (no input driven here); the timings above stand in for the speculate/commit observation"
   }
 ]
