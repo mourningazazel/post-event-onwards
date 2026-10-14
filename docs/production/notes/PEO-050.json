@@ -33,5 +33,10 @@
     "at": "2026-10-14",
     "by": "architect",
     "text": "review amended: finding 3 withdrawn and the brief's manual step 'walk to the next stage' dropped. The map is one continuous world (Ryan, 2026-10-14; ADR-0007, D-041); today's stage exit is a test placeholder that PEO-118 removes, and the revisit case already covers load_stage emptying the store. Findings 1 and 2 stand."
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "rework: findings 1-2"
   }
 ]
