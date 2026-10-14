@@ -26,8 +26,8 @@ owner's verbatim notes. In code: `Dead` is one unit, `horde` is any collection.
    quality; actions check capabilities against materials; skills are 1–100 with honest
    percentages and real failure. Nothing needs a wiki: the item's own text tells you what it
    does and what broken means.
-4. **Onwards, always.** An endless, staged, persistent world on one clock, days since the
-   Event. Early is harder and richer; late is easier and poorer. There is no going back. Runs
+4. **Onwards, always.** One endless, continuous, persistent map on one clock, days since the
+   Event; the player walks it with no edges or jumps between places. Early is harder and richer; late is easier and poorer. There is no going back. Runs
    end in hard permadeath, but the world persists: your last character rises as one of the
    Dead that can see, with your stats and gear, unless you made sure it could not. The next
    one, a son or daughter of the last or someone loosely tied to them, starts a mile or two away.

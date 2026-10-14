@@ -88,9 +88,10 @@ aggregates the movement rule reads.
 
 ### Stages (`stage.hpp`)
 
-Today: an endless sequence of random-wall stages from `stage_seed(world, index)`. Target: the
-hierarchical generation levels of `docs/design/world-generation.md` (macro → region →
-settlement → structure → tile → contents), baseline + Event + aftermath on the global clock
+Today: an endless sequence of random-wall stages from `stage_seed(world, index)`, a test
+placeholder. Target: one continuous map streamed round the player, with no stage jumps (ADR-0007,
+D-041, PEO-118), built from the hierarchical generation levels of
+`docs/design/world-generation.md` (macro → region → settlement → structure → tile → contents), baseline + Event + aftermath on the global clock
 (ADR-0009, ADR-0011), the building census and persona houses (`world-catalog.md` §10). The
 `generate_stage` signature is the seam; generators are plug-ins behind it.
 
