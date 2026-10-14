@@ -26,8 +26,8 @@ cells other than the player's entry. Positions come from the stage's spawn `Rng`
 (stage seed XOR `0xABCD`), redrawn until a free open cell, so at most one per tile. Each draws
 a speed 1 to 3 uniformly (`kMinDeadSpeed`, `kMaxDeadSpeed`, `world.cpp`) stored as speed x
 `update_period`. Then fates are drawn from a separate hash, so adding fates moved no other
-draw. The game sets `initial_dead` from the stage area: 40 per 80x45 cells, so 266 on the
-default 200x120 stage (`src/app/main.cpp`).
+draw. The game sets `initial_dead` from the stage area at play density, `play_density_dead`
+(`world.hpp`): 40 per 80x45 cells, so 11,650 on the default 1024x1024 stage (D-059).
 
 ## Who moves when
 
