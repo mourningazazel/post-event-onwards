@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 152,
+  "next_id": 154,
   "items": [
     {
       "id": "PEO-003",
@@ -899,6 +899,23 @@
       ]
     },
     {
+      "id": "PEO-153",
+      "order": 944,
+      "type": "bug",
+      "title": "Scent age line breaks in release past max_wave_updates; the one map's wave never resets: rebase it, bound the params, clamp deposits (PEO-077)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-10-14",
+      "references": [
+        "src/core/include/peo/core/scent_wave.hpp"
+      ],
+      "depends_on": [
+        "PEO-145"
+      ]
+    },
+    {
       "id": "PEO-147",
       "order": 945,
       "type": "feature",
@@ -997,6 +1014,23 @@
       ],
       "depends_on": [
         "PEO-150"
+      ]
+    },
+    {
+      "id": "PEO-152",
+      "order": 951,
+      "type": "chore",
+      "title": "Real-size stress cases from injected state: packed horde, saturated scent, twice play density, a late clock (D-059, D-060)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "M",
+      "owner": "builder",
+      "created": "2026-10-14",
+      "references": [
+        "docs/testing.md"
+      ],
+      "depends_on": [
+        "PEO-145"
       ]
     },
     {
