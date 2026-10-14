@@ -39,6 +39,9 @@ replies once. When handed one item, do that item only.
      the wall".
    - Manual: what the Builder should do and what to look for, including
      one perf observation when the change touches a per-tick loop.
+   - Map size (D-059): scenario, perf and manual steps run at real size
+     (at least 1024x1024, Dead at play density); tiny fixtures only pin
+     one rule in a unit case.
    - Per-update, per-second or per-Dead work: name the
      `docs/bottlenecks.md` rows it touches and its expected cost, and make
      before-and-after `/perf` numbers for them an acceptance line.
