@@ -64,6 +64,16 @@ struct Location {
     }
 };
 
+/// The fixed order of locations: ground before in, ground by row then column, then containers
+/// by ID and compartment. ItemStore::locations() and ITEM use it, so a save's listings are in
+/// one order a reader can require.
+[[nodiscard]] bool location_before(const Location& a, const Location& b) noexcept;
+
+/// location_before as a comparator, for ordered maps of locations.
+struct LocationBefore {
+    bool operator()(const Location& a, const Location& b) const noexcept { return location_before(a, b); }
+};
+
 struct Thing {
     ThingId id;
     ItemId archetype{};

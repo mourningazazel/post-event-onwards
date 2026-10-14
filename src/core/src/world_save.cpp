@@ -284,6 +284,7 @@ std::optional<std::string> read_items(ByteReader& r, SavedItems& out, std::size_
     const auto on_stage = [&](const Location& at) {
         return at.kind != Location::Kind::Ground || stage.blocked.in_bounds(at.cell);
     };
+    // Every container first, so the chain walk below only ever steps onto things that exist.
     for (const Thing& t : out.things) {
         if (!on_stage(t.at)) {
             return "a thing on a cell off the stage";
@@ -291,6 +292,8 @@ std::optional<std::string> read_items(ByteReader& r, SavedItems& out, std::size_
         if (t.at.kind == Location::Kind::In && !index_of.contains(t.at.container.value)) {
             return "a thing in a container that is not there";
         }
+    }
+    for (const Thing& t : out.things) {
         // Up the chain of containers: it must reach the ground within as many steps as there
         // are things, and never meet the thing it started from.
         Location up = t.at;
@@ -325,10 +328,8 @@ std::optional<std::string> read_items(ByteReader& r, SavedItems& out, std::size_
         if (entries == 0 || entries > max_entries || entries > r.remaining() / kMinEntryBytes) {
             return "a listing that is empty, over the entry cap, or past the bytes left";
         }
-        for (const auto& [seen, unused] : out.listings) {
-            if (seen == *at) {
-                return "the same location listed twice";
-            }
+        if (!out.listings.empty() && !location_before(out.listings.back().first, *at)) {
+            return "listings out of order, or the same location listed twice";
         }
         std::vector<ItemStore::SavedEntry> list;
         list.reserve(entries);
@@ -937,12 +938,13 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
             }
             return at;
         };
-        std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> settled;
+        // Keyed by location, so merging a moved listing is a lookup, not a scan.
+        std::map<Location, std::vector<ItemStore::SavedEntry>, LocationBefore> settled;
         std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> moved;
         for (auto& [at, list] : saved.listings) {
             const Location to = settle(at);
             if (to == at) {
-                settled.emplace_back(at, std::move(list));
+                settled.emplace(at, std::move(list));
             } else {
                 issues.push_back({.section_id = kItemSection,
                                   .scope = SyncScope::World,
@@ -958,15 +960,12 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
                     saved.things[thing_index.find(e.thing.value)->second].at = to;
                 }
             }
-            auto into =
-                std::find_if(settled.begin(), settled.end(), [&](const auto& s) { return s.first == to; });
-            if (into == settled.end()) {
-                settled.emplace_back(to, std::move(list));
-            } else {
-                into->second.insert(into->second.end(), list.begin(), list.end());
-            }
+            std::vector<ItemStore::SavedEntry>& into = settled[to];
+            into.insert(into.end(), list.begin(), list.end());
         }
-        w.items_.rebuild(saved.next_id, saved.things, settled);
+        const std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> listings(
+            std::make_move_iterator(settled.begin()), std::make_move_iterator(settled.end()));
+        w.items_.rebuild(saved.next_id, saved.things, listings);
     }
     for (std::size_t i = 0; i < entries.size(); ++i) {
         const Resolved& to = resolved[i];

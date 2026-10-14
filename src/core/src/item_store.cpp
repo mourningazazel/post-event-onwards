@@ -59,6 +59,16 @@ Location ItemStore::location_of(const Key& key) noexcept {
     return Location::in(ThingId{key.a}, static_cast<std::uint8_t>(key.b));
 }
 
+bool location_before(const Location& a, const Location& b) noexcept {
+    if (a.kind != b.kind) {
+        return a.kind == Location::Kind::Ground;
+    }
+    if (a.kind == Location::Kind::Ground) {
+        return a.cell.y != b.cell.y ? a.cell.y < b.cell.y : a.cell.x < b.cell.x;
+    }
+    return a.container != b.container ? a.container < b.container : a.compartment < b.compartment;
+}
+
 // ---------------------------------------------------------------- reads
 
 std::span<const Entry> ItemStore::listing(Location at) const noexcept {
@@ -124,15 +134,7 @@ std::vector<Location> ItemStore::locations() const {
     for (const auto& [key, entries] : listings_) {
         out.push_back(location_of(key));
     }
-    std::sort(out.begin(), out.end(), [](const Location& a, const Location& b) {
-        if (a.kind != b.kind) {
-            return a.kind == Location::Kind::Ground;
-        }
-        if (a.kind == Location::Kind::Ground) {
-            return a.cell.y != b.cell.y ? a.cell.y < b.cell.y : a.cell.x < b.cell.x;
-        }
-        return a.container != b.container ? a.container < b.container : a.compartment < b.compartment;
-    });
+    std::sort(out.begin(), out.end(), location_before);
     return out;
 }
 
