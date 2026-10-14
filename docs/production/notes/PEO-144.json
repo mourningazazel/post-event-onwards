@@ -18,5 +18,10 @@
     "at": "2026-10-14",
     "by": "architect",
     "text": "1. Run the manual steps the report skipped, on the default 1024x1024 map, and report specific results: walk 50 steps one way, then wait 20 turns, and say whether the Dead gather on your scent; read the status line's spec ms (typical and worst seen) and say whether any key press lags; press Shift+S while walking and say whether the scent overlay drops frames. Headless timings do not replace these steps; D-059 asks for in-game evidence at real size. 2. world.hpp play_density_dead: doc-comment that callers pass sides up to 2048 (kMaxGameStageSide) and guard the 64-bit product before the cast to int (clamp to INT_MAX), constexpr-safe, with a test line for a side past the guard. 3. No other code changes: units, acceptance, tests and docs pass review. The Architect fixed the stale docs/wiki/the-dead.md default in the review commit. Push one commit, add a report note, set Validation."
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "rework: guard play_density_dead, then the in-game manual steps"
   }
 ]
