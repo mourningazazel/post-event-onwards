@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "briefed (split from PEO-136): content/ to .peo, tools to new names, toml++ removed; waits on PEO-142"
+  }
+]

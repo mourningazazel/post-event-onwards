@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "also waits on PEO-143 (content/ is .peo only after it); the tool keeps one depends_on, PEO-136"
+  }
+]

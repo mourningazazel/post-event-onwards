@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "next_id": 142,
+  "next_id": 144,
   "items": [
     {
       "id": "PEO-003",
@@ -839,7 +839,7 @@
       "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-10-13",
       "references": [
         "docs/design/content-format.md"
@@ -1027,6 +1027,40 @@
       "depends_on": [
         "PEO-139",
         "PEO-013"
+      ]
+    },
+    {
+      "id": "PEO-142",
+      "order": 1027,
+      "type": "feature",
+      "title": "Content: core load_content reads .peo, parents from header paths (D-057)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-10-14",
+      "references": [
+        "docs/design/content-format.md"
+      ],
+      "depends_on": [
+        "PEO-136"
+      ]
+    },
+    {
+      "id": "PEO-143",
+      "order": 1037,
+      "type": "feature",
+      "title": "Content: switch content/ to .peo, tools to the new field names, drop toml++ (D-057)",
+      "status": "Pending",
+      "severity": "S2",
+      "effort": "L",
+      "owner": "builder",
+      "created": "2026-10-14",
+      "references": [
+        "docs/design/content-format.md"
+      ],
+      "depends_on": [
+        "PEO-142"
       ]
     }
   ]

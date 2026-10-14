@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "briefed (split from PEO-136): load_content reads .peo beside TOML, golden on a converted tree"
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "briefed: converter, Python .peo reader and golden --peo only (content/ stays TOML); split for effort: core load_content on .peo PEO-142, switch content/ and tools PEO-143. Title still says 'switch both loaders' (tool cannot rename). Briefed against peo.py/peo_format.hpp as on this branch while PEO-135 is in rework (CI fix only)"
+  }
+]
