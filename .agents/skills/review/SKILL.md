@@ -38,7 +38,8 @@ When handed one item, do that item only.
      for numbers (`perf-runner`). Behaviours added without a test are a
      finding unless the brief listed them as `manual`.
    - **Report:** `manual` results are specific; perf numbers present when
-     asked.
+     asked; scenario, perf and manual evidence comes from a real-size map
+     (D-059: at least 1024x1024, Dead at play density), else a finding.
 4. Pass: `python3 tools/work_queue.py complete <id> --by architect --commit
    <last sha>`. Update `docs/architecture.md` if a seam changed, and the
    `docs/wiki/` page of any behaviour, formula, tunable or public symbol
