@@ -92,7 +92,7 @@ hand-built stages and `World::equivalent` to compare two worlds.
 | `content.hpp` | `load_content(sources)`, `ContentSource`, `ContentLoad`, `Content` (`item`, `item_count`, `item_id`, `name`, `parent`, `ancestry`, `abstract`, `tags`, `has`, `int_at`, `string_at`, `has_record`, `remap`, `remap_count`, `for_each_leaf`), `ItemId`, `ContentLeaf`, `kJunkItemId` |
 | `memory.hpp` | `MapMemory` (`reset`, `remember(sight)`, `remembered`, `mark`, `count`, `cells`) |
 | `look.hpp` | `LookCursor` (`begin`, `end`, `step(dir, cells, sight, bounds)`, `cell`, `active`), `LookReport`, `look_at`, `legible`, `kLookJumpCells`, `kLegibleRangeCells` |
-| `item_store.hpp` | `ItemStore` (`place`, `place_line`, `move`, `remove`, `grow`, `shrink`, `at`, `in`, `listing`, `thing`, `thing_at`, `line_at`, `compartments`, `compartments_of`, `next_id`), `ThingId`, `Thing`, `Line`, `Entry`, `Location`, `Address`, `Placed`, `ItemStoreParams`, `kMaxEntriesPerLocation`, `kQualityScale` |
+| `item_store.hpp` | `ItemStore` (`place`, `place_line`, `move`, `remove`, `grow`, `shrink`, `at`, `in`, `listing`, `thing`, `thing_at`, `line_at`, `compartments`, `compartments_of`, `next_id`), `ThingId`, `Thing`, `Line`, `Entry`, `Location`, `location_before`, `LocationBefore`, `Address`, `Placed`, `ItemStoreParams`, `kMaxEntriesPerLocation`, `kQualityScale` |
 | `look_label.hpp` | `far_label(content, archetype)`, `FarLabel`, `ThingKind` (`Item`, `Container`, `Sign`) |
 
 ## Persistence and the long clock

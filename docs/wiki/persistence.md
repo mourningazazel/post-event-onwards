@@ -32,7 +32,7 @@ all little-endian
 | `CHAR` | Character | the player (written as a count, so a second character is a second record) |
 | `SEEN` | Character | the player's map memory, one bit per cell (optional: older saves lack it) |
 | `CDIC` | World | the content dictionary: each item archetype the save refers to, by ID, save-time parent chain and base name (optional: older saves lack it) |
-| `ITEM` | World | the item store: the next thing ID, every thing and where it is, every listing in order with its lines (optional: older saves restore with no items) |
+| `ITEM` | World | the item store: the next thing ID, every thing and where it is, every listing with its lines, listings in `location_before` order (a reader refuses any other order or a repeat; optional: older saves restore with no items) |
 
 `World::save(build)` is deterministic (same world, same bytes). `World::restore(image,
 issues)` checks **every value** against the stage it builds before touching anything: sizes
