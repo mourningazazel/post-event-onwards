@@ -29,6 +29,21 @@ Two hand-built layouts exist for tests and are played through `World::load_layou
 corridor, from the pathfinding review) and `tests/siege/siege_layouts.hpp` (three small
 buildings on a 141x141 stage).
 
+## The one map (`chunk.hpp`, `map_terrain.hpp`, PEO-146)
+
+- **Cells and chunks**: `WorldCell` and `ChunkCoord` are 64-bit; a chunk is 32x32 cells
+  (`kChunkSide`). `chunk_of` floors toward minus infinity (cell -1 is in chunk -1, -33 in -2);
+  `chunk_origin` is the chunk's lowest cell; `chunk_seed(seed, chunk)` is
+  `hash_u64(seed ^ kChunkSeedSalt, x, y)`.
+- **Range**: every `WorldCell` has a chunk, and `chunk_origin(chunk_of(c))` never overflows.
+  `chunk_origin` of a hand-built `ChunkCoord` beyond +/-2^58 would; walking cannot get there.
+- **Placeholder walls**: `wall_at(seed, params, cell)` is the source of truth: a wall when the
+  high 32 bits of `hash_u64(seed ^ kTerrainSalt, x, y)` are below `wall_chance` (of 2^32, a
+  tenth by default). `fill_terrain` writes any clipped rect of a grid placed at a world origin,
+  cell for cell equal to `wall_at`, so pieces filled in any order join with no seam. Openness
+  is indoors on walls, outdoors elsewhere. No border, entry or exit. Nothing reads it yet
+  (World does from PEO-147).
+
 ## Geography (`geography.hpp`, `geography.cpp`, ADR-0018, PEO-095)
 
 **Scale**: one geography cell is 100 m (100 tiles of 1 m); a **square** is 1000x1000 cells,

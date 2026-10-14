@@ -55,6 +55,8 @@ changing them is a design change, not a tweak.
 |---|---|---|
 | Stage size | `WorldParams::stage_width/height`, game `--stage` | 80x45 core, 1024x1024 game (D-059) |
 | Wall density | `src/core/src/stage.cpp` | 0.10 + 0.01 per stage, max 0.35 |
+| One-map wall share | `TerrainParams::wall_chance` (of 2^32) | 429496730 (0.10), placeholder (PEO-146) |
+| Chunk side | `kChunkSide` (`chunk.hpp`) | 32 cells |
 | Continents | `GeographyParams::continent`, `continent_bias_m`, `continent_m` | 2^11 cells, 60 m, 700 m |
 | Mountain bands | `range_mask`, `range_mask_none`, `range_mask_full`, `range`, `range_m` | quarter to 3/5 of the mask, 1800 m |
 | Hills | `hills`, `hills_m` | 2^7 cells, 160 m |

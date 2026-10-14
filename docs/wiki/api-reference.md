@@ -81,6 +81,8 @@ hand-built stages and `World::equivalent` to compare two worlds.
 |---|---|
 | `stage.hpp` | `StageSpec`, `Stage {spec, blocked, openness, entry, exit}`, `stage_seed`, `stage_spec`, `generate_stage`, `kNoExit` |
 | `geography.hpp` | `GeographyParams`, `terrain_at`, `TerrainSample`, `generate_geography(seed, params, rect)`, `generate_square`, `GeographyRegion {rect, elevation_m, cover, body, bodies}`, `WaterBody`, `CellCorner`, `SquareCoord`, `square_of`, `square_rect`, `kGeoCellTiles`, `kSquareCells` |
+| `chunk.hpp` | `WorldCell {x, y}` (int64, `+ Vec2i`), `ChunkCoord {x, y}`, `kChunkSide`, `floor_div`, `chunk_of`, `chunk_origin`, `chunk_seed`, `kChunkSeedSalt` |
+| `map_terrain.hpp` | `TerrainParams {wall_chance}`, `wall_at`, `fill_terrain` (rect and whole-grid), `kTerrainSalt` |
 | `settlement_site.hpp` | `SiteParams`, `place_sites`, `score_site`, `site_candidates`, `site_cell_rect`, `SettlementSite`, `SiteSize`, `Landmark` |
 | `noise.hpp` | `value_noise`, `fbm`, `ridged`, `Octaves`, and the scanning forms `NoiseScan`, `FbmScan`, `NoiseRow`, `FbmRow` (same bits, faster in rows); `kNoiseOne` (Q16) |
 
