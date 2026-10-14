@@ -936,10 +936,10 @@
       "order": 944,
       "type": "feature",
       "title": "The one map's terrain by world cell: chunk.hpp, map_terrain.hpp, seam-free placeholder walls (PEO-118)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "M",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-14",
       "references": [
         "docs/adr/0007-endless-staged-world.md"
