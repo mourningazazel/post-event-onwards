@@ -87,3 +87,9 @@ Rules rather than numbers in code; only the owner may relax them (`docs/roles.md
 | Doc word caps | `WORD_CAPS` in `tools/validate_docs.py` | see `docs/README.md` |
 | Perf budget | D-021, `docs/production/vision.md` | speculate under 100 ms, commit under 1 ms on the M1 Air |
 | Bottleneck threshold | `docs/bottlenecks.md` | 20% of speculate or 10% of commit is a row |
+
+## Items
+
+| Tunable | Where | Default |
+|---|---|---|
+| Entries per location | `kMaxEntriesPerLocation`, `item_store.hpp` (`ItemStoreParams::max_entries`) | 4096. *Hidden* (D-023): far above play and never shown; it refuses a new entry, never a line's growth |

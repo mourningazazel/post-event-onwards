@@ -51,6 +51,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
                               ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
                               ├─ content_migration.hpp  resolve, MigrationReport: a save's content entries against current content (PEO-092)
+                              ├─ item_store.hpp  ItemStore: where every thing is, on the ground or in a compartment; lines and things (PEO-050)
                               ├─ peo_format.hpp  parse_peo: a .peo content file into records (D-057, PEO-135; tools/content/peo.py the same in Python)
                               └─ dead.hpp   Dead, plan_slots, decide_move
 ```
@@ -236,8 +237,8 @@ time, so a runner covers two cells per update.
   versioned image of sections, each with its id, version, sync scope and crc32, written and
   read as bytes in memory; `read_save` never trusts a length and names what it refuses.
   `peo/core/byte_io.hpp` reads and writes payloads little-endian. `World::save` /
-  `World::restore` own the sections: WRLD, STAG (hand-built stages only), SCNT, HORD, OCCL
-  and CDIC in the World scope, CHAR and SEEN in the Character scope. Restore checks every value
+  `World::restore` own the sections: WRLD, STAG (hand-built stages only), SCNT, HORD, OCCL,
+  CDIC and ITEM in the World scope, CHAR and SEEN in the Character scope. Restore checks every value
   against the stage it builds and changes nothing unless the image is Ok. Files, the two
   fallbacks and zstd are the app's and PEO-107 / PEO-108.
   **CDIC** (PEO-092, `peo/core/content_migration.hpp`) is the content dictionary: one entry per
@@ -245,7 +246,9 @@ time, so a runner covers two cells per update.
   refers to content stores a u32 index into CDIC, never an ID string, so on restore each entry
   resolves once against current content (kept, remapped, nearest spawnable ancestor, else
   junk; ADR-0017, D-046) into a `MigrationReport`, and a record's own fields are untouched.
-  `World::set_content` gives restore the content; CDIC is empty until items exist.
+  `World::set_content` gives restore the content. CDIC has one entry per archetype in use, in
+  ItemId order; **ITEM** (PEO-050) is the item store: the next ThingId, every thing (ID, CDIC
+  index, address, location) and every location's listing with its lines inline.
 - `Content`: **built (PEO-008)** in `peo/core/content.hpp`. Core parses the TOML text the
   frontend reads (`src/app/content_files.hpp`, `--content DIR`) with vendored toml++, keeps
   every record type by ID and resolves each item through its parent chain once, at load, as
