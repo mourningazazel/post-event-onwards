@@ -1,0 +1,26 @@
+abstract item.tool_base { name = "tool", tags = [def.tag.cat.tool, def.tag.from.garage, def.tag.cat.tool.hand] }
+item.tool_base.hammer {
+    name = "hammer",
+    shape = def.shape.rod,
+    dims { l = 330 mm, w = 130 mm, h = 30 mm },
+    mass = 570 g,
+    fill = 30%..100%,
+    lit = no,
+    composition {
+        head { material = item.material.steel, share = 70 }
+    },
+    features {
+        light { radius = 3 m, duration = 90 min }
+    }
+}
+item.cabinet {
+    name = "cabinet",
+    shape = def.shape.rod,
+    compartments {
+        top_shelf {
+            name = "top shelf",
+            capacity = 12000 ml,
+            purposes = [{ purpose = world.purpose.junk_drawer, w = 1 }]
+        }
+    }
+}

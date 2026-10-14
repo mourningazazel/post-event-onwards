@@ -1,0 +1,5 @@
+[material.steel]
+desc = "Steel."
+density_mg_cm3 = 7850
+melts_c = 1500
+hardness = 5

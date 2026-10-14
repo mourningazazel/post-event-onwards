@@ -1,0 +1,1 @@
+item.material.steel { desc = "Steel.", density = 7850 kg/m3, melts = 1500 C, hardness = 5 }

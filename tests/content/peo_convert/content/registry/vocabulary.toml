@@ -1,0 +1,29 @@
+# PEO-136 fixture: vocabulary, a dotted tag, and every merged table.
+[namespace.cat]
+desc = "Category."
+
+[namespace.from]
+desc = "Where a thing is found."
+
+[tag."cat.tool"]
+desc = "Tools."
+
+[shape.rod]
+desc = "A long thing."
+fill = 50
+
+[skill.craft]
+name = "craft"
+
+[meta]
+version = 1
+
+[status]
+secure = 1
+
+[dominance]
+D = 1
+blood = 2
+
+[default.impact]
+low = "dent"

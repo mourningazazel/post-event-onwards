@@ -1,0 +1,11 @@
+def.namespace.cat { desc = "Category." }
+def.namespace.from { desc = "Where a thing is found." }
+def.tag.cat.tool { desc = "Tools." }
+def.shape.rod { desc = "A long thing.", fill = 50 }
+mechanic.skill.craft { name = "craft" }
+def.meta { version = 1 }
+def.fastener_status { secure = 1 }
+def.scent_dominance { d = 1, blood = 2 }
+mechanic.reaction.default {
+    impact { low = "dent" }
+}

@@ -1,0 +1,28 @@
+[item.tool_base]
+name = "tool"
+abstract = true
+tags = ["cat.tool", "from.garage", "cat.tool.hand"]
+
+[item.hammer]
+name = "hammer"
+parent = "tool_base"
+shape = "rod"
+dims_mm = [330, 130, 30]
+mass_g = 570
+fill_pct = [30, 100]
+lit = false
+
+[item.hammer.composition.head]
+material = "steel"
+share = 70
+
+[item.hammer.features.light]
+radius_m = 3
+duration_min = 90
+
+[item.cabinet]
+name = "cabinet"
+shape = "rod"
+compartments = [
+  { name = "top shelf", capacity_ml = 12000, purposes = [{ purpose = "junk_drawer", w = 1 }] },
+]

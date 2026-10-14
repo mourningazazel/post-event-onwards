@@ -1,0 +1,15 @@
+mechanic.modifier.big {
+    kind = "variant",
+    skill = mechanic.skill.craft,
+    ops = [
+        { path = "mass", op = "mul", value = 150% },
+        { path = "mass", op = "mul", value = 200% },
+        { path = "features.light.radius", op = "set", value = 5 m },
+        {
+            path = "dims",
+            op = "set",
+            value { l = 400 mm, w = 140 mm, h = 30 mm }
+        }
+    ]
+}
+mechanic.action.hit { tool_substitution = 5%, skill = mechanic.skill.craft }

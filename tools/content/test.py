@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import sys
 
+import common  # noqa: E402
 from common import Db, fail_if, load, load_tests
 from derive import (FLAMMABILITY_RANK, ResolveError, apply_modifier, capabilities, display_name,
                     energy_class, impact_outcome, lock_resistance, loot_expected, main_material,
@@ -409,6 +410,56 @@ def run_peo_conformance() -> list[str]:
     return [f"peo conformance: {f}" for f in failures]
 
 
+# ---------------------------------------------------------------- TOML to .peo (PEO-136)
+PEO_CONVERT = common.TESTS / "peo_convert"
+
+
+def run_peo_convert() -> list[str]:
+    """to_peo on the fixture gives exactly tests/content/peo_convert/expected (and the same
+    bytes twice); the round trip loses nothing on the fixture and on content/; each refusal
+    the converter promises happens."""
+    import golden
+    import to_peo
+
+    errors = []
+    fixture = PEO_CONVERT / "content"
+    first, second = to_peo.convert(fixture), to_peo.convert(fixture)
+    if first != second:
+        errors.append("to_peo: two runs on the fixture differ")
+    expected = {p.relative_to(PEO_CONVERT / "expected"): p.read_text(encoding="utf-8")
+                for p in sorted((PEO_CONVERT / "expected").rglob("*.peo"))}
+    for rel in sorted(set(first) | set(expected)):
+        if first.get(rel) != expected.get(rel):
+            errors.append(f"to_peo: {rel} differs from tests/content/peo_convert/expected")
+    for where in (fixture, common.CONTENT):
+        diffs = golden.peo_round_trip(where)
+        print(f"peo round trip: {where.relative_to(common.ROOT)}: {len(diffs)} differences")
+        errors += [f"peo round trip ({where.relative_to(common.ROOT)}): {d}" for d in diffs[:5]]
+
+    db = common.Db()
+    db.records["shape"]["rod"] = {}
+    db.records["namespace"]["cat"] = {}
+    refusals = {
+        "a key that is not a name": ("item", "x", {"Bad Key": 1}),
+        "two keys that become one": ("item", "x", {"mass_g": 1, "mass": 2}),
+        "a float that is not a whole percent": ("modifier", "x", {"ops": [{"path": "mass_g", "op": "mul",
+                                                                          "value": 0.333}]}),
+        "a reference that names no record": ("item", "x", {"shape": "cube"}),
+        "an ID that is not a path segment": ("item", "Bad", {"shape": "rod"}),
+    }
+    for label, (rtype, rid, rec) in refusals.items():
+        conv = to_peo.Converter(db)
+        conv.where = f"probe {rtype}.{rid}"
+        try:
+            conv.record_path(rtype, rid)
+            conv.block(rtype, rec)
+        except to_peo.ConvertError as e:
+            print(f"peo convert probe: {label} -> refused ({e})")
+            continue
+        errors.append(f"peo convert probe: {label} was not refused")
+    return errors
+
+
 # ---------------------------------------------------------------- rolls (D-030, PEO-057)
 ROLL_SEEDS = range(1, 201)
 SMOKER = "detail.smoker"
@@ -574,7 +625,7 @@ def main() -> int:
         return fail_if(db.errors, "load")
     ctx = Ctx(db)
     errors = (run_expectations(ctx) + run_chains(ctx) + run_fit_probe(db) + run_room_probe(db)
-              + run_extras_probes(db) + run_remap_probes(db) + run_peo_conformance() + run_rolls(db))
+              + run_extras_probes(db) + run_remap_probes(db) + run_peo_conformance() + run_peo_convert() + run_rolls(db))
     return fail_if(errors, "content tests")
 
 

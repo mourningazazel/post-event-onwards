@@ -1,0 +1,12 @@
+world.purpose.junk_drawer { name = "junk drawer", loot = world.loot.drawer_stuff }
+world.loot.drawer_stuff { rolls = 1..2, entries = [{ item = item.tool_base.hammer, w = 1, count = 1..3 }] }
+world.room.kitchen {
+    size = 8 m2..20 m2,
+    objects = [
+        {
+            item = item.cabinet,
+            count = 1,
+            purposes { top_shelf = [{ purpose = world.purpose.junk_drawer, w = 2 }] }
+        }
+    ]
+}

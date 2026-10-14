@@ -1,0 +1,11 @@
+[purpose.junk_drawer]
+name = "junk drawer"
+loot = "drawer_stuff"
+
+[loot.drawer_stuff]
+rolls = [1, 2]
+entries = [{ item = "hammer", w = 1, count = [1, 3] }]
+
+[room.kitchen]
+size_m2 = [8, 20]
+objects = [{ item = "cabinet", count = 1, purposes = { "top shelf" = [{ purpose = "junk_drawer", w = 2 }] } }]

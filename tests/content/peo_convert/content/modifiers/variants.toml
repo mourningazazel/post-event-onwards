@@ -1,0 +1,13 @@
+[modifier.big]
+kind = "variant"
+skill = "craft"
+ops = [
+  { path = "mass_g", op = "mul", value = 1.5 },
+  { path = "mass_g", op = "mul", value = 2 },
+  { path = "features.light.radius_m", op = "set", value = 5 },
+  { path = "dims_mm", op = "set", value = [400, 140, 30] },
+]
+
+[action.hit]
+tool_substitution = 0.05
+skill = "craft"
