@@ -6,6 +6,7 @@
 #include "peo/core/dead.hpp"
 #include "peo/core/desire.hpp"
 #include "peo/core/executor.hpp"
+#include "peo/core/item_store.hpp"
 #include "peo/core/memory.hpp"
 #include "peo/core/revisit.hpp"
 #include "peo/core/rng.hpp"
@@ -236,6 +237,17 @@ public:
     /// What the player remembers seeing of this stage (D-051 A, PEO-124): empty at the
     /// stage's size after every load, carried by store_area and resume_area, saved as SEEN.
     [[nodiscard]] const MapMemory& memory() const noexcept { return memory_; }
+    /// Where every thing on this stage is (PEO-050). Nothing in an update reads it, so a
+    /// speculation stays valid when it changes, and changing it moves no clock. The writable
+    /// form is for generation and tests and checks no stage bounds; place_item and friends do.
+    [[nodiscard]] const ItemStore& items() const noexcept { return items_; }
+    [[nodiscard]] ItemStore& items() noexcept { return items_; }
+    /// The store's place, place_line and move against the content set_content gave (which must
+    /// be set: save writes CDIC from it), refusing a ground cell outside the stage as OffStage.
+    Placed place_item(ItemId archetype, Address address, Location at, ThingId& out);
+    Placed place_line(ItemId archetype, Address address, std::uint32_t count, std::uint16_t quality_mean,
+                      std::uint16_t quality_spread, Location at);
+    Placed move_item(ThingId thing, Location to);
     /// Fold `sight` into the map memory; returns the cells newly remembered. A field not
     /// computed from the player's current cell (before the last move, or from another
     /// stage's entry) folds nothing and returns 0. A field from another stage whose origin
@@ -327,6 +339,7 @@ private:
     Vec2i player_{};
     /// The player's map memory of this stage (PEO-124).
     MapMemory memory_;
+    ItemStore items_;
     Rng rng_{1};
     Tick turn_ = 0;
     Substeps substeps_ = 0;

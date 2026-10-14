@@ -2,6 +2,7 @@
 
 #include "peo/core/aftermath.hpp"
 #include "peo/core/dead.hpp"
+#include "peo/core/item_store.hpp"
 #include "peo/core/memory.hpp"
 
 #include <algorithm>
@@ -18,6 +19,8 @@ struct AreaRecord {
     EventSubsteps updated_at = 0;
     std::vector<Dead> horde;
     MapMemory memory;
+    /// The area's things, as they were left (PEO-050); aging them is PEO-109 / PEO-141.
+    ItemStore items;
 };
 
 /// Bring a stored horde to the clock `now` in closed form (ADR-0019 point 2): drop

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <limits>
@@ -128,6 +129,7 @@ void World::enter_stage(std::uint32_t index) {
     start_field(stage_seed(seed_, index));
     player_ = stage_.entry;
     memory_.reset(stage_.spec.width, stage_.spec.height);
+    items_ = ItemStore(items_.params());
     rng_.reseed(stage_seed(seed_, index) ^ kHordeSeedSalt);
 }
 
@@ -167,8 +169,11 @@ std::optional<AreaRecord> World::store_area() const {
     if (hand_built_) {
         return std::nullopt;
     }
-    return AreaRecord{
-        .stage_index = stage_index_, .updated_at = since_event(), .horde = dead_.horde, .memory = memory_};
+    return AreaRecord{.stage_index = stage_index_,
+                      .updated_at = since_event(),
+                      .horde = dead_.horde,
+                      .memory = memory_,
+                      .items = items_};
 }
 
 void World::resume_area(AreaRecord record) {
@@ -236,6 +241,41 @@ void World::resume_area(AreaRecord record) {
     if (record.memory.width() == w && record.memory.height() == h) {
         memory_ = std::move(record.memory); // enter_stage left it empty otherwise
     }
+    items_ = std::move(record.items); // as left: nothing ages them yet (PEO-109, PEO-141)
+}
+
+namespace {
+
+/// Whether a ground location is inside `stage`.
+bool on_stage(const Stage& stage, const Location& at) noexcept {
+    return at.kind != Location::Kind::Ground || stage.blocked.in_bounds(at.cell);
+}
+
+} // namespace
+
+Placed World::place_item(ItemId archetype, Address address, Location at, ThingId& out) {
+    assert(content_ != nullptr);
+    if (!on_stage(stage_, at)) {
+        return Placed::OffStage;
+    }
+    return items_.place(*content_, archetype, address, at, out);
+}
+
+Placed World::place_line(ItemId archetype, Address address, std::uint32_t count, std::uint16_t quality_mean,
+                         std::uint16_t quality_spread, Location at) {
+    assert(content_ != nullptr);
+    if (!on_stage(stage_, at)) {
+        return Placed::OffStage;
+    }
+    return items_.place_line(*content_, archetype, address, count, quality_mean, quality_spread, at);
+}
+
+Placed World::move_item(ThingId thing, Location to) {
+    assert(content_ != nullptr);
+    if (!on_stage(stage_, to)) {
+        return Placed::OffStage;
+    }
+    return items_.move(*content_, thing, to);
 }
 
 std::size_t World::remember(const SightField& sight) {
@@ -271,6 +311,7 @@ void World::load_layout(Stage stage, Vec2i player, std::vector<Dead> horde) {
     start_field(stage_seed(seed_, stage_index_));
     player_ = player;
     memory_.reset(w, h);
+    items_ = ItemStore(items_.params());
     HordeState& d = dead_;
     d.horde = std::move(horde);
     d.occupied = Grid<std::uint8_t>(w, h, 0);
@@ -628,7 +669,7 @@ bool World::equivalent(const World& a, const World& b) noexcept {
         !same_moves(da.landing, db.landing) || !same_moves(da.deciding, db.deciding) ||
         da.moving != db.moving || da.slot_begin != db.slot_begin || da.slot_units != db.slot_units ||
         !same_cells(da.occupied, db.occupied) || !same_cells(da.reserved, db.reserved) ||
-        !(a.desire_ == b.desire_) || !(a.memory_ == b.memory_)) {
+        !(a.desire_ == b.desire_) || !(a.memory_ == b.memory_) || !(a.items_ == b.items_)) {
         return false;
     }
     for (std::size_t i = 0; i < a.log_.size(); ++i) {
