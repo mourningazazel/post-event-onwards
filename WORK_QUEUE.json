@@ -643,21 +643,6 @@
       "depends_on": []
     },
     {
-      "id": "PEO-092",
-      "order": 797,
-      "type": "feature",
-      "title": "Content migration on load (ADR-0017)",
-      "status": "Validation",
-      "severity": "S3",
-      "effort": "M",
-      "owner": "architect",
-      "created": "2026-10-03",
-      "references": [
-        "docs/domains/persistence.md"
-      ],
-      "depends_on": []
-    },
-    {
       "id": "PEO-102",
       "order": 807,
       "type": "design",
