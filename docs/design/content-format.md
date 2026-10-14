@@ -429,6 +429,83 @@ remap.*         renamed IDs, for old saves
 - **`unit.self`:** keeps its `parent =` line.
 - **Roots:** shared umbrella roots, as abstract as the content allows: the tree above, approved.
 
+## Converting from TOML (PEO-136)
+
+`tools/content/to_peo.py --out DIR` writes the TOML tree as .peo once; `tools/content/peo_load.py`
+reads a .peo tree back into the tools' `Db`; `golden.py --peo` proves the round trip loses nothing
+(an independent inverse, every record, every merged table and every resolved item). These tables
+are the contract PEO-142 and PEO-143 build to.
+
+**Paths.** An item is `item.<ancestors, root first>.<id>` (`claw_hammer` is `item.hammer.claw_hammer`;
+category segments are PEO-130). Everything else is a prefix and the ID's dotted parts:
+
+| Record type | Prefix | Record type | Prefix |
+|---|---|---|---|
+| material | `item.material` | action, skill, modifier, detail_table | `mechanic.<type>` |
+| substance | `substance` | setting, building, room, purpose, loot, extras, outdoor_set, detail, detail_loot | `world.<type>` |
+| property, feature, capability, stimulus, namespace, fastener, scent, shape, schema | `def.<type>` | company, brand, store_chain | `brand.<type>` |
+| tag | `def.tag` (`cat.ammo` is `def.tag.cat.ammo`) | profile | `unit.human` |
+| remap | `remap.item` (block form, keeps `why`) | | |
+
+Merged tables are one record each: `meta` is `def.meta`, `status` is `def.fastener_status`,
+`dominance` is `def.scent_dominance` (its key `D` becomes `d`), `default` is
+`mechanic.reaction.default`. A record's flat ID is its path after its type's prefix (longest prefix
+wins, so `item.material.*` is a material), except an item's, which is its last segment; an item's
+parent is its path minus that segment. A path segment that would start with a digit gets a
+leading `_` (`emits.rot.1` is `def.tag.emits.rot._1`), and reading drops it; PEO-143 may rename
+those tags instead.
+
+**Fields.** A key ending in a unit suffix loses it when its value is a number or numbers, and the
+value carries the unit; longest suffix first:
+
+| Suffix | Unit | Keys today |
+|---|---|---|
+| `_mm` | `mm` | girth, height, inner_diameter, length, max_attach_size, max_dim, min_girth, min_piece, min_thickness, opening, width, wrap_girth |
+| `_m` | `m` | lot, radius |
+| `_mm2` / `_m2` | `mm2` / `m2` | area, contact_area / size |
+| `_g` | `g` | load, mass, max_attach_mass, max_load, max_mass |
+| `_ml` | `ml` | capacity, hydration (items, modifiers) |
+| `_s` / `_min` / `_days` | `s` / `min` / `d` | set_time, time / duration, read_time / clock_min, clock_max |
+| `_c` | `C` | flash_point, freezes, melts |
+| `_pct` | `%` | basement, chance, crash_chance, empty_chance, fill, gain_chance, hydration (substances), power_base, water_base |
+| `_mg_cm3` / `_mg_ml` | `kg/m3` (numerically equal) | density (materials / substances) |
+
+Kept as plain integers under their names: `_kj_g`, `_clo10`, `_wh`, `_w`, and `rigidity_min` and
+`param_or_dim_min` (a minimum, not minutes). A key whose value is a string, a table or a boolean is
+never renamed, so `schema` records and parts named `fill` keep their keys. `dims_mm = [a, b, c]`
+becomes `dims { l = a mm, w = b mm, h = c mm }`. These two-number lists become ranges: `count`,
+`rolls`, `floors`, `density` (settings), `fill_pct`, `lot_m`, `size_m2`. An item's
+`compartments = [ { name = ... }, ... ]` becomes `compartments { <snake_case of name> { ... } }` in
+order, and a room object's purpose overrides take the same keys. In a modifier op the path is
+renamed segment by segment; a `set` or `add` value takes the renamed field's unit (a `dims` value is
+a dims block); a `mul` value is a factor, written as a percent (`0.5` is `50%`, `2` is `200%`).
+
+**Values.** Integers stay. Floats are whole percents (`tool_substitution = 0.05` is `5%`); any other
+float is refused. `true` / `false` are `yes` / `no`. `abstract = true` is the `abstract` keyword and
+`abstract = false` is dropped; `parent` is dropped (the header path says it). A string that names a
+record becomes its full path; every other string stays a string (names, descs, glyphs, brand
+categories, requirement strings such as `fasten>=2`, word scales: PEO-137). The reference fields:
+
+| Record type | Keys and what they name |
+|---|---|
+| item | material: material; shape: shape; tags: tag; modifiers: modifier; details: detail_table; rests_on, item (salvage): item; items (contents): item or loot; purpose: purpose; substance: substance; joints: fastener |
+| room | item: item; contains, loose: loot or item; purpose: purpose; tags: tag |
+| building | room; profile; outdoor: outdoor_set; store_chains: store_chain; exterior, roof, walls: material; context, tags: tag |
+| setting | building; set: outdoor_set; tags: tag |
+| loot, extras | item: item or loot; mods: modifier; substance (loot); ctx, kind: tag (extras) |
+| detail, purpose / detail_loot | loot / loot; detail, kind: tag |
+| outdoor_set | item: item or loot |
+| profile | every clothing slot, carried, pockets: item or loot (`none` and `any` stay words); tags: tag |
+| brand / store_chain | company; own_label_of: store_chain / own_label: brand; type: building |
+| modifier, detail_table | tags_any, tags_all, add_tags, remove_tags: tag; items: item; shapes: shape; skill (modifier); modifier (detail_table entries); substance (modifier) |
+| substance / action / fastener | attacks: material; channel: scent / skill, feature, capability, tag, tag_prefix, shape_in, prop / weaknesses: stimulus |
+
+A tag reference is valid when its namespace exists (deeper parts are the namespace's own, as lint
+checks). A string holding a quote or a line break is written `"""..."""` with escapes. The
+converter refuses, naming file, record and field: a key that is not a name, two keys that become
+one, a float that is not a whole percent, a reference naming no record, an ID that is not a path
+segment.
+
 ## Grammar (for the parsers, PEO-135)
 
 Both parsers (core and `tools/content/`) build to this, and one set of conformance cases proves
