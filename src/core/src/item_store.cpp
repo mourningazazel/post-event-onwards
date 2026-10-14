@@ -94,14 +94,15 @@ const Line& ItemStore::line_at(std::uint32_t index) const noexcept {
 
 std::uint32_t ItemStore::compartments(const Content& content, ThingId container) const noexcept {
     const Thing* t = thing(container);
-    if (t == nullptr) {
-        return 0;
-    }
+    return t == nullptr ? 0 : compartments_of(content, t->archetype);
+}
+
+std::uint32_t ItemStore::compartments_of(const Content& content, ItemId archetype) noexcept {
     std::uint32_t count = 0;
-    while (count < kMaxCompartments && has_compartment(content, t->archetype, count)) {
+    while (count < kMaxCompartments && has_compartment(content, archetype, count)) {
         ++count;
     }
-    if (count == 0 && content.has(t->archetype, kContainerFeature)) {
+    if (count == 0 && content.has(archetype, kContainerFeature)) {
         return 1;
     }
     return count;

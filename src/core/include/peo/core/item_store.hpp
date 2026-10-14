@@ -139,6 +139,8 @@ public:
     /// How many compartments `container` has: its `compartments` array's length, 1 for
     /// features.container, else 0 (and 0 for no such thing).
     [[nodiscard]] std::uint32_t compartments(const Content& content, ThingId container) const noexcept;
+    /// The same for an archetype, with no thing (restore checks a save's compartments with it).
+    [[nodiscard]] static std::uint32_t compartments_of(const Content& content, ItemId archetype) noexcept;
     /// The ID the next placed thing gets.
     [[nodiscard]] ThingId next_id() const noexcept { return ThingId{next_id_}; }
     [[nodiscard]] std::size_t thing_count() const noexcept { return thing_slot_.size(); }

@@ -32,6 +32,17 @@ constexpr std::uint32_t kSeenSection = section_id("SEEN");
 constexpr std::uint32_t kDictionarySection = section_id("CDIC");
 // The least one CDIC entry takes: an empty-length id, an ancestry count and an empty-length name.
 constexpr std::size_t kMinDictionaryEntryBytes = 4 + 2 + 4;
+// ITEM (PEO-050): every thing and every listing of the item store, archetypes as CDIC indices.
+constexpr std::uint32_t kItemSection = section_id("ITEM");
+// The least a thing, a listing and an entry take: a ground location is a kind byte and a cell.
+constexpr std::size_t kMinLocationBytes = 1 + 8;
+constexpr std::size_t kMinThingBytes = 8 + 4 + 8 + kMinLocationBytes;
+constexpr std::size_t kMinListingBytes = kMinLocationBytes + 4;
+constexpr std::size_t kMinEntryBytes = 1 + 8;
+constexpr std::uint8_t kGroundByte = 0;
+constexpr std::uint8_t kInByte = 1;
+constexpr std::uint8_t kThingEntryByte = 0;
+constexpr std::uint8_t kLineEntryByte = 1;
 constexpr std::uint16_t kSectionVersion = 1;
 
 /// The largest stage side a save may ask for: D-036 plans stages to 2048 square, so
@@ -200,6 +211,172 @@ std::optional<std::string> read_dictionary(ByteReader& r, std::vector<ContentRef
     return std::nullopt;
 }
 
+void write_location(ByteWriter& w, const Location& at) {
+    if (at.kind == Location::Kind::Ground) {
+        w.u8(kGroundByte);
+        w.vec2i(at.cell);
+    } else {
+        w.u8(kInByte);
+        w.u64(at.container.value);
+        w.u8(at.compartment);
+    }
+}
+
+/// A location as write_location wrote it, or nullopt for a bad kind byte.
+std::optional<Location> read_location(ByteReader& r) {
+    const std::uint8_t kind = r.u8();
+    if (kind == kGroundByte) {
+        return Location::ground(r.vec2i());
+    }
+    if (kind == kInByte) {
+        const ThingId container{r.u64()};
+        return Location::in(container, r.u8());
+    }
+    return std::nullopt;
+}
+
+/// ITEM as read: archetypes are still CDIC indices (in ItemId::index) until restore maps them.
+struct SavedItems {
+    std::uint64_t next_id = 1;
+    std::vector<Thing> things;
+    std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> listings;
+};
+
+/// Read and check ITEM against the stage and the CDIC size; nothing is trusted. Things come in
+/// ID order, each listed exactly once in the listing of its own location; every container is a
+/// thing and no thing is inside itself.
+std::optional<std::string> read_items(ByteReader& r, SavedItems& out, std::size_t dictionary_size,
+                                      const Stage& stage, std::uint32_t max_entries) {
+    out.next_id = r.u64();
+    const std::uint32_t thing_count = r.u32();
+    if (r.failed()) {
+        return "payload ends early";
+    }
+    if (out.next_id == 0 || thing_count > r.remaining() / kMinThingBytes) {
+        return "next ID 0, or a thing count past the bytes left";
+    }
+    std::map<std::uint64_t, std::size_t> index_of;
+    out.things.reserve(thing_count);
+    for (std::uint32_t i = 0; i < thing_count; ++i) {
+        Thing t;
+        t.id = ThingId{r.u64()};
+        const std::uint32_t entry = r.u32();
+        t.address = r.u64();
+        const std::optional<Location> at = read_location(r);
+        if (r.failed()) {
+            return "payload ends early";
+        }
+        if (t.id.value == 0 || t.id.value >= out.next_id ||
+            (!out.things.empty() && t.id <= out.things.back().id)) {
+            return "a thing ID that is 0, not below the next ID, or out of order";
+        }
+        if (entry >= dictionary_size) {
+            return "a thing's CDIC index out of range";
+        }
+        if (!at) {
+            return "a location kind that is neither ground nor in";
+        }
+        t.archetype = ItemId{entry};
+        t.at = *at;
+        index_of.emplace(t.id.value, out.things.size());
+        out.things.push_back(t);
+    }
+    const auto on_stage = [&](const Location& at) {
+        return at.kind != Location::Kind::Ground || stage.blocked.in_bounds(at.cell);
+    };
+    for (const Thing& t : out.things) {
+        if (!on_stage(t.at)) {
+            return "a thing on a cell off the stage";
+        }
+        if (t.at.kind == Location::Kind::In && !index_of.contains(t.at.container.value)) {
+            return "a thing in a container that is not there";
+        }
+        // Up the chain of containers: it must reach the ground within as many steps as there
+        // are things, and never meet the thing it started from.
+        Location up = t.at;
+        for (std::size_t step = 0; up.kind == Location::Kind::In; ++step) {
+            if (up.container == t.id || step > out.things.size()) {
+                return "a thing inside itself";
+            }
+            up = out.things[index_of.find(up.container.value)->second].at;
+        }
+    }
+    const std::uint32_t listing_count = r.u32();
+    if (r.failed() || listing_count > r.remaining() / kMinListingBytes) {
+        return "a listing count past the bytes left";
+    }
+    std::vector<std::uint8_t> listed(out.things.size(), 0);
+    out.listings.reserve(listing_count);
+    for (std::uint32_t l = 0; l < listing_count; ++l) {
+        const std::optional<Location> at = read_location(r);
+        const std::uint32_t entries = r.u32();
+        if (r.failed()) {
+            return "payload ends early";
+        }
+        if (!at) {
+            return "a location kind that is neither ground nor in";
+        }
+        if (!on_stage(*at)) {
+            return "a listing on a cell off the stage";
+        }
+        if (at->kind == Location::Kind::In && !index_of.contains(at->container.value)) {
+            return "a listing in a container that is not there";
+        }
+        if (entries == 0 || entries > max_entries || entries > r.remaining() / kMinEntryBytes) {
+            return "a listing that is empty, over the entry cap, or past the bytes left";
+        }
+        for (const auto& [seen, unused] : out.listings) {
+            if (seen == *at) {
+                return "the same location listed twice";
+            }
+        }
+        std::vector<ItemStore::SavedEntry> list;
+        list.reserve(entries);
+        for (std::uint32_t e = 0; e < entries; ++e) {
+            const std::uint8_t kind = r.u8();
+            ItemStore::SavedEntry saved{Entry::Kind::Thing, {}, {}};
+            if (kind == kThingEntryByte) {
+                saved.thing = ThingId{r.u64()};
+                const auto found = index_of.find(saved.thing.value);
+                if (r.failed()) {
+                    return "payload ends early";
+                }
+                if (found == index_of.end() || !(out.things[found->second].at == *at) ||
+                    listed[found->second] != 0) {
+                    return "a listed thing that is not there, is elsewhere, or is listed twice";
+                }
+                listed[found->second] = 1;
+            } else if (kind == kLineEntryByte) {
+                saved.kind = Entry::Kind::Line;
+                const std::uint32_t entry = r.u32();
+                saved.line.address = r.u64();
+                saved.line.count = r.u32();
+                saved.line.quality_mean = r.u16();
+                saved.line.quality_spread = r.u16();
+                saved.line.taken = r.u32();
+                if (r.failed()) {
+                    return "payload ends early";
+                }
+                if (entry >= dictionary_size) {
+                    return "a line's CDIC index out of range";
+                }
+                saved.line.archetype = ItemId{entry};
+            } else {
+                return "an entry kind that is neither thing nor line";
+            }
+            list.push_back(saved);
+        }
+        out.listings.emplace_back(*at, std::move(list));
+    }
+    if (std::find(listed.begin(), listed.end(), std::uint8_t{0}) != listed.end()) {
+        return "a thing in no listing";
+    }
+    if (!r.done()) {
+        return "bytes after the payload";
+    }
+    return std::nullopt;
+}
+
 /// Where the parsing and checking of one image goes wrong: the section and the field.
 struct Refusal {
     std::uint32_t section;
@@ -270,11 +447,71 @@ SaveImage World::save(std::string_view build) const {
     }
     add(kLogSection, SyncScope::World, log);
 
-    // CDIC: always written, so the format does not change when items land. The World holds no
-    // item yet, so it has no entries.
+    // CDIC: one entry per distinct archetype in use, in ItemId order, so the same world gives
+    // the same bytes; ITEM then names archetypes by their index here.
+    const std::vector<ThingId> ids = items_.thing_ids();
+    const std::vector<Location> places = items_.locations();
+    std::vector<std::uint32_t> archetypes;
+    for (const ThingId id : ids) {
+        archetypes.push_back(items_.thing(id)->archetype.index);
+    }
+    for (const Location& at : places) {
+        for (const Entry& e : items_.listing(at)) {
+            if (e.kind == Entry::Kind::Line) {
+                archetypes.push_back(items_.line_at(e.index).archetype.index);
+            }
+        }
+    }
+    std::sort(archetypes.begin(), archetypes.end());
+    archetypes.erase(std::unique(archetypes.begin(), archetypes.end()), archetypes.end());
+    assert(archetypes.empty() || content_ != nullptr); // a World holding items has its content set
+    std::vector<ContentRef> refs;
+    refs.reserve(archetypes.size());
+    for (const std::uint32_t a : archetypes) {
+        refs.push_back(content_ != nullptr ? content_ref(*content_, ItemId{a}) : ContentRef{});
+    }
+    const auto entry_of = [&](ItemId item) {
+        return static_cast<std::uint32_t>(std::lower_bound(archetypes.begin(), archetypes.end(), item.index) -
+                                          archetypes.begin());
+    };
     ByteWriter dictionary;
-    write_dictionary(dictionary, {});
+    write_dictionary(dictionary, refs);
     add(kDictionarySection, SyncScope::World, dictionary);
+
+    // ITEM: the next ID, every thing in ID order, then every listing in a fixed order with its
+    // lines inline.
+    ByteWriter items;
+    items.u64(items_.next_id().value);
+    items.u32(static_cast<std::uint32_t>(ids.size()));
+    for (const ThingId id : ids) {
+        const Thing& t = *items_.thing(id);
+        items.u64(t.id.value);
+        items.u32(entry_of(t.archetype));
+        items.u64(t.address);
+        write_location(items, t.at);
+    }
+    items.u32(static_cast<std::uint32_t>(places.size()));
+    for (const Location& at : places) {
+        const std::span<const Entry> entries = items_.listing(at);
+        write_location(items, at);
+        items.u32(static_cast<std::uint32_t>(entries.size()));
+        for (const Entry& e : entries) {
+            if (e.kind == Entry::Kind::Thing) {
+                items.u8(kThingEntryByte);
+                items.u64(items_.thing_at(e.index).id.value);
+            } else {
+                const Line& line = items_.line_at(e.index);
+                items.u8(kLineEntryByte);
+                items.u32(entry_of(line.archetype));
+                items.u64(line.address);
+                items.u32(line.count);
+                items.u16(line.quality_mean);
+                items.u16(line.quality_spread);
+                items.u32(line.taken);
+            }
+        }
+    }
+    add(kItemSection, SyncScope::World, items);
 
     ByteWriter character;
     character.u32(kCharacters);
@@ -327,7 +564,8 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
         {kWorldSection, SyncScope::World},    {kStageSection, SyncScope::World},
         {kScentSection, SyncScope::World},    {kHordeSection, SyncScope::World},
         {kLogSection, SyncScope::World},      {kCharacterSection, SyncScope::Character},
-        {kSeenSection, SyncScope::Character}, {kDictionarySection, SyncScope::World}};
+        {kSeenSection, SyncScope::Character}, {kDictionarySection, SyncScope::World},
+        {kItemSection, SyncScope::World}};
     std::map<std::uint32_t, const SaveSection*> found;
     for (const SaveSection& s : image.sections) {
         const auto k = known.find(s.id);
@@ -627,9 +865,10 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
     // CDIC, optional: an image from before PEO-092 has none and restores with an empty report.
     // Each entry resolves once, into the index-to-Resolved table later sections will read.
     MigrationReport migrated;
+    std::vector<ContentRef> entries;
+    std::vector<Resolved> resolved;
     if (found.contains(kDictionarySection)) {
         ByteReader dr = reader(kDictionarySection);
-        std::vector<ContentRef> entries;
         if (std::optional<std::string> error = read_dictionary(dr, entries)) {
             return refuse({kDictionarySection, SyncScope::World, std::move(*error)});
         }
@@ -637,19 +876,106 @@ SaveStatus World::restore(const SaveImage& image, std::vector<SaveIssue>& issues
             return refuse({kDictionarySection, SyncScope::World,
                            "content entries but no content to resolve them against"});
         }
-        std::vector<Resolved> resolved;
         resolved.reserve(entries.size());
         for (const ContentRef& entry : entries) {
             resolved.push_back(resolve(entry, *content_));
         }
-        for (std::size_t i = 0; i < entries.size(); ++i) {
-            const Resolved& to = resolved[i];
-            if (to.how == Migration::Kept) {
-                continue;
-            }
-            migrated.lines.push_back({entries[i].id, entries[i].name, to,
-                                      to.item ? std::string(content_->name(*to.item)) : std::string{}, 0});
+    }
+
+    // ITEM, optional: an image from before PEO-050 restores with an empty store. Every
+    // archetype moves onto what its CDIC entry resolved to.
+    std::vector<std::uint32_t> references(entries.size(), 0);
+    if (found.contains(kItemSection)) {
+        ByteReader ir = reader(kItemSection);
+        SavedItems saved;
+        if (std::optional<std::string> error =
+                read_items(ir, saved, entries.size(), w.stage_, w.items_.params().max_entries)) {
+            return refuse({kItemSection, SyncScope::World, std::move(*error)});
         }
+        const auto current = [&](ItemId entry) -> std::optional<ItemId> {
+            ++references[entry.index];
+            return resolved[entry.index].item;
+        };
+        for (Thing& t : saved.things) {
+            const std::optional<ItemId> item = current(t.archetype);
+            if (!item) {
+                return refuse({kItemSection, SyncScope::World,
+                               "CDIC entry '" + entries[t.archetype.index].id + "' resolves to no item"});
+            }
+            t.archetype = *item;
+        }
+        for (auto& [at, list] : saved.listings) {
+            for (ItemStore::SavedEntry& e : list) {
+                if (e.kind != Entry::Kind::Line) {
+                    continue;
+                }
+                const std::optional<ItemId> item = current(e.line.archetype);
+                if (!item) {
+                    return refuse(
+                        {kItemSection, SyncScope::World,
+                         "CDIC entry '" + entries[e.line.archetype.index].id + "' resolves to no item"});
+                }
+                e.line.archetype = *item;
+            }
+        }
+        // A compartment past its container's current count (its kind changed) moves to the
+        // container's last compartment, or where the container is when it holds none now:
+        // noted, never refused (ADR-0017).
+        std::map<std::uint64_t, std::size_t> thing_index;
+        for (std::size_t i = 0; i < saved.things.size(); ++i) {
+            thing_index.emplace(saved.things[i].id.value, i);
+        }
+        const auto settle = [&](Location at) {
+            for (std::size_t step = 0; at.kind == Location::Kind::In && step <= saved.things.size(); ++step) {
+                const Thing& holder = saved.things[thing_index.find(at.container.value)->second];
+                const std::uint32_t now_has = ItemStore::compartments_of(*content_, holder.archetype);
+                if (at.compartment < now_has) {
+                    return at;
+                }
+                at =
+                    now_has > 0 ? Location::in(holder.id, static_cast<std::uint8_t>(now_has - 1)) : holder.at;
+            }
+            return at;
+        };
+        std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> settled;
+        std::vector<std::pair<Location, std::vector<ItemStore::SavedEntry>>> moved;
+        for (auto& [at, list] : saved.listings) {
+            const Location to = settle(at);
+            if (to == at) {
+                settled.emplace_back(at, std::move(list));
+            } else {
+                issues.push_back({.section_id = kItemSection,
+                                  .scope = SyncScope::World,
+                                  .what = "thing " + std::to_string(at.container.value) + "'s compartment " +
+                                          std::to_string(at.compartment) +
+                                          " is gone from its kind; its contents moved"});
+                moved.emplace_back(to, std::move(list));
+            }
+        }
+        for (auto& [to, list] : moved) {
+            for (const ItemStore::SavedEntry& e : list) {
+                if (e.kind == Entry::Kind::Thing) {
+                    saved.things[thing_index.find(e.thing.value)->second].at = to;
+                }
+            }
+            auto into =
+                std::find_if(settled.begin(), settled.end(), [&](const auto& s) { return s.first == to; });
+            if (into == settled.end()) {
+                settled.emplace_back(to, std::move(list));
+            } else {
+                into->second.insert(into->second.end(), list.begin(), list.end());
+            }
+        }
+        w.items_.rebuild(saved.next_id, saved.things, settled);
+    }
+    for (std::size_t i = 0; i < entries.size(); ++i) {
+        const Resolved& to = resolved[i];
+        if (to.how == Migration::Kept) {
+            continue;
+        }
+        migrated.lines.push_back({entries[i].id, entries[i].name, to,
+                                  to.item ? std::string(content_->name(*to.item)) : std::string{},
+                                  references[i]});
     }
 
     // All read and checked: set the clock first (the slot poll reads it), then the rest.
