@@ -18,6 +18,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -73,13 +74,20 @@ inline constexpr std::int64_t kPlayDensityDead = 40;
 inline constexpr std::int64_t kPlayDensityWidth = 80;
 inline constexpr std::int64_t kPlayDensityHeight = 45;
 
-/// How many Dead a width x height map holds at play density, rounded down, computed in 64
-/// bits and never negative. World still clamps the spawn to the open cells.
+/// How many Dead a width x height map holds at play density, rounded down and never negative.
+/// Callers pass sides up to 2048 (the game's kMaxGameStageSide), but any int is safe: the
+/// count is computed in 64 bits without overflow and clamped to INT_MAX. World still clamps
+/// the spawn to the open cells.
 [[nodiscard]] constexpr int play_density_dead(int width, int height) noexcept {
     if (width <= 0 || height <= 0) {
         return 0;
     }
-    return static_cast<int>(kPlayDensityDead * width * height / (kPlayDensityWidth * kPlayDensityHeight));
+    // area fits in 64 bits (under 2^62); dividing before multiplying keeps every step in range,
+    // and the remainder's part is exact, so this is floor(area * dead / block).
+    constexpr std::int64_t kBlock = kPlayDensityWidth * kPlayDensityHeight;
+    const std::int64_t area = std::int64_t{width} * height;
+    const std::int64_t dead = area / kBlock * kPlayDensityDead + area % kBlock * kPlayDensityDead / kBlock;
+    return dead > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(dead);
 }
 
 /// Substeps the player spent on one tile since the last update. The log of these is

@@ -165,6 +165,13 @@ TEST_SUITE("world") {
         CHECK(play_density_dead(2048, 2048) == 46603);
         CHECK(play_density_dead(0, 0) == 0);
         CHECK(play_density_dead(-5, 45) == 0);
+        CHECK(play_density_dead(100000, 100000) == 111111111);
+        // Past the guard: the count would not fit an int, so it is clamped, never overflowed.
+        CHECK(play_density_dead(2000000, 2000000) == std::numeric_limits<int>::max());
+        CHECK(play_density_dead(std::numeric_limits<int>::max(), std::numeric_limits<int>::max()) ==
+              std::numeric_limits<int>::max());
+        static_assert(play_density_dead(std::numeric_limits<int>::max(), std::numeric_limits<int>::max()) ==
+                      std::numeric_limits<int>::max());
         static_assert(play_density_dead(80, 45) == 40); // usable where a constant is needed
     }
 
