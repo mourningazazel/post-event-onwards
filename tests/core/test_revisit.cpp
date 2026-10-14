@@ -319,3 +319,26 @@ TEST_SUITE("scenario: revisit") {
         CHECK(fresh.memory().count() == 0);
     }
 }
+
+// PEO-050: an area carries its item store. Fixture names are test data only.
+TEST_SUITE("revisit") {
+    TEST_CASE("store_area then resume_area keeps the store; another stage starts empty") {
+        const std::vector<ContentSource> sources{{"items.toml", "[item.hammer]\nname = \"hammer\"\n"}};
+        ContentLoad load = load_content(sources);
+        REQUIRE(load.errors.empty());
+        const Content& content = *load.content;
+        World w(kSeed, WorldParams{.initial_dead = 0, .stage_width = 12, .stage_height = 8});
+        w.set_content(&content);
+        ThingId hammer{};
+        REQUIRE(w.place_item(*content.item("hammer"), 7, Location::ground({2, 3}), hammer) == Placed::Ok);
+        CHECK(w.place_item(*content.item("hammer"), 8, Location::ground({-1, 3}), hammer) ==
+              Placed::OffStage);
+        const AreaRecord record = *w.store_area();
+        w.load_stage(1);
+        CHECK(w.items().empty());
+        w.resume_area(record);
+        CHECK(w.items() == record.items);
+        REQUIRE(w.items().at({2, 3}).size() == 1);
+        CHECK(w.items().thing_at(w.items().at({2, 3})[0].index).address == 7);
+    }
+}

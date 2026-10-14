@@ -522,3 +522,240 @@ TEST_SUITE("scenario: save") {
         check_continuation(layout, kBefore, kAfter, false);
     }
 }
+
+// PEO-050: the item store in a save (ITEM, with archetypes through CDIC). Fixture names are
+// test data only, not game content.
+namespace {
+
+/// A small stage with no Dead: these cases are about the store, and the unit tier is tight.
+WorldParams item_params() {
+    return {.initial_dead = 0, .stage_width = 12, .stage_height = 8};
+}
+
+constexpr std::string_view kItemFixture = R"(
+[item.tool_base]
+name = "tool"
+abstract = true
+[item.hammer]
+name = "hammer"
+parent = "tool_base"
+[item.claw_hammer]
+name = "claw hammer"
+parent = "hammer"
+[item.cabinet]
+name = "cabinet"
+compartments = [{ name = "drawer" }, { name = "cupboard" }]
+[item.jug]
+name = "jug"
+[item.jug.features.container]
+capacity_ml = 1000
+[item.nail]
+name = "nail"
+[item.junk]
+name = "junk"
+)";
+
+Content item_content(std::string_view text) {
+    const std::vector<ContentSource> sources{{"items.toml", text}};
+    ContentLoad load = load_content(sources);
+    REQUIRE(load.errors.empty());
+    return std::move(*load.content);
+}
+
+ItemId item_of(const Content& content, std::string_view id) {
+    const auto item = content.item(id);
+    REQUIRE(item.has_value());
+    return *item;
+}
+
+/// A world with a claw hammer and a nail line on the ground, and a cabinet holding a jug that
+/// holds a hammer.
+struct Furnished {
+    World world;
+    ThingId claw, cabinet, jug, hammer;
+};
+
+Furnished furnished(const Content& content) {
+    Furnished f{World(kSeed, item_params()), {}, {}, {}, {}};
+    World& w = f.world;
+    w.set_content(&content);
+    const Location ground = Location::ground({3, 4});
+    REQUIRE(w.place_item(item_of(content, "claw_hammer"), 11, ground, f.claw) == Placed::Ok);
+    REQUIRE(w.place_line(item_of(content, "nail"), 12, 40, 700, 80, ground) == Placed::Ok);
+    REQUIRE(w.place_item(item_of(content, "cabinet"), 13, Location::ground({5, 6}), f.cabinet) == Placed::Ok);
+    REQUIRE(w.place_item(item_of(content, "jug"), 14, Location::in(f.cabinet, 1), f.jug) == Placed::Ok);
+    REQUIRE(w.place_item(item_of(content, "hammer"), 15, Location::in(f.jug, 0), f.hammer) == Placed::Ok);
+    return f;
+}
+
+/// The CDIC entry IDs of an image, in order.
+std::vector<std::string> dictionary_ids(SaveImage& image) {
+    ByteReader r(section(image, section_id("CDIC")).payload);
+    const std::uint32_t count = r.u32();
+    std::vector<std::string> ids;
+    for (std::uint32_t i = 0; i < count; ++i) {
+        ids.push_back(r.string(kMaxContentIdBytes).value_or("?"));
+        const std::uint16_t ancestors = r.u16();
+        for (std::uint16_t a = 0; a < ancestors; ++a) {
+            (void)r.string(kMaxContentIdBytes);
+        }
+        (void)r.string(kMaxContentNameBytes);
+    }
+    return ids;
+}
+
+} // namespace
+
+TEST_SUITE("save") {
+    TEST_CASE("things, a line and nested containers save, restore equivalent and save the same bytes") {
+        const Content content = item_content(kItemFixture);
+        Furnished f = furnished(content);
+        SaveImage image = f.world.save(kBuild);
+        const std::vector<std::byte> bytes = write_save(image);
+        // One CDIC entry per archetype in use, in ItemId order (IDs sort as items do).
+        CHECK(dictionary_ids(image) ==
+              std::vector<std::string>{"cabinet", "claw_hammer", "hammer", "jug", "nail"});
+        World loaded(kSeed + 1, item_params());
+        loaded.set_content(&content);
+        std::vector<SaveIssue> issues;
+        MigrationReport report;
+        REQUIRE(loaded.restore(read_save(bytes).image, issues, report) == SaveStatus::Ok);
+        CHECK(issues.empty());
+        CHECK(report.lines.empty());
+        CHECK(World::equivalent(loaded, f.world));
+        CHECK(write_save(loaded.save(kBuild)) == bytes);
+        CHECK(loaded.items().in(f.jug, 0).size() == 1);
+        CHECK(loaded.items().next_id() == f.world.items().next_id());
+    }
+
+    TEST_CASE("a removed archetype resolves to its nearest spawnable ancestor; things keep ID and place") {
+        const Content before = item_content(kItemFixture);
+        Furnished f = furnished(before);
+        const SaveImage image = f.world.save(kBuild);
+        // Now claw_hammer is gone and nothing else changed.
+        std::string text(kItemFixture);
+        const std::size_t at = text.find("[item.claw_hammer]");
+        text.erase(at, text.find("[item.cabinet]") - at);
+        const Content after = item_content(text);
+        World loaded(kSeed + 1, item_params());
+        loaded.set_content(&after);
+        std::vector<SaveIssue> issues;
+        MigrationReport report;
+        REQUIRE(loaded.restore(image, issues, report) == SaveStatus::Ok);
+        const Thing* claw = loaded.items().thing(f.claw);
+        REQUIRE(claw != nullptr);
+        CHECK(claw->archetype == item_of(after, "hammer"));
+        CHECK(claw->at == Location::ground({3, 4}));
+        CHECK(claw->address == 11);
+        REQUIRE(report.lines.size() == 1);
+        CHECK(report.lines[0].old_id == "claw_hammer");
+        CHECK(report.lines[0].to.how == Migration::StandIn);
+        CHECK(report.lines[0].references == 1);
+        CHECK(loaded.items().thing(f.hammer)->at == Location::in(f.jug, 0));
+    }
+
+    TEST_CASE("a compartment that is gone from its kind moves its contents, noted, never refused") {
+        const Content before = item_content(kItemFixture);
+        Furnished f = furnished(before);
+        const SaveImage image = f.world.save(kBuild);
+        // The cabinet now has one compartment: the jug was in the second.
+        std::string text(kItemFixture);
+        const std::string two = R"(compartments = [{ name = "drawer" }, { name = "cupboard" }])";
+        text.replace(text.find(two), two.size(), R"(compartments = [{ name = "drawer" }])");
+        const Content after = item_content(text);
+        World loaded(kSeed + 1, item_params());
+        loaded.set_content(&after);
+        std::vector<SaveIssue> issues;
+        MigrationReport report;
+        REQUIRE(loaded.restore(image, issues, report) == SaveStatus::Ok);
+        CHECK(has_issue(issues, section_id("ITEM")));
+        CHECK(loaded.items().thing(f.jug)->at == Location::in(f.cabinet, 0));
+        CHECK(loaded.items().in(f.cabinet, 0).size() == 1);
+    }
+
+    TEST_CASE(
+        "a bad CDIC index, a missing container and a cell off the stage are Corrupt and change nothing") {
+        const Content content = item_content(kItemFixture);
+        Furnished f = furnished(content);
+        SaveImage image = f.world.save(kBuild);
+        const std::vector<std::byte> item = section(image, section_id("ITEM")).payload;
+        // ITEM's layout: u64 next ID, u32 things, then per thing u64 id, u32 CDIC index, u64
+        // address, then its location: u8 kind and either i32 x, i32 y or u64 container, u8 slot.
+        constexpr std::size_t kFirstThing = 8 + 4;
+        constexpr std::size_t kIndexAt = kFirstThing + 8;
+        constexpr std::size_t kCellAt = kIndexAt + 4 + 8 + 1;
+        const struct {
+            const char* name;
+            std::size_t offset;
+            std::uint32_t value;
+        } forges[] = {
+            {"a CDIC index out of range", kIndexAt, 99},
+            {"a cell off the stage", kCellAt, 1000},
+        };
+        World target(kSeed, item_params());
+        target.set_content(&content);
+        const std::vector<std::byte> before = write_save(target.save(kBuild));
+        for (const auto& forge : forges) {
+            CAPTURE(forge.name);
+            SaveImage forged = image;
+            put_u32(section(forged, section_id("ITEM")).payload, forge.offset, forge.value);
+            std::vector<SaveIssue> issues;
+            CHECK(target.restore(forged, issues) == SaveStatus::Corrupt);
+            CHECK(has_issue(issues, section_id("ITEM")));
+            CHECK(write_save(target.save(kBuild)) == before);
+        }
+        // A missing container: drop the cabinet from the store before saving, so the jug
+        // names a container that is not in the image.
+        SaveImage missing = image;
+        {
+            ByteReader r(item);
+            ByteWriter w;
+            w.u64(r.u64());
+            const std::uint32_t things = r.u32();
+            w.u32(things - 1);
+            for (std::uint32_t i = 0; i < things; ++i) {
+                const std::uint64_t id = r.u64();
+                const std::uint32_t entry = r.u32();
+                const std::uint64_t address = r.u64();
+                const std::uint8_t kind = r.u8();
+                const std::uint64_t a = kind == 0 ? static_cast<std::uint64_t>(r.u32()) |
+                                                        (static_cast<std::uint64_t>(r.u32()) << 32)
+                                                  : r.u64();
+                const std::uint8_t slot = kind == 0 ? 0 : r.u8();
+                if (id == f.cabinet.value) {
+                    continue;
+                }
+                w.u64(id);
+                w.u32(entry);
+                w.u64(address);
+                w.u8(kind);
+                if (kind == 0) {
+                    w.u32(static_cast<std::uint32_t>(a));
+                    w.u32(static_cast<std::uint32_t>(a >> 32));
+                } else {
+                    w.u64(a);
+                    w.u8(slot);
+                }
+            }
+            const std::span<const std::byte> rest = r.bytes(r.remaining());
+            w.bytes(rest);
+            section(missing, section_id("ITEM")).payload = w.take();
+        }
+        std::vector<SaveIssue> issues;
+        CHECK(target.restore(missing, issues) == SaveStatus::Corrupt);
+        CHECK(has_issue(issues, section_id("ITEM")));
+        CHECK(write_save(target.save(kBuild)) == before);
+    }
+
+    TEST_CASE("a save from before ITEM restores with an empty store") {
+        const Content content = item_content(kItemFixture);
+        Furnished f = furnished(content);
+        SaveImage image = f.world.save(kBuild);
+        std::erase_if(image.sections, [](const SaveSection& s) { return s.id == section_id("ITEM"); });
+        World loaded(kSeed + 1, item_params());
+        loaded.set_content(&content);
+        std::vector<SaveIssue> issues;
+        REQUIRE(loaded.restore(image, issues) == SaveStatus::Ok);
+        CHECK(loaded.items().empty());
+    }
+}
