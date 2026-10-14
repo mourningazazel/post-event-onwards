@@ -67,6 +67,21 @@ struct WorldParams {
     Curve attrition = kDefaultAttrition;
 };
 
+/// The Dead at play density (D-059): 40 for every 80x45 cells, the dev game's density since
+/// PEO-117. Tests, tools and the game take a real-size count from here.
+inline constexpr std::int64_t kPlayDensityDead = 40;
+inline constexpr std::int64_t kPlayDensityWidth = 80;
+inline constexpr std::int64_t kPlayDensityHeight = 45;
+
+/// How many Dead a width x height map holds at play density, rounded down, computed in 64
+/// bits and never negative. World still clamps the spawn to the open cells.
+[[nodiscard]] constexpr int play_density_dead(int width, int height) noexcept {
+    if (width <= 0 || height <= 0) {
+        return 0;
+    }
+    return static_cast<int>(kPlayDensityDead * width * height / (kPlayDensityWidth * kPlayDensityHeight));
+}
+
 /// Substeps the player spent on one tile since the last update. The log of these is
 /// applied as scent at the next update (D-015).
 struct Occupancy {
