@@ -8,6 +8,8 @@ global clock, utilities and fires, revisits.
 | [design/world-generation.md](../design/world-generation.md) | Levels, geography, rivers, aftermath, clock, revisits |
 | [design/world-catalog.md](../design/world-catalog.md) | What buildings, rooms and places exist |
 | `src/core/include/peo/core/stage.hpp` | Today's stage generator |
+| `src/core/include/peo/core/chunk.hpp` | World cells and 32x32 chunks of the one map, 64-bit (PEO-146) |
+| `src/core/include/peo/core/map_terrain.hpp` | Placeholder walls as a pure function of seed and world cell (PEO-146) |
 
 - **ADRs:** 0007, 0009, 0010, 0011, 0013 (tile scale), 0018, 0019.
 - **Decisions:** D-004 (persistent world), D-006 (scale). D-040 A (no gate), D-041 A (endless).

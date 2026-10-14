@@ -44,6 +44,8 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ stage.hpp  StageSpec, stage_seed, generate_stage
                               ├─ noise.hpp  integer value noise, fbm, ridged (Q16)
                               ├─ geography.hpp  terrain_at, generate_geography / generate_square
+                              ├─ chunk.hpp  WorldCell, ChunkCoord, chunk_of, chunk_seed: where a cell is on the one map (PEO-146)
+                              ├─ map_terrain.hpp  wall_at, fill_terrain: placeholder walls by world cell, seam-free (PEO-146)
                               ├─ settlement_site.hpp  place_sites: one scored site per 12.5 km cell
                               ├─ sight.hpp  SightField: symmetric shadowcasting within the optical range (PEO-119)
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
