@@ -904,7 +904,7 @@
       "order": 942,
       "type": "feature",
       "title": "Real-size dev game: 1024x1024 at play density from one core constant (D-059, PEO-118)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "M",
       "owner": "builder",
