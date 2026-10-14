@@ -11,7 +11,7 @@
 | Core real-size tests (D-060, PEO-145) | both, CI release job | `verify.py --full` (suites `realsize*`, release only) | 60 s |
 | Core perf | Builder (numbers), Architect (thresholds) | `ctest --preset headless-release` | per-brief |
 | Frontend build | Builder, CI (Linux) | `cmake --build --preset dev` | n/a |
-| Manual in-game | Builder only | brief's `manual` steps | n/a |
+| Manual in-game | Builder only | brief's `manual` steps, on the default 1024x1024 map unless the brief says otherwise (D-059) | n/a |
 | Siege suite (PEO-088) | on demand only: Builder, or the manual `siege` CI workflow | `peo_siege --check` (headless-release) | minutes; 10 min per building job in CI; never in verify, ctest or regular CI |
 | Geography images (PEO-095) | on demand: whoever changes the map | `peo_geo --seed N --square X,Y [--span K] [--scale S] [--grid] --out f.ppm` | about 0.1 s a square (release); the headless way to look at the map |
 

@@ -53,7 +53,7 @@ changing them is a design change, not a tweak.
 
 | Tunable | Where | Default |
 |---|---|---|
-| Stage size | `WorldParams::stage_width/height`, game `--stage` | 80x45 core, 200x120 game |
+| Stage size | `WorldParams::stage_width/height`, game `--stage` | 80x45 core, 1024x1024 game (D-059) |
 | Wall density | `src/core/src/stage.cpp` | 0.10 + 0.01 per stage, max 0.35 |
 | Continents | `GeographyParams::continent`, `continent_bias_m`, `continent_m` | 2^11 cells, 60 m, 700 m |
 | Mountain bands | `range_mask`, `range_mask_none`, `range_mask_full`, `range`, `range_m` | quarter to 3/5 of the mask, 1800 m |

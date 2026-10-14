@@ -32,7 +32,9 @@ It is the input path, so any work added to it is suspect.
 
 **Multipliers.** Time passing multiplies every row: one slept game hour is 1200 updates (D-039, ADR-0016),
 about 17 s here at 512² with 50k (PEO-082). Stages of 1024² to 2048² (D-036)
-multiply every per-cell row by 4 to 16.
+multiply every per-cell row by 4 to 16. The dev game's default, 1024² with 11,650 Dead (D-059), on
+the M1 (release, a walking step): speculate 23 ms serial, 7.8 ms on 7 threads (worst 41 / 26),
+commit 0.17 ms (PEO-144).
 
 ## Rules
 

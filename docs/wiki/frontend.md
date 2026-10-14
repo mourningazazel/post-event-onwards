@@ -27,7 +27,7 @@ tested headlessly in `tests/core`:
 | Flag | Default | Effect |
 |---|---|---|
 | `SEED` | 1 | The world seed. Same seed and same keys give the same run |
-| `--stage WxH` | 200x120 | Stage size, each side 16 to 2048. The Dead scale with area: 40 per 80x45 (so 266 at the default) |
+| `--stage WxH` | 1024x1024 | Stage size, each side 16 to 2048. The Dead scale with area at play density, `play_density_dead` (`world.hpp`): 40 per 80x45, so 11,650 at the default (D-059) |
 | `--threads N` | hardware threads less one | Workers lent to core; 1 is serial. Results are identical at any count |
 | `--tileset PATH` | ASCII | A Dwarf Fortress grid PNG atlas (16x16 glyphs, CP437 order) |
 | `--no-gpu-compute` | off | Never use the GPU scent backend |
@@ -90,7 +90,7 @@ the GPU only matches one CPU thread), and from **512x512** for a windy one (wher
 |---|---|---|
 | Peek depth | `kPeekDepthPercent` (`peek.hpp`) | 15% of the view |
 | Turn queue and rate | `TurnInputParams` (`turn_input.hpp`) | 3 waiting, 3 turns a second |
-| Default seed, stage, density of the Dead | `kDefaultSeed`, `kGameStageWidth/Height`, `kDefaultStageDead` (`main.cpp`) | 1; 200x120; 40 per 80x45 |
+| Default seed, stage, density of the Dead | `kDefaultSeed`, `kGameStageWidth/Height` (`main.cpp`); `play_density_dead` (`world.hpp`) | 1; 1024x1024; 40 per 80x45 |
 | Game wind | `kGameWindMax`, `kGameWindGust` (`main.cpp`) | 8, 2 |
 | GPU thresholds | `kGpuFieldMinCells`, `kGpuWindyMinCells` (`main.cpp`) | never; 512x512 |
 | Colours, glyphs, scent bands | the `k...Rgb` constants and `kScentBands` (`main.cpp`) | |
