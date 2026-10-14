@@ -38,5 +38,10 @@
     "at": "2026-10-14",
     "by": "builder",
     "text": "rework: findings 1-2"
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "rework: (1) 1990d30 read_items checks every thing's container exists in a first pass, then walks chains in a second; 352426d adds the reviewer's case to the Corrupt test (hammer 1 in jug 2 in cabinet 3, jug's container forged to 77): on the old code it gives ASan stack-buffer-overflow at world_save.cpp:301, now Corrupt naming ITEM with the save bytes unchanged. (2) listings must come strictly in the writer's order (location_before, now a shared free function in item_store.hpp used by locations() too): one comparison per listing, and a repeat is refused; moved listings merge through std::map<Location, ..., LocationBefore>, so load is n log n. tests: verify.py --frontend --full all stages passed; the new cases still sum 7.0-9.1 ms under ASan over 5 runs (median 7.7). Finding 3 withdrawn by the architect"
   }
 ]
