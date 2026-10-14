@@ -23,5 +23,10 @@
     "at": "2026-10-14",
     "by": "architect",
     "text": "review: rework. 1. CI red on 063ac88 (run 38478690232): core tests (release) and frontend build fail compiling tests/peo_dump/peo_dump.cpp:107, g++-13 -O2 -Werror=null-dereference inside std::istreambuf_iterator; read the file as tests/content_dump/content_dump.cpp:102 does (std::ostringstream text; text << in.rdbuf();) and build headless-release before pushing (verify.py --full). 2. Brief docs unit not done: docs/domains/items.md lists none of PEO-135 to PEO-137 in its Queue section; add them. Everything else checked (brief units, src/core has no I/O or stream headers, content/ and content.cpp untouched, 46 conformance cases, perf baseline reported) and passes once CI is green."
+  },
+  {
+    "at": "2026-10-13",
+    "by": "builder",
+    "text": "rework: (1) 4280b0c peo_dump reads through std::ostringstream << rdbuf, as content_dump.cpp; verify.py --frontend --full and a headless-release build pass locally (local GCC is 16, which never warned; g++-13 is not installed here, so CI is the check). (2) docs/domains/items.md Queue already lists 135, 136 and 137 on main (line 18), so no change was needed"
   }
 ]
