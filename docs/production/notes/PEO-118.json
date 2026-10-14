@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "split (XL): PEO-144 to PEO-151 linked by depends_on; this is the umbrella, closed by the Architect after PEO-151"
+  }
+]

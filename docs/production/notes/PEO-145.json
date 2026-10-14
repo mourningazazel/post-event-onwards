@@ -1,0 +1,7 @@
+[
+  {
+    "at": "2026-10-14",
+    "by": "architect",
+    "text": "D-060: where real-size cases run (release scenario tier already 7.5 s of 5 s on the cloud runner; a 1024 square update is 60 ms there)"
+  }
+]
