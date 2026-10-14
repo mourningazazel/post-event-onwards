@@ -381,7 +381,7 @@
       "order": 447,
       "type": "design",
       "title": "Items as seeds: read through the seed, instantiate on change, resolve on access, hidden container cap (D-023)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
