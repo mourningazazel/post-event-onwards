@@ -589,6 +589,25 @@ Furnished furnished(const Content& content) {
 }
 
 /// The CDIC entry IDs of an image, in order.
+/// Where each thing's location starts in an ITEM payload, by thing ID.
+std::vector<std::pair<std::uint64_t, std::size_t>> thing_locations(const std::vector<std::byte>& item) {
+    ByteReader r(item);
+    (void)r.u64();
+    const std::uint32_t things = r.u32();
+    std::vector<std::pair<std::uint64_t, std::size_t>> out;
+    std::size_t at = 8 + 4;
+    for (std::uint32_t i = 0; i < things; ++i) {
+        const std::uint64_t id = r.u64();
+        (void)r.u32();
+        (void)r.u64();
+        out.emplace_back(id, at + 8 + 4 + 8);
+        const std::uint8_t kind = r.u8();
+        (void)r.bytes(kind == 0 ? 8 : 9);
+        at += 8 + 4 + 8 + 1 + (kind == 0 ? 8U : 9U);
+    }
+    return out;
+}
+
 std::vector<std::string> dictionary_ids(SaveImage& image) {
     ByteReader r(section(image, section_id("CDIC")).payload);
     const std::uint32_t count = r.u32();
@@ -743,6 +762,31 @@ TEST_SUITE("save") {
         }
         std::vector<SaveIssue> issues;
         CHECK(target.restore(missing, issues) == SaveStatus::Corrupt);
+        CHECK(has_issue(issues, section_id("ITEM")));
+        CHECK(write_save(target.save(kBuild)) == before);
+
+        // A container that is no thing, met while walking a chain: hammer (1) in jug (2) in
+        // cabinet (3), so the hammer's chain is walked before the jug's container is checked;
+        // the jug now names container 77, and the walk must not step onto it.
+        World nested(kSeed, item_params());
+        nested.set_content(&content);
+        ThingId hammer{}, jug{}, cabinet{};
+        REQUIRE(nested.place_item(item_of(content, "hammer"), 1, Location::ground({1, 1}), hammer) ==
+                Placed::Ok);
+        REQUIRE(nested.place_item(item_of(content, "jug"), 2, Location::ground({1, 1}), jug) == Placed::Ok);
+        REQUIRE(nested.place_item(item_of(content, "cabinet"), 3, Location::ground({1, 1}), cabinet) ==
+                Placed::Ok);
+        REQUIRE(nested.move_item(jug, Location::in(cabinet, 0)) == Placed::Ok);
+        REQUIRE(nested.move_item(hammer, Location::in(jug, 0)) == Placed::Ok);
+        SaveImage deep = nested.save(kBuild);
+        std::vector<std::byte>& payload = section(deep, section_id("ITEM")).payload;
+        for (const auto& [id, location] : thing_locations(payload)) {
+            if (id == jug.value) {
+                put_u32(payload, location + 1, 77);
+            }
+        }
+        issues.clear();
+        CHECK(target.restore(deep, issues) == SaveStatus::Corrupt);
         CHECK(has_issue(issues, section_id("ITEM")));
         CHECK(write_save(target.save(kBuild)) == before);
     }
