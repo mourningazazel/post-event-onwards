@@ -8,6 +8,13 @@ Format: date · title · decision · why · consequences.
 Older decisions (settled infrastructure, D-007 to D-032, D-034, superseded D-010, N014-N015) live in
 `decisions-archive/2026-09.md`; D-033, D-035 to D-044, N023 and later ones as they age out, in `decisions-archive/2026-10.md`. They still hold.
 
+## 2026-10-14 · D-060 · Real-size tests get their own tier
+
+User decision: A (review thread). A third tier, `realsize*` suites, runs in release builds only
+with its own 60 s budget, from `verify.py --full` and CI's release job; the unit and scenario
+tiers keep 1 s and 5 s (D-033). Why: one update at 1024x1024 costs about 60 ms, so a real-size
+walk cannot fit the scenario budget. Consequence: PEO-145 builds the tier and its first cases.
+
 ## 2026-10-14 · D-059 · One continuous map, tested at real size
 
 Owner direction (review thread). The map is one continuous world the player walks with no

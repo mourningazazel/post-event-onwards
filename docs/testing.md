@@ -8,6 +8,7 @@
 | Format | both, CI | `python3 tools/verify.py` (or `--fix`) | instant |
 | Core unit tests | both, CI | `ctest --preset headless` | unit tier budget in AGENTS.md, enforced by `suite_budget` |
 | Core scenario tests | both, CI | same run (suites `scenario*`) | scenario tier budget in AGENTS.md, enforced by `scenario_budget` |
+| Core real-size tests (D-060, PEO-145) | both, CI release job | `verify.py --full` (suites `realsize*`, release only) | 60 s |
 | Core perf | Builder (numbers), Architect (thresholds) | `ctest --preset headless-release` | per-brief |
 | Frontend build | Builder, CI (Linux) | `cmake --build --preset dev` | n/a |
 | Manual in-game | Builder only | brief's `manual` steps | n/a |
