@@ -45,7 +45,10 @@ brands; quality), `docs/design/survival-actions.md`, `docs/design/world-catalog.
 | `lint.py` | Schema, vocabulary and reference checks; mass plausibility; container and room fit. Errors fail; `--strict` fails on warnings |
 | `derive.py` | **The executable spec** for turning item data into behaviour: capabilities from features and materials, impact, throw range, packed size, ignition, binding. The C++ port must reproduce it |
 | `generate.py` | The reference roller for a compartment's contents (D-030, PEO-057): every pick from `hash_u64(seed, salt, index)`, the same splitmix64 fold as `rng.hpp`, so the C++ port can be checked roll for roll |
-| `test.py` | Runs `tests/content/`: property expectations, action-chain feasibility, pinned rolls |
+| `test.py` | Runs `tests/content/`: property expectations, action-chain feasibility, pinned rolls, the `peo_convert` fixture and the .peo round trip |
+| `to_peo.py` | One-time converter of the TOML tree to .peo (D-057, PEO-136), `--out DIR`; its path, field and value tables are `docs/design/content-format.md` 'Converting from TOML'. Refuses rather than guesses |
+| `peo_load.py` | Reads a .peo tree into the same database `common.py` builds (record type and flat ID from the path table, an item's parent from its header path) |
+| `golden.py` | Prints every resolved item for the engine diff; `--peo` converts `content/`, reads it back, maps it to TOML names with an independent inverse and fails on any difference |
 
 `verify.py` and the `docs` CI job run `lint.py` and `test.py`. `tests/content/`:
 
