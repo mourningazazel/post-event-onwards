@@ -381,10 +381,10 @@
       "order": 447,
       "type": "design",
       "title": "Items as seeds: read through the seed, instantiate on change, resolve on access, hidden container cap (D-023)",
-      "status": "Validation",
+      "status": "Pending",
       "severity": "S2",
       "effort": "L",
-      "owner": "architect",
+      "owner": "builder",
       "created": "2026-09-29",
       "references": [
         "docs/design/gameplay-model/G03-items-and-belongings.md",
