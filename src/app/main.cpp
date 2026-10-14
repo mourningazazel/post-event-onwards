@@ -122,15 +122,10 @@ std::size_t default_threads() noexcept {
 /// The game's stage (PEO-117): bigger than the window, which shows a view of it centred
 /// on the player. `--stage WxH` chooses another, each side in [kMinGameStageSide,
 /// kMaxGameStageSide] (the PEO-083 ceiling).
-constexpr int kGameStageWidth = 200;
-constexpr int kGameStageHeight = 120;
+constexpr int kGameStageWidth = 1024;
+constexpr int kGameStageHeight = 1024;
 constexpr int kMinGameStageSide = 16;
 constexpr int kMaxGameStageSide = 2048;
-/// The Dead on the old 80x45 default stage; other stages keep that density, so
-/// `--stage 80x45` plays as the game did before PEO-117.
-constexpr int kDefaultStageDead = 40;
-constexpr int kDensityStageWidth = 80;
-constexpr int kDensityStageHeight = 45;
 
 WorldParams game_params(int stage_width, int stage_height) noexcept {
     WorldParams params;
@@ -138,10 +133,8 @@ WorldParams game_params(int stage_width, int stage_height) noexcept {
     params.scent.gust = kGameWindGust;
     params.stage_width = stage_width;
     params.stage_height = stage_height;
-    // Worst case 40 x 2048 x 2048 = 1.7e8 (46,603 Dead; World clamps to the open cells).
-    const auto dead = std::int64_t{kDefaultStageDead} * stage_width * stage_height /
-                      (std::int64_t{kDensityStageWidth} * kDensityStageHeight);
-    params.initial_dead = static_cast<int>(dead);
+    // Play density (D-059), so `--stage 80x45` plays with 40 Dead as before PEO-117.
+    params.initial_dead = play_density_dead(stage_width, stage_height);
     return params;
 }
 constexpr int kScale = 2;
