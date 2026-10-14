@@ -165,21 +165,6 @@ public:
     /// next ID; storage layout is ignored. No allocation.
     friend bool operator==(const ItemStore& a, const ItemStore& b) noexcept;
 
-    /// The archetype of every thing and line, each changed by `map` (restore uses it to move
-    /// archetypes onto resolved content).
-    template <typename F> void remap_archetypes(F&& map) {
-        for (Thing& t : things_) {
-            if (t.id.value != 0) {
-                t.archetype = map(t.archetype);
-            }
-        }
-        for (std::size_t i = 0; i < lines_.size(); ++i) {
-            if (line_used_[i] != 0) {
-                lines_[i].archetype = map(lines_[i].archetype);
-            }
-        }
-    }
-
 private:
     struct Key {
         std::uint64_t a; ///< ground: x and y; in: the container ID
