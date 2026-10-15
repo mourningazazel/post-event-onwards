@@ -86,11 +86,16 @@ if(Python3_Interpreter_FOUND)
              COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/content/golden.py
                      --engine $<TARGET_FILE:peo_content_dump> --content ${CMAKE_SOURCE_DIR}/content)
     set_tests_properties(content_golden PROPERTIES TIMEOUT 60)
+    # PEO-142: content/ converted to .peo reads the same through the engine as through peo_load.
+    add_test(NAME content_golden_peo
+             COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/content/golden.py --via-peo
+                     --engine $<TARGET_FILE:peo_content_dump> --content ${CMAKE_SOURCE_DIR}/content)
+    set_tests_properties(content_golden_peo PROPERTIES TIMEOUT 120)
     # PEO-135: the engine's .peo parser gives every tests/content/peo case its .expect lines.
     add_test(NAME peo_conformance
              COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/content/peo_conformance.py
                      --engine $<TARGET_FILE:peo_peo_dump>)
     set_tests_properties(peo_conformance PROPERTIES TIMEOUT 60)
 else()
-    message(WARNING "Python3 not found: the suite_budget, content_golden and peo_conformance tests are not registered")
+    message(WARNING "Python3 not found: the suite_budget, content_golden, content_golden_peo and peo_conformance tests are not registered")
 endif()

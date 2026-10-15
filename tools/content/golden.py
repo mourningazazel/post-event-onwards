@@ -59,7 +59,13 @@ def walk(item_id: str, value, path: str, out: list[str]) -> None:
 
 
 def golden_lines(content_dir: Path) -> list[str]:
-    db = common.load(content_dir)
+    # A directory of .peo files reads through peo_load (PEO-142), TOML through common.load.
+    if any(content_dir.rglob("*.peo")):
+        import peo_load  # noqa: PLC0415
+
+        db = peo_load.load(content_dir)
+    else:
+        db = common.load(content_dir)
     if db.errors:
         for error in db.errors:
             print(error, file=sys.stderr)
@@ -327,7 +333,25 @@ def main() -> int:
                         help="an earlier print of these lines; fail if any item in it changed")
     parser.add_argument("--peo", action="store_true",
                         help="convert to .peo, read it back and compare every record (PEO-136)")
+    parser.add_argument("--ext", default=".toml", help="the files the engine reads (.peo for a .peo tree)")
+    parser.add_argument("--via-peo", action="store_true",
+                        help="convert --content to .peo in a scratch directory first, then compare the "
+                             "engine's .peo load against peo_load's (PEO-142)")
     args = parser.parse_args()
+
+    if args.via_peo:
+        import tempfile  # noqa: PLC0415
+
+        import to_peo  # noqa: PLC0415
+
+        with tempfile.TemporaryDirectory() as tmp:
+            for rel, text in to_peo.convert(args.content).items():
+                target = Path(tmp) / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text, encoding="utf-8")
+            args.content = Path(tmp)
+            args.ext = ".peo"
+            return compare(args)
 
     if args.peo:
         diffs = peo_round_trip(args.content)
@@ -339,6 +363,10 @@ def main() -> int:
         print(f"golden --peo: every record and resolved item of {args.content} survives the .peo round trip")
         return 0
 
+    return compare(args)
+
+
+def compare(args) -> int:
     expected = golden_lines(args.content)
     if args.unchanged_from is not None:
         before = args.unchanged_from.read_text(encoding="utf-8").splitlines()
@@ -356,7 +384,8 @@ def main() -> int:
         sys.stdout.write("".join(line + "\n" for line in expected))
         return 0
 
-    run = subprocess.run([str(args.engine), str(args.content)], capture_output=True, text=True)
+    command = [str(args.engine)] + (["--ext", args.ext] if args.ext != ".toml" else []) + [str(args.content)]
+    run = subprocess.run(command, capture_output=True, text=True)
     if run.returncode != 0:
         print(f"golden: {args.engine.name} failed ({run.returncode}):\n{run.stderr}", file=sys.stderr)
         return 1
