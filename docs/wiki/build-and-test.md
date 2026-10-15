@@ -46,6 +46,9 @@ All tests are headless doctest suites linked into one binary,
 - `content_golden` (`tools/content/golden.py --engine peo_content_dump`) fails when any item in
   `content/` resolves differently in the engine than in `derive.py`, printing the first 20
   differing lines (item, dotted path, value).
+- `content_golden_peo` (`golden.py --via-peo --engine peo_content_dump`) converts `content/` to
+  .peo in a scratch directory and fails when the engine's load of it (`--ext .peo`) differs from
+  `peo_load.py` and `derive.py` on any line.
 - `peo_conformance` (`tools/content/peo_conformance.py --engine peo_peo_dump`) fails when the
   engine's .peo parser gives any case in `tests/content/peo/` other lines than its `.expect`;
   `tools/content/test.py` runs the same check on the Python parser, so the two agree.

@@ -51,7 +51,7 @@ remembered and unseen rule (`src/app/peek.hpp`, `Peek`, PEO-127).
                               ├─ look.hpp  LookCursor, look_at: the Look cursor over the seen field (PEO-120)
                               ├─ look_label.hpp  far_label: what a thing shows from 20 ft (PEO-121)
                               ├─ memory.hpp  MapMemory: the cells a character has seen on this stage (PEO-124, D-051)
-                              ├─ content.hpp  load_content, Content: content/ text parsed and every item resolved (PEO-008)
+                              ├─ content.hpp  load_content, Content: content/ text (.toml or .peo) parsed and every item resolved (PEO-008, PEO-142)
                               ├─ content_migration.hpp  resolve, MigrationReport: a save's content entries against current content (PEO-092)
                               ├─ item_store.hpp  ItemStore: where every thing is, on the ground or in a compartment; lines and things (PEO-050)
                               ├─ peo_format.hpp  parse_peo: a .peo content file into records (D-057, PEO-135; tools/content/peo.py the same in Python)
@@ -252,11 +252,15 @@ time, so a runner covers two cells per update.
   `World::set_content` gives restore the content. CDIC has one entry per archetype in use, in
   ItemId order; **ITEM** (PEO-050) is the item store: the next ThingId, every thing (ID, CDIC
   index, address, location) and every location's listing with its lines inline.
-- `Content`: **built (PEO-008)** in `peo/core/content.hpp`. Core parses the TOML text the
-  frontend reads (`src/app/content_files.hpp`, `--content DIR`) with vendored toml++, keeps
-  every record type by ID and resolves each item through its parent chain once, at load, as
-  `derive.resolve_item` does; lookups by ID and dotted path. `peo_content_dump` prints every
-  resolved item and the ctest `content_golden` diffs it against `tools/content/golden.py`.
+- `Content`: **built (PEO-008)** in `peo/core/content.hpp`. Core parses the text the
+  frontend reads (`src/app/content_files.hpp`, `--content DIR`), keeps every record type by
+  flat ID and resolves each item through its parent chain once, at load, as
+  `derive.resolve_item` does; lookups by ID and dotted path. Since PEO-142 records are
+  `PeoValue` trees: a `.peo` source goes through `parse_peo` and the path table of
+  `content-format.md` (an item's parent from its header path), a TOML source through a toml++
+  adapter that PEO-143 removes. `peo_content_dump` prints every resolved item; the ctests
+  `content_golden` (TOML) and `content_golden_peo` (content/ converted to .peo, against
+  `peo_load.py`) diff it against `tools/content/golden.py`.
   Derivations (PEO-128) and modifiers with the variant table (PEO-129) build on it.
 - `Replay`: seed plus action log reproduces a run headlessly; the Architect's tool for
   reviewing bugs it cannot see. First piece of the playtest harness.
