@@ -243,3 +243,64 @@ TEST_SUITE("content") {
         }
     }
 }
+
+// PEO-142: .peo sources, typed and parented by the path table. Paths and names are test data.
+TEST_SUITE("content") {
+    TEST_CASE(".peo: a parent from the header path, abstract, quantities, ranges, paths and tags") {
+        constexpr std::string_view kItems =
+            R"(abstract item.tool { tags = [def.tag.cat.tool, def.tag.use.tool] }
+item.tool.hammer {
+    name = "hammer",
+    mass = 1 kg,
+    count = 2..5,
+    shape = def.shape.rod,
+    tags = [def.tag.use.tool, def.tag.use.weapon]
+}
+item.material.steel { name = "steel" }
+)";
+        const std::vector<ContentSource> sources{{"items.peo", kItems}};
+        const ContentLoad loaded = load_content(sources);
+        REQUIRE(loaded.errors.empty());
+        const Content& content = *loaded.content;
+        const ItemId hammer = must(content, "hammer");
+        CHECK(content.parent(hammer) == content.item("tool"));
+        CHECK(content.abstract(must(content, "tool")));
+        CHECK_FALSE(content.abstract(hammer));
+        CHECK(content.int_at(hammer, "mass") == 1000); // base unit: grams
+        CHECK(content.int_at(hammer, "count.0") == 2);
+        CHECK(content.int_at(hammer, "count.1") == 5);
+        CHECK_FALSE(content.has(hammer, "count.2"));
+        CHECK(content.string_at(hammer, "shape") == "def.shape.rod");
+        const auto tags = content.tags(hammer);
+        const std::vector<std::string> expected{"def.tag.cat.tool", "def.tag.use.tool", "def.tag.use.weapon"};
+        CHECK(std::vector<std::string>(tags.begin(), tags.end()) == expected);
+        // item.material.* is a material, not an item.
+        CHECK(content.has_record("material", "steel"));
+        CHECK_FALSE(content.item("steel").has_value());
+    }
+
+    TEST_CASE(".peo: a header whose prefix names no item is rejected") {
+        const std::vector<ContentSource> sources{
+            {"items.peo", "item.nowhere.hammer { name = \"hammer\" }\n"}};
+        const ContentLoad loaded = load_content(sources);
+        CHECK_FALSE(loaded.content.has_value());
+        CHECK(reported(loaded.errors, {"items.peo:1", "'item.nowhere' names no item"}));
+    }
+
+    TEST_CASE(".peo: a remap's path gives a flat ID") {
+        const std::vector<ContentSource> sources{
+            {"items.peo", "item.tool { name = \"tool\" }\nitem.tool.hammer { name = \"hammer\" }\n"},
+            {"remaps.peo", "remap.item.hammer_old { to = item.tool.hammer, why = \"renamed\" }\n"}};
+        const ContentLoad loaded = load_content(sources);
+        REQUIRE(loaded.errors.empty());
+        CHECK(loaded.content->remap("hammer_old") == "hammer");
+    }
+
+    TEST_CASE("the same flat ID from a .toml and a .peo source is rejected naming both") {
+        const std::vector<ContentSource> sources{{"a.toml", "[item.cup]\nname = \"cup\"\n"},
+                                                 {"b.peo", "item.cup { name = \"mug\" }\n"}};
+        const ContentLoad loaded = load_content(sources);
+        CHECK_FALSE(loaded.content.has_value());
+        CHECK(reported(loaded.errors, {"b.peo: duplicate item.cup (first in a.toml)"}));
+    }
+}
