@@ -23,5 +23,10 @@
     "at": "2026-10-14",
     "by": "builder",
     "text": "rework: guard play_density_dead, then the in-game manual steps"
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "rework: (2) ebe531b play_density_dead documents sides up to 2048 (kMaxGameStageSide), divides by the 80x45 block before multiplying so the 64-bit product never overflows for any int sides, and clamps past INT_MAX; test lines: (100000,100000) 111111111, (2000000,2000000) and (INT_MAX,INT_MAX) INT_MAX, a static_assert at INT_MAX; verify.py --frontend --full passed. (1) manual steps run in the game on the default map, driving only the game window (owner's go-ahead), on both the dev build (Debug+ASan, as the brief names) and release, seed 1: log 'stage 1024x1024 with 11650 Dead'. Walked 50 steps east, then waited 20 turns: the Dead gather on the scent: at turn 50 a cluster trails behind the player and by turn 70 about a dozen stand around it, more closing from all sides. Status line spec ms, every speculation a hit, miss 0 throughout: release 45.1 (turn 25), 40.9 (turn 50), 42.6 (turn 70), 36.6 (turn 82), typical about 40, worst seen 45.1; dev build 103.5 (turn 50), 93.1 (turn 70), 97.5 (turn 82). No key press lagged: keys sent every 0.36 s and the turn counter matched each count exactly (25, 50, 70, 82; 50 steps in 19.8 s, the 3-a-second cap). Shift+S while walking: the overlay drew at once and 12 steps with it on took 4.7 s, turn 82 exactly, with no visible stall or dropped frame in the window (no frame counter in the HUD, so frames judged by eye and by the turns keeping pace). The in-game spec ms is above the headless 7.8 ms on 7 threads (bottlenecks.md line): the game's speculate shares the CPU with rendering and the app"
   }
 ]
