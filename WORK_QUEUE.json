@@ -1131,7 +1131,7 @@
       "order": 1027,
       "type": "feature",
       "title": "Content: core load_content reads .peo, parents from header paths (D-057)",
-      "status": "Pending",
+      "status": "InProgress",
       "severity": "S2",
       "effort": "L",
       "owner": "builder",
