@@ -85,6 +85,9 @@ void value_lines(const std::string& record, const std::string& path, const PeoVa
     case PeoKind::Path:
         line("path", v.text);
         return;
+    case PeoKind::Float:
+        line("float", std::to_string(v.floating));
+        return;
     case PeoKind::Expr:
         line("expr", escaped(v.text));
         return;

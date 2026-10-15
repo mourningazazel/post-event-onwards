@@ -24,6 +24,9 @@ enum class PeoKind : std::uint8_t {
     Expr,     ///< a query, call or $role, kept as written (PEO-132 parses it)
     List,
     Block, ///< fields in file order
+    /// A TOML float, made only by load_content's TOML adapter (parse_peo never makes one);
+    /// it goes with toml++ in PEO-143.
+    Float,
 };
 
 /// A quantity's dimension and its base unit: mm, mm2, g, ml, s, whole C, kg/m3, %.
@@ -49,6 +52,8 @@ struct PeoValue {
     std::string text;
     /// A String written as """...""".
     bool formatted = false;
+    /// Float only.
+    double floating = 0.0;
     std::vector<PeoValue> items;
     std::vector<PeoField> fields;
 };
