@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace {
@@ -73,11 +74,17 @@ std::string value_text(const peo::core::ContentLeaf& leaf) {
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::fprintf(stderr, "usage: peo_content_dump <content_dir>\n");
+    // peo_content_dump [--ext .peo] <content_dir>: .toml files unless --ext says otherwise (PEO-142).
+    std::string extension = ".toml";
+    int arg = 1;
+    if (argc == 4 && std::string_view(argv[1]) == "--ext") {
+        extension = argv[2];
+        arg = 3;
+    } else if (argc != 2) {
+        std::fprintf(stderr, "usage: peo_content_dump [--ext .peo] <content_dir>\n");
         return kExitError;
     }
-    const fs::path dir = argv[1];
+    const fs::path dir = argv[arg];
     std::error_code error;
     if (!fs::is_directory(dir, error)) {
         std::fprintf(stderr, "peo_content_dump: %s is not a directory\n", dir.string().c_str());
@@ -86,7 +93,7 @@ int main(int argc, char** argv) {
 
     std::vector<fs::path> files;
     for (const auto& entry : fs::recursive_directory_iterator(dir)) {
-        if (entry.is_regular_file() && entry.path().extension() == ".toml") {
+        if (entry.is_regular_file() && entry.path().extension() == extension) {
             files.push_back(entry.path());
         }
     }

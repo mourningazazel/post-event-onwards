@@ -12,6 +12,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <utility>
 #include <vector>
@@ -33,10 +34,12 @@ struct ContentFiles {
     }
 };
 
-/// Read every *.toml under `dir`, or nullopt with `error` set when `dir` is not a directory
-/// or a file cannot be read.
+/// Read every file ending in `extension` under `dir` (*.toml unless told otherwise; PEO-142
+/// reads *.peo too), or nullopt with `error` set when `dir` is not a directory or a file cannot
+/// be read.
 [[nodiscard]] inline std::optional<ContentFiles> read_content_files(const std::filesystem::path& dir,
-                                                                    std::string& error) {
+                                                                    std::string& error,
+                                                                    std::string_view extension = ".toml") {
     namespace fs = std::filesystem;
     std::error_code code;
     if (!fs::is_directory(dir, code)) {
@@ -45,7 +48,7 @@ struct ContentFiles {
     }
     std::vector<fs::path> files;
     for (fs::recursive_directory_iterator it(dir, code), end; !code && it != end; it.increment(code)) {
-        if (it->is_regular_file(code) && it->path().extension() == ".toml") {
+        if (it->is_regular_file(code) && it->path().extension() == extension) {
             files.push_back(it->path());
         }
     }
