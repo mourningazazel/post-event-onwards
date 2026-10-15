@@ -1131,10 +1131,10 @@
       "order": 1027,
       "type": "feature",
       "title": "Content: core load_content reads .peo, parents from header paths (D-057)",
-      "status": "InProgress",
+      "status": "Validation",
       "severity": "S2",
       "effort": "L",
-      "owner": "builder",
+      "owner": "architect",
       "created": "2026-10-14",
       "references": [
         "docs/design/content-format.md"

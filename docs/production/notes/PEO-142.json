@@ -8,5 +8,10 @@
     "at": "2026-10-14",
     "by": "builder",
     "text": "starting unit 1"
+  },
+  {
+    "at": "2026-10-14",
+    "by": "builder",
+    "text": "commits: 1ff708b core (content.cpp keeps records as PeoValue: one merge, one leaf walk; .peo via parse_peo + the PEO-136 path table, items parented from header paths with parent/abstract synthesized as peo_load does, merged-table records, remap path targets to flat IDs; TOML through a from_toml adapter; PeoKind::Float added for the adapter only, peo_dump prints it), e78f279 read_content_files(dir, error, ext='.toml') and peo_content_dump [--ext .peo], a020ed7 four .peo cases in the content suite (parent from header, abstract, int_at quantity 1000 g, count.0/.1 range, string_at path, tags without repeats, item.material as material, bad parent path rejected with file:line, remap path to flat ID, duplicate across .toml and .peo naming both), b7cb6b1 golden.py --ext and --via-peo + ctest content_golden_peo, 2a4d5ec docs. tests: verify.py --frontend --full all stages passed incl. headless-release; content_golden (TOML) and content_golden_peo both pass: 14021 lines over 418 items identical engine vs Python; 15 content cases; content_migration unchanged and green. perf (release, best of 5, load_content only): before (toml++ tables) TOML 20.7 ms; after TOML 27.4 ms (the adapter copies into PeoValue), converted .peo tree 23.4 ms. manual: dev game starts with 418 items (still TOML) at 1024x1024. open for PEO-143: ItemStore::compartments_of probes compartments.<i> (a list); the converted tree has compartments as a block keyed by name, so container counts need that reader updated when content moves to .peo; a .peo item's parent must be another .peo item (header paths); Content::tags returns full paths for .peo items"
   }
 ]
